@@ -2,16 +2,17 @@ import time
 from psychopy import core, event, visual
 from psychopy.visual import ratingscale
 
-#################################
-# Helper method to wait for a Space key press
-# And keep the window open until feedback
-#################################
 
 def wait_for_space(win):
-    core.wait(1/120)
+    """
+    Helper method to wait for a Spacebar keypress and keep the window open until the window
+    :param win:
+    :return:
+    """
+    core.wait(1 / 120)
     c = event.getKeys()
     while 'space' not in c and 'escape' not in c:
-        core.wait(1/120)
+        core.wait(1 / 120)
         c = event.getKeys()
     if 'escape' in c:
         win.close()
@@ -19,15 +20,18 @@ def wait_for_space(win):
     return
 
 
-#################################
-# Helper method that displays VAR question (text), and places it
-# as a scale with Psychopy.visual.ratingscale. The Scale goes
-# between the two lables, and the answer is saved to Df
-#################################
 def display_vas(win, params, text, labels):
-
-    #TODO: Set up a dictionary that contains data for DataFrame
-    #TODO: Add a DataFrame and write the answers to it
+    """
+    A helper method that displays VAS question (text object) and places a scale using psychopy.visual.ratingscale.
+    The scale goes between two labels, and the answer (1-10_ is saved to Df, along with the response time
+    :param win:
+    :param params:
+    :param text:
+    :param labels:
+    :return:
+    """
+    # TODO: Set up a dictionary that contains data for DataFrame
+    # TODO: Add a DataFrame and write the answers to it
 
     scale = ratingscale.RatingScale(win,
                                     labels=labels,  # Labels at the edges of the scale
@@ -44,7 +48,6 @@ def display_vas(win, params, text, labels):
         get_keypress()
     endTime = time.time()
     return scale.getRating(), endTime - startTime
-
 
 
 def get_keypress():
