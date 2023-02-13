@@ -31,8 +31,6 @@ img.draw()
 win.update()
 helpers.wait_for_space(win)
 
-DoorPlayInfra.setup_door(params, win, 1, 1)
-
 # Initialize DataFrame
 
 # Initialize Sensors
