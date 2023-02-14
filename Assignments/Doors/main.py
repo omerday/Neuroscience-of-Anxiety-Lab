@@ -24,12 +24,12 @@ params = {
 }
 
 # Initialize Screen
-win = visual.Window(params['screenSize'], monitor="testMonitor", color="black", winType='pyglet')
-img = visual.ImageStim(win=win, image="./img/ITI_fixation.jpg", units="pix", opacity=1,
-                       size=(params['screenSize'][0], params['screenSize'][1]))
-img.draw()
-win.update()
-helpers.wait_for_space(win)
+window = visual.Window(params['screenSize'], monitor="testMonitor", color="black", winType='pyglet')
+image = visual.ImageStim(win=window, image="./img/ITI_fixation.jpg", units="pix", opacity=1,
+                         size=(params['screenSize'][0], params['screenSize'][1]))
+image.draw()
+window.update()
+helpers.wait_for_space(window)
 
 # Initialize DataFrame
 
@@ -38,7 +38,7 @@ helpers.wait_for_space(win)
 # Run VAS
 
 # Show Instructions
-show_instructions(win, img, params)
+show_instructions(window, params, image)
 
 # Practice run
 

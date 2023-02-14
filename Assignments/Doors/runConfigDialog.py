@@ -1,13 +1,12 @@
 from psychopy import gui
 
 
-###############################
-# userInputPlay is in charge of gathering initial info for Configuration.
-# It includes the subject number and session, the joystick configuration etc.
-# Used in the Params section in the main file.
-###############################
-
 def user_input_play():
+    """
+    In charge of gathering initial info for configuration using gui.Dlg. it's being inserted into Params dictionary in
+    the main file.
+    :return: answer array
+    """
     userInput = gui.Dlg(title="DOORS Task Information")
     userInput.addField('Subject Number:', )
     # userInput.addField('Session:', 1)
