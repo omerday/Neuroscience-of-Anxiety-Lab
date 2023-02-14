@@ -1,6 +1,6 @@
 from psychopy import visual, core, event
 
-import DoorPlayInfra
+import DoorPlay
 import helpers
 import runConfigDialog
 import pyautogui
@@ -32,7 +32,6 @@ window.update()
 helpers.wait_for_space(window)
 
 # Initialize DataFrame
-
 # Initialize Sensors
 
 # Run VAS

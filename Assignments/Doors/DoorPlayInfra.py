@@ -4,6 +4,7 @@ import helpers
 import time
 
 DOOR_IMAGE_PATH_PREFIX = './img/doors1/'
+OUTCOMES_IMAGE_PREFIX = './img/outcomes/'
 IMAGE_SUFFIX = '.jpg'
 
 
@@ -52,15 +53,13 @@ def move_screen(window, params, image, location, units):
     return image, location
 
 
-def randomize_door_opening_chance():
-    pass
-
-
-def start_door(window, params, image, punishment, reward, location):
+def start_door(window: visual.Window, params, image:visual.ImageStim, punishment: int, reward: int, location):
+    # TODO: take joystick into consideration.
     start_time = time.time()
     end_time = start_time + 10
     key = event.getKeys()
     while time.time() < end_time and 'space' not in key:
+        key = event.getKeys()
         if 'up' in key:
             image, location = move_screen(window, params, image, location, 1)
         if 'down' in key:
@@ -68,4 +67,32 @@ def start_door(window, params, image, punishment, reward, location):
     if 'space' in key:
         pass
     total_time = time.time() - start_time
+    random.seed(time.time() % 60)
     core.wait(2 + random.random() * 2)  # wait 2-4 seconds
+    # Randomize door opening chance according to location:
+    doorOpenChance = random.random()
+    print(f'Door chance: {doorOpenChance}')
+    isDoorOpening = doorOpenChance <= location
+    print(f'isDoorOpening: {isDoorOpening}')
+    if isDoorOpening:
+        # Randomize the chances for p/r. If above 0.5 - reward. else - punishment.
+        rewardChance = random.random()
+        print(f'rewardChance: {rewardChance}')
+        if rewardChance >= 0.5:
+            image.setImage(OUTCOMES_IMAGE_PREFIX + f'{reward}_reward' + IMAGE_SUFFIX)
+            image.setSize((params['screenSize'][0], params['screenSize'][1]))
+            image.draw()
+            window.update()
+            core.wait(2)
+            return reward, total_time
+        else:
+            image.setImage(OUTCOMES_IMAGE_PREFIX + f'{punishment}_punishment' + IMAGE_SUFFIX)
+            image.setSize((params['screenSize'][0], params['screenSize'][1]))
+            image.draw()
+            window.update()
+            core.wait(2)
+            return -1 * punishment, total_time
+    else:
+        return 0, total_time
+
+
