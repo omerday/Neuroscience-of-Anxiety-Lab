@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "C:\Program Files\PsychoPy3\lib\site-packages\psychopy\app\_psychopyApp.py", line 767, in showPrefs
+    prefsDlg = PreferencesDlg(app=self)
+  File "C:\Program Files\PsychoPy3\lib\site-packages\psychopy\app\preferencesDlg.py", line 543, in __init__
+    devnames = sorted(sound.getDevices('output'))
+AttributeError: module 'psychopy.sound' has no attribute 'getDevices'

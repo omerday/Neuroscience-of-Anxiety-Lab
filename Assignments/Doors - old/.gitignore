@@ -1,0 +1,10 @@
+output.csv
+output/*.csv
+PsychoPy3/*
+tmp*.py
+*.edf
+*.EDF
+*.zip
+src/img/outscreenshot/.gitignore
+test.py
+.idea/**
