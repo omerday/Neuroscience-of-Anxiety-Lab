@@ -1,3 +1,4 @@
+import math
 import time
 from psychopy import core, event, visual
 from psychopy.visual import ratingscale
@@ -54,3 +55,16 @@ def get_keypress():
     keys = event.getKeys()
     if keys == ['q'] or keys == ['Q'] or keys == ['Esc']:
         core.quit()
+
+
+def get_p_r_couples(size: int):
+    """
+    the method returns a list with all the combos of p and r according to the size received from the user
+    :param size:
+    :return:
+    """
+    comboList = []
+    for i in range(size):
+        for j in range(size):
+            comboList.append((i + 1, j + 1))
+    return comboList
