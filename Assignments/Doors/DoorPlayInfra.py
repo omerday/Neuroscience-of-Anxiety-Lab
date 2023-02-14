@@ -14,21 +14,38 @@ def setup_door(params, win, reward, punishment):
     :param win: psychopy windows object
     :param reward: reward (1-7)
     :param punishment: punishment (1-7)
-    :return:
+    :return: image: the image object that will be used for movements
+    :return: location: the relative location of the subject from the door, should be 1-100
     """
     isRandom = params['startingDistance'] == 'Random'
-    isKeyboard = params['keyboardMode']
+    location = random.random() if isRandom else params[
+                                                    'startingDistance'] / 100  # a variable for the relative location of the subject from the door, should be 0-1
     imagePath = DOOR_IMAGE_PATH_PREFIX + f"p{punishment}r{reward}" + IMAGE_SUFFIX
 
-    if isRandom:
-        image = visual.ImageStim(win, image=imagePath,
-                                 size=(params['screenSize'][0] * (1 + random.random()), params['screenSize'][1] * (1 + random.random())),
-                                 units="pix", opacity=1)
-    else:
-        image = visual.ImageStim(win, image=imagePath,
-                                 size=(params['screenSize'][0] * (1 + params['startingDistance'] / 100),
-                                       params['screenSize'][1] * (1 + params['startingDistance'] / 100)),
-                                units="pix", opacity=1)
+    image = visual.ImageStim(win, image=imagePath,
+                             size=(params['screenSize'][0] * (1 + location),
+                                   params['screenSize'][1] * (1 + location)),
+                             units="pix", opacity=1)
+
     image.draw()
     win.update()
-    return
+    return image, location
+
+
+def move_screen(win, params, image, location, units):
+    """
+    The method brings the image closer or further from the subject, according to the units of movement given.
+    The units are converted from 1-100 to 0-1, and added to the location.
+    :param win:
+    :param params:
+    :param image:
+    :param location:
+    :param units:
+    :return: image: the updated image object
+    :return: location: the updated location. Will be used to determine the chance of the door opening.
+    """
+    location = location + units / 100
+    image.setSize((params['screenSize'][0] * (1 + location), params['screenSize'][1] * (1 + location)))
+    image.draw()
+    win.update()
+    return image, location
