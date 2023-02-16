@@ -6,6 +6,7 @@ import runConfigDialog
 import pyautogui
 from instructionsScreen import show_instructions
 import LoggerSetup
+import VAS
 
 log = LoggerSetup.set_up_logger()
 configDialogBank = runConfigDialog.user_input_play()
@@ -36,6 +37,7 @@ helpers.wait_for_space(window)
 # Initialize Sensors
 
 # Run VAS
+VAS.beginning_vas(window, params)
 
 # Show Instructions
 show_instructions(window, params, image)
@@ -45,9 +47,13 @@ show_instructions(window, params, image)
 # Task 1
 
 # Mid-VAS
+VAS.middle_vas(window, params, 0)
 
 # Task 2
 
 # Final VAS
+VAS.final_vas(window, params)
 
 # Recap
+
+core.quit()
