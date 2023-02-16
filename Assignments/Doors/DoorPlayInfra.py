@@ -53,21 +53,27 @@ def move_screen(window, params, image, location, units):
     return image, location
 
 
-def start_door(window: visual.Window, params, image:visual.ImageStim, punishment: int, reward: int, location):
-    # TODO: take joystick into consideration.
-    start_time = time.time()
-    end_time = start_time + 10
-    key = event.getKeys()
+def get_movement_input_keyboard(window, params, image: visual.ImageStim, location, end_time: time.time):
     while time.time() < end_time and 'space' not in key:
         key = event.getKeys()
         if 'up' in key:
             image, location = move_screen(window, params, image, location, 1)
         if 'down' in key:
             image, location = move_screen(window, params, image, location, -1)
-    if 'space' in key:
+    return location
+
+
+def start_door(window: visual.Window, params, image:visual.ImageStim, punishment: int, reward: int, location):
+    start_time = time.time()
+    end_time = start_time + 10
+    key = event.getKeys()
+    if params['keyboardMode']:
+        location = get_movement_input_keyboard(window, params, visual, location, end_time)
+    else:
+        # TODO: take joystick into consideration.
         pass
     total_time = time.time() - start_time
-    random.seed(time.time() % 60)
+    random.seed(time.time() % 60)  # Seeding using the current second in order to have relatively random seed
     core.wait(2 + random.random() * 2)  # wait 2-4 seconds
     # Randomize door opening chance according to location:
     doorOpenChance = random.random()

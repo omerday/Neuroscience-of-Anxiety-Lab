@@ -32,6 +32,7 @@ window.update()
 helpers.wait_for_space(window)
 
 # Initialize DataFrame
+
 # Initialize Sensors
 
 # Run VAS
@@ -42,10 +43,12 @@ show_instructions(window, params, image)
 # Practice run
 
 # Task 1
+DoorPlay.run_task(window, params, 1, 0)
 
 # Mid-VAS
 
 # Task 2
+DoorPlay.run_task(window, params, 2, 0)
 
 # Final VAS
 

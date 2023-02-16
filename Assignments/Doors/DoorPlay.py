@@ -1,6 +1,5 @@
 import math
 import random
-
 import DoorPlayInfra
 import helpers
 from psychopy import visual, core
@@ -10,7 +9,7 @@ def practice_run():
     pass
 
 
-def task_1(window: visual.Window, params: dict, roundNum: int, coinsNumber: int):
+def run_task(window: visual.Window, params: dict, roundNum: int, coinsNumber: int):
     # If round2, run show_middle_screen and VAS#2
     isKeyboard = params['keyboardMode']
 
