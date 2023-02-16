@@ -54,6 +54,7 @@ def move_screen(window, params, image, location, units):
 
 
 def get_movement_input_keyboard(window, params, image: visual.ImageStim, location, end_time: time.time):
+    key = event.getKeys()
     while time.time() < end_time and 'space' not in key:
         key = event.getKeys()
         if 'up' in key:
