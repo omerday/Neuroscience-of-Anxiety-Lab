@@ -2,6 +2,7 @@ import math
 import random
 import DoorPlayInfra
 import helpers
+import instructionsScreen
 from psychopy import visual, core
 
 
@@ -10,7 +11,8 @@ def practice_run():
 
 
 def run_task(window: visual.Window, params: dict, roundNum: int, coinsNumber: int):
-    # If round2, run show_middle_screen and VAS#2
+    if roundNum == 2:
+        instructionsScreen.show_middle_screen(window, params)
     isKeyboard = params['keyboardMode']
 
     sizeOfArray = int(math.sqrt(params[f'numOfScreensTask{roundNum}']))

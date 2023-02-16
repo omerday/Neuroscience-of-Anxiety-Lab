@@ -14,6 +14,6 @@ def show_instructions(win: visual.Window, params, img: visual.ImageStim):
         helpers.wait_for_space(win)
 
 
-def show_middle_screen():
+def show_middle_screen(win: visual.Window, params):
     # TODO: Write
     pass
