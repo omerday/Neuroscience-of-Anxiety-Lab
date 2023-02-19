@@ -34,7 +34,7 @@ def setup_door(window, params, punishment: int, reward: int):
     return image, location
 
 
-def move_screen(window, params, image, location, units):
+def move_screen(window, params, image: visual.ImageStim, location, units):
     """
     The method brings the image closer or further from the subject, according to the units of movement given.
     The units are converted from 1-100 to 0-1, and added to the location.
@@ -47,7 +47,7 @@ def move_screen(window, params, image, location, units):
     :return: location: the updated location. Will be used to determine the chance of the door opening.
     """
     location = location + units / 100
-    image.setSize((params['screenSize'][0] * (1 + location), params['screenSize'][1] * (1 + location)))
+    image.size = (params['screenSize'][0] * (1 + location), params['screenSize'][1] * (1 + location))
     image.draw()
     window.update()
     return image, location
@@ -64,12 +64,16 @@ def get_movement_input_keyboard(window, params, image: visual.ImageStim, locatio
     return location
 
 
-def start_door(window: visual.Window, params, image:visual.ImageStim, punishment: int, reward: int, location):
+def get_movement_input_joystick(window, params, image: visual.ImageStim, location, end_time: time.time):
+    pass
+
+
+def start_door(window: visual.Window, params, image: visual.ImageStim, punishment: int, reward: int, location):
     start_time = time.time()
     end_time = start_time + 10
     key = event.getKeys()
     if params['keyboardMode']:
-        location = get_movement_input_keyboard(window, params, visual, location, end_time)
+        location = get_movement_input_keyboard(window, params, image, location, end_time)
     else:
         # TODO: take joystick into consideration.
         pass
@@ -101,5 +105,3 @@ def start_door(window: visual.Window, params, image:visual.ImageStim, punishment
             return -1 * punishment, total_time
     else:
         return 0, total_time
-
-
