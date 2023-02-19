@@ -20,8 +20,9 @@ def setup_door(window, params, punishment: int, reward: int):
     :return: location: the relative location of the subject from the door, should be 1-100
     """
     isRandom = params['startingDistance'] == 'Random'
-    location = random.random() if isRandom else params[
-                                                    'startingDistance'] / 100  # a variable for the relative location of the subject from the door, should be 0-1
+    location = 0.6 - 0.1 * random.random() if isRandom else params[
+                                                    'startingDistance'] / 100  # a variable for the relative location
+    # of the subject from the door, should be 0-1
     imagePath = DOOR_IMAGE_PATH_PREFIX + f"p{punishment}r{reward}" + IMAGE_SUFFIX
 
     image = visual.ImageStim(window, image=imagePath,
