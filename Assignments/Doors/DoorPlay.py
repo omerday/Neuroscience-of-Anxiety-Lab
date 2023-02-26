@@ -11,8 +11,6 @@ def practice_run():
 
 
 def run_task(window: visual.Window, params: dict, roundNum: int, coinsNumber: int):
-    if roundNum == 2:
-        instructionsScreen.show_middle_screen(window, params)
     isKeyboard = params['keyboardMode']
 
     sizeOfArray = int(math.sqrt(params[f'numOfScreensTask{roundNum}']))
