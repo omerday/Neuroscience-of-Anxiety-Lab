@@ -11,9 +11,9 @@ def show_instructions(win: visual.Window, params, img: visual.ImageStim):
         img.setSize((params['screenSize'][0], params['screenSize'][1]))  # Size needs to be reset after changing the image
         img.draw()
         win.update()
-        helpers.wait_for_space(win)
-
-
-def show_middle_screen(win: visual.Window, params):
-    # TODO: Write
-    pass
+    key = event.getKeys()
+    while 'r' not in key and 'space' not in key:
+        key = event.getKeys()
+    if 'r' in key:
+        show_instructions(win, params, img)
+    return
