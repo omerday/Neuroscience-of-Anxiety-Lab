@@ -3,10 +3,10 @@ from psychopy import core, event, visual
 from psychopy.visual import ratingscale
 
 
-def wait_for_space(win):
+def wait_for_space(window):
     """
     Helper method to wait for a Spacebar keypress and keep the window open until the window
-    :param win:
+    :param window:
     :return:
     """
     core.wait(1 / 120)
@@ -15,8 +15,16 @@ def wait_for_space(win):
         core.wait(1 / 120)
         c = event.getKeys()
     if 'escape' in c:
-        win.close()
+        window.close()
         core.quit()
+    return
+
+
+def wait_for_click(window):
+    mouse = event.Mouse()
+    mousePressed = mouse.getPressed()
+    while mousePressed[0] != 1:
+        mousePressed = mouse.getPressed()
     return
 
 
