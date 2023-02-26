@@ -1,5 +1,4 @@
 from psychopy import visual, core, event
-
 import DoorPlay
 import helpers
 import runConfigDialog
