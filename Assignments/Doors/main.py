@@ -1,6 +1,6 @@
 from psychopy import visual, core, event
 
-import DoorPlayInfra
+import DoorPlay
 import helpers
 import runConfigDialog
 import pyautogui
@@ -45,11 +45,13 @@ show_instructions(window, params, image)
 # Practice run
 
 # Task 1
+DoorPlay.run_task(window, params, 1, 0)
 
 # Mid-VAS
 VAS.middle_vas(window, params, 0)
 
 # Task 2
+DoorPlay.run_task(window, params, 2, 0)
 
 # Final VAS
 VAS.final_vas(window, params)

@@ -1,3 +1,4 @@
+import math
 import time
 from psychopy import core, event, visual
 from psychopy.visual import ratingscale
@@ -62,3 +63,41 @@ def get_keypress():
     keys = event.getKeys()
     if keys == ['q'] or keys == ['Q'] or keys == ['Esc']:
         core.quit()
+
+
+def get_p_r_couples(size: int):
+    """
+    the method returns a list with all the combos of p and r according to the size received from the user
+    :param size:
+    :return:
+    """
+    comboList = []
+    for i in range(size):
+        for j in range(size):
+            comboList.append((i + 1, j + 1))
+    return comboList
+
+
+def display_image_for_time(window: visual.Window, params: dict, imagePath: str, timeframe: int):
+    image = visual.ImageStim(win=window, image=imagePath, units='pix', size=(params['screenSize'][0],
+                                                                             params['screenSize'][1]),
+                             opacity=1)
+    image.draw()
+    window.update()
+    key = event.getKeys()
+    endTime = time.time() + timeframe
+    while time.time() < endTime and 'space' not in key:
+        key = event.getKeys()
+    return
+
+
+def display_image_until_key(window: visual.Window, params: dict, imagePath: str, key: str):
+    image = visual.ImageStim(win=window, image=imagePath, units='pix', size=(params['screenSize'][0],
+                                                                             params['screenSize'][1]),
+                             opacity=1)
+    image.draw()
+    window.update()
+    pressedKey = event.getKeys()
+    while key not in pressedKey:
+        pressedKey = event.getKeys()
+    return
