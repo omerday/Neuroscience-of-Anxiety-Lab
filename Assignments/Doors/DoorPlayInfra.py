@@ -26,9 +26,8 @@ def setup_door(window, params, punishment: int, reward: int):
     imagePath = DOOR_IMAGE_PATH_PREFIX + f"p{punishment}r{reward}" + IMAGE_SUFFIX
 
     image = visual.ImageStim(window, image=imagePath,
-                             size=(params['screenSize'][0] * (1 + location),
-                                   params['screenSize'][1] * (1 + location)),
-                             units="pix", opacity=1)
+                             size=((1.5 + location), (1.5 + location)),
+                             units="norm", opacity=1)
 
     image.draw()
     window.update()
@@ -48,7 +47,7 @@ def move_screen(window, params, image: visual.ImageStim, location, units):
     :return: location: the updated location. Will be used to determine the chance of the door opening.
     """
     location = location + units / 100
-    image.size = (params['screenSize'][0] * (1 + location), params['screenSize'][1] * (1 + location))
+    image.size = (1.5 + location, 1.5 + location)
     image.draw()
     window.update()
     return image, location
@@ -92,14 +91,14 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, punishmen
         print(f'rewardChance: {rewardChance}')
         if rewardChance >= 0.5:
             image.setImage(OUTCOMES_IMAGE_PREFIX + f'{reward}_reward' + IMAGE_SUFFIX)
-            image.setSize((params['screenSize'][0], params['screenSize'][1]))
+            image.setSize((2, 2))
             image.draw()
             window.update()
             core.wait(2)
             return reward, total_time
         else:
             image.setImage(OUTCOMES_IMAGE_PREFIX + f'{punishment}_punishment' + IMAGE_SUFFIX)
-            image.setSize((params['screenSize'][0], params['screenSize'][1]))
+            image.setSize((2, 2))
             image.draw()
             window.update()
             core.wait(2)

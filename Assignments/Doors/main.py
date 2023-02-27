@@ -1,8 +1,9 @@
 from psychopy import visual, core, event
 import DoorPlay
 import helpers
+from psychopy.iohub import launchHubServer
 import runConfigDialog
-import pyautogui
+#import pyautogui
 from instructionsScreen import show_instructions
 import LoggerSetup
 import VAS
@@ -19,14 +20,17 @@ params = {
     'fullScreen': configDialogBank[5],
     'keyboardMode': configDialogBank[6],
     'joystickSensitivity': configDialogBank[7],
-    'screenSize': pyautogui.size() if configDialogBank[5] is True else (1024, 768),  # Get Screen Resolution to match Full Screen
+    'screenSize': (1024, 768),  # Get Screen Resolution to match Full Screen
     # 'portAddress': int("0xE050", 16)
 }
 
+io = launchHubServer()
+
 # Initialize Screen
-window = visual.Window(params['screenSize'], monitor="testMonitor", color="black", winType='pyglet')
-image = visual.ImageStim(win=window, image="./img/ITI_fixation.jpg", units="pix", opacity=1,
-                         size=(params['screenSize'][0], params['screenSize'][1]))
+window = visual.Window(params['screenSize'], monitor="testMonitor", color="black", winType='pyglet',
+                       fullscr=True if params['fullScreen'] else False, units="pix")
+image = visual.ImageStim(win=window, image="./img/ITI_fixation.jpg", units="norm", opacity=1,
+                         size=(2,2) if not params['fullScreen'] else None)
 image.draw()
 window.update()
 helpers.wait_for_space(window)
@@ -36,7 +40,7 @@ helpers.wait_for_space(window)
 # Initialize Sensors
 
 # Run VAS
-VAS.beginning_vas(window, params)
+#VAS.beginning_vas(window, params)
 
 # Show Instructions
 show_instructions(window, params, image)
