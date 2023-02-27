@@ -8,6 +8,8 @@ from instructionsScreen import show_instructions
 import LoggerSetup
 import VAS
 
+io = launchHubServer()
+
 log = LoggerSetup.set_up_logger()
 configDialogBank = runConfigDialog.user_input_play()
 
@@ -23,8 +25,6 @@ params = {
     'screenSize': (1024, 768),  # Get Screen Resolution to match Full Screen
     # 'portAddress': int("0xE050", 16)
 }
-
-io = launchHubServer()
 
 # Initialize Screen
 window = visual.Window(params['screenSize'], monitor="testMonitor", color="black", winType='pyglet',
@@ -48,13 +48,13 @@ show_instructions(window, params, image)
 # Practice run
 
 # Task 1
-DoorPlay.run_task(window, params, 1, 0)
+DoorPlay.run_task(window, params, 1, 0, io)
 
 # Mid-VAS
 VAS.middle_vas(window, params, 0)
 
 # Task 2
-DoorPlay.run_task(window, params, 2, 0)
+DoorPlay.run_task(window, params, 2, 0, io)
 
 # Final VAS
 VAS.final_vas(window, params)

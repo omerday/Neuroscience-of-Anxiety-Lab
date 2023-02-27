@@ -53,7 +53,18 @@ def move_screen(window, params, image: visual.ImageStim, location, units):
     return image, location
 
 
-def get_movement_input_keyboard(window, params, image: visual.ImageStim, location, end_time: time.time):
+def get_movement_input_keyboard(window, params, image: visual.ImageStim, location, end_time: time.time, io):
+    # keyboard = io.devices.keyboard
+    # kb_events = keyboard.getKeys(clear=False)
+    # while time.time() < end_time and kb_events[-1].key != ' ' if len(kb_events) > 0 else True:
+    #     core.wait(1/20)
+    #     kb_events = keyboard.getKeys(clear=False)
+    #     if len(kb_events) > 0:
+    #         if 'up' in kb_events[-1].key:
+    #             image, location = move_screen(window, params, image, location, 1)
+    #         if 'down' in kb_events[-1].key:
+    #             image, location = move_screen(window, params, image, location, -1)
+    # return location
     key = event.getKeys()
     while time.time() < end_time and 'space' not in key:
         key = event.getKeys()
@@ -68,12 +79,12 @@ def get_movement_input_joystick(window, params, image: visual.ImageStim, locatio
     pass
 
 
-def start_door(window: visual.Window, params, image: visual.ImageStim, punishment: int, reward: int, location):
+def start_door(window: visual.Window, params, image: visual.ImageStim, punishment: int, reward: int, location, io):
     start_time = time.time()
     end_time = start_time + 10
     key = event.getKeys()
     if params['keyboardMode']:
-        location = get_movement_input_keyboard(window, params, image, location, end_time)
+        location = get_movement_input_keyboard(window, params, image, location, end_time, io)
     else:
         # TODO: take joystick into consideration.
         pass
