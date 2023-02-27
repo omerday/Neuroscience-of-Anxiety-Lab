@@ -40,7 +40,7 @@ helpers.wait_for_space(window)
 # Initialize Sensors
 
 # Run VAS
-#VAS.beginning_vas(window, params)
+VAS.beginning_vas(window, params)
 
 # Show Instructions
 show_instructions(window, params, image)
