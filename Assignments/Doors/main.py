@@ -1,11 +1,14 @@
 from psychopy import visual, core, event
 import DoorPlay
 import helpers
+from psychopy.iohub import launchHubServer
 import runConfigDialog
-import pyautogui
+#import pyautogui
 from instructionsScreen import show_instructions
 import LoggerSetup
 import VAS
+
+io = launchHubServer()
 
 log = LoggerSetup.set_up_logger()
 configDialogBank = runConfigDialog.user_input_play()
@@ -19,15 +22,16 @@ params = {
     'fullScreen': configDialogBank[5],
     'keyboardMode': configDialogBank[6],
     'joystickSensitivity': configDialogBank[7],
-    'screenSize': pyautogui.size() if configDialogBank[5] is True else (1024, 768),  # Get Screen Resolution to match Full Screen
+    'screenSize': (1024, 768),  # Get Screen Resolution to match Full Screen
     'recordPhysio': configDialogBank[8],
     # 'portAddress': int("0xE050", 16)
 }
 
 # Initialize Screen
-window = visual.Window(params['screenSize'], monitor="testMonitor", color="black", winType='pyglet')
-image = visual.ImageStim(win=window, image="./img/ITI_fixation.jpg", units="pix", opacity=1,
-                         size=(params['screenSize'][0], params['screenSize'][1]))
+window = visual.Window(params['screenSize'], monitor="testMonitor", color="black", winType='pyglet',
+                       fullscr=True if params['fullScreen'] else False, units="pix")
+image = visual.ImageStim(win=window, image="./img/ITI_fixation.jpg", units="norm", opacity=1,
+                         size=(2,2) if not params['fullScreen'] else None)
 image.draw()
 window.update()
 helpers.wait_for_space(window)
@@ -45,13 +49,13 @@ show_instructions(window, params, image)
 # Practice run
 
 # Task 1
-DoorPlay.run_task(window, params, 1, 0)
+DoorPlay.run_task(window, params, 1, 0, io)
 
 # Mid-VAS
 VAS.middle_vas(window, params, 0)
 
 # Task 2
-DoorPlay.run_task(window, params, 2, 0)
+DoorPlay.run_task(window, params, 2, 0, io)
 
 # Final VAS
 VAS.final_vas(window, params)

@@ -26,9 +26,8 @@ def setup_door(window, params, punishment: int, reward: int):
     imagePath = DOOR_IMAGE_PATH_PREFIX + f"p{punishment}r{reward}" + IMAGE_SUFFIX
 
     image = visual.ImageStim(window, image=imagePath,
-                             size=(params['screenSize'][0] * (1 + location),
-                                   params['screenSize'][1] * (1 + location)),
-                             units="pix", opacity=1)
+                             size=((1.5 + location), (1.5 + location)),
+                             units="norm", opacity=1)
 
     image.draw()
     window.update()
@@ -48,13 +47,24 @@ def move_screen(window, params, image: visual.ImageStim, location, units):
     :return: location: the updated location. Will be used to determine the chance of the door opening.
     """
     location = location + units / 100
-    image.size = (params['screenSize'][0] * (1 + location), params['screenSize'][1] * (1 + location))
+    image.size = (1.5 + location, 1.5 + location)
     image.draw()
     window.update()
     return image, location
 
 
-def get_movement_input_keyboard(window, params, image: visual.ImageStim, location, end_time: time.time):
+def get_movement_input_keyboard(window, params, image: visual.ImageStim, location, end_time: time.time, io):
+    # keyboard = io.devices.keyboard
+    # kb_events = keyboard.getKeys(clear=False)
+    # while time.time() < end_time and kb_events[-1].key != ' ' if len(kb_events) > 0 else True:
+    #     core.wait(1/20)
+    #     kb_events = keyboard.getKeys(clear=False)
+    #     if len(kb_events) > 0:
+    #         if 'up' in kb_events[-1].key:
+    #             image, location = move_screen(window, params, image, location, 1)
+    #         if 'down' in kb_events[-1].key:
+    #             image, location = move_screen(window, params, image, location, -1)
+    # return location
     key = event.getKeys()
     while time.time() < end_time and 'space' not in key:
         key = event.getKeys()
@@ -69,12 +79,12 @@ def get_movement_input_joystick(window, params, image: visual.ImageStim, locatio
     pass
 
 
-def start_door(window: visual.Window, params, image: visual.ImageStim, punishment: int, reward: int, location):
+def start_door(window: visual.Window, params, image: visual.ImageStim, punishment: int, reward: int, location, io):
     start_time = time.time()
     end_time = start_time + 10
     key = event.getKeys()
     if params['keyboardMode']:
-        location = get_movement_input_keyboard(window, params, image, location, end_time)
+        location = get_movement_input_keyboard(window, params, image, location, end_time, io)
     else:
         # TODO: take joystick into consideration.
         pass
@@ -92,14 +102,14 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, punishmen
         print(f'rewardChance: {rewardChance}')
         if rewardChance >= 0.5:
             image.setImage(OUTCOMES_IMAGE_PREFIX + f'{reward}_reward' + IMAGE_SUFFIX)
-            image.setSize((params['screenSize'][0], params['screenSize'][1]))
+            image.setSize((2, 2))
             image.draw()
             window.update()
             core.wait(2)
             return reward, total_time
         else:
             image.setImage(OUTCOMES_IMAGE_PREFIX + f'{punishment}_punishment' + IMAGE_SUFFIX)
-            image.setSize((params['screenSize'][0], params['screenSize'][1]))
+            image.setSize((2, 2))
             image.draw()
             window.update()
             core.wait(2)
