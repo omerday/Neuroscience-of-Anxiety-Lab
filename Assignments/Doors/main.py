@@ -23,6 +23,7 @@ params = {
     'keyboardMode': configDialogBank[6],
     'joystickSensitivity': configDialogBank[7],
     'screenSize': (1024, 768),  # Get Screen Resolution to match Full Screen
+    'recordPhysio': configDialogBank[8],
     # 'portAddress': int("0xE050", 16)
 }
 
