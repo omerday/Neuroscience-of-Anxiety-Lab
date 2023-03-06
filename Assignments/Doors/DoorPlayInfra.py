@@ -2,6 +2,7 @@ import random
 from psychopy import core, visual, event
 import helpers
 import time
+import keyboard
 
 DOOR_IMAGE_PATH_PREFIX = './img/doors1/'
 OUTCOMES_IMAGE_PREFIX = './img/outcomes/'
@@ -54,6 +55,18 @@ def move_screen(window, params, image: visual.ImageStim, location, units):
 
 
 def get_movement_input_keyboard(window, params, image: visual.ImageStim, location, end_time: time.time, io):
+    """
+    The method gets up/down key state and moves the screen accordingly.
+    Note that for it to work, keyboard package needs to be loaded into psychopy (download the package files and place
+    them in /Applications/PsychoPy.app/Contents/Resources/lib/python3.8, and if running on Mac - you need to run it as sudo.
+    :param window:
+    :param params:
+    :param image:
+    :param location:
+    :param end_time:
+    :param io:
+    :return:
+    """
     # keyboard = io.devices.keyboard
     # kb_events = keyboard.getKeys(clear=False)
     # while time.time() < end_time and kb_events[-1].key != ' ' if len(kb_events) > 0 else True:
@@ -65,12 +78,11 @@ def get_movement_input_keyboard(window, params, image: visual.ImageStim, locatio
     #         if 'down' in kb_events[-1].key:
     #             image, location = move_screen(window, params, image, location, -1)
     # return location
-    key = event.getKeys()
-    while time.time() < end_time and 'space' not in key:
-        key = event.getKeys()
-        if 'up' in key:
+    while time.time() < end_time and not keyboard.is_pressed("space"):
+        core.wait(1/20)
+        if keyboard.is_pressed("up"):
             image, location = move_screen(window, params, image, location, 1)
-        if 'down' in key:
+        if keyboard.is_pressed("down"):
             image, location = move_screen(window, params, image, location, -1)
     return location
 
