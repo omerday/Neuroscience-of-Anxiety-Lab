@@ -20,7 +20,7 @@ def user_input_play():
     # userInput.addField('Eyetracker Support:', False)
     userInput.addField('Full Screen', True)
     userInput.addField('Keyboard Mode', True)
-    userInput.addField('Sensitivity (0: Less sensitive, 1: Normal, 2: More sensitive', 1, choices=[0, 1, 2])
+    userInput.addField('Sensitivity (1: Less sensitive, 2: Normal, 3: More sensitive', 1, choices=[1, 2, 3])
     userInput.addField('Record Physiology', True)
     # userInput.addField('Eyetracker Circle', True)
     # userInput.addField('Sound Mode:',choices=['PTB','Others'])
