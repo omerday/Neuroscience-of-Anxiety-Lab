@@ -10,7 +10,7 @@ import VAS
 
 io = launchHubServer()
 
-log = LoggerSetup.set_up_logger()
+# log = LoggerSetup.set_up_logger()
 configDialogBank = runConfigDialog.user_input_play()
 
 params = {
