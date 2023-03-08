@@ -1,4 +1,5 @@
 import pandas
+import time
 
 
 def setup_data_frame(params: dict):
@@ -8,7 +9,7 @@ def setup_data_frame(params: dict):
                          'StartTime',
                          'CurrentTime',
                          'StepName',
-                         'Session',  # 1 or 2
+                         'Session',  # 1 or 2 in Task step, 1 to 3 in VAS step (Beginning-middle-end)
                          'Round',  # From 1 to 49 or 36
                          'RewardAmount',  # The amount offered for win
                          'PunishmentAmount',  # The amount offered for loss
@@ -31,3 +32,17 @@ def setup_data_frame(params: dict):
 
     Df = pandas.DataFrame(columns=params['headers'])
     return params, Df
+
+
+def create_dict_for_df(params: dict, **kwargs):
+    dictLayout = {}
+    for header in params['headers']:
+        dictLayout[header] = None
+
+    dictLayout['ExperimentName'] = 'Doors'
+    dictLayout['SubjectID'] = params['subjectID']
+    dictLayout['StartTime'] = time.time()
+    for key, value in kwargs.items():
+        if key in dictLayout.keys():
+            dictLayout[key] = value
+    return dictLayout

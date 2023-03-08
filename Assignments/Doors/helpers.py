@@ -2,6 +2,8 @@ import math
 import time
 from psychopy import core, event, visual
 from psychopy.visual import ratingscale
+import SetupDF
+import pandas
 
 
 def wait_for_space(window):
@@ -29,7 +31,7 @@ def wait_for_click(window):
     return
 
 
-def display_vas(win, params, text, labels):
+def display_vas(win, params, text, labels, Df: pandas.DataFrame, questionNo: int, roundNo: int):
     """
     A helper method that displays VAS question (text object) and places a scale using psychopy.visual.ratingscale.
     The scale goes between two labels, and the answer (1-10_ is saved to Df, along with the response time
@@ -49,17 +51,18 @@ def display_vas(win, params, text, labels):
                                     markerColor="Yellow")
     textItem = visual.TextStim(win, text=text, height=.12, units='norm', pos=[0, 0.3], wrapWidth=2)
 
-    startTime = time.time()
+    dict = SetupDF.create_dict_for_df(params, StepName='VAS', VASQuestionNumber=questionNo, Session=roundNo)
     while scale.noResponse:
+        dict['CurrentTime'] = time.time()
+        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         scale.draw()
         textItem.draw()
         win.flip()
-        get_keypress()
-    endTime = time.time()
-    return scale.getRating(), endTime - startTime
+        get_escape()
+    return scale.getRating(), Df, dict
 
 
-def get_keypress():
+def get_escape():
     keys = event.getKeys()
     if keys == ['q'] or keys == ['Q'] or keys == ['Esc']:
         core.quit()

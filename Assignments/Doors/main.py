@@ -1,8 +1,10 @@
+import time
 from psychopy import visual, core, event
 import DoorPlay
 import helpers
 from psychopy.iohub import launchHubServer
 import runConfigDialog
+import SetupDF
 # import pyautogui
 from instructionsScreen import show_instructions
 import LoggerSetup
@@ -37,11 +39,13 @@ window.update()
 helpers.wait_for_space(window)
 
 # Initialize DataFrame
+params, Df = SetupDF.setup_data_frame(params)
 
 # Initialize Sensors
 
 # Run VAS
-VAS.beginning_vas(window, params)
+Df = VAS.beginning_vas(window, params, Df)
+Df.to_csv(f'./{time.time()}.csv')
 
 # Show Instructions
 show_instructions(window, params, image)
@@ -52,13 +56,13 @@ show_instructions(window, params, image)
 DoorPlay.run_task(window, params, 1, 0, io)
 
 # Mid-VAS
-VAS.middle_vas(window, params, 0)
+Df = VAS.middle_vas(window, params, 0, Df)
 
 # Task 2
 DoorPlay.run_task(window, params, 2, 0, io)
 
 # Final VAS
-VAS.final_vas(window, params)
+Df = VAS.final_vas(window, params, Df)
 
 # Recap
 
