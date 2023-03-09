@@ -53,7 +53,7 @@ def display_vas(win, params, text, labels, Df: pandas.DataFrame, questionNo: int
 
     dict = SetupDF.create_dict_for_df(params, StepName='VAS', VASQuestionNumber=questionNo, Session=roundNo)
     while scale.noResponse:
-        dict['CurrentTime'] = time.time()
+        dict['CurrentTime'] = pandas.to_datetime(time.time())
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         scale.draw()
         textItem.draw()
