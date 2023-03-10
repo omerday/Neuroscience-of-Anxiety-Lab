@@ -53,7 +53,7 @@ def move_screen(window, params, image: visual.ImageStim, location, units):
     return image, location
 
 
-def get_movement_input_keyboard(window, params, image: visual.ImageStim, location, end_time: time.time, io):
+def get_movement_input_keyboard(window, params, image: visual.ImageStim, location, end_time: time.time):
     """
     The method gets up/down key state and moves the screen accordingly.
     Note that for it to work, keyboard package needs to be loaded into psychopy (download the package files and place
@@ -94,12 +94,11 @@ def get_movement_input_joystick(window, params, image: visual.ImageStim, locatio
     pass
 
 
-def start_door(window: visual.Window, params, image: visual.ImageStim, punishment: int, reward: int, location, io):
+def start_door(window: visual.Window, params, image: visual.ImageStim, punishment: int, reward: int, location, ):
     start_time = time.time()
     end_time = start_time + 10
-    key = event.getKeys()
     if params['keyboardMode']:
-        location = get_movement_input_keyboard(window, params, image, location, end_time, io)
+        location = get_movement_input_keyboard(window, params, image, location, end_time)
     else:
         # TODO: take joystick into consideration.
         pass

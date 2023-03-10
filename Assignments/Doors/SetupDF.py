@@ -15,6 +15,7 @@ def setup_data_frame(params: dict):
                          'PunishmentAmount',  # The amount offered for loss
                          'DistanceAtStart',  # Initial distance from the screen
                          'DistanceAtLock',  # Distance from the screen upon spacebar / 10 seconds
+                         'CurrentDistance'
                          'MaxDistance',  # Maximal Distance from the Door
                          'MinDistance',  # Minimal Distance from the Door
                          'LockTime',  # When did the door lock
@@ -28,7 +29,7 @@ def setup_data_frame(params: dict):
     if params['recordPhysio']:
         params['headers'].append('ECG')
         params['headers'].append('EMG')
-        params['headers'].append('EDG')
+        params['headers'].append('EDA')
 
     Df = pandas.DataFrame(columns=params['headers'])
     return params, Df

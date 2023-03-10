@@ -23,5 +23,5 @@ def show_instructions(win: visual.Window, params, img: visual.ImageStim, Df: pan
         Df = helpers.wait_for_space(win, Df, dict)
         key = event.getKeys()
     if 'r' in key:
-        show_instructions(win, params, img, Df)
+        Df = show_instructions(win, params, img, Df)
     return Df
