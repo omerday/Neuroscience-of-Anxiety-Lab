@@ -48,7 +48,7 @@ Df = VAS.beginning_vas(window, params, Df)
 Df.to_csv(f'./{time.time()}.csv')
 
 # Show Instructions
-show_instructions(window, params, image)
+Df = show_instructions(window, params, image, Df)
 
 # Practice run
 

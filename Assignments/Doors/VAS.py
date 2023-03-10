@@ -19,6 +19,7 @@ QUESTIONS_FINAL = ["How many coins do you think you won?", "How many coins do yo
 ANSWERS_FINAL = [["Won very few", "Won very many"], ["Lost very few", "Lost very many"], ["never", "all the time"],
                  ["never", "all the time"], ["sad, I did badly", "happy, I did great"]]
 
+
 def beginning_vas(window: visual.Window, params, Df: pandas.DataFrame):
     for i in range(len(QUESTIONS_BEGINNING_MIDDLE)):
         answer, Df, dict = helpers.display_vas(window, params, QUESTIONS_BEGINNING_MIDDLE[i],

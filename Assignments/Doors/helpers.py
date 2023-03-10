@@ -6,21 +6,25 @@ import SetupDF
 import pandas
 
 
-def wait_for_space(window):
+def wait_for_space(window, Df: pandas.DataFrame, dictForDf: dict):
     """
     Helper method to wait for a Spacebar keypress and keep the window open until the window
+    :param dictForDf:
+    :param Df:
     :param window:
     :return:
     """
     core.wait(1 / 120)
     c = event.getKeys()
     while 'space' not in c and 'escape' not in c:
+        dictForDf['CurrentTime'] = pandas.to_datetime(time.time())
+        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         core.wait(1 / 120)
         c = event.getKeys()
     if 'escape' in c:
         window.close()
         core.quit()
-    return
+    return Df
 
 
 def wait_for_click(window):
@@ -81,7 +85,8 @@ def get_p_r_couples(size: int):
     return comboList
 
 
-def display_image_for_time(window: visual.Window, params: dict, imagePath: str, timeframe: int):
+def display_image_for_time(window: visual.Window, params: dict, imagePath: str, timeframe: int, Df: pandas.DataFrame,
+                           dictForDf: dict):
     image = visual.ImageStim(win=window, image=imagePath, units='pix', size=(params['screenSize'][0],
                                                                              params['screenSize'][1]),
                              opacity=1)
@@ -90,11 +95,14 @@ def display_image_for_time(window: visual.Window, params: dict, imagePath: str, 
     key = event.getKeys()
     endTime = time.time() + timeframe
     while time.time() < endTime and 'space' not in key:
+        dictForDf['CurrentTime'] = pandas.to_datetime(time.time())
+        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         key = event.getKeys()
-    return
+    return Df
 
 
-def display_image_until_key(window: visual.Window, params: dict, imagePath: str, key: str):
+def display_image_until_key(window: visual.Window, params: dict, imagePath: str, key: str, Df: pandas.DataFrame,
+                           dictForDf: dict):
     image = visual.ImageStim(win=window, image=imagePath, units='pix', size=(params['screenSize'][0],
                                                                              params['screenSize'][1]),
                              opacity=1)
@@ -102,5 +110,7 @@ def display_image_until_key(window: visual.Window, params: dict, imagePath: str,
     window.update()
     pressedKey = event.getKeys()
     while key not in pressedKey:
+        dictForDf['CurrentTime'] = pandas.to_datetime(time.time())
+        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         pressedKey = event.getKeys()
-    return
+    return Df
