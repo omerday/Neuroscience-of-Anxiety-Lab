@@ -1,4 +1,6 @@
 import random
+
+import pandas
 from psychopy import core, visual, event
 import time
 import pygame
@@ -53,17 +55,18 @@ def move_screen(window, params, image: visual.ImageStim, location, units):
     return image, location
 
 
-def get_movement_input_keyboard(window, params, image: visual.ImageStim, location, end_time: time.time):
+def get_movement_input_keyboard(window, params, image: visual.ImageStim, location, end_time: time.time, Df: pandas.DataFrame, dict: dict):
     """
     The method gets up/down key state and moves the screen accordingly.
     Note that for it to work, keyboard package needs to be loaded into psychopy (download the package files and place
     them in /Applications/PsychoPy.app/Contents/Resources/lib/python3.8, and if running on Mac - you need to run it as sudo.
+    :param dict:
+    :param Df:
     :param window:
     :param params:
     :param image:
     :param location:
     :param end_time:
-    :param io:
     :return:
     """
 
@@ -85,24 +88,49 @@ def get_movement_input_keyboard(window, params, image: visual.ImageStim, locatio
         elif keys[pygame.K_ESCAPE]:
             core.quit()
         elif keys[pygame.K_SPACE]:
-            return location
+            break
         pygame.event.clear()
-    return location
+
+        # Update dict
+        dict['CurrentTime'] = pandas.to_datetime(time.time())
+        dict['CurrentDistance'] = location
+        if location > dict['MaxDistance']:
+            dict['MaxDistance'] = location
+        if location < dict['MinDistance']:
+            dict['MinDistance'] = location
+
+        # Update Df:
+        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
+
+    return location, Df, dict
 
 
 def get_movement_input_joystick(window, params, image: visual.ImageStim, location, end_time: time.time):
     pass
 
 
-def start_door(window: visual.Window, params, image: visual.ImageStim, punishment: int, reward: int, location, ):
+def start_door(window: visual.Window, params, image: visual.ImageStim, punishment: int, reward: int, location,
+               Df: pandas.DataFrame, dict: dict):
+
+    # Set end time for 10s max
     start_time = time.time()
     end_time = start_time + 10
+
+    # Add initial dict parameters
+    dict['StartTime'] = pandas.to_datetime(start_time)
+    dict['CurrentDistance'] = location
+    dict['MaxDistance'] = location
+    dict['MinDistance'] = location
+
     if params['keyboardMode']:
-        location = get_movement_input_keyboard(window, params, image, location, end_time)
+        location, Df, dict = get_movement_input_keyboard(window, params, image, location, end_time, Df, dict)
     else:
         # TODO: take joystick into consideration.
         pass
+
     total_time = time.time() - start_time
+
+    # Seed randomization for waiting time and for door opening chance:
     random.seed(time.time() % 60)  # Seeding using the current second in order to have relatively random seed
     core.wait(2 + random.random() * 2)  # wait 2-4 seconds
     # Randomize door opening chance according to location:
@@ -120,13 +148,13 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, punishmen
             image.draw()
             window.update()
             core.wait(2)
-            return reward, total_time
+            return reward, total_time, Df
         else:
             image.setImage(OUTCOMES_IMAGE_PREFIX + f'{punishment}_punishment' + IMAGE_SUFFIX)
             image.setSize((2, 2))
             image.draw()
             window.update()
             core.wait(2)
-            return -1 * punishment, total_time
+            return -1 * punishment, total_time, Df
     else:
-        return 0, total_time
+        return 0, total_time, Df

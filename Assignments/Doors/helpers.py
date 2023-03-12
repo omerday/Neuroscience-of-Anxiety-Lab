@@ -6,7 +6,7 @@ import SetupDF
 import pandas
 
 
-def wait_for_space(window, Df: pandas.DataFrame, dictForDf: dict):
+def wait_for_space(window, Df: pandas.DataFrame, dict: dict):
     """
     Helper method to wait for a Spacebar keypress and keep the window open until the window
     :param dictForDf:
@@ -17,7 +17,7 @@ def wait_for_space(window, Df: pandas.DataFrame, dictForDf: dict):
     core.wait(1 / 120)
     c = event.getKeys()
     while 'space' not in c and 'escape' not in c:
-        dictForDf['CurrentTime'] = pandas.to_datetime(time.time())
+        dict['CurrentTime'] = pandas.to_datetime(time.time())
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         core.wait(1 / 120)
         c = event.getKeys()
@@ -25,6 +25,23 @@ def wait_for_space(window, Df: pandas.DataFrame, dictForDf: dict):
         window.close()
         core.quit()
     return Df
+
+def wait_for_space_no_df(window):
+    """
+    Helper method to wait for a Spacebar keypress and keep the window open until the window
+    :param dictForDf:
+    :param Df:
+    :param window:
+    :return:
+    """
+    core.wait(1 / 120)
+    c = event.getKeys()
+    while 'space' not in c and 'escape' not in c:
+        core.wait(1 / 120)
+        c = event.getKeys()
+    if 'escape' in c:
+        window.close()
+        core.quit()
 
 
 def wait_for_click(window):

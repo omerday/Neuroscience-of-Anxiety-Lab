@@ -32,6 +32,7 @@ def beginning_vas(window: visual.Window, params, Df: pandas.DataFrame):
 
 
 def middle_vas(window: visual.Window, params, coins: int, Df: pandas.DataFrame):
+    dict = {}
     for i in range(len(QUESTIONS_BEGINNING_MIDDLE)):
         answer, Df, dict = helpers.display_vas(window, params, QUESTIONS_BEGINNING_MIDDLE[i],
                                                ANSWERS_BEGINNING_MIDDLE[i], Df, questionNo=i + 1, roundNo=2)
@@ -49,9 +50,9 @@ def middle_vas(window: visual.Window, params, coins: int, Df: pandas.DataFrame):
     window.update()
     if params["keyboardMode"]:
         # TODO: Add DF here
-        helpers.wait_for_space(window)
+        Df = helpers.wait_for_space(window, Df, dict)
     else:
-        helpers.wait_for_click(window)
+        Df = helpers.wait_for_click(window)
     return Df
 
 

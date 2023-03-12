@@ -29,6 +29,9 @@ params = {
     # 'portAddress': int("0xE050", 16)
 }
 
+# Initialize DataFrame
+params, Df = SetupDF.setup_data_frame(params)
+
 # Initialize Screen
 window = visual.Window(params['screenSize'], monitor="testMonitor", color="black", winType='pyglet',
                        fullscr=True if params['fullScreen'] else False, units="pix")
@@ -36,10 +39,7 @@ image = visual.ImageStim(win=window, image="./img/ITI_fixation.jpg", units="norm
                          size=(2, 2) if not params['fullScreen'] else None)
 image.draw()
 window.update()
-helpers.wait_for_space(window)
-
-# Initialize DataFrame
-params, Df = SetupDF.setup_data_frame(params)
+helpers.wait_for_space_no_df(window)
 
 # Initialize Sensors
 
@@ -53,13 +53,13 @@ Df = show_instructions(window, params, image, Df)
 # Practice run
 
 # Task 1
-DoorPlay.run_task(window, params, 1, 0, io)
+Df = DoorPlay.run_task(window, params, 1, 0, Df)
 
 # Mid-VAS
 Df = VAS.middle_vas(window, params, 0, Df)
 
 # Task 2
-DoorPlay.run_task(window, params, 2, 0, io)
+Df = DoorPlay.run_task(window, params, 2, 0, Df)
 
 # Final VAS
 Df = VAS.final_vas(window, params, Df)

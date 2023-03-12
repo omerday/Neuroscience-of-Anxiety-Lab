@@ -15,7 +15,7 @@ def setup_data_frame(params: dict):
                          'PunishmentAmount',  # The amount offered for loss
                          'DistanceAtStart',  # Initial distance from the screen
                          'DistanceAtLock',  # Distance from the screen upon spacebar / 10 seconds
-                         'CurrentDistance'
+                         'CurrentDistance',
                          'MaxDistance',  # Maximal Distance from the Door
                          'MinDistance',  # Minimal Distance from the Door
                          'LockTime',  # When did the door lock

@@ -26,9 +26,9 @@ def run_task(window: visual.Window, params: dict, session: int, coinsNumber: int
         dict['RewardAmount'] = scenario[0]
         dict['PunishmentAmount'] = scenario[1]
         dict['Round'] = roundNum
-        dict['StartTime'] = pandas.to_datetime(time.time())
         dict['DistanceAtStart'] = distanceFromDoor
-        win, total_time = DoorPlayInfra.start_door(window, params, image, scenario[0], scenario[1], distanceFromDoor)
+        win, total_time, Df = DoorPlayInfra.start_door(window, params, image, scenario[0], scenario[1], distanceFromDoor, Df, dict)
+        Df.to_csv(f'./TaskRun{roundNum} - {time.time()}.csv')
         coinsNumber += win
         scenariosList.remove(scenario)
 
