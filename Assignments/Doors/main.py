@@ -1,4 +1,6 @@
 import time
+import datetime
+
 from psychopy import visual, core, event
 import DoorPlay
 import helpers
@@ -26,6 +28,7 @@ params = {
     'sensitivity': configDialogBank[7],
     'screenSize': (1024, 768),  # Get Screen Resolution to match Full Screen
     'recordPhysio': configDialogBank[8],
+    'startTime': time.time()
     # 'portAddress': int("0xE050", 16)
 }
 

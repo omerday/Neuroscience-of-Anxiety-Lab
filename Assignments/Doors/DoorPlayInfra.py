@@ -22,7 +22,7 @@ def setup_door(window, params, punishment: int, reward: int):
     :return: location: the relative location of the subject from the door, should be 1-100
     """
     isRandom = params['startingDistance'] == 'Random'
-    location = 0.6 - 0.1 * random.random() if isRandom else params[
+    location = round(0.6 - 0.1 * random.random(), 2) if isRandom else params[
                                                                 'startingDistance'] / 100  # a variable for the relative location
     # of the subject from the door, should be 0-1
     imagePath = DOOR_IMAGE_PATH_PREFIX + f"p{punishment}r{reward}" + IMAGE_SUFFIX
@@ -81,15 +81,11 @@ def get_movement_input_keyboard(window, params, image: visual.ImageStim, locatio
                 core.quit()
 
         keys = pygame.key.get_pressed()
-        if True in keys:
-            print(keys)
-        # TODO: Fix bugs in gameplay
+
         if keys[pygame.K_UP] and not keys[pygame.K_DOWN] and not keys[pygame.K_SPACE]:
-            print(keys.index(True))
             if location < 0.97:
                 image, location = move_screen(window, params, image, location, params['sensitivity'] * 0.5)
         elif keys[pygame.K_DOWN] and not keys[pygame.K_UP] and not keys[pygame.K_SPACE]:
-            print(keys.index(True))
             if location > 0.1:
                 image, location = move_screen(window, params, image, location, params['sensitivity'] * (-0.5))
         elif keys[pygame.K_ESCAPE]:
@@ -104,12 +100,12 @@ def get_movement_input_keyboard(window, params, image: visual.ImageStim, locatio
             break
 
         # Update dict
-        dict['CurrentTime'] = datetime.datetime.now()
-        dict['CurrentDistance'] = location
+        dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
+        dict['CurrentDistance'] = round(location, 2)
         if location > dict['MaxDistance']:
-            dict['MaxDistance'] = location
+            dict['MaxDistance'] = round(location, 2)
         if location < dict['MinDistance']:
-            dict['MinDistance'] = location
+            dict['MinDistance'] = round(location, 2)
 
         # Update Df:
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
@@ -127,8 +123,8 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, punishmen
     end_time = start_time + 10
 
     # Add initial dict parameters
-    dict['RoundStartTime'] = datetime.datetime.now()
-    dict['CurrentDistance'] = location
+    dict['RoundStartTime'] = round(time.time() - dict['StartTime'], 3)
+    dict['CurrentDistance'] = location, 2
     dict['MaxDistance'] = location
     dict['MinDistance'] = location
 
@@ -139,8 +135,8 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, punishmen
         pass
 
     total_time = time.time() - start_time
-    dict["LockTime"] = datetime.datetime.now()
-    dict["CurrentTime"] = datetime.datetime.now()
+    dict["LockTime"] = total_time
+    dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
     Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
 
     # Seed randomization for waiting time and for door opening chance:
@@ -150,7 +146,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, punishmen
 
     dict["DoorWaitTime"] = doorWaitTime
     while time.time() < waitStart + doorWaitTime:
-        dict["CurrentTime"] = datetime.datetime.now()
+        dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         core.wait(1/1000)
 
@@ -159,7 +155,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, punishmen
     isDoorOpening = doorOpenChance <= location
 
     dict["DidDoorOpen"] = 1 if isDoorOpening else 0
-    dict["CurrentTime"] = datetime.datetime.now()
+    dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
     Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
 
     if isDoorOpening:
@@ -182,7 +178,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, punishmen
 
         waitTimeStart = time.time()
         while time.time() < waitTimeStart + 2:
-            dict["CurrentTime"] = datetime.datetime.now()
+            dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
             Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
             core.wait(1/1000)
 

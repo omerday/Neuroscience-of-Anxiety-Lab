@@ -44,7 +44,7 @@ def create_dict_for_df(params: dict, **kwargs):
 
     dictLayout['ExperimentName'] = 'Doors'
     dictLayout['SubjectID'] = params['subjectID']
-    dictLayout['StartTime'] = datetime.datetime.now()
+    dictLayout['StartTime'] = params['startTime']
     for key, value in kwargs.items():
         if key in dictLayout.keys():
             dictLayout[key] = value

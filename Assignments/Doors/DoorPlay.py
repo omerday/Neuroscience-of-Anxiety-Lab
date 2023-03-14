@@ -14,13 +14,13 @@ def practice_run():
 
 
 def run_task(window: visual.Window, params: dict, session: int, totalCoins: int, Df: pandas.DataFrame):
-    dict = SetupDF.create_dict_for_df(params, StepName='Doors', Session=session, TotalCoins=totalCoins, )
 
     sizeOfArray = int(math.sqrt(params[f'numOfScreensTask{session}']))
     scenariosList = helpers.get_p_r_couples(sizeOfArray)
 
     roundNum = 0
     while len(scenariosList) != 0:
+        dict = SetupDF.create_dict_for_df(params, StepName='Doors', Session=session, TotalCoins=totalCoins, )
         roundNum = roundNum + 1
         scenario = random.choice(scenariosList)
         image, distanceFromDoor = DoorPlayInfra.setup_door(window, params, scenario[0], scenario[1])
@@ -32,7 +32,7 @@ def run_task(window: visual.Window, params: dict, session: int, totalCoins: int,
         totalCoins += coinsWon
         scenariosList.remove(scenario)
         dict["TotalCoins"] = totalCoins
-        dict["CurrentTime"] = datetime.datetime.now()
+        dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
 
     return Df

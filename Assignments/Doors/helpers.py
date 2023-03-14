@@ -9,15 +9,15 @@ import datetime
 
 def wait_for_space(window, Df: pandas.DataFrame, dict: dict):
     """
-    Helper method to wait for a Spacebar keypress and keep the window open until the window
-    :param dictForDf:
+    Helper method to wait for a Spacebar keypress and keep the window open until then
+    :param dict:
     :param Df:
     :param window:
     :return:
     """
     c = event.getKeys()
     while 'space' not in c and 'escape' not in c:
-        dict['CurrentTime'] = datetime.datetime.now()
+        dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         core.wait(1 / 1000)
         c = event.getKeys()
@@ -29,16 +29,17 @@ def wait_for_space(window, Df: pandas.DataFrame, dict: dict):
 
 def wait_for_space_with_replay(window, Df: pandas.DataFrame, dict: dict):
     """
-    Helper method to wait for a Spacebar keypress and keep the window open until the window
-    :param dictForDf:
+    Helper method to wait for a Spacebar keypress and keep the window open, or get 'r' keypress for replay of the
+     instructions. Returns True if needed to replay.
+    :param dict:
     :param Df:
     :param window:
-    :return:
+    :return: True/False if r was pressed
     """
     c = event.getKeys()
     while 'space' not in c and 'escape' not in c and 'r' not in c:
         event.clearEvents()
-        dict['CurrentTime'] = datetime.datetime.now()
+        dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         core.wait(1 / 1000)
         c = event.getKeys()
@@ -52,9 +53,7 @@ def wait_for_space_with_replay(window, Df: pandas.DataFrame, dict: dict):
 
 def wait_for_space_no_df(window):
     """
-    Helper method to wait for a Spacebar keypress and keep the window open until the window
-    :param dictForDf:
-    :param Df:
+    Helper method to wait for a Spacebar keypress and keep the window open, without writing to Df.
     :param window:
     :return:
     """
@@ -79,15 +78,16 @@ def wait_for_click(window):
 def display_vas(win, params, text, labels, Df: pandas.DataFrame, questionNo: int, roundNo: int):
     """
     A helper method that displays VAS question (text object) and places a scale using psychopy.visual.ratingscale.
-    The scale goes between two labels, and the answer (1-10_ is saved to Df, along with the response time
+    The scale goes between two labels, and the answer (1-100) is saved to Df, along with the response time
+    :param roundNo:
+    :param questionNo:
+    :param Df:
     :param win:
     :param params:
     :param text:
     :param labels:
-    :return:
+    :return: The VAS rating, along with the Dataframe and dict
     """
-    # TODO: Set up a dictionary that contains data for DataFrame
-    # TODO: Add a DataFrame and write the answers to it
 
     scale = ratingscale.RatingScale(win,
                                     labels=labels,  # Labels at the edges of the scale
@@ -98,7 +98,8 @@ def display_vas(win, params, text, labels, Df: pandas.DataFrame, questionNo: int
 
     dict = SetupDF.create_dict_for_df(params, StepName='VAS', VASQuestionNumber=questionNo, Session=roundNo)
     while scale.noResponse:
-        dict['CurrentTime'] = datetime.datetime.now()
+        # dict['CurrentTime'] = datetime.datetime.now() - dict['StartTime']
+        dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         scale.draw()
         textItem.draw()
@@ -136,7 +137,7 @@ def display_image_for_time(window: visual.Window, params: dict, imagePath: str, 
     key = event.getKeys()
     endTime = time.time() + timeframe
     while time.time() < endTime and 'space' not in key:
-        dictForDf['CurrentTime'] = datetime.datetime.now()
+        dictForDf['CurrentTime'] = round(time.time() - dictForDf['StartTime'], 3)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         key = event.getKeys()
     return Df
@@ -151,7 +152,7 @@ def display_image_until_key(window: visual.Window, params: dict, imagePath: str,
     window.update()
     pressedKey = event.getKeys()
     while key not in pressedKey:
-        dictForDf['CurrentTime'] = datetime.datetime.now()
+        dictForDf['CurrentTime'] = round(time.time() - dictForDf['StartTime'], 3)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         pressedKey = event.getKeys()
     return Df
