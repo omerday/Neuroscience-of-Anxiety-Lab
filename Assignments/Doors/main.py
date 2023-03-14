@@ -1,8 +1,10 @@
+import time
 from psychopy import visual, core, event
 import DoorPlay
 import helpers
 from psychopy.iohub import launchHubServer
 import runConfigDialog
+import SetupDF
 # import pyautogui
 from instructionsScreen import show_instructions
 import LoggerSetup
@@ -27,6 +29,9 @@ params = {
     # 'portAddress': int("0xE050", 16)
 }
 
+# Initialize DataFrame
+params, Df = SetupDF.setup_data_frame(params)
+
 # Initialize Screen
 window = visual.Window(params['screenSize'], monitor="testMonitor", color="black", winType='pyglet',
                        fullscr=True if params['fullScreen'] else False, units="pix")
@@ -34,31 +39,29 @@ image = visual.ImageStim(win=window, image="./img/ITI_fixation.jpg", units="norm
                          size=(2, 2) if not params['fullScreen'] else None)
 image.draw()
 window.update()
-helpers.wait_for_space(window)
-
-# Initialize DataFrame
+helpers.wait_for_space_no_df(window)
 
 # Initialize Sensors
 
 # Run VAS
-VAS.beginning_vas(window, params)
+Df = VAS.beginning_vas(window, params, Df)
 
 # Show Instructions
-show_instructions(window, params, image)
+Df = show_instructions(window, params, image, Df)
 
 # Practice run
 
 # Task 1
-DoorPlay.run_task(window, params, 1, 0, io)
+Df = DoorPlay.run_task(window, params, 1, 0, Df)
 
 # Mid-VAS
-VAS.middle_vas(window, params, 0)
+Df = VAS.middle_vas(window, params, 0, Df)
 
 # Task 2
-DoorPlay.run_task(window, params, 2, 0, io)
+Df = DoorPlay.run_task(window, params, 2, 0, Df)
 
 # Final VAS
-VAS.final_vas(window, params)
+Df = VAS.final_vas(window, params, Df)
 
 # Recap
 

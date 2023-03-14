@@ -1,4 +1,6 @@
 import random
+import datetime
+import pandas
 from psychopy import core, visual, event
 import time
 import pygame
@@ -21,7 +23,7 @@ def setup_door(window, params, punishment: int, reward: int):
     """
     isRandom = params['startingDistance'] == 'Random'
     location = 0.6 - 0.1 * random.random() if isRandom else params[
-                                                    'startingDistance'] / 100  # a variable for the relative location
+                                                                'startingDistance'] / 100  # a variable for the relative location
     # of the subject from the door, should be 0-1
     imagePath = DOOR_IMAGE_PATH_PREFIX + f"p{punishment}r{reward}" + IMAGE_SUFFIX
 
@@ -53,81 +55,138 @@ def move_screen(window, params, image: visual.ImageStim, location, units):
     return image, location
 
 
-def get_movement_input_keyboard(window, params, image: visual.ImageStim, location, end_time: time.time, io):
+def get_movement_input_keyboard(window, params, image: visual.ImageStim, location, end_time: time.time,
+                                Df: pandas.DataFrame, dict: dict):
     """
     The method gets up/down key state and moves the screen accordingly.
     Note that for it to work, keyboard package needs to be loaded into psychopy (download the package files and place
     them in /Applications/PsychoPy.app/Contents/Resources/lib/python3.8, and if running on Mac - you need to run it as sudo.
+    :param dict:
+    :param Df:
     :param window:
     :param params:
     :param image:
     :param location:
     :param end_time:
-    :param io:
     :return:
     """
 
     pygame.init()
     while time.time() < end_time:
-        pygame.event.pump()
-        keys = pygame.key.get_pressed()
+        pygame.event.clear()
+        # pygame.event.pump()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 core.quit()
 
-        if keys[pygame.K_UP]:
-            if location < 1:
+        keys = pygame.key.get_pressed()
+        if True in keys:
+            print(keys)
+        # TODO: Fix bugs in gameplay
+        if keys[pygame.K_UP] and not keys[pygame.K_DOWN] and not keys[pygame.K_SPACE]:
+            print(keys.index(True))
+            if location < 0.97:
                 image, location = move_screen(window, params, image, location, params['sensitivity'] * 0.5)
-        elif keys[pygame.K_DOWN]:
-            if location > 0:
+        elif keys[pygame.K_DOWN] and not keys[pygame.K_UP] and not keys[pygame.K_SPACE]:
+            print(keys.index(True))
+            if location > 0.1:
                 image, location = move_screen(window, params, image, location, params['sensitivity'] * (-0.5))
         elif keys[pygame.K_ESCAPE]:
             core.quit()
-        elif keys[pygame.K_SPACE]:
-            return location
-        pygame.event.clear()
-    return location
+        elif keys[pygame.K_SPACE] and not keys[pygame.K_UP] and not keys[pygame.K_DOWN]:
+            spacePress = True
+            while spacePress:
+                for event in pygame.event.get():
+                    if event.type == pygame.KEYUP and event.key == pygame.K_SPACE:
+                        spacePress = False
+                        break
+            break
+
+        # Update dict
+        dict['CurrentTime'] = datetime.datetime.now()
+        dict['CurrentDistance'] = location
+        if location > dict['MaxDistance']:
+            dict['MaxDistance'] = location
+        if location < dict['MinDistance']:
+            dict['MinDistance'] = location
+
+        # Update Df:
+        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
+    return location, Df, dict
 
 
 def get_movement_input_joystick(window, params, image: visual.ImageStim, location, end_time: time.time):
     pass
 
 
-def start_door(window: visual.Window, params, image: visual.ImageStim, punishment: int, reward: int, location, io):
+def start_door(window: visual.Window, params, image: visual.ImageStim, punishment: int, reward: int, location,
+               Df: pandas.DataFrame, dict: dict):
+    # Set end time for 10s max
     start_time = time.time()
     end_time = start_time + 10
-    key = event.getKeys()
+
+    # Add initial dict parameters
+    dict['RoundStartTime'] = datetime.datetime.now()
+    dict['CurrentDistance'] = location
+    dict['MaxDistance'] = location
+    dict['MinDistance'] = location
+
     if params['keyboardMode']:
-        location = get_movement_input_keyboard(window, params, image, location, end_time, io)
+        location, Df, dict = get_movement_input_keyboard(window, params, image, location, end_time, Df, dict)
     else:
         # TODO: take joystick into consideration.
         pass
+
     total_time = time.time() - start_time
+    dict["LockTime"] = datetime.datetime.now()
+    dict["CurrentTime"] = datetime.datetime.now()
+    Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
+
+    # Seed randomization for waiting time and for door opening chance:
     random.seed(time.time() % 60)  # Seeding using the current second in order to have relatively random seed
-    core.wait(2 + random.random() * 2)  # wait 2-4 seconds
+    doorWaitTime = 2 + random.random() * 2 # Randomize waiting time between 2-4 seconds
+    waitStart = time.time()
+
+    dict["DoorWaitTime"] = doorWaitTime
+    while time.time() < waitStart + doorWaitTime:
+        dict["CurrentTime"] = datetime.datetime.now()
+        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
+        core.wait(1/1000)
+
     # Randomize door opening chance according to location:
     doorOpenChance = random.random()
-    print(f'Door chance: {doorOpenChance}')
     isDoorOpening = doorOpenChance <= location
-    print(f'isDoorOpening: {isDoorOpening}')
+
+    dict["DidDoorOpen"] = 1 if isDoorOpening else 0
+    dict["CurrentTime"] = datetime.datetime.now()
+    Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
+
     if isDoorOpening:
         # Randomize the chances for p/r. If above 0.5 - reward. else - punishment.
         rewardChance = random.random()
-        print(f'rewardChance: {rewardChance}')
         if rewardChance >= 0.5:
             image.setImage(OUTCOMES_IMAGE_PREFIX + f'{reward}_reward' + IMAGE_SUFFIX)
             image.setSize((2, 2))
             image.draw()
             window.update()
-            core.wait(2)
-            return reward, total_time
+            coins = reward
+            dict["DidWin"] = 1
         else:
             image.setImage(OUTCOMES_IMAGE_PREFIX + f'{punishment}_punishment' + IMAGE_SUFFIX)
             image.setSize((2, 2))
             image.draw()
             window.update()
-            core.wait(2)
-            return -1 * punishment, total_time
+            coins = -1 * punishment
+            dict["DidWin"] = 0
+
+        waitTimeStart = time.time()
+        while time.time() < waitTimeStart + 2:
+            dict["CurrentTime"] = datetime.datetime.now()
+            Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
+            core.wait(1/1000)
+
+        return coins, total_time, Df, dict
+
     else:
-        return 0, total_time
+        return 0, total_time, Df, dict
