@@ -139,34 +139,54 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, punishmen
         pass
 
     total_time = time.time() - start_time
-
-    # TODO: Add writing to Df from here on!
+    dict["LockTime"] = datetime.datetime.now()
+    dict["CurrentTime"] = datetime.datetime.now()
+    Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
 
     # Seed randomization for waiting time and for door opening chance:
     random.seed(time.time() % 60)  # Seeding using the current second in order to have relatively random seed
-    core.wait(2 + random.random() * 2)  # wait 2-4 seconds
+    doorWaitTime = 2 + random.random() * 2 # Randomize waiting time between 2-4 seconds
+    waitStart = time.time()
+
+    dict["DoorWaitTime"] = doorWaitTime
+    while time.time() < waitStart + doorWaitTime:
+        dict["CurrentTime"] = datetime.datetime.now()
+        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
+        core.wait(1/1000)
+
     # Randomize door opening chance according to location:
     doorOpenChance = random.random()
-    print(f'Door chance: {doorOpenChance}')
     isDoorOpening = doorOpenChance <= location
-    print(f'isDoorOpening: {isDoorOpening}')
+
+    dict["DidDoorOpen"] = 1 if isDoorOpening else 0
+    dict["CurrentTime"] = datetime.datetime.now()
+    Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
+
     if isDoorOpening:
         # Randomize the chances for p/r. If above 0.5 - reward. else - punishment.
         rewardChance = random.random()
-        print(f'rewardChance: {rewardChance}')
         if rewardChance >= 0.5:
             image.setImage(OUTCOMES_IMAGE_PREFIX + f'{reward}_reward' + IMAGE_SUFFIX)
             image.setSize((2, 2))
             image.draw()
             window.update()
-            core.wait(2)
-            return reward, total_time, Df
+            coins = reward
+            dict["DidWin"] = 1
         else:
             image.setImage(OUTCOMES_IMAGE_PREFIX + f'{punishment}_punishment' + IMAGE_SUFFIX)
             image.setSize((2, 2))
             image.draw()
             window.update()
-            core.wait(2)
-            return -1 * punishment, total_time, Df
+            coins = -1 * punishment
+            dict["DidWin"] = 0
+
+        waitTimeStart = time.time()
+        while time.time() < waitTimeStart + 2:
+            dict["CurrentTime"] = datetime.datetime.now()
+            Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
+            core.wait(1/1000)
+
+        return coins, total_time, Df, dict
+
     else:
-        return 0, total_time, Df
+        return 0, total_time, Df, dict

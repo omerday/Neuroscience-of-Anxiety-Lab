@@ -1,3 +1,4 @@
+import datetime
 import math
 import random
 import SetupDF
@@ -12,8 +13,8 @@ def practice_run():
     pass
 
 
-def run_task(window: visual.Window, params: dict, session: int, coinsNumber: int, Df: pandas.DataFrame):
-    dict = SetupDF.create_dict_for_df(params, StepName='Doors', Session=session, TotalCoins=coinsNumber,)
+def run_task(window: visual.Window, params: dict, session: int, totalCoins: int, Df: pandas.DataFrame):
+    dict = SetupDF.create_dict_for_df(params, StepName='Doors', Session=session, TotalCoins=totalCoins, )
 
     sizeOfArray = int(math.sqrt(params[f'numOfScreensTask{session}']))
     scenariosList = helpers.get_p_r_couples(sizeOfArray)
@@ -27,8 +28,11 @@ def run_task(window: visual.Window, params: dict, session: int, coinsNumber: int
         dict['PunishmentAmount'] = scenario[1]
         dict['Round'] = roundNum
         dict['DistanceAtStart'] = distanceFromDoor
-        win, total_time, Df = DoorPlayInfra.start_door(window, params, image, scenario[0], scenario[1], distanceFromDoor, Df, dict)
-        coinsNumber += win
+        coinsWon, total_time, Df, dict = DoorPlayInfra.start_door(window, params, image, scenario[0], scenario[1], distanceFromDoor, Df, dict)
+        totalCoins += coinsWon
         scenariosList.remove(scenario)
+        dict["TotalCoins"] = totalCoins
+        dict["CurrentTime"] = datetime.datetime.now()
+        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
 
     return Df

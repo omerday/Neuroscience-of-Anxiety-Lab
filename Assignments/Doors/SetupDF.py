@@ -2,6 +2,7 @@ import pandas
 import time
 import datetime
 
+
 def setup_data_frame(params: dict):
     params['headers'] = ['Time',
                          'ExpermientName',
@@ -20,8 +21,8 @@ def setup_data_frame(params: dict):
                          'MinDistance',  # Minimal Distance from the Door
                          'RoundStartTime',
                          'LockTime',  # When did the door lock
-                         'DidDoorOpen',
-                         'WinOrLose',
+                         'DidDoorOpen',  # 0 or 1
+                         'DidWin',  # 0 or 1, only if DidDoorOpen is 1!!!
                          'DoorWaitTime',  # How long was the hold before opening the door
                          'TotalCoins',
                          'VASQuestionNumber',
