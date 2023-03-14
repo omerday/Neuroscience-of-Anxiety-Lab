@@ -28,7 +28,6 @@ def run_task(window: visual.Window, params: dict, session: int, coinsNumber: int
         dict['Round'] = roundNum
         dict['DistanceAtStart'] = distanceFromDoor
         win, total_time, Df = DoorPlayInfra.start_door(window, params, image, scenario[0], scenario[1], distanceFromDoor, Df, dict)
-        Df.to_csv(f'./TaskRun{roundNum} - {time.time()}.csv')
         coinsNumber += win
         scenariosList.remove(scenario)
 

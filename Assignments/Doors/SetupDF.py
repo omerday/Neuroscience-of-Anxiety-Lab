@@ -1,6 +1,6 @@
 import pandas
 import time
-
+import datetime
 
 def setup_data_frame(params: dict):
     params['headers'] = ['Time',
@@ -18,6 +18,7 @@ def setup_data_frame(params: dict):
                          'CurrentDistance',
                          'MaxDistance',  # Maximal Distance from the Door
                          'MinDistance',  # Minimal Distance from the Door
+                         'RoundStartTime',
                          'LockTime',  # When did the door lock
                          'DidDoorOpen',
                          'WinOrLose',
@@ -42,7 +43,7 @@ def create_dict_for_df(params: dict, **kwargs):
 
     dictLayout['ExperimentName'] = 'Doors'
     dictLayout['SubjectID'] = params['subjectID']
-    dictLayout['StartTime'] = time.time()
+    dictLayout['StartTime'] = datetime.datetime.now()
     for key, value in kwargs.items():
         if key in dictLayout.keys():
             dictLayout[key] = value

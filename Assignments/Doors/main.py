@@ -44,11 +44,10 @@ helpers.wait_for_space_no_df(window)
 # Initialize Sensors
 
 # Run VAS
-Df = VAS.beginning_vas(window, params, Df)
-Df.to_csv(f'./{time.time()}.csv')
+# Df = VAS.beginning_vas(window, params, Df)
 
 # Show Instructions
-Df = show_instructions(window, params, image, Df)
+# Df = show_instructions(window, params, image, Df)
 
 # Practice run
 

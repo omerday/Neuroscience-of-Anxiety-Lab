@@ -1,4 +1,6 @@
 import time
+import datetime
+
 import pandas
 import helpers
 from psychopy import visual, core
@@ -25,7 +27,7 @@ def beginning_vas(window: visual.Window, params, Df: pandas.DataFrame):
         answer, Df, dict = helpers.display_vas(window, params, QUESTIONS_BEGINNING_MIDDLE[i],
                                                ANSWERS_BEGINNING_MIDDLE[i], Df, questionNo=i + 1, roundNo=1)
 
-        dict['CurrentTime'] = pandas.to_datetime(time.time())
+        dict['CurrentTime'] = datetime.datetime.now()
         dict['VASAnswer'] = answer
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
     return Df
@@ -36,7 +38,7 @@ def middle_vas(window: visual.Window, params, coins: int, Df: pandas.DataFrame):
     for i in range(len(QUESTIONS_BEGINNING_MIDDLE)):
         answer, Df, dict = helpers.display_vas(window, params, QUESTIONS_BEGINNING_MIDDLE[i],
                                                ANSWERS_BEGINNING_MIDDLE[i], Df, questionNo=i + 1, roundNo=2)
-        dict['CurrentTime'] = pandas.to_datetime(time.time())
+        dict['CurrentTime'] = datetime.datetime.now()
         dict['VASAnswer'] = answer
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
 
@@ -60,7 +62,7 @@ def final_vas(window: visual.Window, params, Df=pandas.DataFrame):
     for i in range(len(QUESTIONS_FINAL)):
         answer, Df, dict = helpers.display_vas(window, params, QUESTIONS_FINAL[i], ANSWERS_FINAL[i], Df, questionNo=i + 1,
                                                roundNo=3)
-        dict['CurrentTime'] = pandas.to_datetime(time.time())
+        dict['CurrentTime'] = datetime.datetime.now()
         dict['VASAnswer'] = answer
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
     return Df
