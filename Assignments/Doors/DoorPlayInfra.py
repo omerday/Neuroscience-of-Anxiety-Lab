@@ -59,8 +59,7 @@ def get_movement_input_keyboard(window, params, image: visual.ImageStim, locatio
                                 Df: pandas.DataFrame, dict: dict):
     """
     The method gets up/down key state and moves the screen accordingly.
-    Note that for it to work, keyboard package needs to be loaded into psychopy (download the package files and place
-    them in /Applications/PsychoPy.app/Contents/Resources/lib/python3.8, and if running on Mac - you need to run it as sudo.
+    The method requires pygame to be installed (and therefore imported to Psychopy if needed).
     :param dict:
     :param Df:
     :param window:
@@ -68,7 +67,7 @@ def get_movement_input_keyboard(window, params, image: visual.ImageStim, locatio
     :param image:
     :param location:
     :param end_time:
-    :return:
+    :return: location, Df and dictionary
     """
 
     pygame.init()
