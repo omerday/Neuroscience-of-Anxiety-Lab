@@ -18,9 +18,15 @@ def show_instructions(win: visual.Window, params, img: visual.ImageStim, Df: pan
         win.update()
         if i != 16:
             dict["Round"] = i + 1
-            Df = helpers.wait_for_space(win, Df, dict)
+            if params["keyboardMode"]:
+                Df = helpers.wait_for_space(win, Df, dict)
+            else:
+                Df = helpers.wait_for_joystick_press(win, Df, dict)
     dict["Round"] = 16
-    Df, again = helpers.wait_for_space_with_replay(win, Df, dict)
+    if params["keyboardMode"]:
+        Df, again = helpers.wait_for_space_with_replay(win, Df, dict)
+    else:
+        Df, again = helpers.wait_for_joystick_press_with_replay(win, Df, dict)
     if again:
         Df = show_instructions(win, params, img, Df)
     return Df

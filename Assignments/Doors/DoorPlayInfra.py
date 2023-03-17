@@ -5,10 +5,6 @@ from psychopy import core, visual, event
 import time
 import pygame
 
-DOOR_IMAGE_PATH_PREFIX = './img/doors1/'
-OUTCOMES_IMAGE_PREFIX = './img/outcomes/'
-IMAGE_SUFFIX = '.jpg'
-
 
 def setup_door(window, params, punishment: int, reward: int):
     """
@@ -25,7 +21,7 @@ def setup_door(window, params, punishment: int, reward: int):
     location = round(0.6 - 0.1 * random.random(), 2) if isRandom else params[
                                                                 'startingDistance'] / 100  # a variable for the relative location
     # of the subject from the door, should be 0-1
-    imagePath = DOOR_IMAGE_PATH_PREFIX + f"p{punishment}r{reward}" + IMAGE_SUFFIX
+    imagePath = params['doorImagePathPrefix'] + f"p{punishment}r{reward}" + params['imageSuffix']
 
     image = visual.ImageStim(window, image=imagePath,
                              size=((1.5 + location), (1.5 + location)),
@@ -73,7 +69,6 @@ def get_movement_input_keyboard(window, params, image: visual.ImageStim, locatio
     pygame.init()
     while time.time() < end_time:
         pygame.event.clear()
-        # pygame.event.pump()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -111,8 +106,16 @@ def get_movement_input_keyboard(window, params, image: visual.ImageStim, locatio
     return location, Df, dict
 
 
-def get_movement_input_joystick(window, params, image: visual.ImageStim, location, end_time: time.time):
-    pass
+def get_movement_input_joystick(window, params, image: visual.ImageStim, location, end_time: time.time,
+                                Df: pandas.DataFrame, dict: dict):
+    pygame.init()
+    while time.time() < end_time:
+        pygame.event.clear()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                core.quit()
+
 
 
 def start_door(window: visual.Window, params, image: visual.ImageStim, punishment: int, reward: int, location,
@@ -161,14 +164,14 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, punishmen
         # Randomize the chances for p/r. If above 0.5 - reward. else - punishment.
         rewardChance = random.random()
         if rewardChance >= 0.5:
-            image.setImage(OUTCOMES_IMAGE_PREFIX + f'{reward}_reward' + IMAGE_SUFFIX)
+            image.setImage(params['outcomeImagePredix'] + f'{reward}_reward' + params['imageSuffix'])
             image.setSize((2, 2))
             image.draw()
             window.update()
             coins = reward
             dict["DidWin"] = 1
         else:
-            image.setImage(OUTCOMES_IMAGE_PREFIX + f'{punishment}_punishment' + IMAGE_SUFFIX)
+            image.setImage(params['outcomeImagePredix'] + f'{punishment}_punishment' + params['imageSuffix'])
             image.setSize((2, 2))
             image.draw()
             window.update()

@@ -1,5 +1,7 @@
 import math
 import time
+
+import pygame
 from psychopy import core, event, visual
 from psychopy.visual import ratingscale
 import SetupDF
@@ -27,6 +29,23 @@ def wait_for_space(window, Df: pandas.DataFrame, dict: dict):
     return Df
 
 
+def wait_for_joystick_press(window, Df: pandas.DataFrame, dict: dict):
+
+    pygame.init()
+
+    while True:
+        dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
+        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
+        core.wait(1/1000)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                window.close()
+                core.quit()
+                break
+            if event.type == pygame.JOYBUTTONDOWN:
+                return Df
+
+
 def wait_for_space_with_replay(window, Df: pandas.DataFrame, dict: dict):
     """
     Helper method to wait for a Spacebar keypress and keep the window open, or get 'r' keypress for replay of the
@@ -51,20 +70,50 @@ def wait_for_space_with_replay(window, Df: pandas.DataFrame, dict: dict):
     return Df, False
 
 
+def wait_for_joystick_press_with_replay(window, Df: pandas.DataFrame, dict: dict):
+    """
+    Helper method to wait for a joystick keypress and keep the window open, or get 'r' keypress for replay of the
+     instructions. Returns True if needed to replay.
+    :param dict:
+    :param Df:
+    :param window:
+    :return: True/False if r was pressed
+    """
+    pygame.init()
+    while True:
+        dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
+        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
+        core.wait(1 / 1000)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                window.close()
+                core.quit()
+            if event.type == pygame.JOYBUTTONDOWN:
+                return Df, False
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
+                return Df, True
+
+
 def wait_for_space_no_df(window):
     """
     Helper method to wait for a Spacebar keypress and keep the window open, without writing to Df.
     :param window:
     :return:
     """
-    core.wait(1 / 120)
-    c = event.getKeys()
-    while 'space' not in c and 'escape' not in c:
-        core.wait(1 / 120)
-        c = event.getKeys()
-    if 'escape' in c:
-        window.close()
-        core.quit()
+
+    pygame.init()
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                window.close()
+                core.quit()
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                while True:
+                    for currEvent in pygame.event.get():
+                        if currEvent.type == pygame.KEYUP and currEvent.key == pygame.K_SPACE:
+                            return
+            if event.type == pygame.JOYBUTTONDOWN:
+                return
 
 
 def wait_for_click(window):

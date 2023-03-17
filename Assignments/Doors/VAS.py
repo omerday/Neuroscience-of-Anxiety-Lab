@@ -51,10 +51,9 @@ def middle_vas(window: visual.Window, params, coins: int, Df: pandas.DataFrame):
     message.draw()
     window.update()
     if params["keyboardMode"]:
-        # TODO: Add DF here
         Df = helpers.wait_for_space(window, Df, dict)
     else:
-        Df = helpers.wait_for_click(window)
+        Df = helpers.wait_for_joystick_press(window, Df, dict)
     return Df
 
 
