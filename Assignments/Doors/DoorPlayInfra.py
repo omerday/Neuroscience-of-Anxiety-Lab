@@ -77,10 +77,10 @@ def get_movement_input_keyboard(window, params, image: visual.ImageStim, locatio
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_UP] and not keys[pygame.K_DOWN] and not keys[pygame.K_SPACE]:
-            if location < 0.97:
+            if location < 0.99:
                 image, location = move_screen(window, params, image, location, params['sensitivity'] * 0.5)
         elif keys[pygame.K_DOWN] and not keys[pygame.K_UP] and not keys[pygame.K_SPACE]:
-            if location > 0.1:
+            if location > 0.01:
                 image, location = move_screen(window, params, image, location, params['sensitivity'] * (-0.5))
         elif keys[pygame.K_ESCAPE]:
             core.quit()
@@ -109,13 +109,37 @@ def get_movement_input_keyboard(window, params, image: visual.ImageStim, locatio
 def get_movement_input_joystick(window, params, image: visual.ImageStim, location, end_time: time.time,
                                 Df: pandas.DataFrame, dict: dict):
     pygame.init()
-    while time.time() < end_time:
+    joystickButton = False
+    while time.time() < end_time and not joystickButton:
         pygame.event.clear()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 core.quit()
+            if event.type == pygame.JOYBUTTONDOWN:
+                while True:
+                    for currEvent in pygame.event.get():
+                        if currEvent.type == pygame.JOYBUTTONUP:
+                            joystickButton = True
+                            break
+                    break
 
+        joystickMovement = pygame.joystick.Joystick(0).get_axis(1)
+        if joystickMovement != 0 and 0.01 < location < 0.99:
+            image, location = move_screen(window, params, image, location, params['sensitivity'] * joystickMovement)
+
+        # Update dict
+        dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
+        dict['CurrentDistance'] = round(location, 2)
+        if location > dict['MaxDistance']:
+            dict['MaxDistance'] = round(location, 2)
+        if location < dict['MinDistance']:
+            dict['MinDistance'] = round(location, 2)
+
+        # Update Df:
+        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
+
+    return Df
 
 
 def start_door(window: visual.Window, params, image: visual.ImageStim, punishment: int, reward: int, location,
@@ -133,8 +157,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, punishmen
     if params['keyboardMode']:
         location, Df, dict = get_movement_input_keyboard(window, params, image, location, end_time, Df, dict)
     else:
-        # TODO: take joystick into consideration.
-        pass
+        location, Df, dict = get_movement_input_joystick(window, params, image, location, end_time, Df, dict)
 
     total_time = time.time() - start_time
     dict["LockTime"] = total_time
