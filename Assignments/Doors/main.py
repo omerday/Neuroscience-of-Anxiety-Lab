@@ -1,13 +1,11 @@
 import time
-import datetime
-
+import pygame
 from psychopy import visual, core, event
 import DoorPlay
 import helpers
 from psychopy.iohub import launchHubServer
 import runConfigDialog
 import SetupDF
-# import pyautogui
 from instructionsScreen import show_instructions
 import LoggerSetup
 import VAS
@@ -28,7 +26,10 @@ params = {
     'sensitivity': configDialogBank[7],
     'screenSize': (1024, 768),  # Get Screen Resolution to match Full Screen
     'recordPhysio': configDialogBank[8],
-    'startTime': time.time()
+    'startTime': time.time(),
+    'doorImagePathPrefix': './img/doors1/',
+    'outcomeImagePredix': './img/outcomes/',
+    'imageSuffix': '.jpg'
     # 'portAddress': int("0xE050", 16)
 }
 
@@ -36,6 +37,7 @@ params = {
 params, Df = SetupDF.setup_data_frame(params)
 
 # Initialize Screen
+pygame.init()
 window = visual.Window(params['screenSize'], monitor="testMonitor", color="black", winType='pyglet',
                        fullscr=True if params['fullScreen'] else False, units="pix")
 image = visual.ImageStim(win=window, image="./img/ITI_fixation.jpg", units="norm", opacity=1,

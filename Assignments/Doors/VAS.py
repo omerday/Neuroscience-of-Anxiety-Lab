@@ -1,6 +1,6 @@
 import time
 import datetime
-
+import pygame
 import pandas
 import helpers
 from psychopy import visual, core
@@ -23,6 +23,7 @@ ANSWERS_FINAL = [["Won very few", "Won very many"], ["Lost very few", "Lost very
 
 
 def beginning_vas(window: visual.Window, params, Df: pandas.DataFrame):
+    pygame.quit()
     for i in range(len(QUESTIONS_BEGINNING_MIDDLE)):
         answer, Df, dict = helpers.display_vas(window, params, QUESTIONS_BEGINNING_MIDDLE[i],
                                                ANSWERS_BEGINNING_MIDDLE[i], Df, questionNo=i + 1, roundNo=1)
@@ -51,10 +52,9 @@ def middle_vas(window: visual.Window, params, coins: int, Df: pandas.DataFrame):
     message.draw()
     window.update()
     if params["keyboardMode"]:
-        # TODO: Add DF here
         Df = helpers.wait_for_space(window, Df, dict)
     else:
-        Df = helpers.wait_for_click(window)
+        Df = helpers.wait_for_joystick_press(window, Df, dict)
     return Df
 
 
