@@ -3,6 +3,7 @@ import time
 
 import pygame
 from psychopy import core, event, visual
+from psychopy.iohub import launchHubServer
 from psychopy.visual import ratingscale
 import SetupDF
 import pandas
@@ -103,29 +104,39 @@ def wait_for_joystick_press_with_replay(window, Df: pandas.DataFrame, dict: dict
                             return Df, True
 
 
-def wait_for_space_no_df(window):
+def wait_for_space_no_df(window, io):
     """
     Helper method to wait for a Spacebar keypress and keep the window open, without writing to Df.
     :param window:
     :return:
     """
 
-    pygame.init()
+    keyboard = io.devices.keyboard
     while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+        for event in keyboard.getKeys():
+            if event.key == " ":
+                return
+            if event.key == "escape":
                 window.close()
                 core.quit()
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                while True:
-                    for currEvent in pygame.event.get():
-                        if currEvent.type == pygame.KEYUP and currEvent.key == pygame.K_SPACE:
-                            return
-            if event.type == pygame.JOYBUTTONDOWN:
-                while True:
-                    for currEvent in pygame.event.get():
-                        if currEvent.type == pygame.JOYBUTTONUP:
-                            return
+
+
+    # pygame.init()
+    # while True:
+    #     for event in pygame.event.get():
+    #         if event.type == pygame.QUIT:
+    #             window.close()
+    #             core.quit()
+    #         if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+    #             while True:
+    #                 for currEvent in pygame.event.get():
+    #                     if currEvent.type == pygame.KEYUP and currEvent.key == pygame.K_SPACE:
+    #                         return
+    #         if event.type == pygame.JOYBUTTONDOWN:
+    #             while True:
+    #                 for currEvent in pygame.event.get():
+    #                     if currEvent.type == pygame.JOYBUTTONUP:
+    #                         return
 
 
 def wait_for_click(window):

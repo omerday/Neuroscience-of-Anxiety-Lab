@@ -37,14 +37,13 @@ params = {
 params, Df = SetupDF.setup_data_frame(params)
 
 # Initialize Screen
-pygame.init()
 window = visual.Window(params['screenSize'], monitor="testMonitor", color="black", winType='pyglet',
                        fullscr=True if params['fullScreen'] else False, units="pix")
 image = visual.ImageStim(win=window, image="./img/ITI_fixation.jpg", units="norm", opacity=1,
                          size=(2, 2) if not params['fullScreen'] else None)
 image.draw()
 window.update()
-helpers.wait_for_space_no_df(window)
+helpers.wait_for_space_no_df(window, io)
 
 # Initialize Sensors
 
