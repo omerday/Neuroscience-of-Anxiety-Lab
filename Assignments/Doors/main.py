@@ -9,6 +9,7 @@ import SetupDF
 from instructionsScreen import show_instructions
 import LoggerSetup
 import VAS
+from psychopy import parallel
 
 io = launchHubServer()
 
@@ -29,9 +30,13 @@ params = {
     'startTime': time.time(),
     'doorImagePathPrefix': './img/doors1/',
     'outcomeImagePredix': './img/outcomes/',
-    'imageSuffix': '.jpg'
-    # 'portAddress': int("0xE050", 16)
+    'imageSuffix': '.jpg',
+    'portAddress': int("0xE050", 16),
 }
+
+# Initialize Acqknowledge connectivity
+port = parallel.setPortAddress(params['portAddress'])
+port.setData(0)
 
 # Initialize DataFrame
 params, Df = SetupDF.setup_data_frame(params)

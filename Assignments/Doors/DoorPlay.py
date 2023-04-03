@@ -30,12 +30,19 @@ def run_task(window: visual.Window, params: dict, session: int, totalCoins: int,
     sizeOfArray = int(math.sqrt(params[f'numOfScreensTask{session}']))
     scenariosList = helpers.get_p_r_couples(sizeOfArray)
 
+    # Scenarios List indexing method:
+    # (reward - 1) * 7 + Punishment - 1
+    # For example:
+    # Reward 1 Punishment 1 - index 0
+    # Reward 5 Punishment 2 - index 29
+
     roundNum = 0
     while len(scenariosList) != 0:
 
         # Select a scenario and setup door
         roundNum = roundNum + 1
         scenario = random.choice(scenariosList)
+        scenarioIndex = (scenario[0] - 1) * 7 + (scenario[1] - 1)
         image, distanceFromDoor = DoorPlayInfra.setup_door(window, params, scenario[0], scenario[1])
 
         # Setup new dictionary
