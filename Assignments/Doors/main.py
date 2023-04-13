@@ -1,5 +1,4 @@
 import time
-import pygame
 from psychopy import visual, core, event
 import DoorPlay
 import helpers
@@ -7,9 +6,8 @@ from psychopy.iohub import launchHubServer
 import runConfigDialog
 import SetupDF
 from instructionsScreen import show_instructions
-import LoggerSetup
 import VAS
-from psychopy import parallel
+import serial
 
 io = launchHubServer()
 
@@ -31,12 +29,12 @@ params = {
     'doorImagePathPrefix': './img/doors1/',
     'outcomeImagePredix': './img/outcomes/',
     'imageSuffix': '.jpg',
-    'portAddress': int("0xE050", 16),
+    'port': 'COM4',
 }
 
 # Initialize Acqknowledge connectivity
-port = parallel.setPortAddress(params['portAddress'])
-port.setData(0)
+if params['recordPhysio']:
+    ser = serial.Serial(params['port'], 115200, bytesize=serial.EIGHTBITS)
 
 # Initialize DataFrame
 params, Df = SetupDF.setup_data_frame(params)
@@ -56,18 +54,18 @@ helpers.wait_for_space_no_df(window, io)
 Df = VAS.beginning_vas(window, params, Df)
 
 # Show Instructions
-Df = show_instructions(window, params, image, Df)
+Df = show_instructions(window, params, image, Df, io)
 
 # Practice run
 
 # Task 1
-Df = DoorPlay.run_task(window, params, 1, 0, Df)
+Df = DoorPlay.run_task(window, params, 1, 0, Df, io)
 
 # Mid-VAS
 Df = VAS.middle_vas(window, params, 0, Df)
 
 # Task 2
-Df = DoorPlay.run_task(window, params, 2, 0, Df)
+Df = DoorPlay.run_task(window, params, 2, 0, Df, io)
 
 # Final VAS
 Df = VAS.final_vas(window, params, Df)

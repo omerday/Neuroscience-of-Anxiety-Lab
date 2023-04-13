@@ -4,7 +4,8 @@ import pandas
 from psychopy import core, visual, event
 import time
 import pygame
-
+from psychopy.iohub import launchHubServer
+from psychopy.iohub.client.keyboard import Keyboard
 
 def setup_door(window, params, punishment: int, reward: int):
     """
@@ -52,7 +53,7 @@ def move_screen(window, params, image: visual.ImageStim, location, units):
 
 
 def get_movement_input_keyboard(window, params, image: visual.ImageStim, location, end_time: time.time,
-                                Df: pandas.DataFrame, dict: dict):
+                                Df: pandas.DataFrame, dict: dict, io):
     """
     The method gets up/down key state and moves the screen accordingly.
     The method requires pygame to be installed (and therefore imported to Psychopy if needed).
@@ -66,32 +67,32 @@ def get_movement_input_keyboard(window, params, image: visual.ImageStim, locatio
     :return: location, Df and dictionary
     """
 
-    pygame.init()
-    while time.time() < end_time:
-        pygame.event.clear()
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+    keyboard = io.devices.keyboard
+    noSpace = True
+    while time.time() < end_time and noSpace:
+        for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
+            if event.key == "escape":
+                window.close()
                 core.quit()
-
-        keys = pygame.key.get_pressed()
-
-        if keys[pygame.K_UP] and not keys[pygame.K_DOWN] and not keys[pygame.K_SPACE]:
-            if location < 0.99:
-                image, location = move_screen(window, params, image, location, params['sensitivity'] * 0.5)
-        elif keys[pygame.K_DOWN] and not keys[pygame.K_UP] and not keys[pygame.K_SPACE]:
-            if location > 0.01:
-                image, location = move_screen(window, params, image, location, params['sensitivity'] * (-0.5))
-        elif keys[pygame.K_ESCAPE]:
-            core.quit()
-        elif keys[pygame.K_SPACE] and not keys[pygame.K_UP] and not keys[pygame.K_DOWN]:
-            spacePress = True
-            while spacePress:
-                for event in pygame.event.get():
-                    if event.type == pygame.KEYUP and event.key == pygame.K_SPACE:
-                        spacePress = False
-                        break
-            break
+            if event.key == 'up':
+                upHold = True
+                while upHold:
+                    for releaseEvent in keyboard.getKeys(etype=Keyboard.KEY_RELEASE):
+                        if releaseEvent.key == 'up':
+                            upHold = False
+                    if location < 0.99:
+                        image, location = move_screen(window, params, image, location, params['sensitivity'] * 0.5)
+            elif event.key == 'down':
+                downHold = True
+                while downHold:
+                    for releaseEvent in keyboard.getKeys(etype=Keyboard.KEY_RELEASE):
+                        if releaseEvent == 'down':
+                            downHold = False
+                    if location > 0.01:
+                        image, location = move_screen(window, params, image, location, params['sensitivity'] * (-0.5))
+            elif event.key == ' ' or event.key == 'space':
+                noSpace = False
+                break
 
         # Update dict
         dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
@@ -143,7 +144,7 @@ def get_movement_input_joystick(window, params, image: visual.ImageStim, locatio
 
 
 def start_door(window: visual.Window, params, image: visual.ImageStim, punishment: int, reward: int, location,
-               Df: pandas.DataFrame, dict: dict):
+               Df: pandas.DataFrame, dict: dict, io):
     # Set end time for 10s max
     start_time = time.time()
     end_time = start_time + 10
@@ -155,7 +156,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, punishmen
     dict['MinDistance'] = location
 
     if params['keyboardMode']:
-        location, Df, dict = get_movement_input_keyboard(window, params, image, location, end_time, Df, dict)
+        location, Df, dict = get_movement_input_keyboard(window, params, image, location, end_time, Df, dict, io)
     else:
         location, Df, dict = get_movement_input_joystick(window, params, image, location, end_time, Df, dict)
 

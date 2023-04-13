@@ -1,13 +1,10 @@
-from psychopy import parallel
-from psychopy import core
+import time
+import serial
+import serial.tools.list_ports as list_ports
 
-port = parallel.setPortAddress(int("0xE050", 16))
-parallel.setData(0)
+all_ports = list_ports.comports()
+print(all_ports)
 
-core.wait(10)
+ser = serial.Serial('COM4', 115200, bytesize=serial.EIGHTBITS)
 
-parallel.setData(200)
-
-core.wait(5)
-
-core.quit()
+ser.write(bin(23))

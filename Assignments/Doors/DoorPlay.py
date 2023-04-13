@@ -13,7 +13,7 @@ def practice_run():
     pass
 
 
-def run_task(window: visual.Window, params: dict, session: int, totalCoins: int, Df: pandas.DataFrame):
+def run_task(window: visual.Window, params: dict, session: int, totalCoins: int, Df: pandas.DataFrame, io):
 
     """
     Launch the entire doors task, with all 36/49 doors.
@@ -53,7 +53,7 @@ def run_task(window: visual.Window, params: dict, session: int, totalCoins: int,
         dict['DistanceAtStart'] = distanceFromDoor
 
         # Execute Door of selected scenario
-        coinsWon, total_time, Df, dict = DoorPlayInfra.start_door(window, params, image, scenario[0], scenario[1], distanceFromDoor, Df, dict)
+        coinsWon, total_time, Df, dict = DoorPlayInfra.start_door(window, params, image, scenario[0], scenario[1], distanceFromDoor, Df, dict, io)
         totalCoins += coinsWon
         scenariosList.remove(scenario)
 

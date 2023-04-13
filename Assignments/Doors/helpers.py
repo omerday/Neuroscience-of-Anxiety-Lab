@@ -1,16 +1,15 @@
-import math
 import time
-
 import pygame
 from psychopy import core, event, visual
 from psychopy.iohub import launchHubServer
+from psychopy.iohub.client.keyboard import Keyboard
 from psychopy.visual import ratingscale
 import SetupDF
 import pandas
 import datetime
 
 
-def wait_for_space(window, Df: pandas.DataFrame, dict: dict):
+def wait_for_space(window, Df: pandas.DataFrame, dict: dict, io):
     """
     Helper method to wait for a Spacebar keypress and keep the window open until then
     :param dict:
@@ -18,26 +17,38 @@ def wait_for_space(window, Df: pandas.DataFrame, dict: dict):
     :param window:
     :return:
     """
-    c = event.getKeys()
-    while 'space' not in c and 'escape' not in c:
+    keyboard = io.devices.keyboard
+    while True:
         dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
-        core.wait(1 / 1000)
-        c = event.getKeys()
-    if 'escape' in c:
-        window.close()
-        core.quit()
-    return Df
+        for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
+            if event.key == " ":
+                return Df
+            if event.key == "escape":
+                window.close()
+                core.quit()
+                return Df
+
+    # c = event.getKeys()
+    # while 'space' not in c and 'escape' not in c:
+    #     dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
+    #     Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
+    #     core.wait(1 / 1000)
+    #     c = event.getKeys()
+    # if 'escape' in c:
+    #     window.close()
+    #     core.quit()
+    # return Df
 
 
+# TODO: Add Quit Button
 def wait_for_joystick_press(window, Df: pandas.DataFrame, dict: dict):
-
     pygame.init()
 
     while True:
         dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
-        core.wait(1/1000)
+        core.wait(1 / 1000)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 window.close()
@@ -50,7 +61,8 @@ def wait_for_joystick_press(window, Df: pandas.DataFrame, dict: dict):
                             return Df
 
 
-def wait_for_space_with_replay(window, Df: pandas.DataFrame, dict: dict):
+# TODO: Replay doesnt work :(
+def wait_for_space_with_replay(window, Df: pandas.DataFrame, dict: dict, io):
     """
     Helper method to wait for a Spacebar keypress and keep the window open, or get 'r' keypress for replay of the
      instructions. Returns True if needed to replay.
@@ -59,21 +71,23 @@ def wait_for_space_with_replay(window, Df: pandas.DataFrame, dict: dict):
     :param window:
     :return: True/False if r was pressed
     """
-    c = event.getKeys()
-    while 'space' not in c and 'escape' not in c and 'r' not in c:
-        event.clearEvents()
+    keyboard = io.devices.keyboard
+    while True:
         dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
-        core.wait(1 / 1000)
-        c = event.getKeys()
-    if 'escape' in c:
-        window.close()
-        core.quit()
-    if 'r' in c:
-        return Df, True
-    return Df, False
+        keys = keyboard.getKeys()
+        for event in keys:
+            if event.key == ' ':
+                return Df, False
+            if event.key == "escape":
+                window.close()
+                core.quit()
+            if event.key == 'r' or event.key == 'R':
+                return Df, True
 
 
+# TODO: Set a key for replay
+# TODO: Set a key for quitting
 def wait_for_joystick_press_with_replay(window, Df: pandas.DataFrame, dict: dict):
     """
     Helper method to wait for a joystick keypress and keep the window open, or get 'r' keypress for replay of the
@@ -104,6 +118,7 @@ def wait_for_joystick_press_with_replay(window, Df: pandas.DataFrame, dict: dict
                             return Df, True
 
 
+# TODO: Duplicate for joystick
 def wait_for_space_no_df(window, io):
     """
     Helper method to wait for a Spacebar keypress and keep the window open, without writing to Df.
@@ -113,13 +128,12 @@ def wait_for_space_no_df(window, io):
 
     keyboard = io.devices.keyboard
     while True:
-        for event in keyboard.getKeys():
+        for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
             if event.key == " ":
                 return
             if event.key == "escape":
                 window.close()
                 core.quit()
-
 
     # pygame.init()
     # while True:
