@@ -12,6 +12,7 @@ def setup_data_frame(params: dict):
                          'StepName',
                          'Session',  # 1 or 2 in Task step, 1 to 3 in VAS step (Beginning-middle-end)
                          'Round',  # From 1 to 49 or 36
+                         'ScenarioIndex',
                          'RewardAmount',  # The amount offered for win
                          'PunishmentAmount',  # The amount offered for loss
                          'DistanceAtStart',  # Initial distance from the screen

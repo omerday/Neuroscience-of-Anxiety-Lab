@@ -32,7 +32,7 @@ params = {
     'port': 'COM4',
 }
 
-# Initialize Acqknowledge connectivity
+# Initialize serial port
 if params['recordPhysio']:
     ser = serial.Serial(params['port'], 115200, bytesize=serial.EIGHTBITS)
 

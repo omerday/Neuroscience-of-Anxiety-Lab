@@ -144,26 +144,34 @@ def get_movement_input_joystick(window, params, image: visual.ImageStim, locatio
 
 
 def start_door(window: visual.Window, params, image: visual.ImageStim, punishment: int, reward: int, location,
-               Df: pandas.DataFrame, dict: dict, io):
+               Df: pandas.DataFrame, dict: dict, io, scenarioIndex: int, ser=None):
     # Set end time for 10s max
     start_time = time.time()
     end_time = start_time + 10
-
+    if params['recordPhysio']:
+        ser.write(bin(scenarioIndex))
     # Add initial dict parameters
     dict['RoundStartTime'] = round(time.time() - dict['StartTime'], 3)
     dict['CurrentDistance'] = location, 2
     dict['MaxDistance'] = location
     dict['MinDistance'] = location
+    dict["ScenarioIndex"] = scenarioIndex
+    Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
+    dict.pop("ScenarioIndex")
 
     if params['keyboardMode']:
         location, Df, dict = get_movement_input_keyboard(window, params, image, location, end_time, Df, dict, io)
     else:
         location, Df, dict = get_movement_input_joystick(window, params, image, location, end_time, Df, dict)
 
+    if params['recordPhysio']:
+        ser.write(bin(scenarioIndex + 50))
     total_time = time.time() - start_time
     dict["LockTime"] = total_time
     dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
+    dict["ScenarioIndex"] = scenarioIndex + 50
     Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
+    dict.pop("ScenarioIndex")
 
     # Seed randomization for waiting time and for door opening chance:
     random.seed(time.time() % 60)  # Seeding using the current second in order to have relatively random seed
@@ -180,9 +188,13 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, punishmen
     doorOpenChance = random.random()
     isDoorOpening = doorOpenChance <= location
 
+    if params['recordPhysio']:
+        ser.write(bin(scenarioIndex + 100))
     dict["DidDoorOpen"] = 1 if isDoorOpening else 0
     dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
+    dict["ScenarioIndex"] = scenarioIndex + 100
     Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
+    dict.pop("ScenarioIndex")
 
     if isDoorOpening:
         # Randomize the chances for p/r. If above 0.5 - reward. else - punishment.
