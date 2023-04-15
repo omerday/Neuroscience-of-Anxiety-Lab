@@ -75,7 +75,7 @@ def wait_for_space_with_replay(window, Df: pandas.DataFrame, dict: dict, io):
     while True:
         dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
-        keys = keyboard.waitForKeys()
+        keys = keyboard.getKeys()
         for event in keys:
             if event.key == 'r' or event.key == 'R':
                 return Df, True
