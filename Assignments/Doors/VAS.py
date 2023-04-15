@@ -22,7 +22,7 @@ ANSWERS_FINAL = [["Won very few", "Won very many"], ["Lost very few", "Lost very
                  ["never", "all the time"], ["sad, I did badly", "happy, I did great"]]
 
 
-def beginning_vas(window: visual.Window, params, Df: pandas.DataFrame):
+def beginning_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pandas.DataFrame):
     pygame.quit()
     for i in range(len(QUESTIONS_BEGINNING_MIDDLE)):
         answer, Df, dict = helpers.display_vas(window, params, QUESTIONS_BEGINNING_MIDDLE[i],
@@ -31,10 +31,11 @@ def beginning_vas(window: visual.Window, params, Df: pandas.DataFrame):
         dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
         dict['VASAnswer'] = answer
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
-    return Df
+        miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
+    return Df, miniDf
 
 
-def middle_vas(window: visual.Window, params, coins: int, Df: pandas.DataFrame):
+def middle_vas(window: visual.Window, params, coins: int, Df: pandas.DataFrame, miniDf: pandas.DataFrame):
     dict = {}
     for i in range(len(QUESTIONS_BEGINNING_MIDDLE)):
         answer, Df, dict = helpers.display_vas(window, params, QUESTIONS_BEGINNING_MIDDLE[i],
@@ -42,6 +43,7 @@ def middle_vas(window: visual.Window, params, coins: int, Df: pandas.DataFrame):
         dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
         dict['VASAnswer'] = answer
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
+        miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
 
     if params["keyboardMode"]:
         message = visual.TextStim(window, text=f"Let’s rest for a bit. You have {coins} coins. Press Space when you "
@@ -55,14 +57,15 @@ def middle_vas(window: visual.Window, params, coins: int, Df: pandas.DataFrame):
         Df = helpers.wait_for_space(window, Df, dict)
     else:
         Df = helpers.wait_for_joystick_press(window, Df, dict)
-    return Df
+    return Df, miniDf
 
 
-def final_vas(window: visual.Window, params, Df=pandas.DataFrame):
+def final_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pandas.DataFrame):
     for i in range(len(QUESTIONS_FINAL)):
         answer, Df, dict = helpers.display_vas(window, params, QUESTIONS_FINAL[i], ANSWERS_FINAL[i], Df, questionNo=i + 1,
                                                roundNo=3)
         dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
         dict['VASAnswer'] = answer
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
-    return Df
+        miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
+    return Df, miniDf

@@ -14,7 +14,8 @@ def practice_run():
     pass
 
 
-def run_task(window: visual.Window, params: dict, session: int, totalCoins: int, Df: pandas.DataFrame, io, ser=None):
+def run_task(window: visual.Window, params: dict, session: int, totalCoins: int, Df: pandas.DataFrame,
+             miniDf: pandas.DataFrame, io, ser=None):
 
     """
     Launch the entire doors task, with all 36/49 doors.
@@ -54,7 +55,7 @@ def run_task(window: visual.Window, params: dict, session: int, totalCoins: int,
         dict['DistanceAtStart'] = distanceFromDoor
 
         # Execute Door of selected scenario
-        coinsWon, total_time, Df, dict = DoorPlayInfra.start_door(window, params, image, scenario[0], scenario[1],
+        coinsWon, total_time, Df, dict, lock = DoorPlayInfra.start_door(window, params, image, scenario[0], scenario[1],
                                                                   distanceFromDoor, Df, dict, io, scenarioIndex, ser)
         totalCoins += coinsWon
         scenariosList.remove(scenario)
@@ -63,6 +64,7 @@ def run_task(window: visual.Window, params: dict, session: int, totalCoins: int,
         dict["TotalCoins"] = totalCoins
         dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
-        dataHandler.export_raw_data(params, Df)
+        miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
+        dataHandler.export_raw_data(params, miniDf)
 
-    return Df
+    return Df, miniDf
