@@ -7,7 +7,8 @@ import pygame
 from psychopy.iohub import launchHubServer
 from psychopy.iohub.client.keyboard import Keyboard
 
-def setup_door(window, params, punishment: int, reward: int):
+
+def setup_door(window, params, reward: int, punishment: int):
     """
     Show door corresponding to the reward and punishment sent as arguments. Chooses the size in which it starts
     either randomly or fixed according to the parameters in order to be able to zoom out nicely.
@@ -20,7 +21,7 @@ def setup_door(window, params, punishment: int, reward: int):
     """
     isRandom = params['startingDistance'] == 'Random'
     location = round(0.6 - 0.1 * random.random(), 2) if isRandom else params[
-                                                                'startingDistance'] / 100  # a variable for the relative location
+                                                                          'startingDistance'] / 100  # a variable for the relative location
     # of the subject from the door, should be 0-1
     imagePath = params['doorImagePathPrefix'] + f"p{punishment}r{reward}" + params['imageSuffix']
 
@@ -143,7 +144,7 @@ def get_movement_input_joystick(window, params, image: visual.ImageStim, locatio
     return Df
 
 
-def start_door(window: visual.Window, params, image: visual.ImageStim, punishment: int, reward: int, location,
+def start_door(window: visual.Window, params, image: visual.ImageStim, reward: int, punishment: int, location,
                Df: pandas.DataFrame, dict: dict, io, scenarioIndex: int, ser=None):
     # Set end time for 10s max
     start_time = time.time()
@@ -175,14 +176,14 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, punishmen
 
     # Seed randomization for waiting time and for door opening chance:
     random.seed(time.time() % 60)  # Seeding using the current second in order to have relatively random seed
-    doorWaitTime = 2 + random.random() * 2 # Randomize waiting time between 2-4 seconds
+    doorWaitTime = 2 + random.random() * 2  # Randomize waiting time between 2-4 seconds
     waitStart = time.time()
 
     dict["DoorWaitTime"] = doorWaitTime
     while time.time() < waitStart + doorWaitTime:
         dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
-        core.wait(1/1000)
+        core.wait(1 / 1000)
 
     # Randomize door opening chance according to location:
     doorOpenChance = random.random()
@@ -218,7 +219,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, punishmen
         while time.time() < waitTimeStart + 2:
             dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
             Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
-            core.wait(1/1000)
+            core.wait(1 / 1000)
 
         return coins, total_time, Df, dict
 
