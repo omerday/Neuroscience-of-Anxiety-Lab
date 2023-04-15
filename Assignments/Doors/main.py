@@ -4,7 +4,7 @@ import DoorPlay
 import helpers
 from psychopy.iohub import launchHubServer
 import runConfigDialog
-import SetupDF
+import dataHandler
 from instructionsScreen import show_instructions
 import VAS
 import serial
@@ -37,7 +37,7 @@ if params['recordPhysio']:
     ser = serial.Serial(params['port'], 115200, bytesize=serial.EIGHTBITS)
 
 # Initialize DataFrame
-params, Df = SetupDF.setup_data_frame(params)
+params, Df = dataHandler.setup_data_frame(params)
 
 # Initialize Screen
 window = visual.Window(params['screenSize'], monitor="testMonitor", color="black", winType='pyglet',

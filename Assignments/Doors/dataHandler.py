@@ -1,6 +1,7 @@
 import pandas
 import time
 import datetime
+import bioread
 
 
 def setup_data_frame(params: dict):
@@ -50,3 +51,8 @@ def create_dict_for_df(params: dict, **kwargs):
         if key in dictLayout.keys():
             dictLayout[key] = value
     return dictLayout
+
+
+
+def export_raw_data(params: dict, Df: pandas.DataFrame):
+    Df.to_csv(f'./{params["subjectID"]} - {datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S")}')
