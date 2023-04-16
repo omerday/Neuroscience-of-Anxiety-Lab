@@ -51,8 +51,8 @@ def run_task(window: visual.Window, params: dict, session: int, totalCoins: int,
         dict = dataHandler.create_dict_for_df(params, StepName='Doors', Session=session, TotalCoins=totalCoins, )
         dict['RewardAmount'] = scenario[0]
         dict['PunishmentAmount'] = scenario[1]
-        dict['Round'] = roundNum
-        dict['DistanceAtStart'] = distanceFromDoor
+        dict['Subtrial'] = roundNum
+        dict['DistanceAtStart'] = distanceFromDoor * 100
 
         # Execute Door of selected scenario
         coinsWon, total_time, Df, dict, lock = DoorPlayInfra.start_door(window, params, image, scenario[0], scenario[1],
@@ -65,6 +65,7 @@ def run_task(window: visual.Window, params: dict, session: int, totalCoins: int,
         dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
-        dataHandler.export_raw_data(params, miniDf)
+        Df.to_csv('./Df.csv')
+        dataHandler.analyze_round(Df)
 
     return Df, miniDf
