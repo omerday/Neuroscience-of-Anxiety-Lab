@@ -48,7 +48,10 @@ image = visual.ImageStim(win=window, image="./img/ITI_fixation.jpg", units="norm
                          size=(2, 2) if not params['fullScreen'] else None)
 image.draw()
 window.update()
-helpers.wait_for_space_no_df(window, io)
+if params['keyboardMode']:
+    helpers.wait_for_space_no_df(window, io)
+else:
+    helpers.wait_for_joystick_no_df(window)
 
 # Initialize Sensors
 

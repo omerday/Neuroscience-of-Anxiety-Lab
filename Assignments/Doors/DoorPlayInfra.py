@@ -114,12 +114,16 @@ def get_movement_input_joystick(window, params, image: visual.ImageStim, locatio
             if event.type == pygame.QUIT:
                 core.quit()
             if event.type == pygame.JOYBUTTONDOWN:
-                while True:
-                    for currEvent in pygame.event.get():
-                        if currEvent.type == pygame.JOYBUTTONUP:
-                            joystickButton = True
-                            break
-                    break
+                if pygame.joystick.Joystick(0).get_button(7):
+                    window.close()
+                    core.quit()
+                elif pygame.joystick.Joystick(0).get_button(1):
+                    while True:
+                        for currEvent in pygame.event.get():
+                            if currEvent.type == pygame.JOYBUTTONUP:
+                                joystickButton = True
+                                break
+                        break
 
         joystickMovement = pygame.joystick.Joystick(0).get_axis(1)
         if joystickMovement != 0 and 0.01 < location < 0.99:
