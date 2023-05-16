@@ -3,14 +3,14 @@ import datetime
 import pandas
 from psychopy import visual, core, event
 import helpers
-import SetupDF
+import dataHandler
 
 INSTRUCTION_PATH_PREFIX = "./img/instructions/"
 SUFFIX = ".jpg"
 
 
 def show_instructions(win: visual.Window, params, img: visual.ImageStim, Df: pandas.DataFrame, io):
-    dict = SetupDF.create_dict_for_df(params, StepName="Instructions")
+    dict = dataHandler.create_dict_for_df(params, StepName="Instructions")
     for i in range(16):
         img.image = INSTRUCTION_PATH_PREFIX + "Slide" + str(i + 1) + SUFFIX
         img.setSize((2, 2))  # Size needs to be reset after changing the image

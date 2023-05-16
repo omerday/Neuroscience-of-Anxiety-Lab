@@ -1,10 +1,12 @@
 import time
+
+import pandas
 from psychopy import visual, core, event
 import DoorPlay
 import helpers
 from psychopy.iohub import launchHubServer
 import runConfigDialog
-import SetupDF
+import dataHandler
 from instructionsScreen import show_instructions
 import VAS
 import serial
@@ -37,7 +39,7 @@ if params['recordPhysio']:
     ser = serial.Serial(params['port'], 115200, bytesize=serial.EIGHTBITS)
 
 # Initialize DataFrame
-params, Df = SetupDF.setup_data_frame(params)
+params, Df, miniDf = dataHandler.setup_data_frame(params)
 
 # Initialize Screen
 window = visual.Window(params['screenSize'], monitor="testMonitor", color="black", winType='pyglet',
@@ -51,7 +53,7 @@ helpers.wait_for_space_no_df(window, io)
 # Initialize Sensors
 
 # Run VAS
-Df = VAS.beginning_vas(window, params, Df)
+Df, miniDf = VAS.beginning_vas(window, params, Df, miniDf)
 
 # Show Instructions
 Df = show_instructions(window, params, image, Df, io)
@@ -59,16 +61,23 @@ Df = show_instructions(window, params, image, Df, io)
 # Practice run
 
 # Task 1
-Df = DoorPlay.run_task(window, params, 1, 0, Df, io)
+if params['recordPhysio']:
+    Df, miniDf = DoorPlay.run_task(window, params, 1, 0, Df, miniDf, io, ser)
+else:
+    Df, miniDf = DoorPlay.run_task(window, params, 1, 0, Df, miniDf, io)
 
 # Mid-VAS
-Df = VAS.middle_vas(window, params, 0, Df)
+Df, miniDf = VAS.middle_vas(window, params, 0, Df, miniDf)
 
 # Task 2
-Df = DoorPlay.run_task(window, params, 2, 0, Df, io)
+if params['recordPhysio']:
+    Df, miniDf = DoorPlay.run_task(window, params, 2, 0, Df, miniDf, io, ser)
+else:
+    Df, miniDf = DoorPlay.run_task(window, params, 2, 0, Df, miniDf, io)
 
 # Final VAS
-Df = VAS.final_vas(window, params, Df)
+Df, miniDf = VAS.final_vas(window, params, Df, miniDf)
+dataHandler.export_summarized_dataframe(params, miniDf)
 
 # Recap
 

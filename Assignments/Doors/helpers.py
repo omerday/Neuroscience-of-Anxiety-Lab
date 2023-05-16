@@ -4,7 +4,7 @@ from psychopy import core, event, visual
 from psychopy.iohub import launchHubServer
 from psychopy.iohub.client.keyboard import Keyboard
 from psychopy.visual import ratingscale
-import SetupDF
+import dataHandler
 import pandas
 import datetime
 
@@ -28,17 +28,6 @@ def wait_for_space(window, Df: pandas.DataFrame, dict: dict, io):
                 window.close()
                 core.quit()
                 return Df
-
-    # c = event.getKeys()
-    # while 'space' not in c and 'escape' not in c:
-    #     dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
-    #     Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
-    #     core.wait(1 / 1000)
-    #     c = event.getKeys()
-    # if 'escape' in c:
-    #     window.close()
-    #     core.quit()
-    # return Df
 
 
 # TODO: Add Quit Button
@@ -182,7 +171,7 @@ def display_vas(win, params, text, labels, Df: pandas.DataFrame, questionNo: int
                                     markerColor="Yellow")
     textItem = visual.TextStim(win, text=text, height=.12, units='norm', pos=[0, 0.3], wrapWidth=2)
 
-    dict = SetupDF.create_dict_for_df(params, StepName='VAS', VASQuestionNumber=questionNo, Session=roundNo)
+    dict = dataHandler.create_dict_for_df(params, StepName='VAS', VASQuestionNumber=questionNo, Session=roundNo)
     while scale.noResponse:
         # dict['CurrentTime'] = datetime.datetime.now() - dict['StartTime']
         dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)

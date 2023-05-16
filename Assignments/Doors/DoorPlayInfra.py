@@ -69,6 +69,7 @@ def get_movement_input_keyboard(window, params, image: visual.ImageStim, locatio
     """
 
     keyboard = io.devices.keyboard
+    keyboard.clearEvents()
     noSpace = True
     while time.time() < end_time and noSpace:
         for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
@@ -83,6 +84,7 @@ def get_movement_input_keyboard(window, params, image: visual.ImageStim, locatio
                             upHold = False
                     if location < 0.99:
                         image, location = move_screen(window, params, image, location, params['sensitivity'] * 0.5)
+                        Df = update_movement_in_df(dict, Df, location)
             elif event.key == 'down':
                 downHold = True
                 while downHold:
@@ -91,21 +93,14 @@ def get_movement_input_keyboard(window, params, image: visual.ImageStim, locatio
                             downHold = False
                     if location > 0.01:
                         image, location = move_screen(window, params, image, location, params['sensitivity'] * (-0.5))
+                        Df = update_movement_in_df(dict, Df, location)
             elif event.key == ' ' or event.key == 'space':
                 noSpace = False
                 break
 
-        # Update dict
-        dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
-        dict['CurrentDistance'] = round(location, 2)
-        if location > dict['MaxDistance']:
-            dict['MaxDistance'] = round(location, 2)
-        if location < dict['MinDistance']:
-            dict['MinDistance'] = round(location, 2)
+        Df = update_movement_in_df(dict, Df, location)
 
-        # Update Df:
-        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
-    return location, Df, dict
+    return location, Df, dict, noSpace
 
 
 def get_movement_input_joystick(window, params, image: visual.ImageStim, location, end_time: time.time,
@@ -130,19 +125,22 @@ def get_movement_input_joystick(window, params, image: visual.ImageStim, locatio
         if joystickMovement != 0 and 0.01 < location < 0.99:
             image, location = move_screen(window, params, image, location, params['sensitivity'] * joystickMovement)
 
-        # Update dict
-        dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
-        dict['CurrentDistance'] = round(location, 2)
-        if location > dict['MaxDistance']:
-            dict['MaxDistance'] = round(location, 2)
-        if location < dict['MinDistance']:
-            dict['MinDistance'] = round(location, 2)
-
-        # Update Df:
-        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
+        Df = update_movement_in_df(dict, Df, location)
 
     return Df
 
+
+def update_movement_in_df(dict: dict, Df: pandas.DataFrame, location):
+    dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
+    dict['CurrentDistance'] = round(location, 2) * 100
+    if location > dict['Distance_max']:
+        dict['Distance_max'] = round(location, 2) * 100
+    if location < dict['Distance_min']:
+        dict['Distance_min'] = round(location, 2) * 100
+
+    # Update Df:
+    Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
+    return Df
 
 def start_door(window: visual.Window, params, image: visual.ImageStim, reward: int, punishment: int, location,
                Df: pandas.DataFrame, dict: dict, io, scenarioIndex: int, ser=None):
@@ -153,22 +151,24 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
         ser.write(bin(scenarioIndex))
     # Add initial dict parameters
     dict['RoundStartTime'] = round(time.time() - dict['StartTime'], 3)
-    dict['CurrentDistance'] = location, 2
-    dict['MaxDistance'] = location
-    dict['MinDistance'] = location
+    dict['CurrentDistance'] = round(location, 2) * 100
+    dict['Distance_max'] = round(location, 2) * 100
+    dict['Distance_min'] = round(location, 2) * 100
     dict["ScenarioIndex"] = scenarioIndex
     Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
     dict.pop("ScenarioIndex")
 
     if params['keyboardMode']:
-        location, Df, dict = get_movement_input_keyboard(window, params, image, location, end_time, Df, dict, io)
+        location, Df, dict, lock = get_movement_input_keyboard(window, params, image, location, end_time, Df, dict, io)
     else:
-        location, Df, dict = get_movement_input_joystick(window, params, image, location, end_time, Df, dict)
+        location, Df, dict, lock = get_movement_input_joystick(window, params, image, location, end_time, Df, dict)
 
     if params['recordPhysio']:
         ser.write(bin(scenarioIndex + 50))
     total_time = time.time() - start_time
-    dict["LockTime"] = total_time
+    dict["DistanceAtLock"] = round(location, 2) * 100
+    dict['Distance_lock'] = 1 if lock else 0
+    dict["LockTime"] = total_time * 1000
     dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
     dict["ScenarioIndex"] = scenarioIndex + 50
     Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
@@ -179,7 +179,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     doorWaitTime = 2 + random.random() * 2  # Randomize waiting time between 2-4 seconds
     waitStart = time.time()
 
-    dict["DoorWaitTime"] = doorWaitTime
+    dict["DoorWaitTime"] = doorWaitTime * 1000
     while time.time() < waitStart + doorWaitTime:
         dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
@@ -192,6 +192,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     if params['recordPhysio']:
         ser.write(bin(scenarioIndex + 100))
     dict["DidDoorOpen"] = 1 if isDoorOpening else 0
+    dict["DoorStatus"] = 'opened' if isDoorOpening else 'closed'
     dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
     dict["ScenarioIndex"] = scenarioIndex + 100
     Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
@@ -207,6 +208,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
             window.update()
             coins = reward
             dict["DidWin"] = 1
+            dict["DoorOutcome"] = 'reward'
         else:
             image.setImage(params['outcomeImagePredix'] + f'{punishment}_punishment' + params['imageSuffix'])
             image.setSize((2, 2))
@@ -214,6 +216,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
             window.update()
             coins = -1 * punishment
             dict["DidWin"] = 0
+            dict["DoorOutcome"] = 'punishment'
 
         waitTimeStart = time.time()
         while time.time() < waitTimeStart + 2:
@@ -221,7 +224,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
             Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
             core.wait(1 / 1000)
 
-        return coins, total_time, Df, dict
+        return coins, total_time, Df, dict, lock
 
     else:
-        return 0, total_time, Df, dict
+        return 0, total_time, Df, dict, lock
