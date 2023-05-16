@@ -77,6 +77,7 @@ else:
 
 # Final VAS
 Df, miniDf = VAS.final_vas(window, params, Df, miniDf)
+dataHandler.export_summarized_dataframe(params, miniDf)
 
 # Recap
 

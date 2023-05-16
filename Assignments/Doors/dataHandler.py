@@ -29,12 +29,13 @@ def setup_data_frame(params: dict):
                          'LockTime',  # When did the door lock, Ms
                          'DidDoorOpen',  # 0 or 1
                          'DoorStatus',
-                         'DoorOutcome'
+                         'DoorOutcome',
                          'DidWin',  # 0 or 1, only if DidDoorOpen is 1!!!
                          'DoorWaitTime',  # How long was the hold before opening the door, Ms
                          'TotalCoins',
                          'VASQuestionNumber',
-                         'VASAnswer', ]
+                         'VASAnswer',
+                         'VAS_RT']
 
     if params['recordPhysio']:
         params['headers'].append('ECG')
@@ -64,10 +65,5 @@ def export_raw_data(params: dict, Df: pandas.DataFrame):
     Df.to_csv(f'./{params["subjectID"]} - {datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S.csv")}')
 
 
-def analyze_round(Df: pandas.DataFrame):
-    sns.set_theme(style="whitegrid")
-    g = sns.catplot(data=Df, x="PunishmentAmount", y="CurrentDistance", hue="RewardAmount", capsize=.2,
-                    palette="YlGnBu_d", errorbar="se", kind="point", height=6, aspect=.75,)
-
-    g.despine(left=True)
-    g.savefig("./plot.png", dpi=300, bbox_inches='tight')
+def export_summarized_dataframe(params: dict, Df:pandas.DataFrame):
+    Df.to_csv(f'./miniDF-{params["subjectID"]} - {datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S.csv")}')

@@ -25,11 +25,13 @@ ANSWERS_FINAL = [["Won very few", "Won very many"], ["Lost very few", "Lost very
 def beginning_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pandas.DataFrame):
     pygame.quit()
     for i in range(len(QUESTIONS_BEGINNING_MIDDLE)):
+        startTime = time.time()
         answer, Df, dict = helpers.display_vas(window, params, QUESTIONS_BEGINNING_MIDDLE[i],
                                                ANSWERS_BEGINNING_MIDDLE[i], Df, questionNo=i + 1, roundNo=1)
 
         dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
         dict['VASAnswer'] = answer
+        dict['VAS_RT'] = time.time() - startTime
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
     return Df, miniDf
@@ -38,10 +40,12 @@ def beginning_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: p
 def middle_vas(window: visual.Window, params, coins: int, Df: pandas.DataFrame, miniDf: pandas.DataFrame):
     dict = {}
     for i in range(len(QUESTIONS_BEGINNING_MIDDLE)):
+        startTime = time.time()
         answer, Df, dict = helpers.display_vas(window, params, QUESTIONS_BEGINNING_MIDDLE[i],
                                                ANSWERS_BEGINNING_MIDDLE[i], Df, questionNo=i + 1, roundNo=2)
         dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
         dict['VASAnswer'] = answer
+        dict['VAS_RT'] = time.time() - startTime
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
 
@@ -62,9 +66,11 @@ def middle_vas(window: visual.Window, params, coins: int, Df: pandas.DataFrame, 
 
 def final_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pandas.DataFrame):
     for i in range(len(QUESTIONS_FINAL)):
+        startTime = time.time()
         answer, Df, dict = helpers.display_vas(window, params, QUESTIONS_FINAL[i], ANSWERS_FINAL[i], Df, questionNo=i + 1,
                                                roundNo=3)
         dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
+        dict['VAS_RT'] = time.time() - startTime
         dict['VASAnswer'] = answer
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
