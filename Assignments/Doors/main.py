@@ -59,9 +59,13 @@ else:
 Df, miniDf = VAS.beginning_vas(window, params, Df, miniDf)
 
 # Show Instructions
-Df = show_instructions(window, params, image, Df, io)
+Df, miniDf = show_instructions(window, params, image, Df, miniDf, io)
 
 # Practice run
+if params['recordPhysio']:
+    Df, miniDf = DoorPlay.practice_run(window, params, Df, miniDf, io, ser)
+else:
+    Df, miniDf = DoorPlay.practice_run(window, params, Df, miniDf, io)
 
 # Task 1
 if params['recordPhysio']:
