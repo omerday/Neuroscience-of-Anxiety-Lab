@@ -70,8 +70,8 @@ def get_movement_input_keyboard(window, params, image: visual.ImageStim, locatio
 
     keyboard = io.devices.keyboard
     keyboard.clearEvents()
-    noSpace = True
-    while time.time() < end_time and noSpace:
+    space = False
+    while time.time() < end_time and not space:
         for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
             if event.key == "escape":
                 window.close()
@@ -95,43 +95,42 @@ def get_movement_input_keyboard(window, params, image: visual.ImageStim, locatio
                         image, location = move_screen(window, params, image, location, params['sensitivity'] * (-0.5))
                         Df = update_movement_in_df(dict, Df, location)
             elif event.key == ' ' or event.key == 'space':
-                noSpace = False
+                space = True
                 break
 
         Df = update_movement_in_df(dict, Df, location)
 
-    return location, Df, dict, noSpace
+    return location, Df, dict, space
 
 
 def get_movement_input_joystick(window, params, image: visual.ImageStim, location, end_time: time.time,
                                 Df: pandas.DataFrame, dict: dict):
     pygame.init()
+    joy = pygame.joystick.Joystick(0)
+    joy.init()
     joystickButton = False
     while time.time() < end_time and not joystickButton:
-        pygame.event.clear()
 
         for event in pygame.event.get():
+            if joystickButton:
+                break
             if event.type == pygame.QUIT:
                 core.quit()
             if event.type == pygame.JOYBUTTONDOWN:
-                if pygame.joystick.Joystick(0).get_button(7):
+                if event.button == 7:
                     window.close()
                     core.quit()
-                elif pygame.joystick.Joystick(0).get_button(1):
-                    while True:
-                        for currEvent in pygame.event.get():
-                            if currEvent.type == pygame.JOYBUTTONUP:
-                                joystickButton = True
-                                break
-                        break
+                elif event.button == 0:
+                    joystickButton = True
 
-        joystickMovement = pygame.joystick.Joystick(0).get_axis(1)
-        if joystickMovement != 0 and 0.01 < location < 0.99:
-            image, location = move_screen(window, params, image, location, params['sensitivity'] * joystickMovement)
+        joystickMovement = joy.get_axis(1)
+        if (joystickMovement > 0.15 and 0.01 < location) or (joystickMovement < -0.15 and location < 0.99):
+            image, location = move_screen(window, params, image, location,
+                                          params['sensitivity'] * joystickMovement * -1)
 
         Df = update_movement_in_df(dict, Df, location)
 
-    return Df
+    return location, Df, dict, not joystickButton
 
 
 def update_movement_in_df(dict: dict, Df: pandas.DataFrame, location):

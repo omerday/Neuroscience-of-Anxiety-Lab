@@ -31,8 +31,10 @@ def show_instructions(win: visual.Window, params, img: visual.ImageStim, Df: pan
         Df, again = helpers.wait_for_joystick_press_with_replay(win, Df, dict)
     dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
     miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
-    if again:
+    if again and params["keyboardMode"]:
         Df = show_instructions(win, params, img, Df, io)
+    elif again:
+        Df = helpers.wait_for_joystick_press(win, Df, dict)
 
     img.image = INSTRUCTION_PATH_PREFIX + "practice_start.jpg"
     img.setSize((2,2))

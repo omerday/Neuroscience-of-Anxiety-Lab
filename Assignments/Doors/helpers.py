@@ -31,6 +31,8 @@ def wait_for_space(window, Df: pandas.DataFrame, dict: dict, io):
 
 def wait_for_joystick_press(window, Df: pandas.DataFrame, dict: dict):
     pygame.init()
+    joy = pygame.joystick.Joystick(0)
+    joy.init()
 
     while True:
         dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
@@ -42,7 +44,7 @@ def wait_for_joystick_press(window, Df: pandas.DataFrame, dict: dict):
                 core.quit()
                 break
             if event.type == pygame.JOYBUTTONDOWN:
-                if pygame.joystick.Joystick(0).get_button(7):
+                if event.button == 7:
                     window.close()
                     core.quit()
                 else:
@@ -87,6 +89,8 @@ def wait_for_joystick_press_with_replay(window, Df: pandas.DataFrame, dict: dict
     :return: True/False if r was pressed
     """
     pygame.init()
+    joy = pygame.joystick.Joystick(0)
+    joy.init()
     while True:
         dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
@@ -96,10 +100,10 @@ def wait_for_joystick_press_with_replay(window, Df: pandas.DataFrame, dict: dict
                 window.close()
                 core.quit()
             if event.type == pygame.JOYBUTTONDOWN:
-                if pygame.joystick.Joystick(0).get_button(7):
+                if event.button == 7:
                     window.close()
                     core.quit()
-                elif pygame.joystick.Joystick(0).get_button(2):
+                elif event.button == 1:
                     while True:
                         for currEvent in pygame.event.get():
                             if currEvent.type == pygame.JOYBUTTONUP:
@@ -130,7 +134,8 @@ def wait_for_space_no_df(window, io):
 
 def wait_for_joystick_no_df(window):
     pygame.init()
-
+    joy = pygame.joystick.Joystick(0)
+    joy.init()
     while True:
         core.wait(1 / 1000)
         for event in pygame.event.get():
@@ -139,7 +144,7 @@ def wait_for_joystick_no_df(window):
                 core.quit()
                 break
             if event.type == pygame.JOYBUTTONDOWN:
-                if pygame.joystick.Joystick(0).get_button(7):
+                if event.button == 7:
                     window.close()
                     core.quit()
                 else:
