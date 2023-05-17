@@ -1,12 +1,12 @@
 import pandas
 import time
 import datetime
-import bioread
+# import bioread
 import matplotlib
-import seaborn as sns
+# import seaborn as sns
 
 
-# TODO: Change VAS Type and add RT
+# TODO: Change VAS Type
 def setup_data_frame(params: dict):
     params['headers'] = ['Time',
                          'ExpermientName',

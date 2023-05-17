@@ -10,8 +10,43 @@ import serial
 from psychopy import visual, core
 
 
-def practice_run():
-    pass
+def practice_run(window: visual.Window, params: dict, Df: pandas.DataFrame, miniDf: pandas.DataFrame, io, ser=None):
+
+    roundNum = 1
+    while roundNum <= 5:
+        image, distanceFromDoor = DoorPlayInfra.setup_door(window, params, 0, 0)
+
+        # Setup new dictionary
+        dict = dataHandler.create_dict_for_df(params, StepName='Practice', )
+        dict['RewardAmount'] = 0
+        dict['PunishmentAmount'] = 0
+        dict['Subtrial'] = roundNum
+        dict['DistanceAtStart'] = distanceFromDoor * 100
+
+        # Execute Door of selected scenario
+        coinsWon, total_time, Df, dict, lock = DoorPlayInfra.start_door(window, params, image, 0, 0,
+                                                                        distanceFromDoor, Df, dict, io, 0,
+                                                                        ser)
+
+        # Add data to Df
+        dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
+        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
+        miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
+
+        roundNum = roundNum + 1
+
+    image.image = "./img/instructions/start_main_game.jpg"
+    image.setSize((2, 2))
+    image.draw()
+    window.update()
+    if params["keyboardMode"]:
+        Df = helpers.wait_for_space(window, Df, dict, io)
+    else:
+        Df = helpers.wait_for_joystick_press(window, Df, dict)
+    dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
+    miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
+
+    return Df, miniDf
 
 
 def run_task(window: visual.Window, params: dict, session: int, totalCoins: int, Df: pandas.DataFrame,
@@ -65,7 +100,5 @@ def run_task(window: visual.Window, params: dict, session: int, totalCoins: int,
         dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
-        Df.to_csv('./Df.csv')
-        dataHandler.analyze_round(Df)
 
     return Df, miniDf

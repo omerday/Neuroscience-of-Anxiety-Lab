@@ -27,12 +27,12 @@ def wait_for_space(window, Df: pandas.DataFrame, dict: dict, io):
             if event.key == "escape":
                 window.close()
                 core.quit()
-                return Df
 
 
-# TODO: Add Quit Button
 def wait_for_joystick_press(window, Df: pandas.DataFrame, dict: dict):
     pygame.init()
+    joy = pygame.joystick.Joystick(0)
+    joy.init()
 
     while True:
         dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
@@ -44,10 +44,14 @@ def wait_for_joystick_press(window, Df: pandas.DataFrame, dict: dict):
                 core.quit()
                 break
             if event.type == pygame.JOYBUTTONDOWN:
-                while True:
-                    for currEvent in pygame.event.get():
-                        if currEvent.type == pygame.JOYBUTTONUP:
-                            return Df
+                if event.button == 7:
+                    window.close()
+                    core.quit()
+                else:
+                    while True:
+                        for currEvent in pygame.event.get():
+                            if currEvent.type == pygame.JOYBUTTONUP:
+                                return Df
 
 
 # TODO: Replay doesnt work :(
@@ -75,8 +79,6 @@ def wait_for_space_with_replay(window, Df: pandas.DataFrame, dict: dict, io):
                 core.quit()
 
 
-# TODO: Set a key for replay
-# TODO: Set a key for quitting
 def wait_for_joystick_press_with_replay(window, Df: pandas.DataFrame, dict: dict):
     """
     Helper method to wait for a joystick keypress and keep the window open, or get 'r' keypress for replay of the
@@ -87,6 +89,8 @@ def wait_for_joystick_press_with_replay(window, Df: pandas.DataFrame, dict: dict
     :return: True/False if r was pressed
     """
     pygame.init()
+    joy = pygame.joystick.Joystick(0)
+    joy.init()
     while True:
         dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
@@ -96,18 +100,21 @@ def wait_for_joystick_press_with_replay(window, Df: pandas.DataFrame, dict: dict
                 window.close()
                 core.quit()
             if event.type == pygame.JOYBUTTONDOWN:
-                while True:
-                    for currEvent in pygame.event.get():
-                        if currEvent.type == pygame.JOYBUTTONUP:
-                            return Df, False
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
-                while True:
-                    for currEvent in pygame.event.get():
-                        if currEvent.type == pygame.KEYUP and currEvent.key == pygame.K_r:
-                            return Df, True
+                if event.button == 7:
+                    window.close()
+                    core.quit()
+                elif event.button == 1:
+                    while True:
+                        for currEvent in pygame.event.get():
+                            if currEvent.type == pygame.JOYBUTTONUP:
+                                return Df, True
+                else:
+                    while True:
+                        for currEvent in pygame.event.get():
+                            if currEvent.type == pygame.JOYBUTTONUP:
+                                return Df, False
 
 
-# TODO: Duplicate for joystick
 def wait_for_space_no_df(window, io):
     """
     Helper method to wait for a Spacebar keypress and keep the window open, without writing to Df.
@@ -124,22 +131,27 @@ def wait_for_space_no_df(window, io):
                 window.close()
                 core.quit()
 
-    # pygame.init()
-    # while True:
-    #     for event in pygame.event.get():
-    #         if event.type == pygame.QUIT:
-    #             window.close()
-    #             core.quit()
-    #         if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-    #             while True:
-    #                 for currEvent in pygame.event.get():
-    #                     if currEvent.type == pygame.KEYUP and currEvent.key == pygame.K_SPACE:
-    #                         return
-    #         if event.type == pygame.JOYBUTTONDOWN:
-    #             while True:
-    #                 for currEvent in pygame.event.get():
-    #                     if currEvent.type == pygame.JOYBUTTONUP:
-    #                         return
+
+def wait_for_joystick_no_df(window):
+    pygame.init()
+    joy = pygame.joystick.Joystick(0)
+    joy.init()
+    while True:
+        core.wait(1 / 1000)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                window.close()
+                core.quit()
+                break
+            if event.type == pygame.JOYBUTTONDOWN:
+                if event.button == 7:
+                    window.close()
+                    core.quit()
+                else:
+                    while True:
+                        for currEvent in pygame.event.get():
+                            if currEvent.type == pygame.JOYBUTTONUP:
+                                return
 
 
 def wait_for_click(window):
@@ -231,3 +243,9 @@ def display_image_until_key(window: visual.Window, params: dict, imagePath: str,
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         pressedKey = event.getKeys()
     return Df
+
+
+def graceful_quitting(window: visual.Window, params: dict, Df: pandas.DataFrame):
+    dataHandler.export_raw_data(params, Df)
+    window.close()
+    core.quit()

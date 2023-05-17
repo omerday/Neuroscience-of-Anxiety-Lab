@@ -48,7 +48,10 @@ image = visual.ImageStim(win=window, image="./img/ITI_fixation.jpg", units="norm
                          size=(2, 2) if not params['fullScreen'] else None)
 image.draw()
 window.update()
-helpers.wait_for_space_no_df(window, io)
+if params['keyboardMode']:
+    helpers.wait_for_space_no_df(window, io)
+else:
+    helpers.wait_for_joystick_no_df(window)
 
 # Initialize Sensors
 
@@ -56,9 +59,13 @@ helpers.wait_for_space_no_df(window, io)
 Df, miniDf = VAS.beginning_vas(window, params, Df, miniDf)
 
 # Show Instructions
-Df = show_instructions(window, params, image, Df, io)
+Df, miniDf = show_instructions(window, params, image, Df, miniDf, io)
 
 # Practice run
+if params['recordPhysio']:
+    Df, miniDf = DoorPlay.practice_run(window, params, Df, miniDf, io, ser)
+else:
+    Df, miniDf = DoorPlay.practice_run(window, params, Df, miniDf, io)
 
 # Task 1
 if params['recordPhysio']:
