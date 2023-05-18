@@ -12,6 +12,8 @@ from psychopy import visual, core
 
 def practice_run(window: visual.Window, params: dict, Df: pandas.DataFrame, miniDf: pandas.DataFrame, io, ser=None):
 
+    show_screen_pre_match(window, params, 0, io)
+
     roundNum = 1
     while roundNum <= 5:
         image, distanceFromDoor = DoorPlayInfra.setup_door(window, params, 0, 0)
@@ -35,17 +37,6 @@ def practice_run(window: visual.Window, params: dict, Df: pandas.DataFrame, mini
 
         roundNum = roundNum + 1
 
-    image.image = "./img/instructions/start_main_game.jpg"
-    image.setSize((2, 2))
-    image.draw()
-    window.update()
-    if params["keyboardMode"]:
-        Df = helpers.wait_for_space(window, Df, dict, io)
-    else:
-        Df = helpers.wait_for_joystick_press(window, Df, dict)
-    dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
-    miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
-
     return Df, miniDf
 
 
@@ -63,6 +54,7 @@ def run_task(window: visual.Window, params: dict, session: int, totalCoins: int,
     :param Df:
     :return:
     """
+    show_screen_pre_match(window, params, session, io, totalCoins)
 
     sizeOfArray = int(math.sqrt(params[f'numOfScreensTask{session}']))
     scenariosList = helpers.get_p_r_couples(sizeOfArray)
@@ -102,3 +94,27 @@ def run_task(window: visual.Window, params: dict, session: int, totalCoins: int,
         miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
 
     return Df, miniDf
+
+
+def show_screen_pre_match(window: visual.Window, params: dict, session: int, io, coins=0):
+    if session == 2:
+        if params["keyboardMode"]:
+            message = visual.TextStim(window,
+                                      text=f"Let’s rest for a bit. You have {coins} coins. Press Space when you "
+                                           f"are ready to keep playing.", units="norm", color=(255, 255, 255))
+        else:
+            message = visual.TextStim(window, text=f"Let’s rest for a bit. You have {coins} coins. Click when you "
+                                                   f"are ready to keep playing.", units="norm", color=(255, 255, 255))
+        message.draw()
+
+    else:
+        screenNames = ["practice_start" ,"start_main_game"]
+        image = visual.ImageStim(win=window, units="norm", opacity=1, size=(2, 2) if not params['fullScreen'] else None)
+        image.image = "./img/instructions/" + screenNames[session] + ".jpg"
+        image.draw()
+
+    window.update()
+    if params["keyboardMode"]:
+        Df = helpers.wait_for_space_no_df(window, io)
+    else:
+        Df = helpers.wait_for_joystick_no_df(window)

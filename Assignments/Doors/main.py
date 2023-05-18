@@ -35,8 +35,7 @@ params = {
 }
 
 # Initialize serial port
-if params['recordPhysio']:
-    ser = serial.Serial(params['port'], 115200, bytesize=serial.EIGHTBITS)
+ser = serial.Serial(params['port'], 115200, bytesize=serial.EIGHTBITS) if params['recordPhysio'] else None
 
 # Initialize DataFrame
 params, Df, miniDf = dataHandler.setup_data_frame(params)
@@ -62,25 +61,16 @@ Df, miniDf = VAS.beginning_vas(window, params, Df, miniDf)
 Df, miniDf = show_instructions(window, params, image, Df, miniDf, io)
 
 # Practice run
-if params['recordPhysio']:
-    Df, miniDf = DoorPlay.practice_run(window, params, Df, miniDf, io, ser)
-else:
-    Df, miniDf = DoorPlay.practice_run(window, params, Df, miniDf, io)
+Df, miniDf = DoorPlay.practice_run(window, params, Df, miniDf, io, ser)
 
 # Task 1
-if params['recordPhysio']:
-    Df, miniDf = DoorPlay.run_task(window, params, 1, 0, Df, miniDf, io, ser)
-else:
-    Df, miniDf = DoorPlay.run_task(window, params, 1, 0, Df, miniDf, io)
+Df, miniDf = DoorPlay.run_task(window, params, 1, 0, Df, miniDf, io, ser)
 
 # Mid-VAS
 Df, miniDf = VAS.middle_vas(window, params, 0, Df, miniDf)
 
 # Task 2
-if params['recordPhysio']:
-    Df, miniDf = DoorPlay.run_task(window, params, 2, 0, Df, miniDf, io, ser)
-else:
-    Df, miniDf = DoorPlay.run_task(window, params, 2, 0, Df, miniDf, io)
+Df, miniDf = DoorPlay.run_task(window, params, 2, 0, Df, miniDf, io, ser)
 
 # Final VAS
 Df, miniDf = VAS.final_vas(window, params, Df, miniDf)
