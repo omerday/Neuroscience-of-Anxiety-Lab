@@ -37,8 +37,7 @@ def beginning_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: p
     return Df, miniDf
 
 
-def middle_vas(window: visual.Window, params, coins: int, Df: pandas.DataFrame, miniDf: pandas.DataFrame):
-    dict = {}
+def middle_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pandas.DataFrame):
     for i in range(len(QUESTIONS_BEGINNING_MIDDLE)):
         startTime = time.time()
         answer, Df, dict = helpers.display_vas(window, params, QUESTIONS_BEGINNING_MIDDLE[i],
@@ -49,18 +48,6 @@ def middle_vas(window: visual.Window, params, coins: int, Df: pandas.DataFrame, 
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
 
-    if params["keyboardMode"]:
-        message = visual.TextStim(window, text=f"Let’s rest for a bit. You have {coins} coins. Press Space when you "
-                                               f"are ready to keep playing.", units="norm", color=(255, 255, 255))
-    else:
-        message = visual.TextStim(window, text=f"Let’s rest for a bit. You have {coins} coins. Click when you "
-                                               f"are ready to keep playing.", units="norm", color=(255, 255, 255))
-    message.draw()
-    window.update()
-    if params["keyboardMode"]:
-        Df = helpers.wait_for_space(window, Df, dict)
-    else:
-        Df = helpers.wait_for_joystick_press(window, Df, dict)
     return Df, miniDf
 
 

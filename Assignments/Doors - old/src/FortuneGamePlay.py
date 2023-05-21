@@ -17,7 +17,7 @@ def FortuneGamePlay(Df, win,params,SectionName,gameResult):
         "SessionStartDateTime": datetime.datetime.now().strftime("%m/%d/%y %H:%M:%S"),
     }
 
-    img1 = visual.ImageStim(win=win, image="./img/changeme.jpg", units="pix", opacity=1,size=(1024, 768))
+    img1 = visual.ImageStim(win=win, image="./img/BeforeWheel.jpg", units="pix", opacity=1,size=(1024, 768))
     img1.draw();win.flip()
     win.mouseVisible = False
     # waitUserSpace(Df, params)

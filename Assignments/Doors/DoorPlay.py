@@ -1,6 +1,10 @@
 import datetime
 import math
 import random
+
+import psychopy.visual
+import pygame
+
 import dataHandler
 import pandas
 import DoorPlayInfra
@@ -11,6 +15,8 @@ from psychopy import visual, core
 
 
 def practice_run(window: visual.Window, params: dict, Df: pandas.DataFrame, miniDf: pandas.DataFrame, io, ser=None):
+
+    DoorPlayInfra.show_screen_pre_match(window, params, 0, io)
 
     roundNum = 1
     while roundNum <= 5:
@@ -25,7 +31,7 @@ def practice_run(window: visual.Window, params: dict, Df: pandas.DataFrame, mini
 
         # Execute Door of selected scenario
         coinsWon, total_time, Df, dict, lock = DoorPlayInfra.start_door(window, params, image, 0, 0,
-                                                                        distanceFromDoor, Df, dict, io, 0,
+                                                                        distanceFromDoor, Df, dict, io, 0, miniDf,
                                                                         ser)
 
         # Add data to Df
@@ -34,17 +40,6 @@ def practice_run(window: visual.Window, params: dict, Df: pandas.DataFrame, mini
         miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
 
         roundNum = roundNum + 1
-
-    image.image = "./img/instructions/start_main_game.jpg"
-    image.setSize((2, 2))
-    image.draw()
-    window.update()
-    if params["keyboardMode"]:
-        Df = helpers.wait_for_space(window, Df, dict, io)
-    else:
-        Df = helpers.wait_for_joystick_press(window, Df, dict)
-    dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
-    miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
 
     return Df, miniDf
 
@@ -63,6 +58,7 @@ def run_task(window: visual.Window, params: dict, session: int, totalCoins: int,
     :param Df:
     :return:
     """
+    DoorPlayInfra.show_screen_pre_match(window, params, session, io, totalCoins)
 
     sizeOfArray = int(math.sqrt(params[f'numOfScreensTask{session}']))
     scenariosList = helpers.get_p_r_couples(sizeOfArray)
@@ -91,7 +87,7 @@ def run_task(window: visual.Window, params: dict, session: int, totalCoins: int,
 
         # Execute Door of selected scenario
         coinsWon, total_time, Df, dict, lock = DoorPlayInfra.start_door(window, params, image, scenario[0], scenario[1],
-                                                                  distanceFromDoor, Df, dict, io, scenarioIndex, ser)
+                                                                  distanceFromDoor, Df, dict, io, scenarioIndex, miniDf, ser)
         totalCoins += coinsWon
         scenariosList.remove(scenario)
 
@@ -101,4 +97,4 @@ def run_task(window: visual.Window, params: dict, session: int, totalCoins: int,
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
 
-    return Df, miniDf
+    return Df, miniDf, totalCoins
