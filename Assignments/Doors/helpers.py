@@ -185,7 +185,6 @@ def display_vas(win, params, text, labels, Df: pandas.DataFrame, questionNo: int
 
     dict = dataHandler.create_dict_for_df(params, StepName='VAS', VASQuestionNumber=questionNo, Session=roundNo)
     while scale.noResponse:
-        # dict['CurrentTime'] = datetime.datetime.now() - dict['StartTime']
         dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         scale.draw()
@@ -245,7 +244,9 @@ def display_image_until_key(window: visual.Window, params: dict, imagePath: str,
     return Df
 
 
-def graceful_quitting(window: visual.Window, params: dict, Df: pandas.DataFrame):
+def graceful_quitting(window: visual.Window, params: dict, Df: pandas.DataFrame, miniDf=None):
     dataHandler.export_raw_data(params, Df)
+    if miniDf is not None:
+        dataHandler.export_summarized_dataframe(params, miniDf)
     window.close()
     core.quit()

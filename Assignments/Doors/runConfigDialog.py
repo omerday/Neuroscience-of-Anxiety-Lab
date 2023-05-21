@@ -17,7 +17,6 @@ def user_input_play():
     userInput.addField('Starting Distance', choices=[50, 'Random'])
     # userInput.addField('# of TaskRun3:', 49)
     # userInput.addField('Trigger Support:', True)
-    # userInput.addField('Eyetracker Support:', False)
     userInput.addField('Full Screen', True)
     userInput.addField('Keyboard Mode', True)
     userInput.addField('Sensitivity (1: Less sensitive, 2: Normal, 3: More sensitive', 1, choices=[1, 2, 3])

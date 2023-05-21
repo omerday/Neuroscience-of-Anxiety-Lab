@@ -4,8 +4,11 @@ import pandas
 from psychopy import core, visual, event
 import time
 import pygame
+import helpers
 from psychopy.iohub import launchHubServer
 from psychopy.iohub.client.keyboard import Keyboard
+from psychopy.visual import Window, MovieStim3, FINISHED
+
 
 
 def setup_door(window, params, reward: int, punishment: int):
@@ -54,7 +57,7 @@ def move_screen(window, params, image: visual.ImageStim, location, units):
 
 
 def get_movement_input_keyboard(window, params, image: visual.ImageStim, location, end_time: time.time,
-                                Df: pandas.DataFrame, dict: dict, io):
+                                Df: pandas.DataFrame, dict: dict, io, miniDf:pandas.DataFrame):
     """
     The method gets up/down key state and moves the screen accordingly.
     The method requires pygame to be installed (and therefore imported to Psychopy if needed).
@@ -74,6 +77,7 @@ def get_movement_input_keyboard(window, params, image: visual.ImageStim, locatio
     while time.time() < end_time and not space:
         for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
             if event.key == "escape":
+                helpers.graceful_quitting(window, params, Df, miniDf)
                 window.close()
                 core.quit()
             if event.key == 'up':
@@ -104,7 +108,7 @@ def get_movement_input_keyboard(window, params, image: visual.ImageStim, locatio
 
 
 def get_movement_input_joystick(window, params, image: visual.ImageStim, location, end_time: time.time,
-                                Df: pandas.DataFrame, dict: dict):
+                                Df: pandas.DataFrame, dict: dict, miniDf:pandas.DataFrame):
     pygame.init()
     joy = pygame.joystick.Joystick(0)
     joy.init()
@@ -115,9 +119,12 @@ def get_movement_input_joystick(window, params, image: visual.ImageStim, locatio
             if joystickButton:
                 break
             if event.type == pygame.QUIT:
+                helpers.graceful_quitting(window, params, Df, miniDf)
+                window.close()
                 core.quit()
             if event.type == pygame.JOYBUTTONDOWN:
                 if event.button == 7:
+                    helpers.graceful_quitting(window, params, Df, miniDf)
                     window.close()
                     core.quit()
                 elif event.button == 0:
@@ -146,7 +153,7 @@ def update_movement_in_df(dict: dict, Df: pandas.DataFrame, location):
     return Df
 
 def start_door(window: visual.Window, params, image: visual.ImageStim, reward: int, punishment: int, location,
-               Df: pandas.DataFrame, dict: dict, io, scenarioIndex: int, ser=None):
+               Df: pandas.DataFrame, dict: dict, io, scenarioIndex: int, miniDf:pandas.DataFrame, ser=None):
     # Set end time for 10s max
     start_time = time.time()
     end_time = start_time + 10
@@ -162,9 +169,9 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     dict.pop("ScenarioIndex")
 
     if params['keyboardMode']:
-        location, Df, dict, lock = get_movement_input_keyboard(window, params, image, location, end_time, Df, dict, io)
+        location, Df, dict, lock = get_movement_input_keyboard(window, params, image, location, end_time, Df, dict, io, miniDf)
     else:
-        location, Df, dict, lock = get_movement_input_joystick(window, params, image, location, end_time, Df, dict)
+        location, Df, dict, lock = get_movement_input_joystick(window, params, image, location, end_time, Df, dict, miniDf)
 
     if params['recordPhysio']:
         ser.write(bin(scenarioIndex + 50))
@@ -231,3 +238,55 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
 
     else:
         return 0, total_time, Df, dict, lock
+
+
+def show_screen_pre_match(window: visual.Window, params: dict, session: int, io, coins=0):
+    if session == 2:
+        if params["keyboardMode"]:
+            message = visual.TextStim(window,
+                                      text=f"Let’s rest for a bit. You have {coins} coins. Press Space when you "
+                                           f"are ready to keep playing.", units="norm", color=(255, 255, 255))
+        else:
+            message = visual.TextStim(window, text=f"Let’s rest for a bit. You have {coins} coins. Click when you "
+                                                   f"are ready to keep playing.", units="norm", color=(255, 255, 255))
+        message.draw()
+
+    else:
+        screenNames = ["practice_start", "start_main_game"]
+        image = visual.ImageStim(win=window, units="norm", opacity=1, size=(2, 2))
+        image.image = "./img/instructions/" + screenNames[session] + ".jpg"
+        image.draw()
+
+    window.update()
+    if params["keyboardMode"]:
+        helpers.wait_for_space_no_df(window, io)
+    else:
+        helpers.wait_for_joystick_no_df(window)
+
+    if session == 1:
+        show_wheel(window, params, io)
+
+
+def show_wheel(window: visual.Window, params: dict, io=None):
+    image = visual.ImageStim(win=window, units="norm", opacity=1, size=(2, 2))
+    image.image = "./img/instructions/BeforeWheel.jpg"
+    image.draw()
+    window.update()
+
+    if params["keyboardMode"]:
+        helpers.wait_for_space_no_df(window, io)
+    else:
+        helpers.wait_for_joystick_no_df(window)
+
+    movie = visual.MovieStim3(window, filename=r'./img/16_Coins.mp4', size=(2, 2), units="norm")
+
+    while movie.status != FINISHED:
+        movie.draw()
+        window.flip()
+
+    if params["keyboardMode"]:
+        helpers.wait_for_space_no_df(window, io)
+    else:
+        helpers.wait_for_joystick_no_df(window)
+
+    return

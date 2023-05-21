@@ -55,22 +55,25 @@ else:
 # Initialize Sensors
 
 # Run VAS
-Df, miniDf = VAS.beginning_vas(window, params, Df, miniDf)
+# Df, miniDf = VAS.beginning_vas(window, params, Df, miniDf)
 
 # Show Instructions
-Df, miniDf = show_instructions(window, params, image, Df, miniDf, io)
+# Df, miniDf = show_instructions(window, params, image, Df, miniDf, io)
 
 # Practice run
-Df, miniDf = DoorPlay.practice_run(window, params, Df, miniDf, io, ser)
+# Df, miniDf = DoorPlay.practice_run(window, params, Df, miniDf, io, ser)
 
 # Task 1
-Df, miniDf = DoorPlay.run_task(window, params, 1, 0, Df, miniDf, io, ser)
+Df, miniDf, totalCoins = DoorPlay.run_task(window, params, 1, 0, Df, miniDf, io, ser)
 
 # Mid-VAS
 Df, miniDf = VAS.middle_vas(window, params, 0, Df, miniDf)
 
+Df, miniDf = VAS.final_vas(window, params, Df, miniDf)
+dataHandler.export_summarized_dataframe(params, miniDf)
+
 # Task 2
-Df, miniDf = DoorPlay.run_task(window, params, 2, 0, Df, miniDf, io, ser)
+Df, miniDf, totalCoins = DoorPlay.run_task(window, params, 2, totalCoins, Df, miniDf, io, ser)
 
 # Final VAS
 Df, miniDf = VAS.final_vas(window, params, Df, miniDf)
