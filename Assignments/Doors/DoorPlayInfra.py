@@ -1,5 +1,4 @@
 import random
-import datetime
 import pandas
 from psychopy import core, visual, event
 import time
