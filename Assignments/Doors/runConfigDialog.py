@@ -19,5 +19,6 @@ def user_input_play():
     userInput.addField('Keyboard Mode', True)
     userInput.addField('Sensitivity (2: Less sensitive, 3: Normal, 4: More sensitive', 1, choices=[2, 3, 4])
     userInput.addField('Record Physiology', False)
+    userInput.addField('Save Data at Unexpected Quit', False)
     # userInput.addField('Sound Mode:',choices=['PTB','Others'])
     return userInput.show()

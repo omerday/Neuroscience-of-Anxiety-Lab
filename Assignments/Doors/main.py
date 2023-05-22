@@ -27,6 +27,7 @@ params = {
     'sensitivity': configDialogBank[7],
     'screenSize': (1024, 768),  # Get Screen Resolution to match Full Screen
     'recordPhysio': configDialogBank[8],
+    'saveDataAtQuit': configDialogBank[9],
     'startTime': time.time(),
     'doorImagePathPrefix': './img/doors1/',
     'outcomeImagePredix': './img/outcomes/',
@@ -60,7 +61,7 @@ else:
 # Df, miniDf = show_instructions(window, params, image, Df, miniDf, io)
 
 # Practice run
-# Df, miniDf = DoorPlay.practice_run(window, params, Df, miniDf, io, ser)
+Df, miniDf = DoorPlay.practice_run(window, params, Df, miniDf, io, ser)
 
 # Task 1
 Df, miniDf, totalCoins = DoorPlay.run_task(window, params, 1, 0, Df, miniDf, io, ser)
