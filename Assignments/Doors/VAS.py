@@ -24,6 +24,7 @@ ANSWERS_FINAL = [["Won very few", "Won very many"], ["Lost very few", "Lost very
 
 def beginning_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pandas.DataFrame):
     pygame.quit()
+    window.mouseVisible = True
     for i in range(len(QUESTIONS_BEGINNING_MIDDLE)):
         startTime = time.time()
         answer, Df, dict = helpers.display_vas(window, params, QUESTIONS_BEGINNING_MIDDLE[i],
@@ -34,10 +35,12 @@ def beginning_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: p
         dict['VAS_RT'] = time.time() - startTime
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
+    window.mouseVisible = False
     return Df, miniDf
 
 
 def middle_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pandas.DataFrame):
+    window.mouseVisible = True
     for i in range(len(QUESTIONS_BEGINNING_MIDDLE)):
         startTime = time.time()
         answer, Df, dict = helpers.display_vas(window, params, QUESTIONS_BEGINNING_MIDDLE[i],
@@ -48,10 +51,12 @@ def middle_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pand
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
 
+    window.mouseVisible = False
     return Df, miniDf
 
 
 def final_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pandas.DataFrame):
+    window.mouseVisible = True
     for i in range(len(QUESTIONS_FINAL)):
         startTime = time.time()
         answer, Df, dict = helpers.display_vas(window, params, QUESTIONS_FINAL[i], ANSWERS_FINAL[i], Df, questionNo=i + 1,
@@ -61,4 +66,6 @@ def final_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: panda
         dict['VASAnswer'] = answer
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
+
+    window.mouseVisible = False
     return Df, miniDf

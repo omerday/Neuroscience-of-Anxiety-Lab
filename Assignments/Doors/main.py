@@ -46,6 +46,7 @@ window = visual.Window(params['screenSize'], monitor="testMonitor", color="black
 image = visual.ImageStim(win=window, image="./img/ITI_fixation.jpg", units="norm", opacity=1,
                          size=(2, 2) if not params['fullScreen'] else None)
 image.draw()
+window.mouseVisible = False
 window.update()
 if params['keyboardMode']:
     helpers.wait_for_space_no_df(window, io)
@@ -77,5 +78,5 @@ Df, miniDf = VAS.final_vas(window, params, Df, miniDf)
 dataHandler.export_summarized_dataframe(params, miniDf)
 
 # Recap
-
+window.mouseVisible = True
 core.quit()
