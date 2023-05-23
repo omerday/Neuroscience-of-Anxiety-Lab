@@ -9,7 +9,6 @@ from psychopy.iohub.client.keyboard import Keyboard
 from psychopy.visual import Window, MovieStim3, FINISHED
 
 
-
 def setup_door(window, params, reward: int, punishment: int):
     """
     Show door corresponding to the reward and punishment sent as arguments. Chooses the size in which it starts
@@ -30,8 +29,8 @@ def setup_door(window, params, reward: int, punishment: int):
     image = visual.ImageStim(window, image=imagePath,
                              size=((1.5 + location), (1.5 + location)),
                              units="norm", opacity=1)
-
     image.draw()
+
     window.update()
     return image, location
 
@@ -56,7 +55,7 @@ def move_screen(window, params, image: visual.ImageStim, location, units):
 
 
 def get_movement_input_keyboard(window, params, image: visual.ImageStim, location, end_time: time.time,
-                                Df: pandas.DataFrame, dict: dict, io, miniDf:pandas.DataFrame):
+                                Df: pandas.DataFrame, dict: dict, io, miniDf: pandas.DataFrame):
     """
     The method gets up/down key state and moves the screen accordingly.
     The method requires pygame to be installed (and therefore imported to Psychopy if needed).
@@ -107,7 +106,7 @@ def get_movement_input_keyboard(window, params, image: visual.ImageStim, locatio
 
 
 def get_movement_input_joystick(window, params, image: visual.ImageStim, location, end_time: time.time,
-                                Df: pandas.DataFrame, dict: dict, miniDf:pandas.DataFrame):
+                                Df: pandas.DataFrame, dict: dict, miniDf: pandas.DataFrame):
     pygame.init()
     joy = pygame.joystick.Joystick(0)
     joy.init()
@@ -151,8 +150,9 @@ def update_movement_in_df(dict: dict, Df: pandas.DataFrame, location):
     Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
     return Df
 
+
 def start_door(window: visual.Window, params, image: visual.ImageStim, reward: int, punishment: int, location,
-               Df: pandas.DataFrame, dict: dict, io, scenarioIndex: int, miniDf:pandas.DataFrame, ser=None):
+               Df: pandas.DataFrame, dict: dict, io, scenarioIndex: int, miniDf: pandas.DataFrame, ser=None):
     # Set end time for 10s max
     start_time = time.time()
     end_time = start_time + 10
@@ -168,9 +168,11 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     dict.pop("ScenarioIndex")
 
     if params['keyboardMode']:
-        location, Df, dict, lock = get_movement_input_keyboard(window, params, image, location, end_time, Df, dict, io, miniDf)
+        location, Df, dict, lock = get_movement_input_keyboard(window, params, image, location, end_time, Df, dict, io,
+                                                               miniDf)
     else:
-        location, Df, dict, lock = get_movement_input_joystick(window, params, image, location, end_time, Df, dict, miniDf)
+        location, Df, dict, lock = get_movement_input_joystick(window, params, image, location, end_time, Df, dict,
+                                                               miniDf)
 
     if params['recordPhysio']:
         ser.write(bin(scenarioIndex + 50))
@@ -210,32 +212,54 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     if isDoorOpening:
         # Randomize the chances for p/r. If above 0.5 - reward. else - punishment.
         rewardChance = random.random()
+
         if rewardChance >= 0.5:
-            image.setImage(params['outcomeImagePredix'] + f'{reward}_reward' + params['imageSuffix'])
-            image.setSize((2, 2))
-            image.draw()
-            window.update()
+            outcomeString = f'{reward}_reward'
             coins = reward
             dict["DidWin"] = 1
             dict["DoorOutcome"] = 'reward'
         else:
-            image.setImage(params['outcomeImagePredix'] + f'{punishment}_punishment' + params['imageSuffix'])
-            image.setSize((2, 2))
-            image.draw()
-            window.update()
+            outcomeString = f'{punishment}_punishment'
             coins = -1 * punishment
             dict["DidWin"] = 0
             dict["DoorOutcome"] = 'punishment'
 
+        outcomeImage = visual.ImageStim(window, image=params['outcomeImagePredix'] + outcomeString + params['imageSuffix'],
+                                size=(image.size[0] / 4, image.size[1] / 2.1),
+                                pos=(0, -0.057), units="norm", opacity=1)
+        doorFrameImg = visual.ImageStim(window, image=params['doorImagePathPrefix'] + "doorOpens.png",
+                                        size=(image.size[0] * 0.3, image.size[1] * 0.52),
+                                        pos=(0.009, -0.1), units="norm", opacity=1)
+        image.draw()
+        outcomeImage.draw()
+        doorFrameImg.draw()
+        window.update()
         waitTimeStart = time.time()
         while time.time() < waitTimeStart + 2:
             dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
             Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
             core.wait(1 / 1000)
 
+        del outcomeImage
+        del doorFrameImg
+        window.update()
+
         return coins, total_time, Df, dict, lock
 
     else:
+        image.setImage('./img/iti.jpg')
+        image.setSize((3.2,3.2))
+        image.draw()
+        window.update()
+        start_time = time.time()
+        while time.time() < start_time + 2:
+            dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
+            Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
+            image.size += 0.05
+            image.draw()
+            window.update()
+            core.wait(0.03)
+
         return 0, total_time, Df, dict, lock
 
 

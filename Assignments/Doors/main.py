@@ -22,12 +22,14 @@ params = {
     'numOfScreensTask1': configDialogBank[2],  # Number of Screens in the 1st task, either 49 (7*7) or 36 (6*6)
     'numOfScreensTask2': configDialogBank[3],  # Number of Screens in the 2nd task, either 49 (7*7) or 36 (6*6)
     'startingDistance': configDialogBank[4],  # Decide whether the starting distance is random, or fixed on 50
-    'fullScreen': configDialogBank[5],
-    'keyboardMode': configDialogBank[6],
-    'sensitivity': configDialogBank[7],
+    'recordPhysio': configDialogBank[5],
+    'sensitivity': configDialogBank[6],
+    'fullScreen': configDialogBank[7],
+    'keyboardMode': configDialogBank[8],
     'screenSize': (1024, 768),  # Get Screen Resolution to match Full Screen
-    'recordPhysio': configDialogBank[8],
+    'saveDataAtQuit': configDialogBank[9],
     'startTime': time.time(),
+    'saveAsDefault': configDialogBank[10],
     'doorImagePathPrefix': './img/doors1/',
     'outcomeImagePredix': './img/outcomes/',
     'imageSuffix': '.jpg',
@@ -46,19 +48,18 @@ window = visual.Window(params['screenSize'], monitor="testMonitor", color="black
 image = visual.ImageStim(win=window, image="./img/ITI_fixation.jpg", units="norm", opacity=1,
                          size=(2, 2) if not params['fullScreen'] else None)
 image.draw()
+window.mouseVisible = False
 window.update()
 if params['keyboardMode']:
     helpers.wait_for_space_no_df(window, io)
 else:
     helpers.wait_for_joystick_no_df(window)
 
-# Initialize Sensors
-
 # Run VAS
-Df, miniDf = VAS.beginning_vas(window, params, Df, miniDf)
+# Df, miniDf = VAS.beginning_vas(window, params, Df, miniDf)
 
 # Show Instructions
-Df, miniDf = show_instructions(window, params, image, Df, miniDf, io)
+# Df, miniDf = show_instructions(window, params, image, Df, miniDf, io)
 
 # Practice run
 Df, miniDf = DoorPlay.practice_run(window, params, Df, miniDf, io, ser)
@@ -77,5 +78,5 @@ Df, miniDf = VAS.final_vas(window, params, Df, miniDf)
 dataHandler.export_summarized_dataframe(params, miniDf)
 
 # Recap
-
+window.mouseVisible = True
 core.quit()

@@ -245,8 +245,9 @@ def display_image_until_key(window: visual.Window, params: dict, imagePath: str,
 
 
 def graceful_quitting(window: visual.Window, params: dict, Df: pandas.DataFrame, miniDf=None):
-    dataHandler.export_raw_data(params, Df)
-    if miniDf is not None:
-        dataHandler.export_summarized_dataframe(params, miniDf)
+    if params['saveDataAtQuit']:
+        dataHandler.export_raw_data(params, Df)
+        if miniDf is not None:
+            dataHandler.export_summarized_dataframe(params, miniDf)
     window.close()
     core.quit()
