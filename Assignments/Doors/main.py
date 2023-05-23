@@ -22,13 +22,14 @@ params = {
     'numOfScreensTask1': configDialogBank[2],  # Number of Screens in the 1st task, either 49 (7*7) or 36 (6*6)
     'numOfScreensTask2': configDialogBank[3],  # Number of Screens in the 2nd task, either 49 (7*7) or 36 (6*6)
     'startingDistance': configDialogBank[4],  # Decide whether the starting distance is random, or fixed on 50
-    'fullScreen': configDialogBank[5],
-    'keyboardMode': configDialogBank[6],
-    'sensitivity': configDialogBank[7],
+    'recordPhysio': configDialogBank[5],
+    'sensitivity': configDialogBank[6],
+    'fullScreen': configDialogBank[7],
+    'keyboardMode': configDialogBank[8],
     'screenSize': (1024, 768),  # Get Screen Resolution to match Full Screen
-    'recordPhysio': configDialogBank[8],
     'saveDataAtQuit': configDialogBank[9],
     'startTime': time.time(),
+    'saveAsDefault': configDialogBank[10],
     'doorImagePathPrefix': './img/doors1/',
     'outcomeImagePredix': './img/outcomes/',
     'imageSuffix': '.jpg',
