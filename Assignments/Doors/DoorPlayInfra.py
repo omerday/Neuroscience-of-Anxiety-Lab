@@ -7,6 +7,7 @@ import helpers
 from psychopy.iohub import launchHubServer
 from psychopy.iohub.client.keyboard import Keyboard
 from psychopy.visual import Window, MovieStim3, FINISHED
+from psychopy import sound
 
 from Assignments.Doors import serialHandler
 
@@ -103,7 +104,7 @@ def get_movement_input_keyboard(window, params, image: visual.ImageStim, locatio
 
         Df = update_movement_in_df(dict, Df, location)
 
-    return round((location + 1) * 50, 0), Df, dict, space # NormalizedLocation
+    return round((location + 1) * 50, 0), Df, dict, space  # NormalizedLocation
 
 
 def get_movement_input_joystick(window, params, image: visual.ImageStim, location, end_time: time.time,
@@ -136,7 +137,7 @@ def get_movement_input_joystick(window, params, image: visual.ImageStim, locatio
 
         Df = update_movement_in_df(dict, Df, location)
 
-    return round((location + 1) * 50, 0), Df, dict, not joystickButton # NormalizedLocation
+    return round((location + 1) * 50, 0), Df, dict, not joystickButton  # NormalizedLocation
 
 
 def update_movement_in_df(dict: dict, Df: pandas.DataFrame, location):
@@ -191,8 +192,12 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     random.seed(time.time() % 60)  # Seeding using the current second in order to have relatively random seed
     doorWaitTime = 2 + random.random() * 2  # Randomize waiting time between 2-4 seconds
     waitStart = time.time()
-
     dict["DoorWaitTime"] = doorWaitTime * 1000
+
+    if params['soundOn']:
+        doorWaitTime -= 1
+        play_sound("lock", 1, dict, Df)
+
     while time.time() < waitStart + doorWaitTime:
         dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
@@ -226,21 +231,25 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
             dict["DidWin"] = 0
             dict["DoorOutcome"] = 'punishment'
 
-        outcomeImage = visual.ImageStim(window, image=params['outcomeImagePredix'] + outcomeString + params['imageSuffix'],
-                                size=(image.size[0] / 4, image.size[1] / 2.1),
-                                pos=(0, -0.057), units="norm", opacity=1)
+        outcomeImage = visual.ImageStim(window,
+                                        image=params['outcomeImagePredix'] + outcomeString + params['imageSuffix'],
+                                        size=(image.size[0] / 4, image.size[1] / 2.05),
+                                        pos=(0, -0.059), units="norm", opacity=1)
         doorFrameImg = visual.ImageStim(window, image=params['doorImagePathPrefix'] + "doorOpens.png",
                                         size=(image.size[0] * 0.3, image.size[1] * 0.52),
-                                        pos=(0.009, -0.1), units="norm", opacity=1)
+                                        pos=(0.01, -0.1), units="norm", opacity=1)
         image.draw()
         outcomeImage.draw()
         doorFrameImg.draw()
         window.update()
-        waitTimeStart = time.time()
-        while time.time() < waitTimeStart + 2:
-            dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
-            Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
-            core.wait(1 / 1000)
+        if params['soundOn']:
+            play_sound(dict["DoorOutcome"], 2.5, dict, Df)
+        else:
+            waitTimeStart = time.time()
+            while time.time() < waitTimeStart + 2:
+                dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
+                Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
+                core.wait(1 / 1000)
 
         del outcomeImage
         del doorFrameImg
@@ -250,7 +259,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
 
     else:
         image.setImage('./img/iti.jpg')
-        image.setSize((3.2,3.2))
+        image.setSize((3.2, 3.2))
         image.draw()
         window.update()
         start_time = time.time()
@@ -315,3 +324,24 @@ def show_wheel(window: visual.Window, params: dict, io=None):
         helpers.wait_for_joystick_no_df(window)
 
     return
+
+
+
+def play_sound(soundType: str, waitTime: int, dict: dict, Df: pandas.DataFrame):
+    """
+    The method plays a sound and sleeps through it, while recording data for the DF
+    """
+    SOUNDS = {
+        "lock": "./sounds/click_1s.wav",
+        "reward": "./sounds/new_reward.mp3",
+        "punishment": "./sounds/monster.wav"
+    }
+
+    soundToPlay = sound.Sound(SOUNDS[soundType])
+    soundToPlay.play()
+    startTime = time.time()
+    while time.time() < startTime + waitTime:
+        dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
+        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
+        core.wait(1 / 1000)
+    soundToPlay.stop()
