@@ -7,6 +7,7 @@ import helpers
 from psychopy.iohub import launchHubServer
 import runConfigDialog
 import dataHandler
+from Assignments.Doors import serialHandler
 from instructionsScreen import show_instructions
 import VAS
 import serial
@@ -37,7 +38,8 @@ params = {
 }
 
 # Initialize serial port
-ser = serial.Serial(params['port'], 115200, bytesize=serial.EIGHTBITS) if params['recordPhysio'] else None
+ser = serial.Serial(params['port'], 115200, bytesize=serial.EIGHTBITS, timeout=1) if params['recordPhysio'] else None
+serialHandler.report_event(ser, 255)
 
 # Initialize DataFrame
 params, Df, miniDf = dataHandler.setup_data_frame(params)

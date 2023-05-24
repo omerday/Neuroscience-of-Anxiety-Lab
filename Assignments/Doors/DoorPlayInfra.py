@@ -8,6 +8,8 @@ from psychopy.iohub import launchHubServer
 from psychopy.iohub.client.keyboard import Keyboard
 from psychopy.visual import Window, MovieStim3, FINISHED
 
+from Assignments.Doors import serialHandler
+
 
 def setup_door(window, params, reward: int, punishment: int):
     """
@@ -157,7 +159,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     start_time = time.time()
     end_time = start_time + 10
     if params['recordPhysio']:
-        ser.write(bin(scenarioIndex))
+        serialHandler.report_event(ser, scenarioIndex)
     # Add initial dict parameters
     dict['RoundStartTime'] = round(time.time() - dict['StartTime'], 3)
     dict['CurrentDistance'] = round((location + 1) * 50, 0)
@@ -175,7 +177,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
                                                                miniDf)
 
     if params['recordPhysio']:
-        ser.write(bin(scenarioIndex + 50))
+        serialHandler.report_event(ser, scenarioIndex + 50)
     total_time = time.time() - start_time
     dict["DistanceAtLock"] = location
     dict['Distance_lock'] = 1 if lock else 0
@@ -201,7 +203,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     isDoorOpening = doorOpenChance <= location
 
     if params['recordPhysio']:
-        ser.write(bin(scenarioIndex + 100))
+        serialHandler.report_event(ser, scenarioIndex + 100)
     dict["DidDoorOpen"] = 1 if isDoorOpening else 0
     dict["DoorStatus"] = 'opened' if isDoorOpening else 'closed'
     dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
