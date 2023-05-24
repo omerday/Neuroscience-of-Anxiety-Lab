@@ -28,9 +28,10 @@ params = {
     'fullScreen': configDialogBank[7],
     'keyboardMode': configDialogBank[8],
     'screenSize': (1024, 768),  # Get Screen Resolution to match Full Screen
-    'saveDataAtQuit': configDialogBank[9],
+    'soundOn': configDialogBank[9],
+    'saveDataAtQuit': configDialogBank[10],
     'startTime': time.time(),
-    'saveAsDefault': configDialogBank[10],
+    'saveAsDefault': configDialogBank[11],
     'doorImagePathPrefix': './img/doors1/',
     'outcomeImagePredix': './img/outcomes/',
     'imageSuffix': '.jpg',
@@ -39,7 +40,8 @@ params = {
 
 # Initialize serial port
 ser = serial.Serial(params['port'], 115200, bytesize=serial.EIGHTBITS, timeout=1) if params['recordPhysio'] else None
-serialHandler.report_event(ser, 255)
+if params['recordPhysio']:
+    serialHandler.report_event(ser, 255)
 
 # Initialize DataFrame
 params, Df, miniDf = dataHandler.setup_data_frame(params)

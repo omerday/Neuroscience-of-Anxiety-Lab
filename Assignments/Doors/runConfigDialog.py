@@ -19,6 +19,7 @@ def user_input_play():
     userInput.addField('Sensitivity (2: Less sensitive, 3: Normal, 4: More sensitive', 1, choices=[2, 3, 4])
     userInput.addField('Full Screen', True)
     userInput.addField('Keyboard Mode', True)
+    userInput.addField('Sound On?', True)
     userInput.addField('Save Data at Unexpected Quit', False)
     userInput.addField('Save Config as Default', False)
     # userInput.addField('Sound Mode:',choices=['PTB','Others'])
