@@ -21,13 +21,12 @@ def setup_door(window, params, reward: int, punishment: int):
     :return: location: the relative location of the subject from the door, should be 1-100
     """
     isRandom = params['startingDistance'] == 'Random'
-    location = round(0.6 - 0.1 * random.random(), 2) if isRandom else params[
-                                                                          'startingDistance'] / 100  # a variable for the relative location
+    location = round(0.6 - 0.1 * random.random(), 2) if isRandom else 0  # a variable for the relative location
     # of the subject from the door, should be 0-1
     imagePath = params['doorImagePathPrefix'] + f"p{punishment}r{reward}" + params['imageSuffix']
 
     image = visual.ImageStim(window, image=imagePath,
-                             size=((1.5 + location), (1.5 + location)),
+                             size=((2 + location), (2 + location)),
                              units="norm", opacity=1)
     image.draw()
 
@@ -47,8 +46,8 @@ def move_screen(window, params, image: visual.ImageStim, location, units):
     :return: image: the updated image object
     :return: location: the updated location. Will be used to determine the chance of the door opening.
     """
-    location = location + units / 100
-    image.size = (1.5 + location, 1.5 + location)
+    location = location + (units / 100)
+    image.size = (2 + location, 2 + location)
     image.draw()
     window.update()
     return image, location
@@ -93,7 +92,7 @@ def get_movement_input_keyboard(window, params, image: visual.ImageStim, locatio
                     for releaseEvent in keyboard.getKeys(etype=Keyboard.KEY_RELEASE):
                         if releaseEvent == 'down':
                             downHold = False
-                    if location > 0.01:
+                    if location > -0.99:
                         image, location = move_screen(window, params, image, location, params['sensitivity'] * (-0.5))
                         Df = update_movement_in_df(dict, Df, location)
             elif event.key == ' ' or event.key == 'space':
@@ -102,7 +101,7 @@ def get_movement_input_keyboard(window, params, image: visual.ImageStim, locatio
 
         Df = update_movement_in_df(dict, Df, location)
 
-    return location, Df, dict, space
+    return round((location + 1) * 50, 0), Df, dict, space # NormalizedLocation
 
 
 def get_movement_input_joystick(window, params, image: visual.ImageStim, location, end_time: time.time,
@@ -135,16 +134,17 @@ def get_movement_input_joystick(window, params, image: visual.ImageStim, locatio
 
         Df = update_movement_in_df(dict, Df, location)
 
-    return location, Df, dict, not joystickButton
+    return round((location + 1) * 50, 0), Df, dict, not joystickButton # NormalizedLocation
 
 
 def update_movement_in_df(dict: dict, Df: pandas.DataFrame, location):
     dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
-    dict['CurrentDistance'] = round(location, 2) * 100
-    if location > dict['Distance_max']:
-        dict['Distance_max'] = round(location, 2) * 100
-    if location < dict['Distance_min']:
-        dict['Distance_min'] = round(location, 2) * 100
+    locationNormalized = round((location + 1) * 50, 0)
+    dict['CurrentDistance'] = locationNormalized
+    if locationNormalized > dict['Distance_max']:
+        dict['Distance_max'] = locationNormalized
+    if locationNormalized < dict['Distance_min']:
+        dict['Distance_min'] = locationNormalized
 
     # Update Df:
     Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
@@ -160,9 +160,9 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
         ser.write(bin(scenarioIndex))
     # Add initial dict parameters
     dict['RoundStartTime'] = round(time.time() - dict['StartTime'], 3)
-    dict['CurrentDistance'] = round(location, 2) * 100
-    dict['Distance_max'] = round(location, 2) * 100
-    dict['Distance_min'] = round(location, 2) * 100
+    dict['CurrentDistance'] = round((location + 1) * 50, 0)
+    dict['Distance_max'] = round((location + 1) * 50, 0)
+    dict['Distance_min'] = round((location + 1) * 50, 0)
     dict["ScenarioIndex"] = scenarioIndex
     Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
     dict.pop("ScenarioIndex")
@@ -177,7 +177,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     if params['recordPhysio']:
         ser.write(bin(scenarioIndex + 50))
     total_time = time.time() - start_time
-    dict["DistanceAtLock"] = round(location, 2) * 100
+    dict["DistanceAtLock"] = location
     dict['Distance_lock'] = 1 if lock else 0
     dict["LockTime"] = total_time * 1000
     dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
