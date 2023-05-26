@@ -326,7 +326,6 @@ def show_wheel(window: visual.Window, params: dict, io=None):
     return
 
 
-
 def play_sound(soundType: str, waitTime: int, dict: dict, Df: pandas.DataFrame):
     """
     The method plays a sound and sleeps through it, while recording data for the DF
