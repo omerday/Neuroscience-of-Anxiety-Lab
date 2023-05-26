@@ -1,5 +1,5 @@
 import time
-
+import json
 import pandas
 from psychopy import visual, core, event
 import DoorPlay
@@ -37,6 +37,10 @@ params = {
     'imageSuffix': '.jpg',
     'port': 'COM4',
 }
+
+if params['saveAsDefault']:
+    with open("config.json", 'w') as file:
+        json.dump(params, file, indent=3)
 
 # Initialize serial port
 ser = serial.Serial(params['port'], 115200, bytesize=serial.EIGHTBITS, timeout=1) if params['recordPhysio'] else None
