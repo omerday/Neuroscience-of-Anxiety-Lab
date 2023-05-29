@@ -255,23 +255,20 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
         del doorFrameImg
         window.update()
 
-        return coins, total_time, Df, dict, lock
-
-    else:
-        image.setImage('./img/iti.jpg')
-        image.setSize((3.2, 3.2))
+    image.setImage('./img/iti.jpg')
+    image.setSize((3.2, 3.2))
+    image.draw()
+    window.update()
+    start_time = time.time()
+    while time.time() < start_time + 2:
+        dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
+        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
+        image.size += 0.05
         image.draw()
         window.update()
-        start_time = time.time()
-        while time.time() < start_time + 2:
-            dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
-            Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
-            image.size += 0.05
-            image.draw()
-            window.update()
-            core.wait(0.03)
+        core.wait(0.03)
 
-        return 0, total_time, Df, dict, lock
+    return coins if isDoorOpening else 0, total_time, Df, dict, lock
 
 
 def show_screen_pre_match(window: visual.Window, params: dict, session: int, io, coins=0):
