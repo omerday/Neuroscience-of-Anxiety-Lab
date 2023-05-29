@@ -288,7 +288,7 @@ def show_screen_pre_match(window: visual.Window, params: dict, session: int, io,
     else:
         screenNames = ["practice_start", "start_main_game"]
         image = visual.ImageStim(win=window, units="norm", opacity=1, size=(2, 2))
-        image.image = "./img/instructions/" + screenNames[session] + ".jpg"
+        image.image = "./img/InstructionsHebrew/" + screenNames[session] + ".jpeg"
         image.draw()
 
     window.update()
