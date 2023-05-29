@@ -127,4 +127,4 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-/Assignments/Doors/Logs/*
+/Assignments/Doors/data/config.json
