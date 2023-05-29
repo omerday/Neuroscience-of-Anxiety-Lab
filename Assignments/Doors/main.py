@@ -39,7 +39,7 @@ params = {
 }
 
 if params['saveAsDefault']:
-    with open("config.json", 'w') as file:
+    with open("./data/config.json", 'w') as file:
         json.dump(params, file, indent=3)
 
 # Initialize serial port

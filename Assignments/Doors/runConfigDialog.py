@@ -11,9 +11,9 @@ def user_input_play():
     """
 
     loadedData = {}
-    if os.path.exists("config.json"):
+    if os.path.exists("./data/config.json"):
         configExists = True
-        with open("config.json") as file:
+        with open("./data/config.json") as file:
             try:
                 loadedData = json.load(file)
             except json.decoder.JSONDecodeError:
