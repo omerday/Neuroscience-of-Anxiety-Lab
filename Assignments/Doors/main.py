@@ -7,7 +7,7 @@ import helpers
 from psychopy.iohub import launchHubServer
 import runConfigDialog
 import dataHandler
-from Assignments.Doors import serialHandler
+import serialHandler
 from instructionsScreen import show_instructions
 import VAS
 import serial
@@ -29,9 +29,10 @@ params = {
     'keyboardMode': configDialogBank[8],
     'screenSize': (1024, 768),  # Get Screen Resolution to match Full Screen
     'soundOn': configDialogBank[9],
-    'saveDataAtQuit': configDialogBank[10],
+    'skipInstructions': configDialogBank[10],
+    'saveDataAtQuit': configDialogBank[11],
     'startTime': time.time(),
-    'saveAsDefault': configDialogBank[11],
+    'saveAsDefault': configDialogBank[12],
     'doorImagePathPrefix': './img/doors1/',
     'outcomeImagePredix': './img/outcomes/',
     'imageSuffix': '.jpg',
@@ -63,14 +64,15 @@ if params['keyboardMode']:
 else:
     helpers.wait_for_joystick_no_df(window)
 
-# Run VAS
-Df, miniDf = VAS.beginning_vas(window, params, Df, miniDf)
+if not params['skipInstructions']:
+    # Run VAS
+    Df, miniDf = VAS.beginning_vas(window, params, Df, miniDf)
 
-# Show Instructions
-Df, miniDf = show_instructions(window, params, image, Df, miniDf, io)
+    # Show Instructions
+    Df, miniDf = show_instructions(window, params, image, Df, miniDf, io)
 
-# Practice run
-Df, miniDf = DoorPlay.practice_run(window, params, Df, miniDf, io, ser)
+    # Practice run
+    Df, miniDf = DoorPlay.practice_run(window, params, Df, miniDf, io, ser)
 
 # Task 1
 Df, miniDf, totalCoins = DoorPlay.run_task(window, params, 1, 0, Df, miniDf, io, ser)
