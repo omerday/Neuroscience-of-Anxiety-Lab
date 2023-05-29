@@ -181,7 +181,7 @@ def display_vas(win, params, text, labels, Df: pandas.DataFrame, questionNo: int
                                     scale=None, choices=None, low=0, high=100, precision=1, tickHeight=0, size=2,
                                     textSize=0.6, acceptText='Continue', showValue=False, showAccept=True,
                                     markerColor="Yellow")
-    textItem = visual.TextStim(win, text=text, height=.12, units='norm', pos=[0, 0.3], wrapWidth=2)
+    textItem = visual.TextStim(win, text=text, height=.12, units='norm', pos=[0, 0.3], wrapWidth=2, languageStyle='RTL', font="Open Sans")
 
     dict = dataHandler.create_dict_for_df(params, StepName='VAS', VASQuestionNumber=questionNo, Session=roundNo)
     while scale.noResponse:

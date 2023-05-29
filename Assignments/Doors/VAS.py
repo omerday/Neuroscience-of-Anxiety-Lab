@@ -5,10 +5,10 @@ import pandas
 import helpers
 from psychopy import visual, core
 
-QUESTIONS_BEGINNING_MIDDLE = ["How anxious do you feel right now?",
-                              "How much do you feel like taking part in the task?",
-                              "How tired are you right now?",
-                              "Think about your mood right now. How would you describe it?"]
+QUESTIONS_BEGINNING_MIDDLE = ["כמה אתם מרגישים לחוצים כרגע?",
+                              "כמה אתם מעוניינים לקחת חלק במשימה?",
+                              "כמה עייפים אתם כרגע?",
+                              "חשבו על מצב הרוח שלכם כרגע. איך הייתם מתארים אותו?"]
 ANSWERS_BEGINNING_MIDDLE = [["Not anxious", "Very anxious"], ["Not at all", "Very much"],
                             ["Not tired at all", "Very tired"],
                             ["Worst mood possible", "Best mood possible"]]
