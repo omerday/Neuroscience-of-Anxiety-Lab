@@ -19,7 +19,7 @@ def practice_run(window: visual.Window, params: dict, Df: pandas.DataFrame, mini
     DoorPlayInfra.show_screen_pre_match(window, params, 0, io)
 
     roundNum = 1
-    while roundNum <= 5:
+    while roundNum <= params['practiceTrials']:
         image, distanceFromDoor = DoorPlayInfra.setup_door(window, params, 0, 0)
 
         # Setup new dictionary
