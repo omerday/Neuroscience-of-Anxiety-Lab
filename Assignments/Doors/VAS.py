@@ -9,17 +9,13 @@ QUESTIONS_BEGINNING_MIDDLE = ["כמה אתם מרגישים לחוצים כרג�
                               "כמה אתם מעוניינים לקחת חלק במשימה?",
                               "כמה עייפים אתם כרגע?",
                               "חשבו על מצב הרוח שלכם כרגע. איך הייתם מתארים אותו?"]
-ANSWERS_BEGINNING_MIDDLE = [["Not anxious", "Very anxious"], ["Not at all", "Very much"],
-                            ["Not tired at all", "Very tired"],
-                            ["Worst mood possible", "Best mood possible"]]
-QUESTIONS_FINAL = ["How many coins do you think you won?", "How many coins do you think you lost?", "How often did "
-                                                                                                    "you see the "
-                                                                                                    "monster when the "
-                                                                                                    "door opened?",
-                   "How often did you win coins when the door opened?", "How do you feel about how well you’ve done "
-                                                                        "so far?"]
-ANSWERS_FINAL = [["Won very few", "Won very many"], ["Lost very few", "Lost very many"], ["never", "all the time"],
-                 ["never", "all the time"], ["sad, I did badly", "happy, I did great"]]
+ANSWERS_BEGINNING_MIDDLE = [["לא לחוץ", "מאוד לחוץ"], ["כלל לא", "במידה רבה"],
+                            ["לא עייף כלל", "מאוד עייף"],
+                            ["מצב רוח ירוד מאוד", "מצב רוח טוב מאוד"]]
+QUESTIONS_FINAL = ["בכמה מטבעות זכית לדעתך?", "כמה מטבעות הפסדת לדעתך?", "באיזו תדירות ראית מפלצת כשהדלת נפתחה?",
+                   "באיזו תדירות זכית במטבעות כשהדלת נפתחה?", "מה הרגשתך לגבי הביצועים שלך עד כה?"]
+ANSWERS_FINAL = [["זכיתי במעט מאוד", "זכיתי בהמון"], ["הפסדתי מעט מאוד", "הפסדתי המון"], ["אף פעם", "כל הזמן"],
+                 ["אף פעם", "כל הזמן"], ["עצוב, לא הצלחתי", "שמח, הצלחתי"]]
 
 
 def beginning_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pandas.DataFrame):

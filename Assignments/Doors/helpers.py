@@ -176,7 +176,7 @@ def display_vas(win, params, text, labels, Df: pandas.DataFrame, questionNo: int
     """
 
     scale = ratingscale.RatingScale(win,
-                                    labels=labels,  # Labels at the edges of the scale
+                                    labels=[labels[0][::-1], labels[1][::-1]],  # Labels at the edges of the scale
                                     scale=None, choices=None, low=0, high=100, precision=1, tickHeight=0, size=2,
                                     textSize=0.6, acceptText='Continue', showValue=False, showAccept=True,
                                     markerColor="Yellow")
