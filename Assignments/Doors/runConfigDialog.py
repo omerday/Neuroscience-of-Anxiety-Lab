@@ -26,7 +26,7 @@ def user_input_play():
     userInput.addField('Subject Number:', )
     # userInput.addField('Session:', 1)
     # userInput.addField('Version:', choices=[1, 2])
-    userInput.addField('# of Practice Trials:', 5 if not configExists else loadedData['practiceTrials'])
+    userInput.addField('# of Practice Trials:', 3 if not configExists else loadedData['practiceTrials'])
     userInput.addField('# of TaskRun1:', choices=[49, 36])
     userInput.addField('# of TaskRun2:', choices=[49, 36])
     userInput.addField('Starting Distance', choices=[50, 'Random'])
