@@ -11,6 +11,10 @@ from psychopy import sound
 
 from Assignments.Doors import serialHandler
 
+MIDDLE_SUMMARY_STR1 = "בואו ננוח מעט. עד כה צברתם "
+MIDDLE_SUMMARY_STR2Key = "מטבעות. לחצו על הרווח\n כשאתם מוכנים להמשיך."
+MIDDLE_SUMMARY_STR2Joy = "מטבעות. לחצו על הג'ויסטיק\n כשאתם מוכנים להמשיך."
+
 
 def setup_door(window, params, reward: int, punishment: int):
     """
@@ -275,11 +279,12 @@ def show_screen_pre_match(window: visual.Window, params: dict, session: int, io,
     if session == 2:
         if params["keyboardMode"]:
             message = visual.TextStim(window,
-                                      text=f"Let’s rest for a bit. You have {coins} coins. Press Space when you "
-                                           f"are ready to keep playing.", units="norm", color=(255, 255, 255))
+                                      text=MIDDLE_SUMMARY_STR1 + f"{coins}" + "\n" + MIDDLE_SUMMARY_STR2Key, units="norm",
+                                      color=(255,255,255), languageStyle='RTL')
         else:
-            message = visual.TextStim(window, text=f"Let’s rest for a bit. You have {coins} coins. Click when you "
-                                                   f"are ready to keep playing.", units="norm", color=(255, 255, 255))
+            message = visual.TextStim(window,
+                                      text=MIDDLE_SUMMARY_STR1 + f"{coins}" + "\n" + MIDDLE_SUMMARY_STR2Joy, units="norm",
+                                      color=(255, 255, 255), languageStyle='RTL')
         message.draw()
 
     else:
