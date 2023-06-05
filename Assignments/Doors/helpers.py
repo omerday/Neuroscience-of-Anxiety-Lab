@@ -54,7 +54,6 @@ def wait_for_joystick_press(window, Df: pandas.DataFrame, dict: dict):
                                 return Df
 
 
-# TODO: Replay doesnt work :(
 def wait_for_space_with_replay(window, Df: pandas.DataFrame, dict: dict, io):
     """
     Helper method to wait for a Spacebar keypress and keep the window open, or get 'r' keypress for replay of the
@@ -68,13 +67,13 @@ def wait_for_space_with_replay(window, Df: pandas.DataFrame, dict: dict, io):
     while True:
         dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
-        keys = keyboard.getKeys()
+        keys = keyboard.getPresses()
         for event in keys:
-            if event.key == 'r' or event.key == 'R':
+            if event.char == 'r' or event.char == 'R':
                 return Df, True
-            if event.key == ' ':
+            elif event.key == ' ':
                 return Df, False
-            if event.key == "escape":
+            elif event.key == "escape":
                 window.close()
                 core.quit()
 
