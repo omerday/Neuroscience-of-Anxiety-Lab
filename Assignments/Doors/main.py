@@ -78,10 +78,10 @@ if not params['skipInstructions']:
 Df, miniDf, totalCoins = DoorPlay.run_task(window, params, 1, 0, Df, miniDf, io, ser)
 
 # Mid-VAS
-Df, miniDf = VAS.middle_vas(window, params, 0, Df, miniDf)
+Df, miniDf = VAS.middle_vas(window, params, Df, miniDf)
 
 # Task 2
-Df, miniDf, totalCoins = DoorPlay.run_task(window, params, 2, totalCoins, Df, miniDf, io, ser)
+Df, miniDf, totalCoins = DoorPlay.run_task(window, params, 2, totalCoins , Df, miniDf, io, ser)
 
 # Final VAS
 Df, miniDf = VAS.final_vas(window, params, Df, miniDf)

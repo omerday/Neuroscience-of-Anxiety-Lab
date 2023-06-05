@@ -32,9 +32,9 @@ def show_instructions(win: visual.Window, params, img: visual.ImageStim, Df: pan
     dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
     miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
     if again and params["keyboardMode"]:
-        Df = show_instructions(win, params, img, Df, io)
+        Df = show_instructions(win, params, img, Df, miniDf, io)
     elif again:
-        Df = helpers.wait_for_joystick_press(win, Df, dict)
+        Df = show_instructions(win, params, img, Df, miniDf, io)
 
     dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
     miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])

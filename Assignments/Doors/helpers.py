@@ -69,7 +69,7 @@ def wait_for_space_with_replay(window, Df: pandas.DataFrame, dict: dict, io):
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         keys = keyboard.getPresses()
         for event in keys:
-            if event.char == 'r' or event.char == 'R':
+            if event.key == 'r' or event.key == 'R':
                 return Df, True
             elif event.key == ' ':
                 return Df, False
