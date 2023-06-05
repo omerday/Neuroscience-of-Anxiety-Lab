@@ -219,6 +219,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     dict["ScenarioIndex"] = scenarioIndex + 100
     Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
     dict.pop("ScenarioIndex")
+    coins = 0
 
     if isDoorOpening:
         # Randomize the chances for p/r. If above 0.5 - reward. else - punishment.
@@ -272,7 +273,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
         window.update()
         core.wait(0.03)
 
-    return coins if isDoorOpening else 0, total_time, Df, dict, lock
+    return coins, total_time, Df, dict, lock
 
 
 def show_screen_pre_match(window: visual.Window, params: dict, session: int, io, coins=0):
