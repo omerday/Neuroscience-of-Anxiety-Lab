@@ -9,7 +9,10 @@ from psychopy.iohub.client.keyboard import Keyboard
 from psychopy.visual import Window, MovieStim3, FINISHED
 from psychopy import sound
 
-from Assignments.Doors import serialHandler
+import serialHandler
+
+MIN_LOCATION = -1.25
+MAX_LOCATION = 1.75
 
 MIDDLE_SUMMARY_STR1 = "בואו ננוח מעט. עד כה צברתם "
 MIDDLE_SUMMARY_STR2Key = "מטבעות. לחצו על הרווח\n כשאתם מוכנים להמשיך."
@@ -90,7 +93,18 @@ def get_movement_input_keyboard(window, params, image: visual.ImageStim, locatio
                     for releaseEvent in keyboard.getKeys(etype=Keyboard.KEY_RELEASE):
                         if releaseEvent.key == 'up':
                             upHold = False
-                    if location < 0.99:
+                    # Dividing into segments by location, in order to get the motion smoother.
+                    # If we're close to the door, the movements need to be a bit faster, and as we get back we need it
+                    # Gradually get slower.
+                    if 0.25 <= location < MAX_LOCATION:
+                        image, location = move_screen(window, params, image, location,
+                                                      params['sensitivity'] * 0.5 * 1.5)
+                        Df = update_movement_in_df(dict, Df, location)
+                    elif 0 <= location < 0.25:
+                        image, location = move_screen(window, params, image, location,
+                                                      params['sensitivity'] * 0.5 * 1.25)
+                        Df = update_movement_in_df(dict, Df, location)
+                    elif location < 0:
                         image, location = move_screen(window, params, image, location, params['sensitivity'] * 0.5)
                         Df = update_movement_in_df(dict, Df, location)
             elif event.key == 'down':
@@ -99,8 +113,17 @@ def get_movement_input_keyboard(window, params, image: visual.ImageStim, locatio
                     for releaseEvent in keyboard.getKeys(etype=Keyboard.KEY_RELEASE):
                         if releaseEvent == 'down':
                             downHold = False
-                    if location > -0.99:
+                    # Dividing into segments corresponding with the "down" motion
+                    if MIN_LOCATION < location < 0:
                         image, location = move_screen(window, params, image, location, params['sensitivity'] * (-0.5))
+                        Df = update_movement_in_df(dict, Df, location)
+                    elif 0 <= location <= 0.25:
+                        image, location = move_screen(window, params, image, location,
+                                                      params['sensitivity'] * (-0.5) * 1.25)
+                        Df = update_movement_in_df(dict, Df, location)
+                    elif location > 0.25:
+                        image, location = move_screen(window, params, image, location,
+                                                      params['sensitivity'] * (-0.5) * 1.5)
                         Df = update_movement_in_df(dict, Df, location)
             elif event.key == ' ' or event.key == 'space':
                 space = True
@@ -135,9 +158,32 @@ def get_movement_input_joystick(window, params, image: visual.ImageStim, locatio
                     joystickButton = True
 
         joystickMovement = joy.get_axis(1)
-        if (joystickMovement > 0.15 and 0.01 < location) or (joystickMovement < -0.15 and location < 0.99):
+
+        if joystickMovement > 0.5:
+            speed = 1
+        elif joystickMovement > 0.15:
+            speed = 0.5
+        else:
+            speed = 0
+
+        if joystickMovement > 0 and MIN_LOCATION < location < 0:
             image, location = move_screen(window, params, image, location,
-                                          params['sensitivity'] * joystickMovement * -1)
+                                          params['sensitivity'] * -0.5 * speed)
+        elif joystickMovement > 0 and 0 <= location < 0.25:
+            image, location = move_screen(window, params, image, location,
+                                          params['sensitivity'] * -0.5 * 1.25 * speed)
+        elif joystickMovement > 0 and location >= 0.25:
+            image, location = move_screen(window, params, image, location,
+                                          params['sensitivity'] * -0.5 * 1.5 * speed)
+        elif joystickMovement < 0  and 0.25 <= location < MAX_LOCATION:
+            image, location = move_screen(window, params, image, location,
+                                          params['sensitivity'] * 0.5 * speed)
+        elif joystickMovement < 0 and 0 <= location < 0.25:
+            image, location = move_screen(window, params, image, location,
+                                          params['sensitivity'] * 0.5 * 1.25 * speed)
+        elif joystickMovement < 0 and location < 0:
+            image, location = move_screen(window, params, image, location,
+                                          params['sensitivity'] * 0.5 * 1.5 * speed)
 
         Df = update_movement_in_df(dict, Df, location)
 
@@ -146,7 +192,15 @@ def get_movement_input_joystick(window, params, image: visual.ImageStim, locatio
 
 def update_movement_in_df(dict: dict, Df: pandas.DataFrame, location):
     dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
-    locationNormalized = round((location + 1) * 50, 0)
+    if location > MAX_LOCATION:
+        location = MAX_LOCATION
+    elif location < MIN_LOCATION:
+        location = MIN_LOCATION
+    if location > 0:
+        locationNormalized = round((location * 100) / MAX_LOCATION)
+    else:
+        locationNormalized = round((location * 100) / (-1 * MIN_LOCATION))
+    locationNormalized = round(locationNormalized / 2 + 50)
     dict['CurrentDistance'] = locationNormalized
     if locationNormalized > dict['Distance_max']:
         dict['Distance_max'] = locationNormalized
@@ -280,11 +334,13 @@ def show_screen_pre_match(window: visual.Window, params: dict, session: int, io,
     if session == 2:
         if params["keyboardMode"]:
             message = visual.TextStim(window,
-                                      text=MIDDLE_SUMMARY_STR1 + f"{coins}" + "\n" + MIDDLE_SUMMARY_STR2Key, units="norm",
-                                      color=(255,255,255), languageStyle='RTL')
+                                      text=MIDDLE_SUMMARY_STR1 + f"{coins}" + "\n" + MIDDLE_SUMMARY_STR2Key,
+                                      units="norm",
+                                      color=(255, 255, 255), languageStyle='RTL')
         else:
             message = visual.TextStim(window,
-                                      text=MIDDLE_SUMMARY_STR1 + f"{coins}" + "\n" + MIDDLE_SUMMARY_STR2Joy, units="norm",
+                                      text=MIDDLE_SUMMARY_STR1 + f"{coins}" + "\n" + MIDDLE_SUMMARY_STR2Joy,
+                                      units="norm",
                                       color=(255, 255, 255), languageStyle='RTL')
         message.draw()
 
@@ -329,7 +385,7 @@ def show_wheel(window: visual.Window, params: dict, io=None):
     return
 
 
-def play_sound(soundType: str, waitTime: int, dict: dict, Df: pandas.DataFrame):
+def play_sound(soundType: str, waitTime: float, dict: dict, Df: pandas.DataFrame):
     """
     The method plays a sound and sleeps through it, while recording data for the DF
     """
