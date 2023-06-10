@@ -362,7 +362,7 @@ def show_screen_pre_match(window: visual.Window, params: dict, session: int, io,
 
 def show_wheel(window: visual.Window, params: dict, io=None):
     image = visual.ImageStim(win=window, units="norm", opacity=1, size=(2, 2))
-    image.image = "./img/instructions/BeforeWheel.jpg"
+    image.image = "./img/instructionsHebrew/BeforeWheel.jpg"
     image.draw()
     window.update()
 
