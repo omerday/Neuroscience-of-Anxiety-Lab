@@ -371,7 +371,7 @@ def show_wheel(window: visual.Window, params: dict, io=None):
     else:
         helpers.wait_for_joystick_no_df(window)
 
-    movie = visual.MovieStim3(window, filename=r'./img/16_Coins.mp4', size=(2, 2), units="norm")
+    movie = visual.MovieStim3(window, filename=r'./img/Spin16.mp4', size=(2, 2), units="norm")
 
     while movie.status != FINISHED:
         movie.draw()
