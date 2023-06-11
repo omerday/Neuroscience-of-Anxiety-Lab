@@ -1,5 +1,6 @@
 import random
 import pandas
+import sounddevice as sounddevice
 from psychopy import core, visual, event
 import time
 import pygame
@@ -8,6 +9,7 @@ from psychopy.iohub import launchHubServer
 from psychopy.iohub.client.keyboard import Keyboard
 from psychopy.visual import Window, MovieStim3, FINISHED
 from psychopy import sound
+import psychtoolbox as ptb
 
 import serialHandler
 
@@ -396,7 +398,8 @@ def play_sound(soundType: str, waitTime: float, dict: dict, Df: pandas.DataFrame
     """
 
     soundToPlay = sound.Sound(SOUNDS[soundType])
-    soundToPlay.play()
+    now = ptb.GetSecs()
+    soundToPlay.play(when=now)
     startTime = time.time()
     while time.time() < startTime + waitTime:
         dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
