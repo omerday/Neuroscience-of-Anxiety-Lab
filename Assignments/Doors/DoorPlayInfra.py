@@ -18,6 +18,11 @@ MIDDLE_SUMMARY_STR1 = "בואו ננוח מעט. עד כה צברתם "
 MIDDLE_SUMMARY_STR2Key = "מטבעות. לחצו על הרווח\n כשאתם מוכנים להמשיך."
 MIDDLE_SUMMARY_STR2Joy = "מטבעות. לחצו על הג'ויסטיק\n כשאתם מוכנים להמשיך."
 
+SOUNDS = {
+    "lock": "./sounds/click_1s.wav",
+    "reward": "./sounds/new_reward.mp3",
+    "punishment": "./sounds/monster.wav"
+}
 
 def setup_door(window, params, reward: int, punishment: int):
     """
@@ -389,11 +394,6 @@ def play_sound(soundType: str, waitTime: float, dict: dict, Df: pandas.DataFrame
     """
     The method plays a sound and sleeps through it, while recording data for the DF
     """
-    SOUNDS = {
-        "lock": "./sounds/click_1s.wav",
-        "reward": "./sounds/new_reward.mp3",
-        "punishment": "./sounds/monster.wav"
-    }
 
     soundToPlay = sound.Sound(SOUNDS[soundType])
     soundToPlay.play()
