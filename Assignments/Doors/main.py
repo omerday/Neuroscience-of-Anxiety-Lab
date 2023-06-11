@@ -20,8 +20,8 @@ configDialogBank = runConfigDialog.user_input_play()
 params = {
     'subjectID': configDialogBank[0],
     'practiceTrials': configDialogBank[1],  # Number if Practice Trials, taken from Config Dialog
-    'numOfScreensTask1': configDialogBank[2],  # Number of Screens in the 1st task, either 49 (7*7) or 36 (6*6)
-    'numOfScreensTask2': configDialogBank[3],  # Number of Screens in the 2nd task, either 49 (7*7) or 36 (6*6)
+    'numOfDoors': configDialogBank[2],  # Number of Screens in the 1st task, either 49 (7*7) or 36 (6*6)
+    'numOfTasks': configDialogBank[3],
     'startingDistance': configDialogBank[4],  # Decide whether the starting distance is random, or fixed on 50
     'recordPhysio': configDialogBank[5],
     'sensitivity': configDialogBank[6],
@@ -77,15 +77,19 @@ if not params['skipInstructions']:
 # Task 1
 Df, miniDf, totalCoins = DoorPlay.run_task(window, params, 1, 0, Df, miniDf, io, ser)
 
-# Mid-VAS
-Df, miniDf = VAS.middle_vas(window, params, Df, miniDf)
+roundNum = 2
+while roundNum <= params['numOfTasks']:
+    # Mid-VAS
+    Df, miniDf = VAS.middle_vas(window, params, Df, miniDf)
 
-# Task 2
-Df, miniDf, totalCoins = DoorPlay.run_task(window, params, 2, totalCoins, Df, miniDf, io, ser)
+    # Task 2
+    Df, miniDf, totalCoins = DoorPlay.run_task(window, params, roundNum, totalCoins, Df, miniDf, io, ser)
+
+    roundNum += 1
 
 # Final VAS
 Df, miniDf = VAS.final_vas(window, params, Df, miniDf)
-dataHandler.export_summarized_dataframe(params, miniDf)
+helpers.graceful_quitting(window, params, Df, miniDf)
 
 # Recap
 window.mouseVisible = True

@@ -338,7 +338,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
 
 
 def show_screen_pre_match(window: visual.Window, params: dict, session: int, io, coins=0):
-    if session == 2:
+    if session == 2 or session == 3:
         if params["keyboardMode"]:
             message = visual.TextStim(window,
                                       text=MIDDLE_SUMMARY_STR1 + f"{coins}" + "\n" + MIDDLE_SUMMARY_STR2Key,

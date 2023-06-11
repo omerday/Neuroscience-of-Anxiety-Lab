@@ -60,7 +60,7 @@ def run_task(window: visual.Window, params: dict, session: int, totalCoins: int,
     """
     DoorPlayInfra.show_screen_pre_match(window, params, session, io, totalCoins)
 
-    sizeOfArray = int(math.sqrt(params[f'numOfScreensTask{session}']))
+    sizeOfArray = int(math.sqrt(params[f'numOfDoors']))
     scenariosList = helpers.get_p_r_couples(sizeOfArray)
 
     # Scenarios List indexing method:
