@@ -13,7 +13,7 @@ import psychtoolbox as ptb
 
 import serialHandler
 
-MIN_LOCATION = -1.25
+MIN_LOCATION = -1.5
 MAX_LOCATION = 1.75
 
 MIDDLE_SUMMARY_STR1 = "בואו ננוח מעט. עד כה צברתם "
@@ -166,10 +166,10 @@ def get_movement_input_joystick(window, params, image: visual.ImageStim, locatio
 
         joystickMovement = joy.get_axis(1)
 
-        if joystickMovement > 0.5:
+        if joystickMovement > 0.5 or joystickMovement < -0.5:
+            speed = 2
+        elif joystickMovement > 0.15 or joystickMovement < -0.15:
             speed = 1
-        elif joystickMovement > 0.15:
-            speed = 0.5
         else:
             speed = 0
 
@@ -184,13 +184,13 @@ def get_movement_input_joystick(window, params, image: visual.ImageStim, locatio
                                           params['sensitivity'] * -0.5 * 1.5 * speed)
         elif joystickMovement < 0  and 0.25 <= location < MAX_LOCATION:
             image, location = move_screen(window, params, image, location,
-                                          params['sensitivity'] * 0.5 * speed)
+                                          params['sensitivity'] * 0.5 * 1.5 * speed)
         elif joystickMovement < 0 and 0 <= location < 0.25:
             image, location = move_screen(window, params, image, location,
                                           params['sensitivity'] * 0.5 * 1.25 * speed)
         elif joystickMovement < 0 and location < 0:
             image, location = move_screen(window, params, image, location,
-                                          params['sensitivity'] * 0.5 * 1.5 * speed)
+                                          params['sensitivity'] * 0.5 * speed)
 
         Df = update_movement_in_df(dict, Df, location)
 

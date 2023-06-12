@@ -35,7 +35,7 @@ def user_input_play():
     userInput.addField('Full Screen', True if not configExists else loadedData['fullScreen'])
     userInput.addField('Keyboard Mode', True if not configExists else loadedData['keyboardMode'])
     userInput.addField('Sound On?', True if not configExists else loadedData['soundOn'])
-    userInput.addField('Skip Instructions', False if not configExists else loadedData['soundOn'])
+    userInput.addField('Skip Instructions', False if not configExists else loadedData['skipInstructions'])
     userInput.addField('Save Data at Unexpected Quit', False if not configExists else loadedData['saveDataAtQuit'])
     userInput.addField('Save Config as Default', False if not configExists else loadedData['saveAsDefault'])
     # userInput.addField('Sound Mode:',choices=['PTB','Others'])
