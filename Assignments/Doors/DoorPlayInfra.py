@@ -26,6 +26,7 @@ SOUNDS = {
     "punishment": "./sounds/monster.wav"
 }
 
+
 def setup_door(window, params, reward: int, punishment: int):
     """
     Show door corresponding to the reward and punishment sent as arguments. Chooses the size in which it starts
@@ -137,8 +138,8 @@ def get_movement_input_keyboard(window, params, image: visual.ImageStim, locatio
                 break
 
         Df = update_movement_in_df(dict, Df, location)
-
-    return round((location + 1) * 50, 0), Df, dict, space  # NormalizedLocation
+    location = normalize_location(location)
+    return location, Df, dict, space  # NormalizedLocation
 
 
 def get_movement_input_joystick(window, params, image: visual.ImageStim, location, end_time: time.time,
@@ -182,7 +183,7 @@ def get_movement_input_joystick(window, params, image: visual.ImageStim, locatio
         elif joystickMovement > 0 and location >= 0.25:
             image, location = move_screen(window, params, image, location,
                                           params['sensitivity'] * -0.5 * 1.5 * speed)
-        elif joystickMovement < 0  and 0.25 <= location < MAX_LOCATION:
+        elif joystickMovement < 0 and 0.25 <= location < MAX_LOCATION:
             image, location = move_screen(window, params, image, location,
                                           params['sensitivity'] * 0.5 * 1.5 * speed)
         elif joystickMovement < 0 and 0 <= location < 0.25:
@@ -193,12 +194,11 @@ def get_movement_input_joystick(window, params, image: visual.ImageStim, locatio
                                           params['sensitivity'] * 0.5 * speed)
 
         Df = update_movement_in_df(dict, Df, location)
+    location = normalize_location(location)
+    return location, Df, dict, not joystickButton  # NormalizedLocation
 
-    return round((location + 1) * 50, 0), Df, dict, not joystickButton  # NormalizedLocation
 
-
-def update_movement_in_df(dict: dict, Df: pandas.DataFrame, location):
-    dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
+def normalize_location(location: int):
     if location > MAX_LOCATION:
         location = MAX_LOCATION
     elif location < MIN_LOCATION:
@@ -208,6 +208,13 @@ def update_movement_in_df(dict: dict, Df: pandas.DataFrame, location):
     else:
         locationNormalized = round((location * 100) / (-1 * MIN_LOCATION))
     locationNormalized = round(locationNormalized / 2 + 50)
+    print(locationNormalized)
+    return locationNormalized
+
+
+def update_movement_in_df(dict: dict, Df: pandas.DataFrame, location):
+    dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
+    locationNormalized = normalize_location(location)
     dict['CurrentDistance'] = locationNormalized
     if locationNormalized > dict['Distance_max']:
         dict['Distance_max'] = locationNormalized
@@ -270,7 +277,8 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
 
     # Randomize door opening chance according to location:
     doorOpenChance = random.random()
-    isDoorOpening = doorOpenChance <= location
+    isDoorOpening = doorOpenChance <= (location / 100)
+    print(f"doorChance - {doorOpenChance}, location - {location / 100}, isOpening - {isDoorOpening}")
 
     if params['recordPhysio']:
         serialHandler.report_event(ser, scenarioIndex + 100)
