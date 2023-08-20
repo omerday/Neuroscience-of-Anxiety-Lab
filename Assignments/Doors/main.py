@@ -19,20 +19,21 @@ configDialogBank = runConfigDialog.user_input_play()
 
 params = {
     'subjectID': configDialogBank[0],
-    'practiceTrials': configDialogBank[1],  # Number if Practice Trials, taken from Config Dialog
-    'numOfDoors': configDialogBank[2],  # Number of Screens in the 1st task, either 49 (7*7) or 36 (6*6)
-    'numOfTasks': configDialogBank[3],
-    'startingDistance': configDialogBank[4],  # Decide whether the starting distance is random, or fixed on 50
-    'recordPhysio': configDialogBank[5],
-    'sensitivity': configDialogBank[6],
-    'fullScreen': configDialogBank[7],
-    'keyboardMode': configDialogBank[8],
+    'Session': configDialogBank[1],
+    'practiceTrials': configDialogBank[2],  # Number if Practice Trials, taken from Config Dialog
+    'numOfDoors': configDialogBank[3],  # Number of Screens in the 1st task, either 49 (7*7) or 36 (6*6)
+    'numOfTasks': configDialogBank[4],
+    'startingDistance': configDialogBank[5],  # Decide whether the starting distance is random, or fixed on 50
+    'recordPhysio': configDialogBank[6],
+    'sensitivity': configDialogBank[7],
+    'fullScreen': configDialogBank[8],
+    'keyboardMode': configDialogBank[9],
     'screenSize': (1024, 768),  # Get Screen Resolution to match Full Screen
-    'soundOn': configDialogBank[9],
-    'skipInstructions': configDialogBank[10],
-    'saveDataAtQuit': configDialogBank[11],
+    'soundOn': configDialogBank[10],
+    'skipInstructions': configDialogBank[11],
+    'saveDataAtQuit': configDialogBank[12],
     'startTime': time.time(),
-    'saveAsDefault': configDialogBank[12],
+    'saveAsDefault': configDialogBank[13],
     'doorImagePathPrefix': './img/doors1/',
     'outcomeImagePredix': './img/outcomes/',
     'imageSuffix': '.jpg',

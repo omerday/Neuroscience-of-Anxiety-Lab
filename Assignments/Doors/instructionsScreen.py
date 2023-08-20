@@ -10,7 +10,7 @@ SUFFIX = ".jpeg"
 
 
 def show_instructions(win: visual.Window, params, img: visual.ImageStim, Df: pandas.DataFrame, miniDf: pandas.DataFrame, io):
-    dict = dataHandler.create_dict_for_df(params, StepName="Instructions")
+    dict = dataHandler.create_dict_for_df(params, Section="Instructions")
     for i in range(18):
         img.image = INSTRUCTION_PATH_PREFIX + "Slide" + str(i + 1) + SUFFIX
         img.setSize((2, 2))  # Size needs to be reset after changing the image

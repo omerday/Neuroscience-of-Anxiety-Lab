@@ -13,8 +13,9 @@ def setup_data_frame(params: dict):
                          'SubjectID',
                          'StartTime',
                          'CurrentTime',
-                         'StepName',
-                         'Session',  # 1 or 2 in Task step, 1 to 3 in VAS step (Beginning-middle-end)
+                         'Section',
+                         'Session'
+                         'Round',  # 1 or 2 in Task step, 1 to 3 in VAS step (Beginning-middle-end)
                          'Subtrial',  # From 1 to 49 or 36
                          'ScenarioIndex',
                          'RewardAmount',  # The amount offered for win
@@ -55,6 +56,7 @@ def create_dict_for_df(params: dict, **kwargs):
     dictLayout['ExperimentName'] = 'Doors'
     dictLayout['SubjectID'] = params['subjectID']
     dictLayout['StartTime'] = params['startTime']
+    dictLayout['Session'] = params['Session']
     for key, value in kwargs.items():
         if key in dictLayout.keys():
             dictLayout[key] = value

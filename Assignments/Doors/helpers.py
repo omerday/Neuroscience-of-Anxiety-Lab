@@ -182,7 +182,7 @@ def display_vas(win, params, text, labels, Df: pandas.DataFrame, questionNo: int
                                     markerColor="Yellow")
     textItem = visual.TextStim(win, text=text, height=.12, units='norm', pos=[0, 0.3], wrapWidth=2, languageStyle='RTL', font="Open Sans")
 
-    dict = dataHandler.create_dict_for_df(params, StepName='VAS', VASQuestionNumber=questionNo, Session=roundNo)
+    dict = dataHandler.create_dict_for_df(params, Section='VAS', VASQuestionNumber=questionNo, Round=roundNo)
     while scale.noResponse:
         dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])

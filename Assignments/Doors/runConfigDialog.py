@@ -24,7 +24,7 @@ def user_input_play():
 
     userInput = gui.Dlg(title="DOORS Task Information")
     userInput.addField('Subject Number:', )
-    # userInput.addField('Session:', 1)
+    userInput.addField('Session:', 1)
     # userInput.addField('Version:', choices=[1, 2])
     userInput.addField('# of Practice Trials:', 3 if not configExists else loadedData['practiceTrials'])
     userInput.addField('# of Doors:', choices=[49, 36])
