@@ -5,6 +5,7 @@ import pandas
 import helpers
 from psychopy import visual, core
 
+
 QUESTIONS_BEGINNING_MIDDLE = ["כמה אתם מרגישים לחוצים כרגע?",
                               "כמה אתם מעוניינים לקחת חלק במשימה?",
                               "כמה עייפים אתם כרגע?",
