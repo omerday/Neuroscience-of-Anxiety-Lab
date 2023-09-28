@@ -44,7 +44,7 @@ def practice_run(window: visual.Window, params: dict, Df: pandas.DataFrame, mini
     return Df, miniDf
 
 
-def run_task(window: visual.Window, params: dict, round: int, totalCoins: int, Df: pandas.DataFrame,
+def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int, Df: pandas.DataFrame,
              miniDf: pandas.DataFrame, io, ser=None):
 
     """
@@ -58,7 +58,7 @@ def run_task(window: visual.Window, params: dict, round: int, totalCoins: int, D
     :param Df:
     :return:
     """
-    DoorPlayInfra.show_screen_pre_match(window, params, round, io, totalCoins)
+    DoorPlayInfra.show_screen_pre_match(window, params, roundNum, io, totalCoins)
 
     sizeOfArray = int(math.sqrt(params[f'numOfDoors']))
     scenariosList = helpers.get_p_r_couples(sizeOfArray)
@@ -79,7 +79,7 @@ def run_task(window: visual.Window, params: dict, round: int, totalCoins: int, D
         image, distanceFromDoor = DoorPlayInfra.setup_door(window, params, scenario[0], scenario[1])
 
         # Setup new dictionary
-        dict = dataHandler.create_dict_for_df(params, Section=f'TaskRun{round}', Round=round, TotalCoins=totalCoins, )
+        dict = dataHandler.create_dict_for_df(params, Section=f'TaskRun{roundNum}', Round=roundNum, TotalCoins=totalCoins, )
         dict['RewardAmount'] = scenario[0]
         dict['PunishmentAmount'] = scenario[1]
         dict['Subtrial'] = subtrial
