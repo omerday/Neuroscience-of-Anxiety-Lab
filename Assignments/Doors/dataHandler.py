@@ -2,11 +2,14 @@ import pandas
 import time
 import datetime
 # import bioread
-import matplotlib
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+
+
 # import seaborn as sns
 
 
-# TODO: Change VAS Type
 def setup_data_frame(params: dict):
     params['headers'] = ['Time',
                          'ExpermientName',
@@ -71,3 +74,20 @@ def export_raw_data(params: dict, Df: pandas.DataFrame):
 
 def export_summarized_dataframe(params: dict, Df:pandas.DataFrame):
     Df.to_csv(f'./data/Subject {params["subjectID"]} - miniDF - {datetime.datetime.now().strftime("%Y-%m-%d %H-%M.csv")}')
+
+
+def single_subject_analysis(params: dict, ):
+    miniDf = pd.read_csv("data/Subject  - miniDF - 2023-10-01 14-30.csv")
+    # subject = params["subjectID"]
+    dist_df = miniDf[miniDf["Section"].str.contains("TaskRun")]
+
+    # Correlation between R/P amount and the lock distance
+    sns.scatterplot(data=dist_df, x="RewardAmount", y="DistanceAtLock", hue="PunishmentAmount")
+    plt.show()
+
+    # Correlation between R/P amount and the lock time
+    sns.scatterplot(data=dist_df, x="RewardAmount", y="LockTime", hue="PunishmentAmount")
+    plt.show()
+
+
+single_subject_analysis({})

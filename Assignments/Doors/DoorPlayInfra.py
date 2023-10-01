@@ -231,6 +231,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     # Set end time for 10s max
     start_time = time.time()
     end_time = start_time + 10
+    dict["ScenarioIndex"] = scenarioIndex
     if params['recordPhysio']:
         serialHandler.report_event(ser, scenarioIndex)
     # Add initial dict parameters
@@ -249,6 +250,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
         location, Df, dict, lock = get_movement_input_joystick(window, params, image, location, end_time, Df, dict,
                                                                miniDf)
 
+    dict["ScenarioIndex"] = scenarioIndex + 50
     if params['recordPhysio']:
         serialHandler.report_event(ser, scenarioIndex + 50)
     total_time = time.time() - start_time
@@ -280,6 +282,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     isDoorOpening = doorOpenChance <= (location / 100)
     print(f"doorChance - {doorOpenChance}, location - {location / 100}, isOpening - {isDoorOpening}")
 
+    dict["ScenarioIndex"] = scenarioIndex + 100
     if params['recordPhysio']:
         serialHandler.report_event(ser, scenarioIndex + 100)
     dict["DidDoorOpen"] = 1 if isDoorOpening else 0

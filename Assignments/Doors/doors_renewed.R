@@ -12,6 +12,8 @@ rootDir <- paste(getwd(),"/Documents/data", sep="")
 plotDir <- paste(getwd(),"/Documents/data/plots", sep="")
 setwd(rootDir)
 
+dx <- read_csv('subjects.csv')
+
 df <- read_csv('24146_1_1_12072020_doors.csv')
 head(df)
 
@@ -67,6 +69,10 @@ q_data <- rbind(q_data, q_subj)
 dist_data$Section <- substr(dist_data$Section, 8,8)
 names(dist_data)[names(dist_data) == "Section"] <- "RunNumber"
 vas_data$Section <- substr(vas_data$Section, 4,4)
+
+dist_data <- merge(dist_data, dx, by="Subject", all.x=TRUE)
+vas_data <- merge(vas_data, dx, by="Subject", all.x=TRUE)
+q_data <- merge(q_data, dx, by="Subject", all.x=TRUE)
 
 rm(dist_subj, q_subj, vas_subj)
 
@@ -179,7 +185,7 @@ for (g in group) {
     type <- unique(vas_data$VAS_type)
     x = data.frame()
     for (t in type) {
-      x1 <- subset(vas_data, dx == g)
+      x1 <- subset(vas_data, Group == g)
       x1 <- subset(x1, Section == b)
       x1 <- subset(x1, VAS_type == t)
       x1 <- psych::describe(x1$VAS_score)
