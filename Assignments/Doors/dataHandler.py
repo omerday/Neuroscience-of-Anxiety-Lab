@@ -14,9 +14,9 @@ def setup_data_frame(params: dict):
                          'StartTime',
                          'CurrentTime',
                          'Section',
-                         'Session'
+                         'Session',
                          'Round',  # 1 or 2 in Task step, 1 to 3 in VAS step (Beginning-middle-end)
-                         'Subtrial',  # From 1 to 49 or 36
+                         'Trial',  # From 1 to 49 or 36
                          'ScenarioIndex',
                          'RewardAmount',  # The amount offered for win
                          'PunishmentAmount',  # The amount offered for loss
@@ -33,9 +33,11 @@ def setup_data_frame(params: dict):
                          'DoorOutcome',
                          'DidWin',  # 0 or 1, only if DidDoorOpen is 1!!!
                          'DoorWaitTime',  # How long was the hold before opening the door, Ms
+                         'ITI_duration',
                          'TotalCoins',
                          'VASQuestionNumber',
-                         'VASAnswer',
+                         'VAS_Answer',
+                         'VAS_type',
                          'VAS_RT']
 
     if params['recordPhysio']:

@@ -334,8 +334,10 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     image.draw()
     window.update()
     start_time = time.time()
-    while time.time() < start_time + 2:
+    iti_time = 2 + random.random() * 2
+    while time.time() < start_time + iti_time:
         dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
+        dict["ITI_duration"] = iti_time
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         image.size += 0.05
         image.draw()

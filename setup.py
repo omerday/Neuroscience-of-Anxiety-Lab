@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 def read_requires():
-    with open("requirements.txt", "rt") as req_f:
+    with open("Assignments/Doors/requirements.txt", "rt") as req_f:
         requirements = []
         for req in req_f.readlines():
             requirements.append(req)

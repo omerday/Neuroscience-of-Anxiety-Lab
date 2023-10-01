@@ -5,7 +5,7 @@ import pandas
 import helpers
 from psychopy import visual, core
 
-
+LABELS = ["Anxiety", "Avoidance", "Tired", "Mood"]
 QUESTIONS_BEGINNING_MIDDLE = ["כמה אתם מרגישים לחוצים כרגע?",
                               "כמה אתם מעוניינים לקחת חלק במשימה?",
                               "כמה עייפים אתם כרגע?",
@@ -13,6 +13,7 @@ QUESTIONS_BEGINNING_MIDDLE = ["כמה אתם מרגישים לחוצים כרג�
 ANSWERS_BEGINNING_MIDDLE = [["לא לחוץ", "מאוד לחוץ"], ["כלל לא", "במידה רבה"],
                             ["לא עייף כלל", "מאוד עייף"],
                             ["מצב רוח ירוד מאוד", "מצב רוח טוב מאוד"]]
+QUESTIONS_LABEL = ["Won", "Lost", "Monster", "Coins", "Performance"]
 QUESTIONS_FINAL = ["בכמה מטבעות זכית לדעתך?", "כמה מטבעות הפסדת לדעתך?", "באיזו תדירות ראית מפלצת כשהדלת נפתחה?",
                    "באיזו תדירות זכית במטבעות כשהדלת נפתחה?", "מה הרגשתך לגבי הביצועים שלך עד כה?"]
 ANSWERS_FINAL = [["זכיתי במעט מאוד", "זכיתי בהמון"], ["הפסדתי מעט מאוד", "הפסדתי המון"], ["אף פעם", "כל הזמן"],
@@ -26,9 +27,10 @@ def beginning_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: p
         startTime = time.time()
         answer, Df, dict = helpers.display_vas(window, params, QUESTIONS_BEGINNING_MIDDLE[i],
                                                ANSWERS_BEGINNING_MIDDLE[i], Df, questionNo=i + 1, roundNo=1)
-
+        dict['Section'] = "VASpre"
         dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
-        dict['VASAnswer'] = answer
+        dict['VAS_Answer'] = answer
+        dict['VAS_type'] = LABELS[i]
         dict['VAS_RT'] = time.time() - startTime
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
@@ -36,14 +38,21 @@ def beginning_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: p
     return Df, miniDf
 
 
-def middle_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pandas.DataFrame):
+def middle_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pandas.DataFrame, roundNum: int):
     window.mouseVisible = True
     for i in range(len(QUESTIONS_BEGINNING_MIDDLE)):
         startTime = time.time()
         answer, Df, dict = helpers.display_vas(window, params, QUESTIONS_BEGINNING_MIDDLE[i],
                                                ANSWERS_BEGINNING_MIDDLE[i], Df, questionNo=i + 1, roundNo=2)
+        if roundNum == 2:
+            dict['Section'] = "VAS1"
+        elif roundNum == 3:
+            dict['Section'] = "VASmid"
+        else:
+            dict['Section'] = "VASpost"
         dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
-        dict['VASAnswer'] = answer
+        dict['VAS_Answer'] = answer
+        dict['VAS_type'] = LABELS[i]
         dict['VAS_RT'] = time.time() - startTime
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
@@ -58,9 +67,11 @@ def final_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: panda
         startTime = time.time()
         answer, Df, dict = helpers.display_vas(window, params, QUESTIONS_FINAL[i], ANSWERS_FINAL[i], Df, questionNo=i + 1,
                                                roundNo=3)
+        dict["Section"] = 'Question'
         dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
-        dict['VAS_RT'] = time.time() - startTime
-        dict['VASAnswer'] = answer
+        dict['Q_type'] = QUESTIONS_LABEL[i]
+        dict['Q_RT'] = time.time() - startTime
+        dict['Q_score'] = answer
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
 

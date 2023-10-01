@@ -81,12 +81,14 @@ Df, miniDf, totalCoins = DoorPlay.run_task(window, params, 1, 0, Df, miniDf, io,
 roundNum = 2
 while roundNum <= params['numOfTasks']:
     # Mid-VAS
-    Df, miniDf = VAS.middle_vas(window, params, Df, miniDf)
+    Df, miniDf = VAS.middle_vas(window, params, Df, miniDf, roundNum)
 
     # Task 2
     Df, miniDf, totalCoins = DoorPlay.run_task(window, params, roundNum, totalCoins, Df, miniDf, io, ser)
 
     roundNum += 1
+
+Df, miniDf = VAS.middle_vas(window, params, Df, miniDf, roundNum)
 
 # Final VAS
 Df, miniDf = VAS.final_vas(window, params, Df, miniDf)

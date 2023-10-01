@@ -1,9 +1,0 @@
-pygame~=2.2.0
-pandas~=1.5.3
-PsychoPy~=2023.1.0
-pyserial~=3.5
-bioread~=3.0.1
-numpy~=1.23.5
-matplotlib~=3.7.0
-sounddevice~=0.4.6
-psychtoolbox~=3.0.18.2
