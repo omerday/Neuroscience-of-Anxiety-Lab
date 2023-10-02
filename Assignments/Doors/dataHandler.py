@@ -19,7 +19,7 @@ def setup_data_frame(params: dict):
                          'Section',
                          'Session',
                          'Round',  # 1 or 2 in Task step, 1 to 3 in VAS step (Beginning-middle-end)
-                         'Trial',  # From 1 to 49 or 36
+                         'Subtrial',  # From 1 to 49 or 36
                          'ScenarioIndex',
                          'RewardAmount',  # The amount offered for win
                          'PunishmentAmount',  # The amount offered for loss

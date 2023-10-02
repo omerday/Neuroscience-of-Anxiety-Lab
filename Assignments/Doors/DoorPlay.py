@@ -26,7 +26,7 @@ def practice_run(window: visual.Window, params: dict, Df: pandas.DataFrame, mini
         dict = dataHandler.create_dict_for_df(params, Section='Practice', )
         dict['RewardAmount'] = 0
         dict['PunishmentAmount'] = 0
-        dict['Trial'] = subtrial
+        dict['Subtrial'] = subtrial
         dict['DistanceAtStart'] = distanceFromDoor * 100
 
         # Execute Door of selected scenario
@@ -82,7 +82,7 @@ def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int
         dict = dataHandler.create_dict_for_df(params, Section=f'TaskRun{roundNum}', Round=roundNum, TotalCoins=totalCoins, )
         dict['RewardAmount'] = scenario[0]
         dict['PunishmentAmount'] = scenario[1]
-        dict['Trial'] = subtrial
+        dict['Subtrial'] = subtrial
         dict['DistanceAtStart'] = distanceFromDoor * 100
 
         # Execute Door of selected scenario
