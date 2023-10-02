@@ -254,9 +254,9 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     if params['recordPhysio']:
         serialHandler.report_event(ser, scenarioIndex + 50)
     total_time = time.time() - start_time
-    dict["DistanceAtLock"] = location
+    dict["DistanceFromDoor_SubTrial"] = location
     dict['Distance_lock'] = 1 if lock else 0
-    dict["LockTime"] = total_time * 1000
+    dict["DoorAction_RT"] = total_time * 1000
     dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
     dict["ScenarioIndex"] = scenarioIndex + 50
     Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
@@ -266,7 +266,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     random.seed(time.time() % 60)  # Seeding using the current second in order to have relatively random seed
     doorWaitTime = 2 + random.random() * 2  # Randomize waiting time between 2-4 seconds
     waitStart = time.time()
-    dict["DoorWaitTime"] = doorWaitTime * 1000
+    dict["Door_anticipation_time"] = doorWaitTime * 1000
 
     if params['soundOn']:
         doorWaitTime -= 1
@@ -285,7 +285,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     dict["ScenarioIndex"] = scenarioIndex + 100
     if params['recordPhysio']:
         serialHandler.report_event(ser, scenarioIndex + 100)
-    dict["DidDoorOpen"] = 1 if isDoorOpening else 0
+    dict["Door_opened"] = 1 if isDoorOpening else 0
     dict["DoorStatus"] = 'opened' if isDoorOpening else 'closed'
     dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
     dict["ScenarioIndex"] = scenarioIndex + 100
@@ -301,12 +301,12 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
             outcomeString = f'{reward}_reward'
             coins = reward
             dict["DidWin"] = 1
-            dict["DoorOutcome"] = 'reward'
+            dict["Door_outcome"] = 'reward'
         else:
             outcomeString = f'{punishment}_punishment'
             coins = -1 * punishment
             dict["DidWin"] = 0
-            dict["DoorOutcome"] = 'punishment'
+            dict["Door_outcome"] = 'punishment'
 
         outcomeImage = visual.ImageStim(window,
                                         image=params['outcomeImagePredix'] + outcomeString + params['imageSuffix'],
@@ -320,7 +320,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
         doorFrameImg.draw()
         window.update()
         if params['soundOn']:
-            play_sound(dict["DoorOutcome"], 2.5, dict, Df)
+            play_sound(dict["Door_outcome"], 2.5, dict, Df)
         else:
             waitTimeStart = time.time()
             while time.time() < waitTimeStart + 2:

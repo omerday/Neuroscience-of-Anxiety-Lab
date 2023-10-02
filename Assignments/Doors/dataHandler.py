@@ -21,27 +21,30 @@ def setup_data_frame(params: dict):
                          'Round',  # 1 or 2 in Task step, 1 to 3 in VAS step (Beginning-middle-end)
                          'Subtrial',  # From 1 to 49 or 36
                          'ScenarioIndex',
-                         'RewardAmount',  # The amount offered for win
-                         'PunishmentAmount',  # The amount offered for loss
+                         'Reward_magnitude',  # The amount offered for win
+                         'Punishment_magnitude',  # The amount offered for loss
                          'DistanceAtStart',  # Initial distance from the screen
-                         'DistanceAtLock',  # Distance from the screen upon spacebar / 10 seconds
+                         'DistanceFromDoor_SubTrial',  # Distance from the screen upon spacebar / 10 seconds
                          'CurrentDistance',
                          'Distance_max',  # Maximal Distance from the Door
                          'Distance_min',  # Minimal Distance from the Door
                          'Distance_lock',
                          'RoundStartTime',
-                         'LockTime',  # When did the door lock, Ms
-                         'DidDoorOpen',  # 0 or 1
+                         'DoorAction_RT',  # When did the door lock, Ms
+                         'Door_opened',  # 0 or 1
                          'DoorStatus',
-                         'DoorOutcome',
+                         'Door_outcome',
                          'DidWin',  # 0 or 1, only if DidDoorOpen is 1!!!
-                         'DoorWaitTime',  # How long was the hold before opening the door, Ms
+                         'Door_anticipation_time',  # How long was the hold before opening the door, Ms
                          'ITI_duration',
                          'TotalCoins',
                          'VASQuestionNumber',
                          'VAS_Answer',
                          'VAS_type',
-                         'VAS_RT']
+                         'VAS_RT',
+                         'Q_type',
+                         'Q_score',
+                         'Q_RT']
 
     if params['recordPhysio']:
         params['headers'].append('ECG')
@@ -82,11 +85,11 @@ def single_subject_analysis(params: dict, ):
     dist_df = miniDf[miniDf["Section"].str.contains("TaskRun")]
 
     # Correlation between R/P amount and the lock distance
-    sns.scatterplot(data=dist_df, x="RewardAmount", y="DistanceAtLock", hue="PunishmentAmount")
+    sns.scatterplot(data=dist_df, x="Reward_magnitude", y="DistanceFromDoor_SubTrial", hue="Punishment_magnitude")
     plt.show()
 
     # Correlation between R/P amount and the lock time
-    sns.scatterplot(data=dist_df, x="RewardAmount", y="LockTime", hue="PunishmentAmount")
+    sns.scatterplot(data=dist_df, x="Reward_magnitude", y="DoorAction_RT", hue="Punishment_magnitude")
     plt.show()
 
 
