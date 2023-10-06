@@ -38,8 +38,15 @@ def setup_door(window, params, reward: int, punishment: int):
     :return: image: the image object that will be used for movements
     :return: location: the relative location of the subject from the door, should be 1-100
     """
-    isRandom = params['startingDistance'] == 'Random'
-    location = round(0.6 - 0.1 * random.random(), 2) if isRandom else 0  # a variable for the relative location
+    random.seed()
+    if params['startingDistance'] == 'Random':
+        location = round(random.uniform(MIN_LOCATION, MAX_LOCATION), 2)
+    elif params['startingDistance'] == '40-60':
+        location = round(random.uniform(MIN_LOCATION / 5, MAX_LOCATION / 5), 2)
+    else:
+        location = 0
+    # isRandom = params['startingDistance'] == 'Random'
+    # location = round(0.6 - 0.1 * random.random(), 2) if isRandom else 0  # a variable for the relative location
     # of the subject from the door, should be 0-1
     imagePath = params['doorImagePathPrefix'] + f"p{punishment}r{reward}" + params['imageSuffix']
 
@@ -208,7 +215,6 @@ def normalize_location(location: int):
     else:
         locationNormalized = round((location * 100) / (-1 * MIN_LOCATION))
     locationNormalized = round(locationNormalized / 2 + 50)
-    print(locationNormalized)
     return locationNormalized
 
 
