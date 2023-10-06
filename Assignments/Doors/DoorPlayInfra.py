@@ -231,7 +231,6 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     # Set end time for 10s max
     start_time = time.time()
     end_time = start_time + 10
-    dict["ScenarioIndex"] = scenarioIndex
     if params['recordPhysio']:
         serialHandler.report_event(ser, scenarioIndex)
     # Add initial dict parameters
@@ -282,7 +281,6 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     isDoorOpening = doorOpenChance <= (location / 100)
     print(f"doorChance - {doorOpenChance}, location - {location / 100}, isOpening - {isDoorOpening}")
 
-    dict["ScenarioIndex"] = scenarioIndex + 100
     if params['recordPhysio']:
         serialHandler.report_event(ser, scenarioIndex + 100)
     dict["Door_opened"] = 1 if isDoorOpening else 0

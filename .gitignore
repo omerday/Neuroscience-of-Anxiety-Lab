@@ -127,4 +127,5 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-/Assignments/Doors/data/config.json
+./Assignments/Doors/data/config.json
+Assignments/Doors/.ipynb_checkpoints

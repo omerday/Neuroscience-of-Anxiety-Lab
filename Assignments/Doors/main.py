@@ -65,9 +65,10 @@ if params['keyboardMode']:
 else:
     helpers.wait_for_joystick_no_df(window)
 
+# Run VAS
+Df, miniDf = VAS.beginning_vas(window, params, Df, miniDf)
+
 if not params['skipInstructions']:
-    # Run VAS
-    Df, miniDf = VAS.beginning_vas(window, params, Df, miniDf)
 
     # Show Instructions
     Df, miniDf = show_instructions(window, params, image, Df, miniDf, io)
