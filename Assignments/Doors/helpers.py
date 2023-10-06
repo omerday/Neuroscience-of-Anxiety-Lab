@@ -57,7 +57,7 @@ def wait_for_joystick_press(window, Df: pandas.DataFrame, dict: dict):
 def wait_for_space_with_replay(window, Df: pandas.DataFrame, dict: dict, io):
     """
     Helper method to wait for a Spacebar keypress and keep the window open, or get 'r' keypress for replay of the
-     instructions. Returns True if needed to replay.
+     InstructionsEnglish. Returns True if needed to replay.
     :param dict:
     :param Df:
     :param window:
@@ -81,7 +81,7 @@ def wait_for_space_with_replay(window, Df: pandas.DataFrame, dict: dict, io):
 def wait_for_joystick_press_with_replay(window, Df: pandas.DataFrame, dict: dict):
     """
     Helper method to wait for a joystick keypress and keep the window open, or get 'r' keypress for replay of the
-     instructions. Returns True if needed to replay.
+     InstructionsEnglish. Returns True if needed to replay.
     :param dict:
     :param Df:
     :param window:
@@ -174,13 +174,23 @@ def display_vas(win, params, text, labels, Df: pandas.DataFrame, questionNo: int
     :param labels:
     :return: The VAS rating, along with the Dataframe and dict
     """
+    if params["language"] == "Hebrew":
+        scale = ratingscale.RatingScale(win,
+                                        labels=[labels[0][::-1], labels[1][::-1]],  # Labels at the edges of the scale
+                                        scale=None, choices=None, low=0, high=100, precision=1, tickHeight=0, size=2,
+                                        textSize=0.6, acceptText='Continue', showValue=False, showAccept=True,
+                                        markerColor="Yellow")
+        textItem = visual.TextStim(win, text=text, height=.12, units='norm', pos=[0, 0.3], wrapWidth=2,
+                                   languageStyle='RTL', font="Open Sans")
 
-    scale = ratingscale.RatingScale(win,
-                                    labels=[labels[0][::-1], labels[1][::-1]],  # Labels at the edges of the scale
-                                    scale=None, choices=None, low=0, high=100, precision=1, tickHeight=0, size=2,
-                                    textSize=0.6, acceptText='Continue', showValue=False, showAccept=True,
-                                    markerColor="Yellow")
-    textItem = visual.TextStim(win, text=text, height=.12, units='norm', pos=[0, 0.3], wrapWidth=2, languageStyle='RTL', font="Open Sans")
+    else:
+        scale = ratingscale.RatingScale(win,
+                                        labels=[labels[0], labels[1]],  # Labels at the edges of the scale
+                                        scale=None, choices=None, low=0, high=100, precision=1, tickHeight=0, size=2,
+                                        textSize=0.6, acceptText='Continue', showValue=False, showAccept=True,
+                                        markerColor="Yellow")
+        textItem = visual.TextStim(win, text=text, height=.12, units='norm', pos=[0, 0.3], wrapWidth=2,
+                                   languageStyle="LTR", font="Open Sans")
 
     dict = dataHandler.create_dict_for_df(params, Section='VAS', VASQuestionNumber=questionNo, Round=roundNo)
     while scale.noResponse:

@@ -35,6 +35,7 @@ def user_input_play(debug=False):
     userInput.addField('Keyboard Mode', True if not configExists else loadedData['keyboardMode'])
     userInput.addField('Sound On?', True if not configExists else loadedData['soundOn'])
     userInput.addField('Skip Instructions', False if not configExists else loadedData['skipInstructions'])
+    userInput.addField("Preferred Language", "Hebrew" if not configExists else loadedData["language"], choices=["Hebrew", "English"])
     if debug:
         userInput.addField('Full Screen', True if not configExists else loadedData['fullScreen'])
         userInput.addField('Save Data at Unexpected Quit', False if not configExists else loadedData['saveDataAtQuit'])

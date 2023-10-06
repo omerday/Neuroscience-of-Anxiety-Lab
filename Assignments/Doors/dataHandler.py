@@ -72,12 +72,12 @@ def create_dict_for_df(params: dict, **kwargs):
 
 def export_raw_data(params: dict, Df: pandas.DataFrame):
     Df.to_csv(
-        f'./data/Subject {params["subjectID"]} - fullDF - {datetime.datetime.now().strftime("%Y-%m-%d %H-%M.csv")}')
+        f'./data/Doors {params["subjectID"]} - fullDF - {datetime.datetime.now().strftime("%Y-%m-%d %H-%M.csv")}')
 
 
 def export_summarized_dataframe(params: dict, Df: pandas.DataFrame):
     Df.to_csv(
-        f'./data/Subject {params["subjectID"]} - miniDF - {datetime.datetime.now().strftime("%Y-%m-%d %H-%M.csv")}')
+        f'./data/Doors {params["subjectID"]} - miniDF - {datetime.datetime.now().strftime("%Y-%m-%d %H-%M.csv")}')
 
 
 def single_subject_analysis(params: dict, ):

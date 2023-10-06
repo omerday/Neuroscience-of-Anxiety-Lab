@@ -16,9 +16,19 @@ import serialHandler
 MIN_LOCATION = -1.5
 MAX_LOCATION = 1.75
 
-MIDDLE_SUMMARY_STR1 = "בואו ננוח מעט. עד כה צברתם "
-MIDDLE_SUMMARY_STR2Key = "מטבעות. לחצו על הרווח\n כשאתם מוכנים להמשיך."
-MIDDLE_SUMMARY_STR2Joy = "מטבעות. לחצו על הג'ויסטיק\n כשאתם מוכנים להמשיך."
+MIDDLE_SUMMARY_STR1_HE = "בואו ננוח מעט.\n"
+MIDDLE_SUMMARY_STR2Key_HE = "לחצו על הרווח כשאתם מוכנים להמשיך."
+MIDDLE_SUMMARY_STR2Joy_HE = "לחצו על הג'ויסטיק כשאתם מוכנים להמשיך."
+
+MIDDLE_SUMMARY_STR1_EN = "Let's rest a bit.\n"
+MIDDLE_SUMMARY_STR2Key_EN = "Press the spacebar when you're ready."
+MIDDLE_SUMMARY_STR2Joy_EN = "Press the joystick when you're ready."
+
+FINAL_SUMMARY_STR1_EN = "You scored "
+FINAL_SUMMARY_STR2_EN = "Coins!\n Well done!\n\nThank you for your participation."
+
+FINAL_SUMMARY_STR1_HE = "צברת "
+FINAL_SUMMARY_STR2_HE = "מטבעות\n כל הכבוד!\n\n תודה על השתתפותך בניסוי."
 
 SOUNDS = {
     "lock": "./sounds/click_1s.wav",
@@ -356,22 +366,25 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
 
 def show_screen_pre_match(window: visual.Window, params: dict, session: int, io, coins=0):
     if session == 2 or session == 3:
-        if params["keyboardMode"]:
+        if params["language"] == "Hebrew":
             message = visual.TextStim(window,
-                                      text=MIDDLE_SUMMARY_STR1 + f"{coins}" + "\n" + MIDDLE_SUMMARY_STR2Key,
+                                      text=MIDDLE_SUMMARY_STR1_HE + (MIDDLE_SUMMARY_STR2Key_HE if params["keyboardMode"] else MIDDLE_SUMMARY_STR2Joy_HE),
                                       units="norm",
                                       color=(255, 255, 255), languageStyle='RTL')
         else:
             message = visual.TextStim(window,
-                                      text=MIDDLE_SUMMARY_STR1 + f"{coins}" + "\n" + MIDDLE_SUMMARY_STR2Joy,
+                                      text=MIDDLE_SUMMARY_STR1_EN + (MIDDLE_SUMMARY_STR2Key_EN if params["keyboardMode"] else MIDDLE_SUMMARY_STR2Joy_EN),
                                       units="norm",
-                                      color=(255, 255, 255), languageStyle='RTL')
+                                      color=(255, 255, 255), languageStyle='LTR')
         message.draw()
 
     else:
         screenNames = ["practice_start", "start_main_game"]
         image = visual.ImageStim(win=window, units="norm", opacity=1, size=(2, 2))
-        image.image = "./img/InstructionsHebrew/" + screenNames[session] + ".jpeg"
+        if params["language"] == "Hebrew":
+            image.image = "./img/InstructionsHebrew/" + screenNames[session] + ".jpeg"
+        else:
+            image.image = "./img/InstructionsEnglish/" + screenNames[session] + ".jpeg"
         image.draw()
 
     window.update()
@@ -386,7 +399,10 @@ def show_screen_pre_match(window: visual.Window, params: dict, session: int, io,
 
 def show_wheel(window: visual.Window, params: dict, io=None):
     image = visual.ImageStim(win=window, units="norm", opacity=1, size=(2, 2))
-    image.image = "./img/instructionsHebrew/BeforeWheel.jpg"
+    if params["language"] == "Hebrew":
+        image.image = "./img/InstructionsHebrew/BeforeWheel.jpg"
+    else:
+        image.image = "./img/InstructionsEnglish/BeforeWheel.jpg"
     image.draw()
     window.update()
 
@@ -407,6 +423,25 @@ def show_wheel(window: visual.Window, params: dict, io=None):
         helpers.wait_for_joystick_no_df(window)
 
     return
+
+
+def show_screen_post_match(window: visual.Window, params: dict, io, coins=0):
+    if params["language"] == "Hebrew":
+        message = visual.TextStim(window,
+                                  text=FINAL_SUMMARY_STR1_HE + f'{coins} ' + FINAL_SUMMARY_STR2_HE,
+                                  units="norm",
+                                  color=(255, 255, 255), languageStyle='RTL')
+    else:
+        message = visual.TextStim(window,
+                                  text=FINAL_SUMMARY_STR1_EN + f'{coins} ' + FINAL_SUMMARY_STR2_EN,
+                                  units="norm",
+                                  color=(255, 255, 255), languageStyle='LTR')
+    message.draw()
+    window.update()
+    if params["keyboardMode"]:
+        helpers.wait_for_space_no_df(window, io)
+    else:
+        helpers.wait_for_joystick_no_df(window)
 
 
 def play_sound(soundType: str, waitTime: float, dict: dict, Df: pandas.DataFrame):

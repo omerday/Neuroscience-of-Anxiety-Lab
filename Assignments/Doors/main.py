@@ -8,6 +8,7 @@ from psychopy.iohub import launchHubServer
 import runConfigDialog
 import dataHandler
 import serialHandler
+from Assignments.Doors import DoorPlayInfra
 from instructionsScreen import show_instructions
 import VAS
 import serial
@@ -31,10 +32,11 @@ params = {
     'screenSize': (1024, 768),  # Get Screen Resolution to match Full Screen
     'soundOn': configDialogBank[9],
     'skipInstructions': configDialogBank[10],
-    'fullScreen': configDialogBank[11] if debug else True,
-    'saveDataAtQuit': configDialogBank[12] if debug else True,
+    'language': configDialogBank[11],
+    'fullScreen': configDialogBank[12] if debug else True,
+    'saveDataAtQuit': configDialogBank[13] if debug else True,
     'startTime': time.time(),
-    'saveAsDefault': configDialogBank[13] if debug else True,
+    'saveAsDefault': configDialogBank[14] if debug else True,
     'doorImagePathPrefix': './img/doors1/',
     'outcomeImagePredix': './img/outcomes/',
     'imageSuffix': '.jpg',
@@ -94,6 +96,7 @@ Df, miniDf = VAS.middle_vas(window, params, Df, miniDf, roundNum)
 
 # Final VAS
 Df, miniDf = VAS.final_vas(window, params, Df, miniDf)
+DoorPlayInfra.show_screen_post_match(window, params, io, totalCoins)
 helpers.graceful_quitting(window, params, Df, miniDf)
 
 # Recap
