@@ -15,7 +15,8 @@ import serial
 io = launchHubServer()
 
 # log = LoggerSetup.set_up_logger()
-configDialogBank = runConfigDialog.user_input_play()
+debug = False
+configDialogBank = runConfigDialog.user_input_play(debug)
 
 params = {
     'subjectID': configDialogBank[0],
@@ -26,14 +27,14 @@ params = {
     'startingDistance': configDialogBank[5],  # Decide whether the starting distance is random, or fixed on 50
     'recordPhysio': configDialogBank[6],
     'sensitivity': configDialogBank[7],
-    'fullScreen': configDialogBank[8],
-    'keyboardMode': configDialogBank[9],
+    'keyboardMode': configDialogBank[8],
     'screenSize': (1024, 768),  # Get Screen Resolution to match Full Screen
-    'soundOn': configDialogBank[10],
-    'skipInstructions': configDialogBank[11],
-    'saveDataAtQuit': configDialogBank[12],
+    'soundOn': configDialogBank[9],
+    'skipInstructions': configDialogBank[10],
+    'fullScreen': configDialogBank[11] if debug else True,
+    'saveDataAtQuit': configDialogBank[12] if debug else True,
     'startTime': time.time(),
-    'saveAsDefault': configDialogBank[13],
+    'saveAsDefault': configDialogBank[13] if debug else True,
     'doorImagePathPrefix': './img/doors1/',
     'outcomeImagePredix': './img/outcomes/',
     'imageSuffix': '.jpg',

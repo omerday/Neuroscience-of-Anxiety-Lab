@@ -1,5 +1,5 @@
 {
-   "subjectID": "92313",
+   "subjectID": "",
    "Session": 1,
    "practiceTrials": 3,
    "numOfDoors": 49,
@@ -7,7 +7,6 @@
    "startingDistance": 50,
    "recordPhysio": false,
    "sensitivity": 3,
-   "fullScreen": false,
    "keyboardMode": true,
    "screenSize": [
       1024,
@@ -15,8 +14,9 @@
    ],
    "soundOn": false,
    "skipInstructions": true,
+   "fullScreen": true,
    "saveDataAtQuit": true,
-   "startTime": 1696223718.288,
+   "startTime": 1696595502.887978,
    "saveAsDefault": true,
    "doorImagePathPrefix": "./img/doors1/",
    "outcomeImagePredix": "./img/outcomes/",

@@ -97,5 +97,3 @@ def single_subject_analysis(params: dict, ):
                  err_style="band", errorbar="sd")
     plt.show()
 
-
-single_subject_analysis({})

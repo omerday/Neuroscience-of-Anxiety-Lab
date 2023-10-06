@@ -4,7 +4,7 @@ from psychopy import gui
 import json
 
 
-def user_input_play():
+def user_input_play(debug=False):
     """
     In charge of gathering initial info for configuration using gui.Dlg. it's being inserted into Params dictionary in
     the main file.
@@ -32,11 +32,12 @@ def user_input_play():
     userInput.addField('Starting Distance', choices=[50, 'Random'])
     userInput.addField('Record Physiology', False if not configExists else loadedData['recordPhysio'])
     userInput.addField('Sensitivity (2: Less sensitive, 3: Normal, 4: More sensitive', 1 if not configExists else loadedData['sensitivity'] - 2, choices=[2, 3, 4])
-    userInput.addField('Full Screen', True if not configExists else loadedData['fullScreen'])
     userInput.addField('Keyboard Mode', True if not configExists else loadedData['keyboardMode'])
     userInput.addField('Sound On?', True if not configExists else loadedData['soundOn'])
     userInput.addField('Skip Instructions', False if not configExists else loadedData['skipInstructions'])
-    userInput.addField('Save Data at Unexpected Quit', False if not configExists else loadedData['saveDataAtQuit'])
-    userInput.addField('Save Config as Default', False if not configExists else loadedData['saveAsDefault'])
+    if debug:
+        userInput.addField('Full Screen', True if not configExists else loadedData['fullScreen'])
+        userInput.addField('Save Data at Unexpected Quit', False if not configExists else loadedData['saveDataAtQuit'])
+        userInput.addField('Save Config as Default', False if not configExists else loadedData['saveAsDefault'])
     # userInput.addField('Sound Mode:',choices=['PTB','Others'])
     return userInput.show()
