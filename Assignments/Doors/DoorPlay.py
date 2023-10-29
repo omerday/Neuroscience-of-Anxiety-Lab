@@ -84,9 +84,10 @@ def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int
         dict['Punishment_magnitude'] = scenario[1]
         dict['Subtrial'] = subtrial
         dict['DistanceAtStart'] = distanceFromDoor * 100
+        dict["ScenarioIndex"] = scenarioIndex
 
         # Execute Door of selected scenario
-        coinsWon, total_time, Df, dict, lock = DoorPlayInfra.start_door(window, params, image, scenario[0], scenario[1],
+        coinsWon, total_time, Df, miniDf, dict, lock = DoorPlayInfra.start_door(window, params, image, scenario[0], scenario[1],
                                                                   distanceFromDoor, Df, dict, io, scenarioIndex, miniDf, ser)
         totalCoins += coinsWon
         scenariosList.remove(scenario)

@@ -256,6 +256,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     dict['Distance_min'] = round((location + 1) * 50, 0)
     dict["ScenarioIndex"] = scenarioIndex
     Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
+    miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
     dict.pop("ScenarioIndex")
 
     if params['keyboardMode']:
@@ -275,6 +276,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
     dict["ScenarioIndex"] = scenarioIndex + 50
     Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
+    miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
     dict.pop("ScenarioIndex")
 
     # Seed randomization for waiting time and for door opening chance:
@@ -304,7 +306,6 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
     dict["ScenarioIndex"] = scenarioIndex + 100
     Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
-    dict.pop("ScenarioIndex")
     coins = 0
 
     if isDoorOpening:
@@ -333,6 +334,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
         outcomeImage.draw()
         doorFrameImg.draw()
         window.update()
+        miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
         if params['soundOn']:
             play_sound(dict["Door_outcome"], 2.5, dict, Df)
         else:
@@ -361,7 +363,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
         window.update()
         core.wait(0.03)
 
-    return coins, total_time, Df, dict, lock
+    return coins, total_time, Df, miniDf, dict, lock
 
 
 def show_screen_pre_match(window: visual.Window, params: dict, session: int, io, coins=0):
