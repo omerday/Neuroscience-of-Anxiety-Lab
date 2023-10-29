@@ -69,6 +69,9 @@ def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int
     # Reward 1 Punishment 1 - index 0
     # Reward 5 Punishment 2 - index 29
 
+    # When sending a signal to biopac, we'll add 1 to the scenario in order to avoid 0 from being sent.
+    # This should be deduced from the event channel when analyzing the .acq file.
+
     subtrial = 0
     while len(scenariosList) != 0:
 
