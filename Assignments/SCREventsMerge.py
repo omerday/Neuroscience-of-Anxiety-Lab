@@ -56,7 +56,7 @@ columns = ["Reward_magnitude", "Punishment_magnitude", "DistanceFromDoor_SubTria
 
 events_list = np.zeros(151)
 for index, row in era_df.iterrows():
-    scenario = row["Event.NID"]
+    scenario = row["Event.NID"] - 1
     numberOfTimes = events_list[scenario]
     for column in columns:
         # print(mini_df[mini_df["ScenarioIndex"] == scenario].iloc[[numberOfTimes]][column])

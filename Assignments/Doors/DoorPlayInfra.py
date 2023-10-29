@@ -55,9 +55,7 @@ def setup_door(window, params, reward: int, punishment: int):
         location = round(random.uniform(MIN_LOCATION / 5, MAX_LOCATION / 5), 2)
     else:
         location = 0
-    # isRandom = params['startingDistance'] == 'Random'
-    # location = round(0.6 - 0.1 * random.random(), 2) if isRandom else 0  # a variable for the relative location
-    # of the subject from the door, should be 0-1
+
     imagePath = params['doorImagePathPrefix'] + f"p{punishment}r{reward}" + params['imageSuffix']
 
     image = visual.ImageStim(window, image=imagePath,
@@ -248,7 +246,9 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     start_time = time.time()
     end_time = start_time + 10
     if params['recordPhysio']:
-        serialHandler.report_event(ser, scenarioIndex)
+        # When sending a signal to biopac, we'll add 1 to the scenario in order to avoid 0 from being sent.
+        # This should be deduced from the event channel when analyzing the .acq file.
+        serialHandler.report_event(ser, scenarioIndex + 1)
     # Add initial dict parameters
     dict['RoundStartTime'] = round(time.time() - dict['StartTime'], 3)
     dict['CurrentDistance'] = round((location + 1) * 50, 0)
@@ -268,7 +268,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
 
     dict["ScenarioIndex"] = scenarioIndex + 50
     if params['recordPhysio']:
-        serialHandler.report_event(ser, scenarioIndex + 50)
+        serialHandler.report_event(ser, scenarioIndex + 51)
     total_time = time.time() - start_time
     dict["DistanceFromDoor_SubTrial"] = location
     dict['Distance_lock'] = 1 if lock else 0
@@ -300,7 +300,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     print(f"doorChance - {doorOpenChance}, location - {location / 100}, isOpening - {isDoorOpening}")
 
     if params['recordPhysio']:
-        serialHandler.report_event(ser, scenarioIndex + 100)
+        serialHandler.report_event(ser, scenarioIndex + 101)
     dict["Door_opened"] = 1 if isDoorOpening else 0
     dict["DoorStatus"] = 'opened' if isDoorOpening else 'closed'
     dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
