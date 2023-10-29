@@ -2,6 +2,18 @@ import pandas as pd
 import sys
 import numpy as np
 
+"""
+    The script recieves two file paths - the ERA file (result of the SCR matlab script) and the miniDF file from the doors task.
+    The script merges info from the miniDF into the era table, according to the scenario index.
+    The columns merged:
+    
+        "Reward_magnitude", 
+        "Punishment_magnitude", 
+        "DistanceFromDoor_SubTrial", 
+        "Door_opened", 
+        "Door_outcome"
+"""
+
 n = len(sys.argv)
 era_path = ""
 minidf_path = ""
