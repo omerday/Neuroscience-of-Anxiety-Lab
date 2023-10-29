@@ -96,6 +96,5 @@ def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int
         dict["TotalCoins"] = totalCoins
         dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
-#        miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
 
     return Df, miniDf, totalCoins
