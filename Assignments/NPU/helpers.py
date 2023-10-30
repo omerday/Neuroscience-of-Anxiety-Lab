@@ -2,6 +2,8 @@ from psychopy import visual, core, event
 from psychopy.iohub import launchHubServer
 from psychopy.iohub.client.keyboard import Keyboard
 from psychopy.visual import ratingscale
+from psychopy import sound
+import psychtoolbox as ptb
 
 
 def wait_for_space(window: visual.Window, io):
@@ -38,3 +40,20 @@ def wait_for_space_with_rating_scale(window, img: visual.ImageStim, io, params:d
         img.draw()
         scale.draw()
         window.flip()
+
+
+def play_startle_and_wait(window: visual.Window, io):
+    soundToPlay = sound.Sound("./sounds/startle_probe.wav")
+    core.wait(2)
+    now = ptb.GetSecs()
+    soundToPlay.play(when=now)
+    core.wait(1)
+    keyboard = io.devices.keyboard
+    while True:
+        for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
+            if event.key == " ":
+                soundToPlay.stop()
+                return
+            if event.key == "escape":
+                window.close()
+                core.quit()

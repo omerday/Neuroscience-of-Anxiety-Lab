@@ -25,12 +25,12 @@ def show_instructions(params: dict, window: visual.Window, img: visual.ImageStim
                 helpers.wait_for_space_with_rating_scale(window, img, io, params)
             elif i == 19:
                 # TODO: play the sound
-                helpers.wait_for_space(window, io)
+                helpers.play_startle_and_wait(window, io)
             else:
                 helpers.wait_for_space(window, io)
         # Last slide:
         img.image = f"{PATH}{SLIDES}{pref}{SUFFIX}"
-        img.setSize((1, 1))
+        img.setSize((2,2))
         img.draw()
         window.update()
         replay = helpers.wait_for_space_with_replay(window, io)
