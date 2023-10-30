@@ -43,3 +43,12 @@ helpers.wait_for_space(window, io)
 if not params["skipInstructions"]:
     instructionsScreen.show_instructions(params, window, image, io)
 
+# Run Sequence
+
+# Additional Data Measuring
+instructionsScreen.midpoint(params, window, image, io)
+
+# Run Sequence #2
+
+# End of task Finalization
+instructionsScreen.finalization(params, window, image, io)
