@@ -60,9 +60,34 @@ def play_startle_and_wait(window: visual.Window, io):
                 core.quit()
 
 
-def wait_with_shocks():
+def wait_with_shocks(window: visual.Window, cue_times: list, end_time: time, shock_time: time, io):
     pass
 
 
-def wait_without_shocks():
-    pass
+def wait_without_shocks(window: visual.Window, cue_times: list, end_time: time, io):
+    keyboard = io.devices.keyboard
+    while time.time() <= end_time:
+        if len(cue_times) == 0:
+            pass
+        elif cue_times[0] <= time.time() <= cue_times[0] + 0.5:
+            play_startle()
+            cue_times.remove(cue_times[0])
+
+        for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
+            if event.key == "escape":
+                window.close()
+                core.quit()
+
+
+def play_startle():
+    soundToPlay = sound.Sound("./sounds/startle_probe.wav")
+    now = ptb.GetSecs()
+    soundToPlay.play(when=now)
+    core.wait(1)
+
+
+def play_shock_sound():
+    soundToPlay = sound.Sound("./sounds/shock_sound.mp3")
+    now = ptb.GetSecs()
+    soundToPlay.play(when=now)
+    core.wait(1.5)

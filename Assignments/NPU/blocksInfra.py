@@ -1,5 +1,6 @@
 from psychopy import visual, core, event
 import random
+import helpers
 import time
 
 PATH = "./img/blocks/"
@@ -13,29 +14,30 @@ FIXED_CUE_TIMES = [30, 60, 90]
 
 
 def n_block(window: visual.Window, image: visual.ImageStim, params: dict, io):
-    cue_times = randomize_cue_times() if params["timing"] else FIXED_CUE_TIMES
+    cue_times = randomize_cue_times() if params["timing"] == "Randomized" else FIXED_CUE_TIMES
+    startle_times = randomize_startles()
+    cue_times, startle_times = prepare_cues_and_startles(cue_times, startle_times)
+
     timing_index = 0
     start_time = time.time()
-    image.image = f"{PATH}N_{params['language'][0]}{SUFFIX}"
-    image.setSize((2, 2))
-    image.draw()
-    window.update()
+
     while time.time() < start_time + BLOCK_LENGTH:
-        # TODO: Write to DF
+        image.image = f"{PATH}N_{params['language'][0]}{SUFFIX}"
+        image.setSize((2, 2))
+        image.draw()
+        window.update()
+
+        launch_wait_sequence(window=window, end_time=start_time + cue_times[timing_index] - 0.5, startles=startle_times, io=io)
+
         if start_time + cue_times[timing_index] <= time.time() <= start_time + cue_times[timing_index] + 1:
             current_cue_time = time.time()
             image.image = f"{PATH}N_{params['language'][0]}_Cue{SUFFIX}"
             image.setSize((2, 2))
             image.draw()
             window.update()
-            while time.time() < current_cue_time + CUE_LENGTH:
-                # TODO: Write to DF
-                pass
-            image.image = f"{PATH}N_{params['language'][0]}{SUFFIX}"
-            image.setSize((2, 2))
-            image.draw()
-            window.update()
-            timing_index += 1
+
+            launch_wait_sequence(window=window, end_time = time.time() + CUE_LENGTH, startles=startle_times, io=io)
+
     return
 
 
@@ -69,3 +71,27 @@ def randomize_startles():
         seconds.remove(times[i])
     times.sort()
     return times
+
+
+def prepare_cues_and_startles(cues: list, startles: list):
+    start_time = time.time()
+    cue_times = []
+    startle_times = []
+    for cue in cues:
+        cue_times.append(cue + start_time)
+    for startle in startles:
+        startle_times.append(startle + start_time)
+    return cue_times, startle_times
+
+
+def launch_wait_sequence(window: visual.Window, end_time, startles: list, io, shock_time=0):
+    """
+    The method prepares the command for launching the wait sequence from the "Helpers" module.
+    It takes the cues times, shock times (if there are any) and the end time of the current waiting sequence and organizes
+    them into a command.
+    """
+    startles_filtered = list(filter(lambda cue: cue <= end_time, startles))
+    if shock_time != 0:
+        helpers.wait_with_shocks(window=window, cue_times=startles_filtered, end_time=end_time, shock_time=shock_time, io=io)
+    else:
+        helpers.wait_without_shocks(window=window, cue_times=startles_filtered, end_time=end_time, io=io)
