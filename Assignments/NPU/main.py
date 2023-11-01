@@ -4,10 +4,11 @@ from psychopy import visual, core, event, monitors
 import configDialog
 import json
 import helpers, instructionsScreen
+import blocksInfra
 
 io = launchHubServer()
 
-debug = False
+debug = True
 configDialogBank = configDialog.get_user_input(debug)
 
 params = {
@@ -17,7 +18,7 @@ params = {
     "gender": "F" if configDialogBank[3] == "Female" else "M",
     "language": configDialogBank[4],
     "shockType": configDialogBank[5],
-    "timing": configDialogBank[6],
+    "skipStartle": configDialogBank[6],
     "recordPhysio": configDialogBank[7],
     "skipInstructions": configDialogBank[8],
     "fullScreen": configDialogBank[9] if debug is True else True,
@@ -46,6 +47,7 @@ if not params["skipInstructions"]:
     instructionsScreen.show_instructions(params, window, image, io)
 
 # Run Sequence
+blocksInfra.n_block(window, image, params, io)
 
 # Additional Data Measuring
 instructionsScreen.midpoint(params, window, image, io)

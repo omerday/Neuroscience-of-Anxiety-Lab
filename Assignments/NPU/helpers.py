@@ -5,6 +5,9 @@ from psychopy.visual import ratingscale
 from psychopy import sound
 import psychtoolbox as ptb
 import time
+import random
+
+from Assignments.NPU import blocksInfra
 
 
 def wait_for_space(window: visual.Window, io):
@@ -60,23 +63,76 @@ def play_startle_and_wait(window: visual.Window, io):
                 core.quit()
 
 
-def wait_with_shocks(window: visual.Window, cue_times: list, end_time: time, shock_time: time, io):
-    pass
+def randomize_cue_times():
+    random.seed()
+    times = [random.randrange(10, 50), random.randrange(30, 90), random.randrange(80, 110)]
+    times.sort()
+
+    while times[2] < times[1] + 10:
+        times[2] = random.randrange(times[1] + 10, blocksInfra.BLOCK_LENGTH - 10)
+    while times[1] < times[0] + 10:
+        times[1] = random.randrange(times[0] + 10, times[2] - 10)
+
+    print(f"cue times - {times}")
+    return times
 
 
-def wait_without_shocks(window: visual.Window, cue_times: list, end_time: time, io):
-    keyboard = io.devices.keyboard
-    while time.time() <= end_time:
-        if len(cue_times) == 0:
-            pass
-        elif cue_times[0] <= time.time() <= cue_times[0] + 0.5:
-            play_startle()
-            cue_times.remove(cue_times[0])
+def randomize_startles(cues: list):
+    random.seed()
+    seconds = list(range(2, 120))
+    startle_times = []
+    for cue in cues:
+        # Randomize startle within cues (between 2 secs from the beginning and 2 secs from the end
+        startle_times.append(round(random.uniform(cue + 2, cue + blocksInfra.CUE_LENGTH - 1), 2))
+        # Remove all the seconds with a cue in them for future randchoice
+        for x in range(cue, cue + 9):
+            seconds.remove(x)
+    for i in range(blocksInfra.STARTLES_PER_BLOCK - 3):
+        chosen_sec = random.choice(seconds)
+        startle_times.append(chosen_sec)
+        seconds.remove(chosen_sec)
+    startle_times.sort()
 
-        for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
-            if event.key == "escape":
-                window.close()
-                core.quit()
+    print(f"startle times: {startle_times}")
+    return startle_times
+
+
+def randomize_shock(cues: list, startles: list, predictable: bool, params: dict):
+    random.seed()
+    shock_time = 0
+    if predictable:
+        num_of_cue = random.randrange(0, 3)
+        shock_time = round(random.uniform(cues[num_of_cue], cues[num_of_cue] + blocksInfra.CUE_LENGTH), 2)
+        if not params["skipStartle"]:
+            startle_in_cue = 0
+            for startle_time in startles:
+                if cues[num_of_cue] <= startle_time <= cues[num_of_cue] + blocksInfra.CUE_LENGTH:
+                    startle_in_cue = startle_time
+            while startle_in_cue - 2.5 < shock_time < startle_in_cue + 2.5:
+                shock_time = round(random.uniform(cues[num_of_cue], cues[num_of_cue] + blocksInfra.CUE_LENGTH), 2)
+    else:
+        if params["skipStartle"]:
+            shock_time = random.randrange(10, blocksInfra.BLOCK_LENGTH - 10)
+        else:
+            startle_near_shock = True
+            while startle_near_shock:
+                startle_near_shock = False
+                shock_time = random.randrange(10, blocksInfra.BLOCK_LENGTH - 10)
+                for startle_time in startles:
+                    if abs(shock_time - startle_time) > 3:
+                        startle_near_shock = True
+    return shock_time
+
+
+def prepare_cues_and_startles(cues: list, startles: list):
+    start_time = time.time()
+    cue_times = []
+    startle_times = []
+    for cue in cues:
+        cue_times.append(cue + start_time)
+    for startle in startles:
+        startle_times.append(startle + start_time)
+    return cue_times, startle_times
 
 
 def play_startle():

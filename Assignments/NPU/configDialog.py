@@ -31,7 +31,7 @@ def get_user_input(debug=False):
     userInput.addField("Preferred Language", "Hebrew" if not configExists else loadedData["language"],
                        choices=["Hebrew", "English"])
     userInput.addField("Shock Type", "Shock" if not configExists else loadedData["shockType"], choices=["Shock", "Sound"])
-    userInput.addField("Timing", "Randomized" if not configExists else loadedData["timing"], choices=["Randomized", "Hard-Coded"])
+    userInput.addField("Skip Startles", False if not configExists else loadedData["skipStartle"])
     userInput.addField('Record Physiology', False if not configExists else loadedData['recordPhysio'])
     userInput.addField('Skip Instructions', False if not configExists else loadedData['skipInstructions'])
     if debug:
