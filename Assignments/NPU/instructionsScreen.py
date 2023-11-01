@@ -21,6 +21,7 @@ def show_instructions(params: dict, window: visual.Window, img: visual.ImageStim
             if i == 4:
                 # TODO: send calibration signal to the biopac
                 # TODO: Change to 3 minutes in prod
+                # TODO: Add DF Writing in the meantime
                 core.wait(5)
             elif i == 18:
                 helpers.wait_for_space_with_rating_scale(window, img, io, params)
@@ -63,6 +64,7 @@ def midpoint(params: dict, window: visual.Window, img: visual.ImageStim, io):
     window.update()
     # TODO: send calibration signal to the biopac
     # TODO: Change to 3 minutes in prod
+    # TODO: Write to DF
     core.wait(5)
 
     img.image = f"./img/start{params['language'][0]}{SUFFIX}"

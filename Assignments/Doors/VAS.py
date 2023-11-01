@@ -53,7 +53,7 @@ def beginning_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: p
                                                    ANSWERS_BEGINNING_MIDDLE_EN[i], Df, questionNo=i + 1, roundNo=1)
         dict['Section'] = "VASpre"
         dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
-        dict['VAS_Answer'] = answer
+        dict['VAS_score'] = answer
         dict['VAS_type'] = LABELS[i]
         dict['VAS_RT'] = time.time() - startTime
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
@@ -79,7 +79,7 @@ def middle_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pand
         else:
             dict['Section'] = "VAS3"
         dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
-        dict['VAS_Answer'] = answer
+        dict['VAS_score'] = answer
         dict['VAS_type'] = LABELS[i]
         dict['VAS_RT'] = time.time() - startTime
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])

@@ -27,11 +27,13 @@ def get_user_input(debug=False):
     userInput.addField('Subject Number:', )
     userInput.addField('Session:', 1)
     userInput.addField('# of Blocks:', 2 if not configExists else loadedData['blocks'] - 1, choices=[1, 2, 3])
-    userInput.addField('Record Physiology', False if not configExists else loadedData['recordPhysio'])
-    userInput.addField('Skip Instructions', False if not configExists else loadedData['skipInstructions'])
     userInput.addField('Gender', "Female" if not configExists else loadedData["gender"], choices=["Male", "Female"])
     userInput.addField("Preferred Language", "Hebrew" if not configExists else loadedData["language"],
                        choices=["Hebrew", "English"])
+    userInput.addField("Shock Type", "Shock" if not configExists else loadedData["shockType"], choices=["Shock", "Sound"])
+    userInput.addField("Timing", "Randomized" if not configExists else loadedData["timing"], choices=["Randomized", "Hard-Coded"])
+    userInput.addField('Record Physiology', False if not configExists else loadedData['recordPhysio'])
+    userInput.addField('Skip Instructions', False if not configExists else loadedData['skipInstructions'])
     if debug:
         userInput.addField('Full Screen', True if not configExists else loadedData['fullScreen'])
         userInput.addField('Save Data at Unexpected Quit', False if not configExists else loadedData['saveDataAtQuit'])

@@ -96,7 +96,7 @@ def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int
         scenariosList.remove(scenario)
 
         # Add data to Df
-        dict["TotalCoins"] = totalCoins
+        dict["Total_coins"] = totalCoins
         dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
 

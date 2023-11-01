@@ -20,7 +20,7 @@ debug = False
 configDialogBank = runConfigDialog.user_input_play(debug)
 
 params = {
-    'subjectID': configDialogBank[0],
+    'Subject': configDialogBank[0],
     'Session': configDialogBank[1],
     'practiceTrials': configDialogBank[2],  # Number if Practice Trials, taken from Config Dialog
     'numOfDoors': configDialogBank[3],  # Number of Screens in the 1st task, either 49 (7*7) or 36 (6*6)

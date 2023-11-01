@@ -4,6 +4,7 @@ from psychopy.iohub.client.keyboard import Keyboard
 from psychopy.visual import ratingscale
 from psychopy import sound
 import psychtoolbox as ptb
+import time
 
 
 def wait_for_space(window: visual.Window, io):
@@ -57,3 +58,11 @@ def play_startle_and_wait(window: visual.Window, io):
             if event.key == "escape":
                 window.close()
                 core.quit()
+
+
+def wait_with_shocks():
+    pass
+
+
+def wait_without_shocks():
+    pass

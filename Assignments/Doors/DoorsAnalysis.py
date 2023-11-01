@@ -7,7 +7,7 @@ DIST_HEADERS = ["Section", "Session", "Round", "Subtrial", 'ScenarioIndex','Rewa
            'DistanceAtStart', 'DistanceFromDoor_SubTrial', 'CurrentDistance', 'Distance_max', 'Distance_min',
            'Distance_lock', 'DoorAction_RT', 'Door_opened', 'DoorStatus', 'Door_outcome',
            'DidWin', 'Door_anticipation_time', 'ITI_duration',]
-VAS_HEADERS = ["Section", 'VASQuestionNumber', 'VAS_Answer', 'VAS_type', 'VAS_RT',]
+VAS_HEADERS = ["Section", 'VASQuestionNumber', 'VAS_score', 'VAS_type', 'VAS_RT',]
 
 def analyze_subject(subject_id: int):
     df = None
