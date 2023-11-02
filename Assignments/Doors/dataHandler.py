@@ -8,7 +8,7 @@ import seaborn as sns
 
 HEADERS = ['Time',
            'ExpermientName',
-           'SubjectID',
+           'Subject',
            'StartTime',
            'CurrentTime',
            'Section',
@@ -32,9 +32,9 @@ HEADERS = ['Time',
            'DidWin',  # 0 or 1, only if DidDoorOpen is 1!!!
            'Door_anticipation_time',  # How long was the hold before opening the door, Ms
            'ITI_duration',
-           'TotalCoins',
+           'Total_coins',
            'VASQuestionNumber',
-           'VAS_Answer',
+           'VAS_score',
            'VAS_type',
            'VAS_RT',
            'Q_type',
@@ -61,7 +61,7 @@ def create_dict_for_df(params: dict, **kwargs):
         dictLayout[header] = None
 
     dictLayout['ExperimentName'] = 'Doors'
-    dictLayout['SubjectID'] = params['subjectID']
+    dictLayout['Subject'] = params['Subject']
     dictLayout['StartTime'] = params['startTime']
     dictLayout['Session'] = params['Session']
     for key, value in kwargs.items():
@@ -72,12 +72,12 @@ def create_dict_for_df(params: dict, **kwargs):
 
 def export_raw_data(params: dict, Df: pandas.DataFrame):
     Df.to_csv(
-        f'./data/Doors {params["subjectID"]} - fullDF - {datetime.datetime.now().strftime("%Y-%m-%d %H-%M.csv")}')
+        f'./data/Doors {params["Subject"]} - fullDF - {datetime.datetime.now().strftime("%Y-%m-%d %H-%M.csv")}')
 
 
 def export_summarized_dataframe(params: dict, Df: pandas.DataFrame):
     Df.to_csv(
-        f'./data/Doors {params["subjectID"]} - miniDF - {datetime.datetime.now().strftime("%Y-%m-%d %H-%M.csv")}')
+        f'./data/Doors {params["Subject"]} - miniDF - {datetime.datetime.now().strftime("%Y-%m-%d %H-%M.csv")}')
 
 
 def single_subject_analysis(params: dict, ):

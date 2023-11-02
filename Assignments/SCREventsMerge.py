@@ -17,7 +17,7 @@ import numpy as np
 n = len(sys.argv)
 era_path = ""
 minidf_path = ""
-subjectID = 0
+Subject = 0
 
 if n < 3:
     print("Not enough arguments entered!\nPlease add the paths to the era file and the miniDF")
@@ -25,7 +25,7 @@ if n < 3:
 else:
     era_path = sys.argv[1]
     minidf_path = sys.argv[2]
-    subjectID = era_path.split("_")[0].split("/")[-1]
+    Subject = era_path.split("_")[0].split("/")[-1]
 
 try:
     print(f"Trying to load the era file from {era_path}...")
@@ -67,5 +67,5 @@ for index, row in era_df.iterrows():
 print(era_df.head())
 
 print("All done merging the files!")
-era_df.to_csv(f"{subjectID}_era_merged.csv")
-print(f"Final result can be found under {subjectID}_era_merged.csv")
+era_df.to_csv(f"{Subject}_era_merged.csv")
+print(f"Final result can be found under {Subject}_era_merged.csv")
