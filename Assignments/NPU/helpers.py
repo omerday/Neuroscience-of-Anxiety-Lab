@@ -65,13 +65,8 @@ def play_startle_and_wait(window: visual.Window, io):
 
 def randomize_cue_times():
     random.seed()
-    times = [random.randrange(10, 50), random.randrange(30, 90), random.randrange(80, 110)]
+    times = [random.randrange(10, 35), random.randrange(45, 75), random.randrange(85, 110)]
     times.sort()
-
-    while times[2] < times[1] + 10:
-        times[2] = random.randrange(times[1] + 10, blocksInfra.BLOCK_LENGTH - 10)
-    while times[1] < times[0] + 10:
-        times[1] = random.randrange(times[0] + 10, times[2] - 10)
 
     print(f"cue times - {times}")
     return times
@@ -88,7 +83,7 @@ def randomize_startles(cues: list):
         for x in range(cue, cue + 9):
             seconds.remove(x)
     for i in range(blocksInfra.STARTLES_PER_BLOCK - 3):
-        chosen_sec = random.choice(seconds)
+        chosen_sec = random.choice(seconds[int(i / 3 * len(seconds)) : int((i + 1) / 3 * len(seconds))])
         startle_times.append(chosen_sec)
         seconds.remove(chosen_sec)
     startle_times.sort()
@@ -121,6 +116,7 @@ def randomize_shock(cues: list, startles: list, predictable: bool, params: dict)
                 for startle_time in startles:
                     if abs(shock_time - startle_time) > 3:
                         startle_near_shock = True
+    print(f"Shock is in {shock_time - time.time()} seconds")
     return shock_time
 
 

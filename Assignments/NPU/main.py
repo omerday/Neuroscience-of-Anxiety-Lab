@@ -47,7 +47,9 @@ if not params["skipInstructions"]:
     instructionsScreen.show_instructions(params, window, image, io)
 
 # Run Sequence
-blocksInfra.n_block(window, image, params, io)
+blocksInfra.run_condition(condition="N", window=window, image=image, params=params, io=io)
+blocksInfra.run_condition(condition="P", window=window, image=image, params=params, io=io)
+
 
 # Additional Data Measuring
 instructionsScreen.midpoint(params, window, image, io)
