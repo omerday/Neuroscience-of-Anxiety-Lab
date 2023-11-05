@@ -6,6 +6,7 @@ import json
 import helpers, instructionsScreen
 import blocksInfra
 import time
+import dataHandler
 
 io = launchHubServer()
 
@@ -42,19 +43,21 @@ image = visual.ImageStim(win=window, image="./img/init.jpg", units="norm", opaci
 image.draw()
 window.mouseVisible = False
 window.update()
-helpers.wait_for_space(window, io)
+helpers.wait_for_space_no_df(window, io)
+
+# Setup DFs
+params, df, mini_df = dataHandler.setup_data_frame(params)
 
 # Initiate instructions sequence
 if not params["skipInstructions"]:
-    instructionsScreen.show_instructions(params, window, image, io)
+    df, mini_df = instructionsScreen.show_instructions(params, window, image, io, df, mini_df)
 
 # Run Sequence
 
-
 # Additional Data Measuring
-instructionsScreen.midpoint(params, window, image, io)
+df, mini_df = instructionsScreen.midpoint(params, window, image, io, df, mini_df)
 
 # Run Sequence #2
 
 # End of task Finalization
-instructionsScreen.finalization(params, window, image, io)
+df, mini_df = instructionsScreen.finalization(params, window, image, io, df, mini_df)
