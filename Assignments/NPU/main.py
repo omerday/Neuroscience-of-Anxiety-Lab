@@ -5,6 +5,7 @@ import configDialog
 import json
 import helpers, instructionsScreen
 import blocksInfra
+import time
 
 io = launchHubServer()
 
@@ -24,7 +25,8 @@ params = {
     "fullScreen": configDialogBank[9] if debug is True else True,
     "saveDataAtQuit": configDialogBank[10] if debug is True else True,
     "saveConfig": configDialogBank[11] if debug is True else True,
-    "screenSize": (1024, 768)
+    "screenSize": (1024, 768),
+    "startTime": time.time()
 }
 
 if params['saveConfig']:
