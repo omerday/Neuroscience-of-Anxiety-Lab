@@ -52,7 +52,7 @@ def beginning_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: p
             answer, Df, dict = helpers.display_vas(window, params, QUESTIONS_BEGINNING_MIDDLE_EN[i],
                                                    ANSWERS_BEGINNING_MIDDLE_EN[i], Df, questionNo=i + 1, roundNo=1)
         dict['Section'] = "VASpre"
-        dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
+        dict['CurrentTime'] = round(time.time() - dict['StartTime'], 2)
         dict['VAS_score'] = answer
         dict['VAS_type'] = LABELS[i]
         dict['VAS_RT'] = time.time() - startTime
@@ -78,7 +78,7 @@ def middle_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pand
             dict['Section'] = "VAS2"
         else:
             dict['Section'] = "VAS3"
-        dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
+        dict['CurrentTime'] = round(time.time() - dict['StartTime'], 2)
         dict['VAS_score'] = answer
         dict['VAS_type'] = LABELS[i]
         dict['VAS_RT'] = time.time() - startTime
@@ -101,7 +101,7 @@ def final_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: panda
                                                    questionNo=i + 1,
                                                    roundNo=3)
         dict["Section"] = 'Question'
-        dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
+        dict['CurrentTime'] = round(time.time() - dict['StartTime'], 2)
         dict['Q_type'] = QUESTIONS_LABEL[i]
         dict['Q_RT'] = time.time() - startTime
         dict['Q_score'] = answer

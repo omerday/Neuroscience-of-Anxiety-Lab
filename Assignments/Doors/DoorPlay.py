@@ -35,7 +35,7 @@ def practice_run(window: visual.Window, params: dict, Df: pandas.DataFrame, mini
                                                                         ser)
 
         # Add data to Df
-        dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
+        dict["CurrentTime"] = round(time.time() - dict['StartTime'], 2)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
 
@@ -97,7 +97,7 @@ def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int
 
         # Add data to Df
         dict["Total_coins"] = totalCoins
-        dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
+        dict["CurrentTime"] = round(time.time() - dict['StartTime'], 2)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
 
     return Df, miniDf, totalCoins

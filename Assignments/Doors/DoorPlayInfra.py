@@ -33,7 +33,8 @@ FINAL_SUMMARY_STR2_HE = "מטבעות\n כל הכבוד!\n\n תודה על הש�
 SOUNDS = {
     "lock": "./sounds/click_1s.wav",
     "reward": "./sounds/new_reward.mp3",
-    "punishment": "./sounds/monster.wav"
+    "punishment": "./sounds/monster.wav",
+    "beep": "./sounds/beep_for_anticipation.mp3"
 }
 
 
@@ -227,7 +228,7 @@ def normalize_location(location: int):
 
 
 def update_movement_in_df(dict: dict, Df: pandas.DataFrame, location):
-    dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
+    dict['CurrentTime'] = round(time.time() - dict['StartTime'], 2)
     locationNormalized = normalize_location(location)
     dict['CurrentDistance'] = locationNormalized
     if locationNormalized > dict['Distance_max']:
@@ -250,7 +251,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
         # This should be deduced from the event channel when analyzing the .acq file.
         serialHandler.report_event(ser, scenarioIndex + 1)
     # Add initial dict parameters
-    dict['RoundStartTime'] = round(time.time() - dict['StartTime'], 3)
+    dict['RoundStartTime'] = round(time.time() - dict['StartTime'], 2)
     dict['CurrentDistance'] = round((location + 1) * 50, 0)
     dict['Distance_max'] = round((location + 1) * 50, 0)
     dict['Distance_min'] = round((location + 1) * 50, 0)
@@ -273,7 +274,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     dict["DistanceFromDoor_SubTrial"] = location
     dict['Distance_lock'] = 1 if lock else 0
     dict["DoorAction_RT"] = total_time * 1000
-    dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
+    dict["CurrentTime"] = round(time.time() - dict['StartTime'], 2)
     dict["ScenarioIndex"] = scenarioIndex + 50
     Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
     miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
@@ -281,18 +282,21 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
 
     # Seed randomization for waiting time and for door opening chance:
     random.seed(time.time() % 60)  # Seeding using the current second in order to have relatively random seed
-    doorWaitTime = 2 + random.random() * 2  # Randomize waiting time between 2-4 seconds
-    waitStart = time.time()
+    doorWaitTime = 3 + random.random() * 2  # Randomize waiting time between 3-5 seconds
     dict["Door_anticipation_time"] = doorWaitTime * 1000
 
     if params['soundOn']:
-        doorWaitTime -= 1
-        play_sound("lock", 1, dict, Df)
+        play_sound("lock", 0.5, dict, Df)
+        doorWaitTime -= 2
 
+    waitStart = time.time()
     while time.time() < waitStart + doorWaitTime:
-        dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
+        dict["CurrentTime"] = round(time.time() - dict['StartTime'], 2)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
-        core.wait(1 / 1000)
+        core.wait(1 / 100)
+
+    if params["soundOn"]:
+        play_sound("beep", 2, dict, Df)
 
     # Randomize door opening chance according to location:
     doorOpenChance = random.random()
@@ -303,7 +307,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
         serialHandler.report_event(ser, scenarioIndex + 101)
     dict["Door_opened"] = 1 if isDoorOpening else 0
     dict["DoorStatus"] = 'opened' if isDoorOpening else 'closed'
-    dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
+    dict["CurrentTime"] = round(time.time() - dict['StartTime'], 2)
     dict["ScenarioIndex"] = scenarioIndex + 100
     Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
     coins = 0
@@ -313,20 +317,22 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
         rewardChance = random.random()
 
         if rewardChance >= 0.5:
-            outcomeString = f'{reward}_reward'
+            # outcomeString = f'{reward}_reward'
+            outcome_string = "reward"
             coins = reward
             dict["DidWin"] = 1
             dict["Door_outcome"] = 'reward'
         else:
-            outcomeString = f'{punishment}_punishment'
+            # outcomeString = f'{punishment}_punishment'
+            outcome_string = "punishment"
             coins = -1 * punishment
             dict["DidWin"] = 0
             dict["Door_outcome"] = 'punishment'
 
         outcomeImage = visual.ImageStim(window,
-                                        image=params['outcomeImagePredix'] + outcomeString + params['imageSuffix'],
-                                        size=(image.size[0] / 4, image.size[1] / 2.05),
-                                        pos=(0, -0.059), units="norm", opacity=1)
+                                        image=params['outcomeImagePredix'] + outcome_string + params['imageSuffix'],
+                                        size=(image.size[0] / 4.7, image.size[1] / 2.13),
+                                        pos=(0, -0.085), units="norm", opacity=1)
         doorFrameImg = visual.ImageStim(window, image=params['doorImagePathPrefix'] + "doorOpens.png",
                                         size=(image.size[0] * 0.3, image.size[1] * 0.52),
                                         pos=(0.01, -0.1), units="norm", opacity=1)
@@ -340,7 +346,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
         else:
             waitTimeStart = time.time()
             while time.time() < waitTimeStart + 2:
-                dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
+                dict["CurrentTime"] = round(time.time() - dict['StartTime'], 2)
                 Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
                 core.wait(1 / 1000)
 
@@ -355,7 +361,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     start_time = time.time()
     iti_time = 2 + random.random() * 2
     while time.time() < start_time + iti_time:
-        dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
+        dict["CurrentTime"] = round(time.time() - dict['StartTime'], 2)
         dict["ITI_duration"] = iti_time
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         image.size += 0.05
@@ -456,7 +462,7 @@ def play_sound(soundType: str, waitTime: float, dict: dict, Df: pandas.DataFrame
     soundToPlay.play(when=now)
     startTime = time.time()
     while time.time() < startTime + waitTime:
-        dict["CurrentTime"] = round(time.time() - dict['StartTime'], 3)
+        dict["CurrentTime"] = round(time.time() - dict['StartTime'], 2)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         core.wait(1 / 1000)
     soundToPlay.stop()
