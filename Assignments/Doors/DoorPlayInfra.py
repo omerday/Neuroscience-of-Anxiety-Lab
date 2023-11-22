@@ -273,7 +273,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     total_time = time.time() - start_time
     dict["DistanceFromDoor_SubTrial"] = location
     dict['Distance_lock'] = 1 if lock else 0
-    dict["DoorAction_RT"] = total_time * 1000
+    dict["DoorAction_RT"] = round(total_time, 2) if total_time < 10 else 10
     dict["CurrentTime"] = round(time.time() - dict['StartTime'], 2)
     dict["ScenarioIndex"] = scenarioIndex + 50
     Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
