@@ -329,15 +329,15 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
             dict["DidWin"] = 0
             dict["Door_outcome"] = 'punishment'
 
-        outcomeImage = visual.ImageStim(window,
-                                        image=params['outcomeImagePredix'] + outcome_string + params['imageSuffix'],
-                                        size=(image.size[0] / 4.7, image.size[1] / 2.13),
-                                        pos=(0, -0.085), units="norm", opacity=1)
-        doorFrameImg = visual.ImageStim(window, image=params['doorImagePathPrefix'] + "doorOpens.png",
+        # outcomeImage = visual.ImageStim(window,
+        #                                 image=params['outcomeImagePredix'] + outcome_string + params['imageSuffix'],
+        #                                 size=(image.size[0] / 4.7, image.size[1] / 2.13),
+        #                                 pos=(0, -0.085), units="norm", opacity=1)
+        doorFrameImg = visual.ImageStim(window, image=params['doorImagePathPrefix'] + outcome_string + ".png",
                                         size=(image.size[0] * 0.3, image.size[1] * 0.52),
-                                        pos=(0.01, -0.1), units="norm", opacity=1)
+                                        pos=(0.01, -0.15), units="norm", opacity=1)
         image.draw()
-        outcomeImage.draw()
+        # outcomeImage.draw()
         doorFrameImg.draw()
         window.update()
         miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
@@ -350,7 +350,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
                 Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
                 core.wait(1 / 1000)
 
-        del outcomeImage
+        # del outcomeImage
         del doorFrameImg
         window.update()
 
