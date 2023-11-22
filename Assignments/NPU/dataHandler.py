@@ -13,7 +13,7 @@ HEADERS = [
     'Cue',  # Is cue presented (1 or 0)
     'Startle',  # Startle played (1 or 0, mainly for the miniDF)
     'Shock',  # Shock presented (1 or 0)
-    'FearRating'  # (0-10 
+    'FearRating',  # (0-10)
     'CueStart',  # a 1-0 representation of when the cue started, for the miniDF
     'CueEnd',  # # a 1-0 representation of when the cue ended, for the miniDF
     'ScenarioIndex',
@@ -47,12 +47,13 @@ def create_dict_for_df(params: dict, **kwargs):
 
 
 def export_raw_data(params: dict, df: pd.DataFrame):
-    # TODO: Remove duplicates!
+    df = df.drop_duplicates(keep='first')
     df.to_csv(
         f'./data/NPU {params["Subject"]} - fullDF - {datetime.datetime.now().strftime("%Y-%m-%d %H-%M.csv")}')
 
 
 def export_summarized_dataframe(params: dict, mini_df: pd.DataFrame):
+    mini_df = mini_df.drop_duplicates(keep='first')
     mini_df.to_csv(
         f'./data/NPU {params["Subject"]} - miniDF - {datetime.datetime.now().strftime("%Y-%m-%d %H-%M.csv")}')
 

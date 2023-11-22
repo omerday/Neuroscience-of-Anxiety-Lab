@@ -17,24 +17,26 @@ def show_instructions(params: dict, window: visual.Window, img: visual.ImageStim
     dict_for_df = dataHandler.create_dict_for_df(params, Step="Instructions")
 
     replay = True
+    plays_again = False
     while replay:
         for i in range(1, SLIDES):
-            dict_for_df["InstructionScreenNum"] = i
-            dict_for_df["CurrentTime"] = round(time.time() - params["startTime"], 2)
-            mini_df = pd.concat([mini_df, dict_for_df])
+            if not plays_again or (plays_again and i not in [3, 4, 5]):
+                dict_for_df["InstructionScreenNum"] = i
+                dict_for_df["CurrentTime"] = round(time.time() - params["startTime"], 2)
+                mini_df = pd.concat([mini_df, pd.DataFrame.from_records([dict_for_df])])
 
-            img.image = f"{PATH}{i}{pref}{SUFFIX}"
-            img.setSize((2,2))
-            img.draw()
-            window.update()
-            if i == 4:
-                df, mini_df = helpers.wait_for_calibration(window, params, io, df, mini_df, dict_for_df)
-            elif i == 18:
-                df = helpers.wait_for_space_with_rating_scale(window, img, io, params, df, dict_for_df)
-            elif i == 19:
-                df = helpers.play_startle_and_wait(window, io, params, df, dict_for_df)
-            else:
-                df = helpers.wait_for_space(window, io, params, df, dict_for_df)
+                img.image = f"{PATH}{i}{pref}{SUFFIX}"
+                img.setSize((2,2))
+                img.draw()
+                window.update()
+                if i == 4:
+                    df, mini_df = helpers.wait_for_calibration(window, params, io, df, mini_df, dict_for_df)
+                elif i == 18:
+                    df = helpers.wait_for_space_with_rating_scale(window, img, io, params, df, dict_for_df)
+                elif i == 19:
+                    df = helpers.play_startle_and_wait(window, io, params, df, dict_for_df)
+                else:
+                    df = helpers.wait_for_space(window, io, params, df, dict_for_df)
 
         # Last slide:
         img.image = f"{PATH}{SLIDES}{pref}{SUFFIX}"
@@ -42,18 +44,19 @@ def show_instructions(params: dict, window: visual.Window, img: visual.ImageStim
         img.draw()
         window.update()
         replay, df = helpers.wait_for_space_with_replay(window, io, params, df, dict_for_df)
+        plays_again = replay
 
         img.image = f"./img/start{params['language'][0]}{SUFFIX}"
         img.setSize((2,2))
         img.draw()
         window.update()
 
-        dict_for_df["InstructionScreenNum"] = "Start"
-        dict_for_df["CurrentTime"] = round(time.time() - params["startTime"], 2)
-        mini_df = pd.concat([mini_df, dict_for_df])
+    dict_for_df["InstructionScreenNum"] = "Start"
+    dict_for_df["CurrentTime"] = round(time.time() - params["startTime"], 2)
+    mini_df = pd.concat([mini_df, pd.DataFrame.from_records([dict_for_df])])
 
-        df = helpers.wait_for_space(window, io, params, df, dict_for_df)
-        return df, mini_df
+    df = helpers.wait_for_space(window, io, params, df, dict_for_df)
+    return df, mini_df
 
 
 def finalization(params: dict, window: visual.Window, img: visual.ImageStim, io, df: pd.DataFrame, mini_df: pd.DataFrame):
@@ -61,7 +64,7 @@ def finalization(params: dict, window: visual.Window, img: visual.ImageStim, io,
     dict_for_df["InstructionScreenNum"] = "Final"
     dict_for_df["CurrentTime"] = round(time.time() - params["startTime"], 2)
 
-    mini_df = pd.concat([mini_df, dict_for_df])
+    mini_df = pd.concat([mini_df, pd.DataFrame.from_records([dict_for_df])])
 
     img.image = f"./img/finish{params['language'][0]}{SUFFIX}"
     img.setSize((2, 2))
@@ -77,7 +80,7 @@ def midpoint(params: dict, window: visual.Window, img: visual.ImageStim, io, df:
     dict_for_df["InstructionScreenNum"] = "Middle"
     dict_for_df["CurrentTime"] = round(time.time() - params["startTime"], 2)
 
-    mini_df = pd.concat([mini_df, dict_for_df])
+    mini_df = pd.concat([mini_df, pd.DataFrame.from_records([dict_for_df])])
 
     img.image = f"./img/middle{params['gender'][0]}{params['language'][0]}{SUFFIX}"
     img.setSize((2, 2))

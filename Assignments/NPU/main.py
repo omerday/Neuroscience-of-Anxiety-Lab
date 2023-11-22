@@ -19,13 +19,15 @@ params = {
     "blocks": configDialogBank[2],
     "gender": "F" if configDialogBank[3] == "Female" else "M",
     "language": configDialogBank[4],
-    "shockType": configDialogBank[5],
-    "skipStartle": configDialogBank[6],
-    "recordPhysio": configDialogBank[7],
-    "skipInstructions": configDialogBank[8],
-    "fullScreen": configDialogBank[9] if debug is True else True,
-    "saveDataAtQuit": configDialogBank[10] if debug is True else True,
-    "saveConfig": configDialogBank[11] if debug is True else True,
+    "fistBlock": configDialogBank[5],
+    "secondBlock": configDialogBank[6],
+    "shockType": configDialogBank[7],
+    "skipStartle": configDialogBank[8],
+    "recordPhysio": configDialogBank[9],
+    "skipInstructions": configDialogBank[10],
+    "fullScreen": configDialogBank[11] if debug is True else True,
+    "saveDataAtQuit": configDialogBank[12] if debug is True else True,
+    "saveConfig": configDialogBank[13] if debug is True else True,
     "screenSize": (1024, 768),
     "startTime": time.time()
 }
@@ -53,11 +55,15 @@ if not params["skipInstructions"]:
     df, mini_df = instructionsScreen.show_instructions(params, window, image, io, df, mini_df)
 
 # Run Sequence
+for ch in params["firstBlock"]:
+    df, mini_df = blocksInfra.run_condition(window, image, params, io, ch, df, mini_df,1)
 
 # Additional Data Measuring
 df, mini_df = instructionsScreen.midpoint(params, window, image, io, df, mini_df)
 
 # Run Sequence #2
+for ch in params["secondBlock"]:
+    df, mini_df = blocksInfra.run_condition(window, image, params, io, ch, df, mini_df,2)
 
 # End of task Finalization
 df, mini_df = instructionsScreen.finalization(params, window, image, io, df, mini_df)
