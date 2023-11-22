@@ -19,7 +19,7 @@ def wait_for_space(window, Df: pandas.DataFrame, dict: dict, io):
     """
     keyboard = io.devices.keyboard
     while True:
-        dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
+        dict['CurrentTime'] = round(time.time() - dict['StartTime'], 2)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
             if event.key == " ":
@@ -35,7 +35,7 @@ def wait_for_joystick_press(window, Df: pandas.DataFrame, dict: dict):
     joy.init()
 
     while True:
-        dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
+        dict['CurrentTime'] = round(time.time() - dict['StartTime'], 2)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         core.wait(1 / 1000)
         for event in pygame.event.get():
@@ -65,7 +65,7 @@ def wait_for_space_with_replay(window, Df: pandas.DataFrame, dict: dict, io):
     """
     keyboard = io.devices.keyboard
     while True:
-        dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
+        dict['CurrentTime'] = round(time.time() - dict['StartTime'], 2)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         keys = keyboard.getPresses()
         for event in keys:
@@ -91,7 +91,7 @@ def wait_for_joystick_press_with_replay(window, Df: pandas.DataFrame, dict: dict
     joy = pygame.joystick.Joystick(0)
     joy.init()
     while True:
-        dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
+        dict['CurrentTime'] = round(time.time() - dict['StartTime'], 2)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         core.wait(1 / 1000)
         for event in pygame.event.get():
@@ -179,7 +179,7 @@ def display_vas(win, params, text, labels, Df: pandas.DataFrame, questionNo: int
                                         labels=[labels[0][::-1], labels[1][::-1]],  # Labels at the edges of the scale
                                         scale=None, choices=None, low=0, high=100, precision=1, tickHeight=0, size=2,
                                         textSize=0.6, acceptText='Continue', showValue=False, showAccept=True,
-                                        markerColor="Yellow")
+                                        markerColor="Yellow", acceptKeys=["space"])
         textItem = visual.TextStim(win, text=text, height=.12, units='norm', pos=[0, 0.3], wrapWidth=2,
                                    languageStyle='RTL', font="Open Sans")
 
@@ -188,13 +188,13 @@ def display_vas(win, params, text, labels, Df: pandas.DataFrame, questionNo: int
                                         labels=[labels[0], labels[1]],  # Labels at the edges of the scale
                                         scale=None, choices=None, low=0, high=100, precision=1, tickHeight=0, size=2,
                                         textSize=0.6, acceptText='Continue', showValue=False, showAccept=True,
-                                        markerColor="Yellow")
+                                        markerColor="Yellow", acceptKeys=["space"])
         textItem = visual.TextStim(win, text=text, height=.12, units='norm', pos=[0, 0.3], wrapWidth=2,
                                    languageStyle="LTR", font="Open Sans")
 
     dict = dataHandler.create_dict_for_df(params, Section='VAS', VASQuestionNumber=questionNo, Round=roundNo)
     while scale.noResponse:
-        dict['CurrentTime'] = round(time.time() - dict['StartTime'], 3)
+        dict['CurrentTime'] = round(time.time() - dict['StartTime'], 2)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         scale.draw()
         textItem.draw()
@@ -232,7 +232,7 @@ def display_image_for_time(window: visual.Window, params: dict, imagePath: str, 
     key = event.getKeys()
     endTime = time.time() + timeframe
     while time.time() < endTime and 'space' not in key:
-        dictForDf['CurrentTime'] = round(time.time() - dictForDf['StartTime'], 3)
+        dictForDf['CurrentTime'] = round(time.time() - dictForDf['StartTime'], 2)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         key = event.getKeys()
     return Df
@@ -247,7 +247,7 @@ def display_image_until_key(window: visual.Window, params: dict, imagePath: str,
     window.update()
     pressedKey = event.getKeys()
     while key not in pressedKey:
-        dictForDf['CurrentTime'] = round(time.time() - dictForDf['StartTime'], 3)
+        dictForDf['CurrentTime'] = round(time.time() - dictForDf['StartTime'], 2)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         pressedKey = event.getKeys()
     return Df
