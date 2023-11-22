@@ -30,6 +30,10 @@ def get_user_input(debug=False):
     userInput.addField('Gender', "Female" if not configExists else loadedData["gender"], choices=["Male", "Female"])
     userInput.addField("Preferred Language", "Hebrew" if not configExists else loadedData["language"],
                        choices=["Hebrew", "English"])
+    userInput.addField('First Block Order', "PNUNUNP" if not configExists else loadedData["firstBlock"],
+                       choices=["PNUNUNP", "UNPNPNU"])
+    userInput.addField('Second Block Order', "UNPNPNU" if not configExists else loadedData["secondBlock"],
+                       choices=["PNUNUNP", "UNPNPNU"])
     userInput.addField("Shock Type", "Shock" if not configExists else loadedData["shockType"], choices=["Shock", "Sound"])
     userInput.addField("Skip Startles", False if not configExists else loadedData["skipStartle"])
     userInput.addField('Record Physiology', False if not configExists else loadedData['recordPhysio'])

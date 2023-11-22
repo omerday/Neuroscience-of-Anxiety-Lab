@@ -1,3 +1,4 @@
+import pandas as pd
 from psychopy import visual, core, event
 from psychopy.iohub import launchHubServer
 from psychopy.iohub.client.keyboard import Keyboard
@@ -8,9 +9,12 @@ import time
 import random
 
 from Assignments.NPU import blocksInfra
+import dataHandler
+
+CALIBRATION_TIME = 5
 
 
-def wait_for_space(window: visual.Window, io):
+def wait_for_space_no_df(window: visual.Window, io):
     keyboard = io.devices.keyboard
     while True:
         for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
@@ -21,32 +25,84 @@ def wait_for_space(window: visual.Window, io):
                 core.quit()
 
 
-def wait_for_space_with_replay(window, io):
+def wait_for_space(window: visual.Window, io, params: dict, df: pd.DataFrame, dict_for_df: dict):
     keyboard = io.devices.keyboard
     while True:
-        keys = keyboard.getPresses()
-        for event in keys:
-            if event.key == 'r' or event.key == 'R':
-                return True
-            elif event.key == ' ':
-                return False
-            elif event.key == "escape":
+        dict_for_df["CurrentTime"] = round(time.time() - params["startTime"], 2)
+        df = pd.concat([df, pd.DataFrame.from_records([dict_for_df])])
+        for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
+            if event.key == " ":
+                return df
+            if event.key == "escape":
+                dataHandler.export_raw_data(params, df)
                 window.close()
                 core.quit()
 
 
-def wait_for_space_with_rating_scale(window, img: visual.ImageStim, io, params:dict):
+def wait_for_space_with_replay(window: visual.Window, io, params: dict, df: pd.DataFrame, dict_for_df: dict):
     keyboard = io.devices.keyboard
-    print(-params["screenSize"][1]/2 + 100)
-    scale = ratingscale.RatingScale(win=window, scale=None,labels=["0", "10"], low=0, high=10, markerStart=5, showAccept=False, markerColor="Red",
-                                   acceptKeys=["space"], textColor="Black", lineColor="Black", pos=(0,-window.size[1]/2 + 200))
+    while True:
+        dict_for_df["CurrentTime"] = round(time.time() - params["startTime"], 2)
+        df = pd.concat([df, pd.DataFrame.from_records([dict_for_df])])
+        keys = keyboard.getPresses()
+        for event in keys:
+            if event.key == 'r' or event.key == 'R':
+                return True, df
+            elif event.key == ' ':
+                return False, df
+            elif event.key == "escape":
+                dataHandler.export_raw_data(params, df)
+                window.close()
+                core.quit()
+
+
+def wait_for_space_with_rating_scale(window, img: visual.ImageStim, io, params: dict, df: pd.DataFrame,
+                                     dict_for_df: dict):
+    keyboard = io.devices.keyboard
+    print(-params["screenSize"][1] / 2 + 100)
+    scale = ratingscale.RatingScale(win=window, scale=None, labels=["0", "10"], low=0, high=10, markerStart=5,
+                                    showAccept=False, markerColor="Red",
+                                    acceptKeys=["space"], textColor="Black", lineColor="Black",
+                                    pos=(0, -window.size[1] / 2 + 200))
     while scale.noResponse:
+        dict_for_df["CurrentTime"] = round(time.time() - params["startTime"], 2)
+        dict_for_df["FearRating"] = scale.getRating()
+        df = pd.concat([df, pd.DataFrame.from_records([dict_for_df])])
+
         img.draw()
         scale.draw()
         window.flip()
 
+    return df
 
-def play_startle_and_wait(window: visual.Window, io):
+
+def wait_for_calibration(window: visual.Window, params, io, df: pd.DataFrame, mini_df: pd.DataFrame, dict_for_df: dict):
+    keyboard = io.devices.keyboard
+    start_time = time.time()
+    dict_for_df["Step"] = "Calibration"
+    dict_for_df["CurrentTime"] = round(time.time() - params["startTime"], 2)
+
+    if params["recordPhysio"]:
+        # TODO: Send signal and add it to the dict
+        pass
+
+    mini_df = pd.concat([mini_df, pd.DataFrame.from_records([dict_for_df])])
+
+    while time.time() < start_time + CALIBRATION_TIME:
+        dict_for_df["CurrentTime"] = round(time.time() - params["startTime"], 2)
+        df = pd.concat([df, pd.DataFrame.from_records([dict_for_df])])
+        for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
+            if event.key == "escape":
+                dataHandler.export_raw_data(params, df)
+                window.close()
+                core.quit()
+        core.wait(0.05)
+
+    return df, mini_df
+
+
+def play_startle_and_wait(window: visual.Window, io, params: dict, df: pd.DataFrame,
+                                     dict_for_df: dict):
     soundToPlay = sound.Sound("./sounds/startle_probe.wav")
     core.wait(2)
     now = ptb.GetSecs()
@@ -54,11 +110,14 @@ def play_startle_and_wait(window: visual.Window, io):
     core.wait(1)
     keyboard = io.devices.keyboard
     while True:
+        dict_for_df["CurrentTime"] = round(time.time() - params["startTime"], 2)
+        df = pd.concat([df, pd.DataFrame.from_records([dict_for_df])])
         for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
             if event.key == " ":
                 soundToPlay.stop()
-                return
+                return df
             if event.key == "escape":
+                dataHandler.export_raw_data(params, df)
                 window.close()
                 core.quit()
 
@@ -83,7 +142,7 @@ def randomize_startles(cues: list):
         for x in range(cue, cue + 9):
             seconds.remove(x)
     for i in range(blocksInfra.STARTLES_PER_BLOCK - 3):
-        chosen_sec = random.choice(seconds[int(i / 3 * len(seconds)) : int((i + 1) / 3 * len(seconds))])
+        chosen_sec = random.choice(seconds[int(i / 3 * len(seconds)): int((i + 1) / 3 * len(seconds))])
         startle_times.append(chosen_sec)
         seconds.remove(chosen_sec)
     startle_times.sort()
@@ -131,15 +190,31 @@ def prepare_cues_and_startles(cues: list, startles: list):
     return cue_times, startle_times
 
 
-def play_startle():
+def play_startle(dict_for_df: dict, df: pd.DataFrame, mini_df: pd.DataFrame):
+    dict_for_df["CurrentTime"] = round(time.time() - dict_for_df["StartTime"], 2)
+    dict_for_df["Startle"] = 1
+    mini_df = pd.concat([mini_df, pd.DataFrame.from_records([dict_for_df])])
+
     soundToPlay = sound.Sound("./sounds/startle_probe.wav")
     now = ptb.GetSecs()
+    now_for_while = time.time()
     soundToPlay.play(when=now)
-    core.wait(1)
+    while time.time() < now_for_while + 1:
+        dict_for_df["CurrentTime"] = round(time.time() - dict_for_df["StartTime"], 2)
+        df = pd.concat([df, pd.DataFrame.from_records([dict_for_df])])
+        core.wait(0.05)
+    dict_for_df.pop("Startle")
+    return df, mini_df
 
 
-def play_shock_sound():
+def play_shock_sound(dict_for_df: dict, df: pd.DataFrame):
     soundToPlay = sound.Sound("./sounds/shock_sound.mp3")
     now = ptb.GetSecs()
     soundToPlay.play(when=now)
-    core.wait(1.5)
+    now_for_while = time.time()
+
+    while time.time() < now_for_while + 1.5:
+        dict_for_df["CurrentTime"] = round(time.time() - dict_for_df["StartTime"], 2)
+        df = pd.concat([df, pd.DataFrame.from_records([dict_for_df])])
+        core.wait(0.05)
+    return df
