@@ -12,14 +12,18 @@ def user_input_play(debug=False):
     """
 
     loadedData = {}
-    if os.path.exists("./data/config.json"):
-        configExists = True
-        with open("./data/config.json") as file:
-            try:
-                loadedData = json.load(file)
-            except json.decoder.JSONDecodeError:
-                configExists = False
+    if os.path.exists("./data"):
+        if os.path.exists("./data/config.json"):
+            configExists = True
+            with open("./data/config.json") as file:
+                try:
+                    loadedData = json.load(file)
+                except json.decoder.JSONDecodeError:
+                    configExists = False
+        else:
+            configExists = False
     else:
+        os.mkdir("data")
         configExists = False
 
     userInput = gui.Dlg(title="DOORS Task Information")

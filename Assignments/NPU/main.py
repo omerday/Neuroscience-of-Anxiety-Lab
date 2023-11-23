@@ -10,7 +10,7 @@ import dataHandler
 
 io = launchHubServer()
 
-debug = True
+debug = False
 configDialogBank = configDialog.get_user_input(debug)
 
 params = {
@@ -19,7 +19,7 @@ params = {
     "blocks": configDialogBank[2],
     "gender": "F" if configDialogBank[3] == "Female" else "M",
     "language": configDialogBank[4],
-    "fistBlock": configDialogBank[5],
+    "firstBlock": configDialogBank[5],
     "secondBlock": configDialogBank[6],
     "shockType": configDialogBank[7],
     "skipStartle": configDialogBank[8],
