@@ -8,7 +8,7 @@ from psychopy.iohub import launchHubServer
 import runConfigDialog
 import dataHandler
 import serialHandler
-from Assignments.Doors import DoorPlayInfra
+import DoorPlayInfra
 from instructionsScreen import show_instructions
 import VAS
 import serial

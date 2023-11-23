@@ -8,7 +8,7 @@ import psychtoolbox as ptb
 import time
 import random
 
-from Assignments.NPU import blocksInfra
+import blocksInfra
 import dataHandler
 
 CALIBRATION_TIME = 5
