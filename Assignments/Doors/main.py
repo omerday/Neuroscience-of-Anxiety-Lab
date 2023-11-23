@@ -16,7 +16,7 @@ import serial
 io = launchHubServer()
 
 # log = LoggerSetup.set_up_logger()
-debug = True
+debug = False
 configDialogBank = runConfigDialog.user_input_play(debug)
 
 params = {

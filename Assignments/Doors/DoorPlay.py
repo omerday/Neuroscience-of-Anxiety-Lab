@@ -23,21 +23,21 @@ def practice_run(window: visual.Window, params: dict, Df: pandas.DataFrame, mini
         image, distanceFromDoor = DoorPlayInfra.setup_door(window, params, 0, 0)
 
         # Setup new dictionary
-        dict = dataHandler.create_dict_for_df(params, Section='Practice', )
-        dict['Reward_magnitude'] = 0
-        dict['Punishment_magnitude'] = 0
-        dict['Subtrial'] = subtrial
-        dict['DistanceAtStart'] = distanceFromDoor * 100
+        dict_for_df = dataHandler.create_dict_for_df(params, Section='Practice', )
+        dict_for_df['Reward_magnitude'] = 0
+        dict_for_df['Punishment_magnitude'] = 0
+        dict_for_df['Subtrial'] = subtrial
+        dict_for_df['DistanceAtStart'] = distanceFromDoor * 100
 
         # Execute Door of selected scenario
-        coinsWon, total_time, Df, miniDf, dict, lock = DoorPlayInfra.start_door(window, params, image, 0, 0,
-                                                                        distanceFromDoor, Df, dict, io, 0, miniDf,
+        coinsWon, total_time, Df, miniDf, dict_for_df, lock = DoorPlayInfra.start_door(window, params, image, 0, 0,
+                                                                        distanceFromDoor, Df, dict_for_df, io, 0, miniDf,
                                                                         ser)
 
         # Add data to Df
-        dict["CurrentTime"] = round(time.time() - dict['StartTime'], 2)
-        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
-        miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
+        dict_for_df["CurrentTime"] = round(time.time() - dict_for_df['StartTime'], 2)
+        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
+        miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict_for_df])])
 
         subtrial = subtrial + 1
 
@@ -82,22 +82,22 @@ def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int
         image, distanceFromDoor = DoorPlayInfra.setup_door(window, params, scenario[0], scenario[1])
 
         # Setup new dictionary
-        dict = dataHandler.create_dict_for_df(params, Section=f'TaskRun{roundNum}', Round=roundNum, TotalCoins=totalCoins, )
-        dict['Reward_magnitude'] = scenario[0]
-        dict['Punishment_magnitude'] = scenario[1]
-        dict['Subtrial'] = subtrial
-        dict['DistanceAtStart'] = distanceFromDoor * 100
-        dict["ScenarioIndex"] = scenarioIndex
+        dict_for_df = dataHandler.create_dict_for_df(params, Section=f'TaskRun{roundNum}', Round=roundNum, TotalCoins=totalCoins, )
+        dict_for_df['Reward_magnitude'] = scenario[0]
+        dict_for_df['Punishment_magnitude'] = scenario[1]
+        dict_for_df['Subtrial'] = subtrial
+        dict_for_df['DistanceAtStart'] = distanceFromDoor * 100
+        dict_for_df["ScenarioIndex"] = scenarioIndex
 
         # Execute Door of selected scenario
-        coinsWon, total_time, Df, miniDf, dict, lock = DoorPlayInfra.start_door(window, params, image, scenario[0], scenario[1],
-                                                                  distanceFromDoor, Df, dict, io, scenarioIndex, miniDf, ser)
+        coinsWon, total_time, Df, miniDf, dict_for_df, lock = DoorPlayInfra.start_door(window, params, image, scenario[0], scenario[1],
+                                                                  distanceFromDoor, Df, dict_for_df, io, scenarioIndex, miniDf, ser)
         totalCoins += coinsWon
         scenariosList.remove(scenario)
 
         # Add data to Df
-        dict["Total_coins"] = totalCoins
-        dict["CurrentTime"] = round(time.time() - dict['StartTime'], 2)
-        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
+        dict_for_df["Total_coins"] = totalCoins
+        dict_for_df["CurrentTime"] = round(time.time() - dict_for_df['StartTime'], 2)
+        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
 
     return Df, miniDf, totalCoins
