@@ -25,7 +25,8 @@ def show_instructions(params: dict, window: visual.Window, img: visual.ImageStim
         for i in range(1, SLIDES):
             if params["skipCalibration"] and i in [3, 4, 5]:
                 pass
-            #TODO: Skip startle screen
+            elif params["skipStartle"] and i == STARTLE_SLIDE:
+                pass
             elif not plays_again or (plays_again and i not in [3, 4, 5]):
                 dict_for_df["InstructionScreenNum"] = i
                 dict_for_df["CurrentTime"] = round(time.time() - params["startTime"], 2)
