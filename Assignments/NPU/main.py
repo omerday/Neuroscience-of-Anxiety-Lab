@@ -11,7 +11,7 @@ import VAS
 
 io = launchHubServer()
 
-debug = False
+debug = True
 configDialogBank = configDialog.get_user_input(debug)
 
 params = {
@@ -64,7 +64,8 @@ for ch in params["firstBlock"]:
     df, mini_df = blocksInfra.run_condition(window, image, params, io, ch, df, mini_df,1)
 
 # Additional Data Measuring
-df, mini_df = instructionsScreen.midpoint(params, window, image, io, df, mini_df)
+if not params["skipCalibration"]:
+    df, mini_df = instructionsScreen.midpoint(params, window, image, io, df, mini_df)
 
 df, mini_df = VAS.vas(window, params, df, mini_df, io, 2)
 df = instructionsScreen.start_screen(window, image, params, df, io)

@@ -145,7 +145,7 @@ def play_shock_and_wait(window: visual.Window, io, params: dict, df: pd.DataFram
 
 def randomize_cue_times():
     random.seed()
-    times = [random.randrange(10, 35), random.randrange(45, 75), random.randrange(85, 110)]
+    times = [random.randrange(8, 30), random.randrange(45, 70), random.randrange(85, 105)]
     times.sort()
 
     print(f"cue times - {times}")
@@ -160,7 +160,7 @@ def randomize_startles(cues: list):
         # Randomize startle within cues (between 2 secs from the beginning and 2 secs from the end
         startle_times.append(round(random.uniform(cue + 2, cue + blocksInfra.CUE_LENGTH - 1), 2))
         # Remove all the seconds with a cue in them for future randchoice
-        for x in range(cue, cue + 9):
+        for x in range(cue, cue + blocksInfra.CUE_LENGTH + 1):
             seconds.remove(x)
     for i in range(blocksInfra.STARTLES_PER_BLOCK - 3):
         chosen_sec = random.choice(seconds[int(i / 3 * len(seconds)): int((i + 1) / 3 * len(seconds))])
@@ -175,29 +175,41 @@ def randomize_startles(cues: list):
 def randomize_shock(cues: list, startles: list, predictable: bool, params: dict):
     random.seed()
     shock_time = 0
+    resolve_cue_conflict = False
     if predictable:
-        num_of_cue = random.randrange(0, 3)
-        shock_time = round(random.uniform(cues[num_of_cue], cues[num_of_cue] + blocksInfra.CUE_LENGTH), 2)
-        if not params["skipStartle"]:
-            startle_in_cue = 0
-            for startle_time in startles:
-                if cues[num_of_cue] <= startle_time <= cues[num_of_cue] + blocksInfra.CUE_LENGTH:
-                    startle_in_cue = startle_time
-            while startle_in_cue - 2.5 < shock_time < startle_in_cue + 2.5:
-                shock_time = round(random.uniform(cues[num_of_cue], cues[num_of_cue] + blocksInfra.CUE_LENGTH), 2)
-    else:
+        cue_for_shock = round(random.choice([0, 1, 2]), 2)
         if params["skipStartle"]:
-            shock_time = random.randrange(10, blocksInfra.BLOCK_LENGTH - 10)
+            shock_time = round(cues[cue_for_shock] + random.uniform(2, 10), 2)
         else:
-            startle_near_shock = True
-            while startle_near_shock:
-                startle_near_shock = False
-                shock_time = random.randrange(10, blocksInfra.BLOCK_LENGTH - 10)
-                for startle_time in startles:
-                    if abs(shock_time - startle_time) > 3:
-                        startle_near_shock = True
-    print(f"Shock is in {shock_time - time.time()} seconds")
-    return shock_time
+            shock_time = round(cues[cue_for_shock] + random.uniform(6, 8), 2)
+            resolve_cue_conflict = True
+
+    else:
+        shock_time = round(random.randrange(10, blocksInfra.BLOCK_LENGTH - 10), 2)
+        for cue in cues:
+            if cue <= shock_time <= cue + blocksInfra.CUE_LENGTH:
+                if params["skipStartle"]:
+                    if not cue + 2 <= shock_time <= cue + blocksInfra.CUE_LENGTH - 2:
+                        shock_time = round(random.randrange(cue + 2, cue + blocksInfra.CUE_LENGTH - 2), 2)
+                else:
+                    shock_time = round(cue + random.uniform(6, 8), 2)
+                    resolve_cue_conflict = True
+
+    if resolve_cue_conflict:
+        cue_time = 0
+        for cue in cues:
+            if cue <= shock_time <= cue + blocksInfra.CUE_LENGTH:
+                cue_time = cue
+        new_startle = round(cue_time + random.uniform(1.5, 3.5), 2)
+        for startle in startles:
+            if cue_time < startle < cue_time + blocksInfra.CUE_LENGTH:
+                startles.remove(startle)
+                startles.append(new_startle)
+                startles.sort()
+
+    print(f"Shock is in {shock_time} seconds")
+    print(f"Final startles are: {startles}")
+    return shock_time, startles
 
 
 def prepare_cues_and_startles(cues: list, startles: list):
