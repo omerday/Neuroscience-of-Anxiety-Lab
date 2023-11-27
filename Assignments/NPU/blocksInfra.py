@@ -12,7 +12,7 @@ PATH = "./img/blocks/"
 SUFFIX = ".jpg"
 
 BLOCK_LENGTH = 120
-CUE_LENGTH = 8
+CUE_LENGTH = 12
 STARTLES_PER_BLOCK = 6
 
 FIXED_CUE_TIMES = [30, 60, 90]
@@ -33,14 +33,15 @@ def run_condition(window: visual.Window, image: visual.ImageStim, params: dict, 
     else:
         startle_times = []
 
-    cue_times, startle_times = helpers.prepare_cues_and_startles(cue_times, startle_times)
-
     dict_for_df = dataHandler.create_dict_for_df(params=params, Step="Game", Block=blockNum, Scenario=condition)
 
     if condition == 'N':
         shock_time = 0
     else:
-        shock_time = helpers.randomize_shock(cue_times, startle_times, True if condition == 'P' else False, params)
+        shock_time, startle_times = helpers.randomize_shock(cue_times, startle_times, True if condition == 'P' else False, params)
+        shock_time = shock_time + time.time()
+
+    cue_times, startle_times = helpers.prepare_cues_and_startles(cue_times, startle_times)
 
     timing_index = 0
     start_time = time.time()
