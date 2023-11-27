@@ -26,9 +26,10 @@ params = {
     "skipStartle": configDialogBank[8],
     "recordPhysio": configDialogBank[9],
     "skipInstructions": configDialogBank[10],
-    "fullScreen": configDialogBank[11] if debug is True else True,
-    "saveDataAtQuit": configDialogBank[12] if debug is True else True,
-    "saveConfig": configDialogBank[13] if debug is True else True,
+    "skipCalibration": configDialogBank[11],
+    "fullScreen": configDialogBank[12] if debug is True else True,
+    "saveDataAtQuit": configDialogBank[13] if debug is True else True,
+    "saveConfig": configDialogBank[14] if debug is True else True,
     "screenSize": (1024, 768),
     "startTime": time.time()
 }

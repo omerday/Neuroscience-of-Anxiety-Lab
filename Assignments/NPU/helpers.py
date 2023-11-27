@@ -11,7 +11,7 @@ import random
 import blocksInfra
 import dataHandler
 
-CALIBRATION_TIME = 5
+CALIBRATION_TIME = 60
 
 
 def wait_for_space_no_df(window: visual.Window, io):
@@ -61,7 +61,7 @@ def wait_for_space_with_rating_scale(window, img: visual.ImageStim, io, params: 
     keyboard = io.devices.keyboard
     print(-params["screenSize"][1] / 2 + 100)
     scale = ratingscale.RatingScale(win=window, scale=None, labels=["0", "10"], low=0, high=10, markerStart=5,
-                                    showAccept=False, markerColor="Red",
+                                    showAccept=False, markerColor="Gray",
                                     acceptKeys=["space"], textColor="Black", lineColor="Black",
                                     pos=(0, -window.size[1] / 2 + 200))
     while scale.noResponse:

@@ -20,7 +20,9 @@ def show_instructions(params: dict, window: visual.Window, img: visual.ImageStim
     plays_again = False
     while replay:
         for i in range(1, SLIDES):
-            if not plays_again or (plays_again and i not in [3, 4, 5]):
+            if params["skipCalibration"] and i in [3, 4, 5]:
+                pass
+            elif not plays_again or (plays_again and i not in [3, 4, 5]):
                 dict_for_df["InstructionScreenNum"] = i
                 dict_for_df["CurrentTime"] = round(time.time() - params["startTime"], 2)
                 mini_df = pd.concat([mini_df, pd.DataFrame.from_records([dict_for_df])])
