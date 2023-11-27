@@ -80,7 +80,7 @@ def wait_in_condition(window: visual.Window, image: visual.ImageStim, startle_ti
                      io, params: dict, dict_for_df: dict, df:pd.DataFrame, mini_df:pd.DataFrame, fear_level=5, shock_time=0):
     keyboard = io.devices.keyboard
     scale = ratingscale.RatingScale(win=window, scale=None, labels=["0", "10"], low=0, high=10, markerStart=fear_level,
-                                    showAccept=False, markerColor="Red", textColor="Black", lineColor="Black",
+                                    showAccept=False, markerColor="Gray", textColor="Black", lineColor="Black",
                                     pos=(0, -window.size[1] / 2 + 200))
 
     while time.time() <= end_time:

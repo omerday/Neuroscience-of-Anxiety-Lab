@@ -26,9 +26,10 @@ params = {
     "skipStartle": configDialogBank[8],
     "recordPhysio": configDialogBank[9],
     "skipInstructions": configDialogBank[10],
-    "fullScreen": configDialogBank[11] if debug is True else True,
-    "saveDataAtQuit": configDialogBank[12] if debug is True else True,
-    "saveConfig": configDialogBank[13] if debug is True else True,
+    "skipCalibration": configDialogBank[11],
+    "fullScreen": configDialogBank[12] if debug is True else True,
+    "saveDataAtQuit": configDialogBank[13] if debug is True else True,
+    "saveConfig": configDialogBank[14] if debug is True else True,
     "screenSize": (1024, 768),
     "startTime": time.time()
 }
@@ -41,7 +42,7 @@ if params['saveConfig']:
 
 window = visual.Window(size=params['screenSize'], monitor="testMonitor", color=(0.6, 0.6, 0.6), winType='pyglet',
                        fullscr=True if params['fullScreen'] else False, units="pix")
-image = visual.ImageStim(win=window, image="./img/init.jpg", units="norm", opacity=1,
+image = visual.ImageStim(win=window, image="./img/init.jpeg", units="norm", opacity=1,
                          size=(2, 2) if not params['fullScreen'] else None)
 image.draw()
 window.mouseVisible = False

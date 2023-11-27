@@ -11,7 +11,7 @@ import random
 import blocksInfra
 import dataHandler
 
-CALIBRATION_TIME = 5
+CALIBRATION_TIME = 60
 
 
 def wait_for_space_no_df(window: visual.Window, io):
@@ -61,7 +61,7 @@ def wait_for_space_with_rating_scale(window, img: visual.ImageStim, io, params: 
     keyboard = io.devices.keyboard
     print(-params["screenSize"][1] / 2 + 100)
     scale = ratingscale.RatingScale(win=window, scale=None, labels=["0", "10"], low=0, high=10, markerStart=5,
-                                    showAccept=False, markerColor="Red",
+                                    showAccept=False, markerColor="Gray",
                                     acceptKeys=["space"], textColor="Black", lineColor="Black",
                                     pos=(0, -window.size[1] / 2 + 200))
     while scale.noResponse:
@@ -105,6 +105,27 @@ def play_startle_and_wait(window: visual.Window, io, params: dict, df: pd.DataFr
                                      dict_for_df: dict):
     soundToPlay = sound.Sound("./sounds/startle_probe.wav")
     core.wait(2)
+    now = ptb.GetSecs()
+    soundToPlay.play(when=now)
+    core.wait(1)
+    keyboard = io.devices.keyboard
+    while True:
+        dict_for_df["CurrentTime"] = round(time.time() - params["startTime"], 2)
+        df = pd.concat([df, pd.DataFrame.from_records([dict_for_df])])
+        for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
+            if event.key == " ":
+                soundToPlay.stop()
+                return df
+            if event.key == "escape":
+                dataHandler.export_raw_data(params, df)
+                window.close()
+                core.quit()
+
+
+def play_shock_and_wait(window: visual.Window, io, params: dict, df: pd.DataFrame,
+                                     dict_for_df: dict):
+    soundToPlay = sound.Sound("./sounds/shock_sound.mp3")
+    core.wait(3)
     now = ptb.GetSecs()
     soundToPlay.play(when=now)
     core.wait(1)

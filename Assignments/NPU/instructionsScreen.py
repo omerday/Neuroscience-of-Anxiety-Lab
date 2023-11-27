@@ -7,8 +7,11 @@ import helpers
 import dataHandler
 
 PATH = "./img/instructions/"
-SUFFIX = ".jpg"
-SLIDES = 20
+SUFFIX = ".jpeg"
+SLIDES = 21
+SHOCK_SLIDE = 7
+STARTLE_SLIDE = 20
+RATING_SLIDE = 19
 
 
 def show_instructions(params: dict, window: visual.Window, img: visual.ImageStim, io, df: pd.DataFrame,
@@ -20,7 +23,11 @@ def show_instructions(params: dict, window: visual.Window, img: visual.ImageStim
     plays_again = False
     while replay:
         for i in range(1, SLIDES):
-            if not plays_again or (plays_again and i not in [3, 4, 5]):
+            if params["skipCalibration"] and i in [3, 4, 5]:
+                pass
+            elif params["skipStartle"] and i == STARTLE_SLIDE:
+                pass
+            elif not plays_again or (plays_again and i not in [3, 4, 5]):
                 dict_for_df["InstructionScreenNum"] = i
                 dict_for_df["CurrentTime"] = round(time.time() - params["startTime"], 2)
                 mini_df = pd.concat([mini_df, pd.DataFrame.from_records([dict_for_df])])
@@ -32,9 +39,11 @@ def show_instructions(params: dict, window: visual.Window, img: visual.ImageStim
                 if i == 4:
                     df, mini_df = helpers.wait_for_calibration(window, params, io, df, mini_df, dict_for_df)
                     dict_for_df["Step"] = "Instructions"
-                elif i == 18:
+                elif i == SHOCK_SLIDE:
+                    df = helpers.play_shock_and_wait(window, io, params, df, dict_for_df)
+                elif i == RATING_SLIDE:
                     df = helpers.wait_for_space_with_rating_scale(window, img, io, params, df, dict_for_df)
-                elif i == 19:
+                elif i == STARTLE_SLIDE:
                     df = helpers.play_startle_and_wait(window, io, params, df, dict_for_df)
                 else:
                     df = helpers.wait_for_space(window, io, params, df, dict_for_df)
