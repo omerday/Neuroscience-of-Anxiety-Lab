@@ -11,7 +11,7 @@ import VAS
 
 io = launchHubServer()
 
-debug = True
+debug = False
 configDialogBank = configDialog.get_user_input(debug)
 
 params = {
