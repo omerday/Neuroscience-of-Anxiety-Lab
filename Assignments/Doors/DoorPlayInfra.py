@@ -16,6 +16,8 @@ import serialHandler
 MIN_LOCATION = -1.5
 MAX_LOCATION = 1.75
 
+WAIT_TIME_ON_DOOR = 4
+
 MIDDLE_SUMMARY_STR1_HE = "בואו ננוח מעט.\n"
 MIDDLE_SUMMARY_STR2Key_HE = "לחצו על הרווח כשאתם מוכנים להמשיך."
 MIDDLE_SUMMARY_STR2Joy_HE = "לחצו על הג'ויסטיק כשאתם מוכנים להמשיך."
@@ -342,10 +344,10 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
         window.update()
         miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict_for_df])])
         if params['soundOn']:
-            play_sound(dict_for_df["Door_outcome"], 2.5, dict_for_df, Df)
+            play_sound(dict_for_df["Door_outcome"], WAIT_TIME_ON_DOOR, dict_for_df, Df)
         else:
             waitTimeStart = time.time()
-            while time.time() < waitTimeStart + 2:
+            while time.time() < waitTimeStart + WAIT_TIME_ON_DOOR:
                 dict_for_df["CurrentTime"] = round(time.time() - dict_for_df['StartTime'], 2)
                 Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
                 core.wait(1 / 1000)
@@ -353,6 +355,13 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
         # del outcomeImage
         del doorFrameImg
         window.update()
+
+    else:
+        waitTimeStart = time.time()
+        while time.time() < waitTimeStart + WAIT_TIME_ON_DOOR:
+            dict_for_df["CurrentTime"] = round(time.time() - dict_for_df['StartTime'], 2)
+            Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
+            core.wait(1 / 1000)
 
     image.setImage('./img/iti.jpg')
     image.setSize((3.2, 3.2))
