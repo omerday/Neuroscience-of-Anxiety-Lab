@@ -31,6 +31,7 @@ def show_instructions(params: dict, window: visual.Window, img: visual.ImageStim
                 window.update()
                 if i == 4:
                     df, mini_df = helpers.wait_for_calibration(window, params, io, df, mini_df, dict_for_df)
+                    dict_for_df["Step"] = "Instructions"
                 elif i == 18:
                     df = helpers.wait_for_space_with_rating_scale(window, img, io, params, df, dict_for_df)
                 elif i == 19:
@@ -46,16 +47,16 @@ def show_instructions(params: dict, window: visual.Window, img: visual.ImageStim
         replay, df = helpers.wait_for_space_with_replay(window, io, params, df, dict_for_df)
         plays_again = replay
 
-        img.image = f"./img/start{params['language'][0]}{SUFFIX}"
-        img.setSize((2,2))
-        img.draw()
-        window.update()
-
-    dict_for_df["InstructionScreenNum"] = "Start"
-    dict_for_df["CurrentTime"] = round(time.time() - params["startTime"], 2)
-    mini_df = pd.concat([mini_df, pd.DataFrame.from_records([dict_for_df])])
-
-    df = helpers.wait_for_space(window, io, params, df, dict_for_df)
+    #     img.image = f"./img/start{params['language'][0]}{SUFFIX}"
+    #     img.setSize((2,2))
+    #     img.draw()
+    #     window.update()
+    #
+    # dict_for_df["InstructionScreenNum"] = "Start"
+    # dict_for_df["CurrentTime"] = round(time.time() - params["startTime"], 2)
+    # mini_df = pd.concat([mini_df, pd.DataFrame.from_records([dict_for_df])])
+    #
+    # df = helpers.wait_for_space(window, io, params, df, dict_for_df)
     return df, mini_df
 
 
@@ -94,11 +95,21 @@ def midpoint(params: dict, window: visual.Window, img: visual.ImageStim, io, df:
     window.update()
 
     df, mini_df = helpers.wait_for_calibration(window, params, io, df, mini_df, dict_for_df)
-
-    img.image = f"./img/start{params['language'][0]}{SUFFIX}"
-    img.setSize((2, 2))
-    img.draw()
-    window.update()
-    df = helpers.wait_for_space(window, io, params, df, dict_for_df)
+    #
+    # img.image = f"./img/start{params['language'][0]}{SUFFIX}"
+    # img.setSize((2, 2))
+    # img.draw()
+    # window.update()
+    # df = helpers.wait_for_space(window, io, params, df, dict_for_df)
 
     return df, mini_df
+
+
+def start_screen(window: visual.Window, image: visual.ImageStim, params: dict, df: pandas.DataFrame, io):
+    dict_for_df = dataHandler.create_dict_for_df(params, Step="Instructions", InstructionScreenNum="Start",)
+    image.image = f"./img/start{params['language'][0]}{SUFFIX}"
+    image.setSize((2, 2))
+    image.draw()
+    window.update()
+    df = helpers.wait_for_space(window, io, params, df, dict_for_df)
+    return df

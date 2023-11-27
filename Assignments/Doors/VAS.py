@@ -51,7 +51,7 @@ def beginning_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: p
         else:
             answer, Df, dict = helpers.display_vas(window, params, QUESTIONS_BEGINNING_MIDDLE_EN[i],
                                                    ANSWERS_BEGINNING_MIDDLE_EN[i], Df, questionNo=i + 1, roundNo=1)
-        dict['Section'] = "VASpre"
+        dict['Section'] = "VAS1"
         dict['CurrentTime'] = round(time.time() - dict['StartTime'], 2)
         dict['VAS_score'] = answer
         dict['VAS_type'] = LABELS[i]
@@ -73,11 +73,11 @@ def middle_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pand
             answer, Df, dict = helpers.display_vas(window, params, QUESTIONS_BEGINNING_MIDDLE_EN[i],
                                                    ANSWERS_BEGINNING_MIDDLE_EN[i], Df, questionNo=i + 1, roundNo=2)
         if roundNum == 2:
-            dict['Section'] = "VAS1"
-        elif roundNum == 3:
             dict['Section'] = "VAS2"
-        else:
+        elif roundNum == 3:
             dict['Section'] = "VAS3"
+        else:
+            dict['Section'] = "VASpost"
         dict['CurrentTime'] = round(time.time() - dict['StartTime'], 2)
         dict['VAS_score'] = answer
         dict['VAS_type'] = LABELS[i]

@@ -7,6 +7,7 @@ import helpers, instructionsScreen
 import blocksInfra
 import time
 import dataHandler
+import VAS
 
 io = launchHubServer()
 
@@ -38,7 +39,7 @@ if params['saveConfig']:
     with open("./data/config.json", 'w') as file:
         json.dump(params, file, indent=3)
 
-window = visual.Window(size=params['screenSize'], monitor="testMonitor", color="black", winType='pyglet',
+window = visual.Window(size=params['screenSize'], monitor="testMonitor", color=(0.6, 0.6, 0.6), winType='pyglet',
                        fullscr=True if params['fullScreen'] else False, units="pix")
 image = visual.ImageStim(win=window, image="./img/init.jpg", units="norm", opacity=1,
                          size=(2, 2) if not params['fullScreen'] else None)
@@ -54,6 +55,9 @@ params, df, mini_df = dataHandler.setup_data_frame(params)
 if not params["skipInstructions"]:
     df, mini_df = instructionsScreen.show_instructions(params, window, image, io, df, mini_df)
 
+df, mini_df = VAS.vas(window, params, df, mini_df, io, 1)
+df = instructionsScreen.start_screen(window, image, params, df, io)
+
 # Run Sequence
 for ch in params["firstBlock"]:
     df, mini_df = blocksInfra.run_condition(window, image, params, io, ch, df, mini_df,1)
@@ -61,9 +65,14 @@ for ch in params["firstBlock"]:
 # Additional Data Measuring
 df, mini_df = instructionsScreen.midpoint(params, window, image, io, df, mini_df)
 
+df, mini_df = VAS.vas(window, params, df, mini_df, io, 2)
+df = instructionsScreen.start_screen(window, image, params, df, io)
+
 # Run Sequence #2
 for ch in params["secondBlock"]:
     df, mini_df = blocksInfra.run_condition(window, image, params, io, ch, df, mini_df,2)
+
+df, mini_df = VAS.vas(window, params, df, mini_df, io, 3)
 
 # End of task Finalization
 df, mini_df = instructionsScreen.finalization(params, window, image, io, df, mini_df)
