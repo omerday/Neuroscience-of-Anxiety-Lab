@@ -45,7 +45,7 @@ params = {
     'port': 'COM4',
 }
 
-if params['saveConfig']:
+if params['saveAsDefault']:
     if not os.path.exists("./data"):
         os.mkdir("data")
     with open("./data/config.json", 'w') as file:

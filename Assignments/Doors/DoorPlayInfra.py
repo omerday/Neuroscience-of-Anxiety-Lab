@@ -331,13 +331,9 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
             dict_for_df["DidWin"] = 0
             dict_for_df["Door_outcome"] = 'punishment'
 
-        # outcomeImage = visual.ImageStim(window,
-        #                                 image=params['outcomeImagePredix'] + outcome_string + params['imageSuffix'],
-        #                                 size=(image.size[0] / 4.7, image.size[1] / 2.13),
-        #                                 pos=(0, -0.085), units="norm", opacity=1)
         doorFrameImg = visual.ImageStim(window, image=params['doorImagePathPrefix'] + outcome_string + ".png",
-                                        size=(image.size[0] * 0.3, image.size[1] * 0.52),
-                                        pos=(0.01, -0.15), units="norm", opacity=1)
+                                        size=(image.size[0], image.size[1]),
+                                        pos=(0, 0), units="norm", opacity=1)
         image.draw()
         # outcomeImage.draw()
         doorFrameImg.draw()
