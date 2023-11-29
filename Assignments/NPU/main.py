@@ -38,7 +38,7 @@ params = {
 if params['saveConfig']:
     if not os.path.exists("./data"):
         os.mkdir("data")
-    with open("./data/config.json", 'w') as file:
+    with open("./data/NPUconfig.json", 'w') as file:
         json.dump(params, file, indent=3)
 
 ser = serial.Serial(params['port'], 115200, bytesize=serial.EIGHTBITS, timeout=1) if params['recordPhysio'] else None
