@@ -8,6 +8,7 @@ import blocksInfra
 import time
 import dataHandler
 import VAS
+import serial, serialHandler
 
 io = launchHubServer()
 
@@ -40,6 +41,10 @@ if params['saveConfig']:
     with open("./data/config.json", 'w') as file:
         json.dump(params, file, indent=3)
 
+ser = serial.Serial(params['port'], 115200, bytesize=serial.EIGHTBITS, timeout=1) if params['recordPhysio'] else None
+if params['recordPhysio']:
+    serialHandler.report_event(ser, 255)
+
 window = visual.Window(size=params['screenSize'], monitor="testMonitor", color=(0.6, 0.6, 0.6), winType='pyglet',
                        fullscr=True if params['fullScreen'] else False, units="pix")
 image = visual.ImageStim(win=window, image="./img/init.jpeg", units="norm", opacity=1,
@@ -54,7 +59,7 @@ params, df, mini_df = dataHandler.setup_data_frame(params)
 
 # Initiate instructions sequence
 if not params["skipInstructions"]:
-    df, mini_df = instructionsScreen.show_instructions(params, window, image, io, df, mini_df)
+    df, mini_df = instructionsScreen.show_instructions(params, window, image, io, df, mini_df, ser)
 
 df, mini_df = VAS.vas(window, params, df, mini_df, io, 1)
 df = instructionsScreen.start_screen(window, image, params, df, io)
@@ -65,7 +70,7 @@ for ch in params["firstBlock"]:
 
 # Additional Data Measuring
 if not params["skipCalibration"]:
-    df, mini_df = instructionsScreen.midpoint(params, window, image, io, df, mini_df)
+    df, mini_df = instructionsScreen.midpoint(params, window, image, io, df, mini_df, ser)
 
 df, mini_df = VAS.vas(window, params, df, mini_df, io, 2)
 df = instructionsScreen.start_screen(window, image, params, df, io)

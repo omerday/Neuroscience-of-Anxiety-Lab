@@ -15,7 +15,7 @@ RATING_SLIDE = 19
 
 
 def show_instructions(params: dict, window: visual.Window, img: visual.ImageStim, io, df: pd.DataFrame,
-                      mini_df: pd.DataFrame):
+                      mini_df: pd.DataFrame, ser=None):
     pref = f"{params['gender'][0]}{params['language'][0]}"
     dict_for_df = dataHandler.create_dict_for_df(params, Step="Instructions")
 
@@ -37,7 +37,7 @@ def show_instructions(params: dict, window: visual.Window, img: visual.ImageStim
                 img.draw()
                 window.update()
                 if i == 4:
-                    df, mini_df = helpers.wait_for_calibration(window, params, io, df, mini_df, dict_for_df)
+                    df, mini_df = helpers.wait_for_calibration(window, params, io, df, mini_df, dict_for_df, ser)
                     dict_for_df["Step"] = "Instructions"
                 elif i == SHOCK_SLIDE:
                     df = helpers.play_shock_and_wait(window, io, params, df, dict_for_df)
@@ -56,16 +56,6 @@ def show_instructions(params: dict, window: visual.Window, img: visual.ImageStim
         replay, df = helpers.wait_for_space_with_replay(window, io, params, df, dict_for_df)
         plays_again = replay
 
-    #     img.image = f"./img/start{params['language'][0]}{SUFFIX}"
-    #     img.setSize((2,2))
-    #     img.draw()
-    #     window.update()
-    #
-    # dict_for_df["InstructionScreenNum"] = "Start"
-    # dict_for_df["CurrentTime"] = round(time.time() - params["startTime"], 2)
-    # mini_df = pd.concat([mini_df, pd.DataFrame.from_records([dict_for_df])])
-    #
-    # df = helpers.wait_for_space(window, io, params, df, dict_for_df)
     return df, mini_df
 
 
@@ -85,7 +75,8 @@ def finalization(params: dict, window: visual.Window, img: visual.ImageStim, io,
     return df, mini_df
 
 
-def midpoint(params: dict, window: visual.Window, img: visual.ImageStim, io, df: pd.DataFrame, mini_df: pd.DataFrame):
+def midpoint(params: dict, window: visual.Window, img: visual.ImageStim, io, df: pd.DataFrame,
+             mini_df: pd.DataFrame, ser=None):
     dict_for_df = dataHandler.create_dict_for_df(params, Step="Instructions")
     dict_for_df["InstructionScreenNum"] = "Middle"
     dict_for_df["CurrentTime"] = round(time.time() - params["startTime"], 2)
@@ -103,7 +94,7 @@ def midpoint(params: dict, window: visual.Window, img: visual.ImageStim, io, df:
     img.draw()
     window.update()
 
-    df, mini_df = helpers.wait_for_calibration(window, params, io, df, mini_df, dict_for_df)
+    df, mini_df = helpers.wait_for_calibration(window, params, io, df, mini_df, dict_for_df, ser)
     #
     # img.image = f"./img/start{params['language'][0]}{SUFFIX}"
     # img.setSize((2, 2))

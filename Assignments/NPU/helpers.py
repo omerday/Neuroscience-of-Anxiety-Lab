@@ -10,6 +10,7 @@ import random
 
 import blocksInfra
 import dataHandler
+import serialHandler
 
 CALIBRATION_TIME = 60
 
@@ -76,17 +77,19 @@ def wait_for_space_with_rating_scale(window, img: visual.ImageStim, io, params: 
     return df
 
 
-def wait_for_calibration(window: visual.Window, params, io, df: pd.DataFrame, mini_df: pd.DataFrame, dict_for_df: dict):
+def wait_for_calibration(window: visual.Window, params, io, df: pd.DataFrame, mini_df: pd.DataFrame,
+                         dict_for_df: dict, ser=None):
     keyboard = io.devices.keyboard
     start_time = time.time()
     dict_for_df["Step"] = "Calibration"
     dict_for_df["CurrentTime"] = round(time.time() - params["startTime"], 2)
+    dict_for_df["ScenarioIndex"] = 9
 
     if params["recordPhysio"]:
-        # TODO: Send signal and add it to the dict
-        pass
+        serialHandler.report_event(ser, dict_for_df["ScenarioIndex"])
 
     mini_df = pd.concat([mini_df, pd.DataFrame.from_records([dict_for_df])])
+    dict_for_df.pop("ScenarioIndex")
 
     while time.time() < start_time + CALIBRATION_TIME:
         dict_for_df["CurrentTime"] = round(time.time() - params["startTime"], 2)
@@ -102,7 +105,7 @@ def wait_for_calibration(window: visual.Window, params, io, df: pd.DataFrame, mi
 
 
 def play_startle_and_wait(window: visual.Window, io, params: dict, df: pd.DataFrame,
-                                     dict_for_df: dict):
+                          dict_for_df: dict):
     soundToPlay = sound.Sound("./sounds/startle_probe.wav")
     core.wait(2)
     now = ptb.GetSecs()
@@ -123,7 +126,7 @@ def play_startle_and_wait(window: visual.Window, io, params: dict, df: pd.DataFr
 
 
 def play_shock_and_wait(window: visual.Window, io, params: dict, df: pd.DataFrame,
-                                     dict_for_df: dict):
+                        dict_for_df: dict):
     soundToPlay = sound.Sound("./sounds/shock_sound.mp3")
     core.wait(3)
     now = ptb.GetSecs()
@@ -223,10 +226,15 @@ def prepare_cues_and_startles(cues: list, startles: list):
     return cue_times, startle_times
 
 
-def play_startle(dict_for_df: dict, df: pd.DataFrame, mini_df: pd.DataFrame):
+def play_startle(dict_for_df: dict, df: pd.DataFrame, mini_df: pd.DataFrame, ser=None):
     dict_for_df["CurrentTime"] = round(time.time() - dict_for_df["StartTime"], 2)
     dict_for_df["Startle"] = 1
+    dict_for_df["ScenarioIndex"] += blocksInfra.STARTLE_EVENT_INDEX
+
     mini_df = pd.concat([mini_df, pd.DataFrame.from_records([dict_for_df])])
+
+    if ser is not None:
+        serialHandler.report_event(ser, dict_for_df["ScenarioIndex"])
 
     soundToPlay = sound.Sound("./sounds/startle_probe.wav")
     now = ptb.GetSecs()
@@ -237,6 +245,7 @@ def play_startle(dict_for_df: dict, df: pd.DataFrame, mini_df: pd.DataFrame):
         df = pd.concat([df, pd.DataFrame.from_records([dict_for_df])])
         core.wait(0.05)
     dict_for_df.pop("Startle")
+    dict_for_df["ScenarioIndex"] -= blocksInfra.STARTLE_EVENT_INDEX
     return df, mini_df
 
 
