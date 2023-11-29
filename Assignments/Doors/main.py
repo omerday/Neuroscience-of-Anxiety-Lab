@@ -12,6 +12,7 @@ import DoorPlayInfra
 from instructionsScreen import show_instructions
 import VAS
 import serial
+import os
 
 io = launchHubServer()
 
@@ -44,7 +45,9 @@ params = {
     'port': 'COM4',
 }
 
-if params['saveAsDefault']:
+if params['saveConfig']:
+    if not os.path.exists("./data"):
+        os.mkdir("data")
     with open("./data/config.json", 'w') as file:
         json.dump(params, file, indent=3)
 
