@@ -98,12 +98,6 @@ def midpoint(params: dict, window: visual.Window, img: visual.ImageStim, io, df:
     window.update()
 
     df, mini_df = helpers.wait_for_calibration(window, params, io, df, mini_df, dict_for_df, ser)
-    #
-    # img.image = f"./img/start{params['language'][0]}{SUFFIX}"
-    # img.setSize((2, 2))
-    # img.draw()
-    # window.update()
-    # df = helpers.wait_for_space(window, io, params, df, dict_for_df)
 
     return df, mini_df
 
@@ -129,7 +123,7 @@ def blank_screen(window: visual.Window, image: visual.ImageStim, params: dict, d
     wait_end_time = time.time() + random.uniform(2, 4)
     while time.time() < wait_end_time:
         dict_for_df["CurrentTime"] = round(time.time() - params["startTime"], 2)
-        df = pd.concat([df, pandas.DataFrame.from_records(dict_for_df)])
+        df = pd.concat([df, pandas.DataFrame.from_records([dict_for_df])])
         for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
             if event.key == "escape":
                 window.close()

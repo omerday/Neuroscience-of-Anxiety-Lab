@@ -17,7 +17,8 @@ HEADERS = [
     'CueStart',  # a 1-0 representation of when the cue started, for the miniDF
     'CueEnd',  # # a 1-0 representation of when the cue ended, for the miniDF
     'ScenarioIndex',
-    'InstructionScreenNum'
+    'InstructionScreenNum',
+    'HabituationNum'
     'ShockType',
 ]
 

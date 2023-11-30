@@ -61,6 +61,8 @@ params, df, mini_df = dataHandler.setup_data_frame(params)
 if not params["skipInstructions"]:
     df, mini_df = instructionsScreen.show_instructions(params, window, image, io, df, mini_df, ser)
 
+if not params['skipStartle']:
+    df, mini_df = helpers.startle_habituation_sequence(window, image, params, io, df, mini_df, ser)
 df, mini_df = VAS.vas(window, params, df, mini_df, io, 1)
 df = instructionsScreen.start_screen(window, image, params, df, io)
 
