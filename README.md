@@ -9,7 +9,10 @@ We'll supply a brief explanation on each of the tasks, and how to run the code a
 
 
 ### 🚪 Doors
+The doors task is meant to measure the approach and avoidance of the subject in a given environment.
 
+In each round of the assignment, the subject will encounter 49 doors with an even chance to either win a certain amount of money, or lose a certain (different) amount of money.
+He needs to decide whether to approach or avoid the door (by going back and forth), increasing or decreasing the chances of the door opening upon the distance from the door.
 
 ### ⚡️ NPU
 
