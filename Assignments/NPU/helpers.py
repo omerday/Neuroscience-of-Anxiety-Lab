@@ -13,6 +13,8 @@ import dataHandler
 import serialHandler
 
 CALIBRATION_TIME = 60
+HABITUATION_STARTLES = 9
+HABITUATION_EVENT = 8
 
 
 def wait_for_space_no_df(window: visual.Window, io):
@@ -38,6 +40,20 @@ def wait_for_space(window: visual.Window, io, params: dict, df: pd.DataFrame, di
                 dataHandler.export_raw_data(params, df)
                 window.close()
                 core.quit()
+
+
+def wait_until_time_with_df(window: visual.Window, io, params: dict, df: pd.DataFrame, dict_for_df: dict, end_time):
+    keyboard = io.devices.keyboard
+    while time.time() < end_time:
+        dict_for_df["CurrentTime"] = round(time.time() - params["startTime"], 2)
+        df = pd.concat([df, pd.DataFrame.from_records([dict_for_df])])
+        for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
+            if event.key == "escape":
+                dataHandler.export_raw_data(params, df)
+                window.close()
+                core.quit()
+        core.wait(0.01)
+    return df
 
 
 def wait_for_space_with_replay(window: visual.Window, io, params: dict, df: pd.DataFrame, dict_for_df: dict):
@@ -260,3 +276,31 @@ def play_shock_sound(dict_for_df: dict, df: pd.DataFrame):
         df = pd.concat([df, pd.DataFrame.from_records([dict_for_df])])
         core.wait(0.05)
     return df
+
+
+def startle_habituation_sequence(window:visual.Window, image: visual.ImageStim, params: dict, io, df: pd.DataFrame,
+                                 mini_df:pd.DataFrame, ser=None):
+    image.image = f"./img/habituation{params['language'][0]}.jpeg"
+    image.setSize((2,2))
+    image.draw()
+    window.update()
+
+    dict_for_df = dataHandler.create_dict_for_df(params, Step="Habituation Sequence", ScenarioIndex=HABITUATION_EVENT)
+
+    df = wait_until_time_with_df(window, io, params, df, dict_for_df, time.time() + 4)
+
+    for i in range(1, HABITUATION_STARTLES + 1):
+        wait_end_time = time.time() + random.uniform(5, 7)
+        if params["recordPhysio"]:
+            serialHandler.report_event(ser, HABITUATION_EVENT)
+        dict_for_df["HabituationNum"] = i
+        mini_df = pd.concat([mini_df, pd.DataFrame.from_records([dict_for_df])])
+
+        soundToPlay = sound.Sound("./sounds/startle_probe.wav")
+        now = ptb.GetSecs()
+        soundToPlay.play(when=now)
+        core.wait(0.5)
+
+        df = wait_until_time_with_df(window, io, params, df, dict_for_df, wait_end_time)
+
+    return df, mini_df

@@ -1,3 +1,4 @@
+import random
 import time
 import datetime
 import pandas
@@ -5,6 +6,8 @@ import pandas as pd
 from psychopy import visual, core, event
 import helpers
 import dataHandler
+from psychopy.iohub.client.keyboard import Keyboard
+
 
 PATH = "./img/instructions/"
 SUFFIX = ".jpeg"
@@ -95,12 +98,6 @@ def midpoint(params: dict, window: visual.Window, img: visual.ImageStim, io, df:
     window.update()
 
     df, mini_df = helpers.wait_for_calibration(window, params, io, df, mini_df, dict_for_df, ser)
-    #
-    # img.image = f"./img/start{params['language'][0]}{SUFFIX}"
-    # img.setSize((2, 2))
-    # img.draw()
-    # window.update()
-    # df = helpers.wait_for_space(window, io, params, df, dict_for_df)
 
     return df, mini_df
 
@@ -112,4 +109,24 @@ def start_screen(window: visual.Window, image: visual.ImageStim, params: dict, d
     image.draw()
     window.update()
     df = helpers.wait_for_space(window, io, params, df, dict_for_df)
+    return df
+
+
+def blank_screen(window: visual.Window, image: visual.ImageStim, params: dict, df: pandas.DataFrame, io, block: int,
+                 condition: str):
+    keyboard = io.devices.keyboard
+    dict_for_df = dataHandler.create_dict_for_df(params, Step="Game", Block=block, Scenario=condition)
+    image.image = f"./image/blank.jpeg"
+    image.setSize((2, 2))
+    image.draw()
+    window.update()
+    wait_end_time = time.time() + random.uniform(2, 4)
+    while time.time() < wait_end_time:
+        dict_for_df["CurrentTime"] = round(time.time() - params["startTime"], 2)
+        df = pd.concat([df, pandas.DataFrame.from_records([dict_for_df])])
+        for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
+            if event.key == "escape":
+                window.close()
+                core.quit()
+        core.wait(0.01)
     return df

@@ -61,12 +61,15 @@ params, df, mini_df = dataHandler.setup_data_frame(params)
 if not params["skipInstructions"]:
     df, mini_df = instructionsScreen.show_instructions(params, window, image, io, df, mini_df, ser)
 
+if not params['skipStartle']:
+    df, mini_df = helpers.startle_habituation_sequence(window, image, params, io, df, mini_df, ser)
 df, mini_df = VAS.vas(window, params, df, mini_df, io, 1)
 df = instructionsScreen.start_screen(window, image, params, df, io)
 
 # Run Sequence
 for ch in params["firstBlock"]:
     df, mini_df = blocksInfra.run_condition(window, image, params, io, ch, df, mini_df,1)
+    df = instructionsScreen.blank_screen(window, image, params, df, io, 1, ch)
 
 # Additional Data Measuring
 if not params["skipCalibration"]:
@@ -78,6 +81,7 @@ df = instructionsScreen.start_screen(window, image, params, df, io)
 # Run Sequence #2
 for ch in params["secondBlock"]:
     df, mini_df = blocksInfra.run_condition(window, image, params, io, ch, df, mini_df,2)
+    df = instructionsScreen.blank_screen(window, image, params, df, io, 2, ch)
 
 df, mini_df = VAS.vas(window, params, df, mini_df, io, 3)
 
