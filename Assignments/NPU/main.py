@@ -67,6 +67,7 @@ df = instructionsScreen.start_screen(window, image, params, df, io)
 # Run Sequence
 for ch in params["firstBlock"]:
     df, mini_df = blocksInfra.run_condition(window, image, params, io, ch, df, mini_df,1)
+    df = instructionsScreen.blank_screen(window, image, params, df, io, 1, ch)
 
 # Additional Data Measuring
 if not params["skipCalibration"]:
@@ -78,6 +79,7 @@ df = instructionsScreen.start_screen(window, image, params, df, io)
 # Run Sequence #2
 for ch in params["secondBlock"]:
     df, mini_df = blocksInfra.run_condition(window, image, params, io, ch, df, mini_df,2)
+    df = instructionsScreen.blank_screen(window, image, params, df, io, 2, ch)
 
 df, mini_df = VAS.vas(window, params, df, mini_df, io, 3)
 
