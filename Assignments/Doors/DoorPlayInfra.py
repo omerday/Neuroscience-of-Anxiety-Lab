@@ -249,9 +249,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     start_time = time.time()
     end_time = start_time + 10
     if params['recordPhysio']:
-        # When sending a signal to biopac, we'll add 1 to the scenario in order to avoid 0 from being sent.
-        # This should be deduced from the event channel when analyzing the .acq file.
-        serialHandler.report_event(ser, scenarioIndex + 1)
+        serialHandler.report_event(ser, scenarioIndex)
     # Add initial dict parameters
     dict_for_df['RoundStartTime'] = round(time.time() - dict_for_df['StartTime'], 2)
     dict_for_df['CurrentDistance'] = round((location + 1) * 50, 0)
@@ -271,7 +269,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
 
     dict_for_df["ScenarioIndex"] = scenarioIndex + 50
     if params['recordPhysio']:
-        serialHandler.report_event(ser, scenarioIndex + 51)
+        serialHandler.report_event(ser, scenarioIndex + 50)
     total_time = time.time() - start_time
     dict_for_df["DistanceFromDoor_SubTrial"] = location
     dict_for_df['Distance_lock'] = 1 if lock else 0
@@ -306,7 +304,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     print(f"doorChance - {doorOpenChance}, location - {location / 100}, isOpening - {isDoorOpening}")
 
     if params['recordPhysio']:
-        serialHandler.report_event(ser, scenarioIndex + 101)
+        serialHandler.report_event(ser, scenarioIndex + 100)
     dict_for_df["Door_opened"] = 1 if isDoorOpening else 0
     dict_for_df["DoorStatus"] = 'opened' if isDoorOpening else 'closed'
     dict_for_df["CurrentTime"] = round(time.time() - dict_for_df['StartTime'], 2)

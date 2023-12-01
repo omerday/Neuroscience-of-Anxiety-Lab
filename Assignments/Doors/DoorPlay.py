@@ -64,10 +64,10 @@ def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int
     scenariosList = helpers.get_p_r_couples(sizeOfArray)
 
     # Scenarios List indexing method:
-    # (reward - 1) * 7 + Punishment - 1
+    # (reward - 1) * 7 + Punishment
     # For example:
-    # Reward 1 Punishment 1 - index 0
-    # Reward 5 Punishment 2 - index 29
+    # Reward 1 Punishment 1 - index 1
+    # Reward 5 Punishment 2 - index 30
 
     # When sending a signal to biopac, we'll add 1 to the scenario in order to avoid 0 from being sent.
     # This should be deduced from the event channel when analyzing the .acq file.
@@ -78,7 +78,7 @@ def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int
         # Select a scenario and setup door
         subtrial = subtrial + 1
         scenario = random.choice(scenariosList)
-        scenarioIndex = (scenario[0] - 1) * 7 + (scenario[1] - 1)
+        scenarioIndex = (scenario[0] - 1) * 7 + (scenario[1])
         image, distanceFromDoor = DoorPlayInfra.setup_door(window, params, scenario[0], scenario[1])
 
         # Setup new dictionary
