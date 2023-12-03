@@ -287,7 +287,8 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
 
     if params['soundOn']:
         play_sound("lock", 0.5, dict_for_df, Df)
-        doorWaitTime -= 2
+        if params['beeps']:
+            doorWaitTime -= 2
 
     waitStart = time.time()
     while time.time() < waitStart + doorWaitTime:
@@ -295,7 +296,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
         core.wait(1 / 100)
 
-    if params["soundOn"]:
+    if params["soundOn"] and params['beeps']:
         play_sound("beep", 2, dict_for_df, Df)
 
     # Randomize door opening chance according to location:
