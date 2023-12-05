@@ -439,7 +439,7 @@ def show_wheel(window: visual.Window, params: dict, io=None):
     return
 
 
-def show_screen_post_match(window: visual.Window, params: dict, io, coins=0):
+def show_screen_post_match(window: visual.Window, params: dict, io, coins=0, df=None, mini_df=None):
     if params["language"] == "Hebrew":
         message = visual.TextStim(window,
                                   text=FINAL_SUMMARY_STR1_HE + f'{coins} ' + FINAL_SUMMARY_STR2_HE,
@@ -453,9 +453,9 @@ def show_screen_post_match(window: visual.Window, params: dict, io, coins=0):
     message.draw()
     window.update()
     if params["keyboardMode"]:
-        helpers.wait_for_space_no_df(window, io)
+        helpers.wait_for_space_no_df(window, io, params, df, mini_df)
     else:
-        helpers.wait_for_joystick_no_df(window)
+        helpers.wait_for_joystick_no_df(window, params, df, mini_df)
 
 
 def play_sound(soundType: str, waitTime: float, dict_for_df: dict, Df: pandas.DataFrame):

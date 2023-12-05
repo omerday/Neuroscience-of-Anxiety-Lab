@@ -101,7 +101,7 @@ Df, miniDf = VAS.middle_vas(window, params, Df, miniDf, roundNum)
 
 # Final VAS
 Df, miniDf = VAS.final_vas(window, params, Df, miniDf)
-DoorPlayInfra.show_screen_post_match(window, params, io, totalCoins)
+DoorPlayInfra.show_screen_post_match(window, params, io, totalCoins, Df, miniDf)
 helpers.graceful_quitting(window, params, Df, miniDf)
 
 # Recap

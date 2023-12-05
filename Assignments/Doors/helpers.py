@@ -9,7 +9,7 @@ import pandas
 import datetime
 
 
-def wait_for_space(window, Df: pandas.DataFrame, dict_for_df: dict, io):
+def wait_for_space(window, Df: pandas.DataFrame, dict_for_df: dict, io, params=None, mini_df=None):
     """
     Helper method to wait for a Spacebar keypress and keep the window open until then
     :param dict_for_df:
@@ -25,11 +25,12 @@ def wait_for_space(window, Df: pandas.DataFrame, dict_for_df: dict, io):
             if event.key == " ":
                 return Df
             if event.key == "escape":
+                graceful_quitting(window, params, Df, mini_df)
                 window.close()
                 core.quit()
 
 
-def wait_for_joystick_press(window, Df: pandas.DataFrame, dict_for_df: dict):
+def wait_for_joystick_press(window, Df: pandas.DataFrame, dict_for_df: dict, params=None, mini_df=None):
     pygame.init()
     joy = pygame.joystick.Joystick(0)
     joy.init()
@@ -40,11 +41,13 @@ def wait_for_joystick_press(window, Df: pandas.DataFrame, dict_for_df: dict):
         core.wait(1 / 1000)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                graceful_quitting(window, params, Df, mini_df)
                 window.close()
                 core.quit()
                 break
             if event.type == pygame.JOYBUTTONDOWN:
                 if event.button == 7:
+                    graceful_quitting(window, params, Df, mini_df)
                     window.close()
                     core.quit()
                 else:
@@ -54,7 +57,7 @@ def wait_for_joystick_press(window, Df: pandas.DataFrame, dict_for_df: dict):
                                 return Df
 
 
-def wait_for_space_with_replay(window, Df: pandas.DataFrame, dict_for_df: dict, io):
+def wait_for_space_with_replay(window, Df: pandas.DataFrame, dict_for_df: dict, io, params=None, mini_df=None):
     """
     Helper method to wait for a Spacebar keypress and keep the window open, or get 'r' keypress for replay of the
      InstructionsEnglish. Returns True if needed to replay.
@@ -74,11 +77,12 @@ def wait_for_space_with_replay(window, Df: pandas.DataFrame, dict_for_df: dict, 
             elif event.key == ' ':
                 return Df, False
             elif event.key == "escape":
+                graceful_quitting(window, params, Df, mini_df)
                 window.close()
                 core.quit()
 
 
-def wait_for_joystick_press_with_replay(window, Df: pandas.DataFrame, dict_for_df: dict):
+def wait_for_joystick_press_with_replay(window, Df: pandas.DataFrame, dict_for_df: dict, params=None, mini_df=None):
     """
     Helper method to wait for a joystick keypress and keep the window open, or get 'r' keypress for replay of the
      InstructionsEnglish. Returns True if needed to replay.
@@ -96,10 +100,12 @@ def wait_for_joystick_press_with_replay(window, Df: pandas.DataFrame, dict_for_d
         core.wait(1 / 1000)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                graceful_quitting(window, params, Df, mini_df)
                 window.close()
                 core.quit()
             if event.type == pygame.JOYBUTTONDOWN:
                 if event.button == 7:
+                    graceful_quitting(window, params, Df, mini_df)
                     window.close()
                     core.quit()
                 elif event.button == 1:
@@ -114,7 +120,7 @@ def wait_for_joystick_press_with_replay(window, Df: pandas.DataFrame, dict_for_d
                                 return Df, False
 
 
-def wait_for_space_no_df(window, io):
+def wait_for_space_no_df(window, io, params=None, df=None, mini_df=None):
     """
     Helper method to wait for a Spacebar keypress and keep the window open, without writing to Df.
     :param window:
@@ -127,11 +133,10 @@ def wait_for_space_no_df(window, io):
             if event.key == " ":
                 return
             if event.key == "escape":
-                window.close()
-                core.quit()
+                graceful_quitting(window, params, df, mini_df)
 
 
-def wait_for_joystick_no_df(window):
+def wait_for_joystick_no_df(window, params=None, df=None, mini_df=None):
     pygame.init()
     joy = pygame.joystick.Joystick(0)
     joy.init()
@@ -139,11 +144,13 @@ def wait_for_joystick_no_df(window):
         core.wait(1 / 1000)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                graceful_quitting(window, params, df, mini_df)
                 window.close()
                 core.quit()
                 break
             if event.type == pygame.JOYBUTTONDOWN:
                 if event.button == 7:
+                    graceful_quitting(window, params, df, mini_df)
                     window.close()
                     core.quit()
                 else:
@@ -179,7 +186,7 @@ def display_vas(win, params, text, labels, Df: pandas.DataFrame, questionNo: int
                                         labels=[labels[0][::-1], labels[1][::-1]],  # Labels at the edges of the scale
                                         scale=None, choices=None, low=0, high=100, precision=1, tickHeight=0, size=2,
                                         textSize=0.6, acceptText='Continue', showValue=False, showAccept=True,
-                                        markerColor="Yellow", acceptKeys=["space"])
+                                        markerColor="Yellow", acceptKeys=[" ", "space"], markerStart=50)
         textItem = visual.TextStim(win, text=text, height=.12, units='norm', pos=[0, 0.3], wrapWidth=2,
                                    languageStyle='RTL', font="Open Sans")
 
@@ -188,7 +195,7 @@ def display_vas(win, params, text, labels, Df: pandas.DataFrame, questionNo: int
                                         labels=[labels[0], labels[1]],  # Labels at the edges of the scale
                                         scale=None, choices=None, low=0, high=100, precision=1, tickHeight=0, size=2,
                                         textSize=0.6, acceptText='Continue', showValue=False, showAccept=True,
-                                        markerColor="Yellow", acceptKeys=["space"])
+                                        markerColor="Yellow", acceptKeys=[" ", "space"], markerStart=50)
         textItem = visual.TextStim(win, text=text, height=.12, units='norm', pos=[0, 0.3], wrapWidth=2,
                                    languageStyle="LTR", font="Open Sans")
 
@@ -254,15 +261,17 @@ def display_image_until_key(window: visual.Window, params: dict, imagePath: str,
 
 
 def graceful_quitting(window: visual.Window, params: dict, Df: pandas.DataFrame, miniDf=None):
-    dataHandler.export_raw_data(params, Df)
+    if Df is not None:
+        dataHandler.export_raw_data(params, Df)
     if miniDf is not None:
         dataHandler.export_summarized_dataframe(params, miniDf)
     window.close()
     core.quit()
 
 
-def countdown_before_door_open(window: visual.Window, image: visual.ImageStim, params: dict, df: pandas.DataFrame, dict_for_df: dict):
-    text_stim = visual.TextStim(window, text='3', pos=(0,0), bold=True, height = 75 * image.size[0])
+def countdown_before_door_open(window: visual.Window, image: visual.ImageStim, params: dict, df: pandas.DataFrame,
+                               dict_for_df: dict):
+    text_stim = visual.TextStim(window, text='3', pos=(0, 0), bold=True, height=75 * image.size[0])
     print(image.size)
     for i in [3, 2, 1]:
         text_stim.text = str(i)
