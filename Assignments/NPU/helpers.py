@@ -99,7 +99,7 @@ def wait_for_calibration(window: visual.Window, params, io, df: pd.DataFrame, mi
     start_time = time.time()
     dict_for_df["Step"] = "Calibration"
     dict_for_df["CurrentTime"] = round(time.time() - params["startTime"], 2)
-    dict_for_df["ScenarioIndex"] = 9
+    dict_for_df["ScenarioIndex"] = 99
 
     if params["recordPhysio"]:
         serialHandler.report_event(ser, dict_for_df["ScenarioIndex"])
