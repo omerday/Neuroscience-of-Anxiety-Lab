@@ -248,8 +248,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     # Set end time for 10s max
     start_time = time.time()
     end_time = start_time + 10
-    if params['recordPhysio']:
-        serialHandler.report_event(ser, scenarioIndex)
+
     # Add initial dict parameters
     dict_for_df['RoundStartTime'] = round(time.time() - dict_for_df['StartTime'], 2)
     dict_for_df['CurrentDistance'] = round((location + 1) * 50, 0)
@@ -269,13 +268,12 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
 
     dict_for_df["ScenarioIndex"] = scenarioIndex + 50
     if params['recordPhysio']:
-        serialHandler.report_event(ser, scenarioIndex + 50)
+        serialHandler.report_event(ser, dict_for_df["ScenarioIndex"])
     total_time = time.time() - start_time
     dict_for_df["DistanceFromDoor_SubTrial"] = location
     dict_for_df['Distance_lock'] = 1 if lock else 0
     dict_for_df["DoorAction_RT"] = round(total_time, 2) if total_time < 10 else 10
     dict_for_df["CurrentTime"] = round(time.time() - dict_for_df['StartTime'], 2)
-    dict_for_df["ScenarioIndex"] = scenarioIndex + 50
     Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
     miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict_for_df])])
     dict_for_df.pop("ScenarioIndex")
@@ -304,12 +302,12 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     isDoorOpening = doorOpenChance <= (location / 100)
     print(f"doorChance - {doorOpenChance}, location - {location / 100}, isOpening - {isDoorOpening}")
 
+    dict_for_df["ScenarioIndex"] = scenarioIndex + 100
     if params['recordPhysio']:
         serialHandler.report_event(ser, scenarioIndex + 100)
     dict_for_df["Door_opened"] = 1 if isDoorOpening else 0
     dict_for_df["DoorStatus"] = 'opened' if isDoorOpening else 'closed'
     dict_for_df["CurrentTime"] = round(time.time() - dict_for_df['StartTime'], 2)
-    dict_for_df["ScenarioIndex"] = scenarioIndex + 100
     Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
     coins = 0
 

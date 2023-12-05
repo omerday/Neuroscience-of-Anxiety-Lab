@@ -14,16 +14,18 @@ List of scenarios:
     # Reward 1 Punishment 1 - index 0
     # Reward 5 Punishment 2 - index 29
     
-    0-48 - Door start
-    50-98 - Door lock
-    100-148 - Door opening
+    51-99 - Door start
+    101-149 - Door lock
+    151-199 - Door opening
 """
 
 
 def report_event(ser: serial.Serial, event_num: int):
     if not ser.is_open:
         ser.open()
+    print(f"Sending event {event_num} to BioPac - {hex(event_num).encode()}")
     ser.write(hex(event_num).encode())
     time.sleep(0.05)
+    print(f"Sending event RR to BioPac - {'RR'.encode()}")
     ser.write("RR".encode())
     ser.close()

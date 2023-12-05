@@ -4,7 +4,7 @@ import random
 
 import psychopy.visual
 import pygame
-
+import serialHandler
 import dataHandler
 import pandas
 import DoorPlayInfra
@@ -78,7 +78,7 @@ def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int
         # Select a scenario and setup door
         subtrial = subtrial + 1
         scenario = random.choice(scenariosList)
-        scenarioIndex = (scenario[0] - 1) * 7 + (scenario[1])
+        scenarioIndex = (scenario[0] - 1) * 7 + (scenario[1]) + 50
         image, distanceFromDoor = DoorPlayInfra.setup_door(window, params, scenario[0], scenario[1])
 
         # Setup new dictionary
@@ -88,6 +88,9 @@ def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int
         dict_for_df['Subtrial'] = subtrial
         dict_for_df['DistanceAtStart'] = distanceFromDoor * 100
         dict_for_df["ScenarioIndex"] = scenarioIndex
+
+        if params['recordPhysio']:
+            serialHandler.report_event(ser, scenarioIndex)
 
         # Execute Door of selected scenario
         coinsWon, total_time, Df, miniDf, dict_for_df, lock = DoorPlayInfra.start_door(window, params, image, scenario[0], scenario[1],
