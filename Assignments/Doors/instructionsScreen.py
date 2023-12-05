@@ -25,16 +25,16 @@ def show_instructions(win: visual.Window, params, img: visual.ImageStim, Df: pan
         if i != SLIDES:
             dict_for_df["Round"] = i
             if params["keyboardMode"]:
-                Df = helpers.wait_for_space(win, Df, dict_for_df, io)
+                Df = helpers.wait_for_space(win, Df, dict_for_df, io, params, miniDf)
             else:
-                Df = helpers.wait_for_joystick_press(win, Df, dict_for_df)
+                Df = helpers.wait_for_joystick_press(win, Df, dict_for_df, params, miniDf)
             dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
             miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict_for_df])])
     dict_for_df["Round"] = SLIDES
     if params["keyboardMode"]:
-        Df, again = helpers.wait_for_space_with_replay(win, Df, dict_for_df, io)
+        Df, again = helpers.wait_for_space_with_replay(win, Df, dict_for_df, io, params, miniDf)
     else:
-        Df, again = helpers.wait_for_joystick_press_with_replay(win, Df, dict_for_df)
+        Df, again = helpers.wait_for_joystick_press_with_replay(win, Df, dict_for_df, params, miniDf)
     dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
     miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict_for_df])])
     if again and params["keyboardMode"]:
