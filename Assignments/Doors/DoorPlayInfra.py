@@ -287,6 +287,8 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
         play_sound("lock", 0.5, dict_for_df, Df)
         if params['beeps']:
             doorWaitTime -= 2
+        else:
+            doorWaitTime -= 3
 
     waitStart = time.time()
     while time.time() < waitStart + doorWaitTime:
@@ -295,7 +297,9 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
         core.wait(1 / 100)
 
     if params["soundOn"] and params['beeps']:
-        play_sound("beep", 2, dict_for_df, Df)
+        Df = play_sound("beep", 2, dict_for_df, Df)
+    else:
+        Df = helpers.countdown_before_door_open(window, image, params, Df, dict_for_df,)
 
     # Randomize door opening chance according to location:
     doorOpenChance = random.random()
@@ -337,7 +341,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
         window.update()
         miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict_for_df])])
         if params['soundOn']:
-            play_sound(dict_for_df["Door_outcome"], WAIT_TIME_ON_DOOR, dict_for_df, Df)
+            Df = play_sound(dict_for_df["Door_outcome"], WAIT_TIME_ON_DOOR, dict_for_df, Df)
         else:
             waitTimeStart = time.time()
             while time.time() < waitTimeStart + WAIT_TIME_ON_DOOR:
@@ -468,3 +472,4 @@ def play_sound(soundType: str, waitTime: float, dict_for_df: dict, Df: pandas.Da
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
         core.wait(1 / 1000)
     soundToPlay.stop()
+    return Df

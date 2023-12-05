@@ -254,9 +254,32 @@ def display_image_until_key(window: visual.Window, params: dict, imagePath: str,
 
 
 def graceful_quitting(window: visual.Window, params: dict, Df: pandas.DataFrame, miniDf=None):
-    if params['saveDataAtQuit']:
-        dataHandler.export_raw_data(params, Df)
-        if miniDf is not None:
-            dataHandler.export_summarized_dataframe(params, miniDf)
+    dataHandler.export_raw_data(params, Df)
+    if miniDf is not None:
+        dataHandler.export_summarized_dataframe(params, miniDf)
     window.close()
     core.quit()
+
+
+def countdown_before_door_open(window: visual.Window, image: visual.ImageStim, params: dict, df: pandas.DataFrame, dict_for_df: dict):
+    text_stim = visual.TextStim(window, text='3', pos=(0,0), bold=True, height = 75 * image.size[0])
+    print(image.size)
+    for i in [3, 2, 1]:
+        text_stim.text = str(i)
+        image.draw()
+        text_stim.draw()
+        window.flip()
+        df = wait_for_time(1, df, dict_for_df)
+    del text_stim
+    image.draw()
+    window.flip()
+    return df
+
+
+def wait_for_time(time_to_wait: float, df: pandas.DataFrame, dict_for_df: dict):
+    start_time = time.time()
+    while time.time() < start_time + time_to_wait:
+        dict_for_df["CurrentTime"] = time.time()
+        df = pandas.concat([df, pandas.DataFrame.from_records([dict_for_df])])
+        core.wait(0.05)
+    return df

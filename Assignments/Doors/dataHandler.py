@@ -73,13 +73,13 @@ def create_dict_for_df(params: dict, **kwargs):
 def export_raw_data(params: dict, Df: pandas.DataFrame):
     Df = Df.drop_duplicates(keep='first')
     Df.to_csv(
-        f'./data/Doors {params["Subject"]} - fullDF - {datetime.datetime.now().strftime("%Y-%m-%d %H-%M.csv")}')
+        f'./data/Doors {params["Subject"]} Session {params["Session"]} - fullDF - {datetime.datetime.now().strftime("%Y-%m-%d %H-%M.csv")}')
 
 
 def export_summarized_dataframe(params: dict, Df: pandas.DataFrame):
     Df = Df.drop_duplicates(keep='first')
     Df.to_csv(
-        f'./data/Doors {params["Subject"]} - miniDF - {datetime.datetime.now().strftime("%Y-%m-%d %H-%M.csv")}')
+        f'./data/Doors {params["Subject"]} Session {params["Session"]} - miniDF - {datetime.datetime.now().strftime("%Y-%m-%d %H-%M.csv")}')
 
 
 def single_subject_analysis(params: dict, ):

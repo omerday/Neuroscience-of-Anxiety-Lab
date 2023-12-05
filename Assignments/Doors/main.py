@@ -33,7 +33,7 @@ params = {
     'keyboardMode': configDialogBank[9],
     'screenSize': (1024, 768),  # Get Screen Resolution to match Full Screen
     'soundOn': configDialogBank[10],
-    'beeps': True,
+    'beeps': False,
     'skipInstructions': configDialogBank[11],
     'language': configDialogBank[12],
     'fullScreen': configDialogBank[13] if debug else True,
