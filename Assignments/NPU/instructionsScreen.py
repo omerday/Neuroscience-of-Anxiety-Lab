@@ -116,7 +116,7 @@ def blank_screen(window: visual.Window, image: visual.ImageStim, params: dict, d
                  condition: str):
     keyboard = io.devices.keyboard
     dict_for_df = dataHandler.create_dict_for_df(params, Step="Game", Block=block, Scenario=condition)
-    image.image = f"./image/blank.jpeg"
+    image.image = f"./img/blank.jpeg"
     image.setSize((2, 2))
     image.draw()
     window.update()

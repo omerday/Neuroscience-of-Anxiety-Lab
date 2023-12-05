@@ -14,7 +14,7 @@ import serialHandler
 
 CALIBRATION_TIME = 60
 HABITUATION_STARTLES = 9
-HABITUATION_EVENT = 8
+HABITUATION_EVENT = 80
 
 
 def wait_for_space_no_df(window: visual.Window, io):

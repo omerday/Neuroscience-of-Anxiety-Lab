@@ -32,7 +32,8 @@ params = {
     "saveDataAtQuit": configDialogBank[13] if debug is True else True,
     "saveConfig": configDialogBank[14] if debug is True else True,
     "screenSize": (1024, 768),
-    "startTime": time.time()
+    "startTime": time.time(),
+    'port': 'COM4',
 }
 
 if params['saveConfig']:
@@ -68,7 +69,7 @@ df = instructionsScreen.start_screen(window, image, params, df, io)
 
 # Run Sequence
 for ch in params["firstBlock"]:
-    df, mini_df = blocksInfra.run_condition(window, image, params, io, ch, df, mini_df,1)
+    df, mini_df = blocksInfra.run_condition(window, image, params, io, ch, df, mini_df,1, ser)
     df = instructionsScreen.blank_screen(window, image, params, df, io, 1, ch)
 
 # Additional Data Measuring
@@ -80,7 +81,7 @@ df = instructionsScreen.start_screen(window, image, params, df, io)
 
 # Run Sequence #2
 for ch in params["secondBlock"]:
-    df, mini_df = blocksInfra.run_condition(window, image, params, io, ch, df, mini_df,2)
+    df, mini_df = blocksInfra.run_condition(window, image, params, io, ch, df, mini_df,2, ser)
     df = instructionsScreen.blank_screen(window, image, params, df, io, 2, ch)
 
 df, mini_df = VAS.vas(window, params, df, mini_df, io, 3)
