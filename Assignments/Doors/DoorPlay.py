@@ -14,7 +14,8 @@ import serial
 from psychopy import visual, core
 
 
-def practice_run(window: visual.Window, params: dict, Df: pandas.DataFrame, miniDf: pandas.DataFrame, io, ser=None):
+def practice_run(window: visual.Window, params: dict, Df: pandas.DataFrame, miniDf: pandas.DataFrame,
+                 summary_df: pandas.DataFrame, io, ser=None):
 
     DoorPlayInfra.show_screen_pre_match(window, params, 0, io)
 
@@ -31,21 +32,21 @@ def practice_run(window: visual.Window, params: dict, Df: pandas.DataFrame, mini
 
         # Execute Door of selected scenario
         coinsWon, total_time, Df, miniDf, dict_for_df, lock = DoorPlayInfra.start_door(window, params, image, 0, 0, 0,
-                                                                        distanceFromDoor, Df, dict_for_df, io, 0, miniDf,
+                                                                        distanceFromDoor, Df, dict_for_df, io, 0, miniDf, summary_df,
                                                                         ser)
 
         # Add data to Df
         dict_for_df["CurrentTime"] = round(time.time() - dict_for_df['StartTime'], 2)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
-        miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict_for_df])])
+        summary_df = pandas.concat([summary_df, pandas.DataFrame.from_records([dict_for_df])])
 
         subtrial = subtrial + 1
 
-    return Df, miniDf
+    return Df, miniDf, summary_df
 
 
 def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int, Df: pandas.DataFrame,
-             miniDf: pandas.DataFrame, io, ser=None):
+             miniDf: pandas.DataFrame, summary_df: pandas.DataFrame, io, ser=None):
 
     """
     Launch the entire doors task, with all 36/49 doors.
@@ -94,16 +95,17 @@ def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int
 
         # Execute Door of selected scenario
         coinsWon, total_time, Df, miniDf, dict_for_df, lock = DoorPlayInfra.start_door(window, params, image, scenario[0], scenario[1], totalCoins,
-                                                                  distanceFromDoor, Df, dict_for_df, io, scenarioIndex, miniDf, ser)
+                                                                  distanceFromDoor, Df, dict_for_df, io, scenarioIndex, miniDf, summary_df, ser)
         totalCoins += coinsWon
         scenariosList.remove(scenario)
 
         # Add data to Df
         dict_for_df["Total_coins"] = totalCoins
         dict_for_df["CurrentTime"] = round(time.time() - dict_for_df['StartTime'], 2)
-        miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict_for_df])])
+
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
+        summary_df = pandas.concat([summary_df, pandas.DataFrame.from_records([dict_for_df])])
 
-        dataHandler.save_backup(params, Df, miniDf)
+        dataHandler.save_backup(params, fullDF=Df, miniDF=miniDf, summary=summary_df)
 
-    return Df, miniDf, totalCoins
+    return Df, miniDf, summary_df, totalCoins

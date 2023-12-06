@@ -4,6 +4,7 @@ import pygame
 import pandas
 import helpers
 from psychopy import visual, core
+import dataHandler
 
 LABELS = ["Anxiety", "Avoidance", "Tired", "Mood"]
 QUESTIONS_BEGINNING_MIDDLE_HE = ["כמה אתם מרגישים לחוצים כרגע?",
@@ -40,7 +41,7 @@ ANSWERS_FINAL_EN = [["Won very few", "Won very many"], ["Lost very few", "Lost v
                  ["never", "all the time"], ["sad, I did badly", "happy, I did great"]]
 
 
-def beginning_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pandas.DataFrame):
+def beginning_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pandas.DataFrame, summary_df: pandas.DataFrame):
     pygame.quit()
     window.mouseVisible = True
     for i in range(len(QUESTIONS_BEGINNING_MIDDLE_HE)):
@@ -56,13 +57,19 @@ def beginning_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: p
         dict['VAS_score'] = answer
         dict['VAS_type'] = LABELS[i]
         dict['VAS_RT'] = time.time() - startTime
+
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
+        summary_df = pandas.concat([summary_df, pandas.DataFrame.from_records([dict])])
+
+        dataHandler.save_backup(params, fullDF=Df, miniDF=miniDf, summary=summary_df)
+
     window.mouseVisible = False
-    return Df, miniDf
+    return Df, miniDf, summary_df
 
 
-def middle_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pandas.DataFrame, roundNum: int):
+def middle_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pandas.DataFrame,
+               summary_df: pandas.DataFrame, roundNum: int):
     window.mouseVisible = True
     for i in range(len(QUESTIONS_BEGINNING_MIDDLE_HE)):
         startTime = time.time()
@@ -82,14 +89,18 @@ def middle_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pand
         dict['VAS_score'] = answer
         dict['VAS_type'] = LABELS[i]
         dict['VAS_RT'] = time.time() - startTime
+
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
+        summary_df = pandas.concat([summary_df, pandas.DataFrame.from_records([dict])])
+
+        dataHandler.save_backup(params, fullDF=Df, miniDF=miniDf, summary=summary_df)
 
     window.mouseVisible = False
-    return Df, miniDf
+    return Df, miniDf, summary_df
 
 
-def final_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pandas.DataFrame):
+def final_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pandas.DataFrame, summary_df: pandas.DataFrame):
     window.mouseVisible = True
     for i in range(len(QUESTIONS_FINAL_HE)):
         startTime = time.time()
@@ -105,8 +116,12 @@ def final_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: panda
         dict['Q_type'] = QUESTIONS_LABEL[i]
         dict['Q_RT'] = time.time() - startTime
         dict['Q_score'] = answer
+
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
         miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
+        summary_df = pandas.concat([summary_df, pandas.DataFrame.from_records([dict])])
+
+        dataHandler.save_backup(params, fullDF=Df, miniDF=miniDf, summary=summary_df)
 
     window.mouseVisible = False
-    return Df, miniDf
+    return Df, miniDf, summary_df
