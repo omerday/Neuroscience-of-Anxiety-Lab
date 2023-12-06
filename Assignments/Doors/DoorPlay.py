@@ -86,14 +86,14 @@ def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int
         dict_for_df['Reward_magnitude'] = scenario[0]
         dict_for_df['Punishment_magnitude'] = scenario[1]
         dict_for_df['Subtrial'] = subtrial
-        dict_for_df['DistanceAtStart'] = distanceFromDoor * 100
+        dict_for_df['DistanceAtStart'] = distanceFromDoor * 100 if distanceFromDoor != 0 else 50
         dict_for_df["ScenarioIndex"] = scenarioIndex
 
         if params['recordPhysio']:
             serialHandler.report_event(ser, scenarioIndex)
 
         # Execute Door of selected scenario
-        coinsWon, total_time, Df, miniDf, dict_for_df, lock = DoorPlayInfra.start_door(window, params, image, scenario[0], scenario[1],
+        coinsWon, total_time, Df, miniDf, dict_for_df, lock = DoorPlayInfra.start_door(window, params, image, scenario[0], scenario[1], totalCoins,
                                                                   distanceFromDoor, Df, dict_for_df, io, scenarioIndex, miniDf, ser)
         totalCoins += coinsWon
         scenariosList.remove(scenario)
@@ -101,6 +101,7 @@ def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int
         # Add data to Df
         dict_for_df["Total_coins"] = totalCoins
         dict_for_df["CurrentTime"] = round(time.time() - dict_for_df['StartTime'], 2)
+        miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict_for_df])])
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
 
     return Df, miniDf, totalCoins

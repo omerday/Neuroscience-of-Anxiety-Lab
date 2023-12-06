@@ -35,7 +35,7 @@ FINAL_SUMMARY_STR2_HE = "מטבעות\n כל הכבוד!\n\n תודה על הש�
 SOUNDS = {
     "lock": "./sounds/click_1s.wav",
     "reward": "./sounds/new_reward.mp3",
-    "punishment": "./sounds/monster.wav",
+    "punishment": "./sounds/monster.mp3",
     "beep": "./sounds/beep_for_anticipation.mp3"
 }
 
@@ -243,7 +243,7 @@ def update_movement_in_df(dict_for_df: dict, Df: pandas.DataFrame, location):
     return Df
 
 
-def start_door(window: visual.Window, params, image: visual.ImageStim, reward: int, punishment: int, location,
+def start_door(window: visual.Window, params, image: visual.ImageStim, reward: int, punishment: int, total_coins: int, location,
                Df: pandas.DataFrame, dict_for_df: dict, io, scenarioIndex: int, miniDf: pandas.DataFrame, ser=None):
     # Set end time for 10s max
     start_time = time.time()
@@ -255,6 +255,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     dict_for_df['Distance_max'] = round((location + 1) * 50, 0)
     dict_for_df['Distance_min'] = round((location + 1) * 50, 0)
     dict_for_df["ScenarioIndex"] = scenarioIndex
+    dict_for_df["Total_coins"] = total_coins
     Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
     miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict_for_df])])
     dict_for_df.pop("ScenarioIndex")
@@ -272,7 +273,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     total_time = time.time() - start_time
     dict_for_df["DistanceFromDoor_SubTrial"] = location
     dict_for_df['Distance_lock'] = 1 if lock else 0
-    dict_for_df["DoorAction_RT"] = round(total_time, 2) if total_time < 10 else 10
+    dict_for_df["DoorAction_RT"] = round(total_time * 1000, 2) if total_time < 10 else 10
     dict_for_df["CurrentTime"] = round(time.time() - dict_for_df['StartTime'], 2)
     Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
     miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict_for_df])])
@@ -339,7 +340,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
         # outcomeImage.draw()
         doorFrameImg.draw()
         window.update()
-        miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict_for_df])])
+
         if params['soundOn']:
             Df = play_sound(dict_for_df["Door_outcome"], WAIT_TIME_ON_DOOR, dict_for_df, Df)
         else:
