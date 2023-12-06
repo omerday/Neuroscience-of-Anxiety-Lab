@@ -90,7 +90,7 @@ def move_screen(window, params, image: visual.ImageStim, location, units):
 
 
 def get_movement_input_keyboard(window, params, image: visual.ImageStim, location, end_time: time.time,
-                                Df: pandas.DataFrame, dict_for_df: dict, io, miniDf: pandas.DataFrame):
+                                Df: pandas.DataFrame, dict_for_df: dict, io, miniDf: pandas.DataFrame, summary_df=None):
     """
     The method gets up/down key state and moves the screen accordingly.
     The method requires pygame to be installed (and therefore imported to Psychopy if needed).
@@ -110,7 +110,7 @@ def get_movement_input_keyboard(window, params, image: visual.ImageStim, locatio
     while time.time() < end_time and not space:
         for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
             if event.key == "escape":
-                helpers.graceful_quitting(window, params, Df, miniDf)
+                helpers.graceful_quitting(window, params, Df, miniDf, summary_df)
                 window.close()
                 core.quit()
             if event.key == 'up':
@@ -161,7 +161,7 @@ def get_movement_input_keyboard(window, params, image: visual.ImageStim, locatio
 
 
 def get_movement_input_joystick(window, params, image: visual.ImageStim, location, end_time: time.time,
-                                Df: pandas.DataFrame, dict_for_df: dict, miniDf: pandas.DataFrame):
+                                Df: pandas.DataFrame, dict_for_df: dict, miniDf: pandas.DataFrame, summary_df=None):
     pygame.init()
     joy = pygame.joystick.Joystick(0)
     joy.init()
@@ -172,12 +172,12 @@ def get_movement_input_joystick(window, params, image: visual.ImageStim, locatio
             if joystickButton:
                 break
             if event.type == pygame.QUIT:
-                helpers.graceful_quitting(window, params, Df, miniDf)
+                helpers.graceful_quitting(window, params, Df, miniDf, summary_df)
                 window.close()
                 core.quit()
             if event.type == pygame.JOYBUTTONDOWN:
                 if event.button == 7:
-                    helpers.graceful_quitting(window, params, Df, miniDf)
+                    helpers.graceful_quitting(window, params, Df, miniDf, summary_df)
                     window.close()
                     core.quit()
                 elif event.button == 0:
@@ -244,7 +244,7 @@ def update_movement_in_df(dict_for_df: dict, Df: pandas.DataFrame, location):
 
 
 def start_door(window: visual.Window, params, image: visual.ImageStim, reward: int, punishment: int, total_coins: int, location,
-               Df: pandas.DataFrame, dict_for_df: dict, io, scenarioIndex: int, miniDf: pandas.DataFrame, ser=None):
+               Df: pandas.DataFrame, dict_for_df: dict, io, scenarioIndex: int, miniDf: pandas.DataFrame, summary_df=None, ser=None):
     # Set end time for 10s max
     start_time = time.time()
     end_time = start_time + 10
@@ -262,10 +262,10 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
 
     if params['keyboardMode']:
         location, Df, dict_for_df, lock = get_movement_input_keyboard(window, params, image, location, end_time, Df, dict_for_df, io,
-                                                                      miniDf)
+                                                                      miniDf, summary_df)
     else:
         location, Df, dict_for_df, lock = get_movement_input_joystick(window, params, image, location, end_time, Df, dict_for_df,
-                                                                      miniDf)
+                                                                      miniDf, summary_df)
 
     dict_for_df["ScenarioIndex"] = scenarioIndex + 50
     if params['recordPhysio']:
@@ -313,6 +313,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     dict_for_df["Door_opened"] = 1 if isDoorOpening else 0
     dict_for_df["DoorStatus"] = 'opened' if isDoorOpening else 'closed'
     dict_for_df["CurrentTime"] = round(time.time() - dict_for_df['StartTime'], 2)
+    dict_for_df["Total_coins"] = total_coins
     Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
     coins = 0
 
@@ -341,6 +342,9 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
         doorFrameImg.draw()
         window.update()
 
+        dict_for_df["Total_coins"] += coins
+        miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict_for_df])])
+
         if params['soundOn']:
             Df = play_sound(dict_for_df["Door_outcome"], WAIT_TIME_ON_DOOR, dict_for_df, Df)
         else:
@@ -355,6 +359,8 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
         window.update()
 
     else:
+        miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict_for_df])])
+
         waitTimeStart = time.time()
         while time.time() < waitTimeStart + WAIT_TIME_ON_DOOR:
             dict_for_df["CurrentTime"] = round(time.time() - dict_for_df['StartTime'], 2)
@@ -380,6 +386,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
 
 
 def show_screen_pre_match(window: visual.Window, params: dict, session: int, io, coins=0):
+    #TODO: Add dfs here for graceful quitting!
     if session == 2 or session == 3:
         if params["language"] == "Hebrew":
             message = visual.TextStim(window,

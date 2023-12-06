@@ -9,7 +9,7 @@ import pandas
 import datetime
 
 
-def wait_for_space(window, Df: pandas.DataFrame, dict_for_df: dict, io, params=None, mini_df=None):
+def wait_for_space(window, Df: pandas.DataFrame, dict_for_df: dict, io, params=None, mini_df=None, summary_df=None):
     """
     Helper method to wait for a Spacebar keypress and keep the window open until then
     :param dict_for_df:
@@ -25,12 +25,12 @@ def wait_for_space(window, Df: pandas.DataFrame, dict_for_df: dict, io, params=N
             if event.key == " ":
                 return Df
             if event.key == "escape":
-                graceful_quitting(window, params, Df, mini_df)
+                graceful_quitting(window, params, Df, mini_df, summary_df)
                 window.close()
                 core.quit()
 
 
-def wait_for_joystick_press(window, Df: pandas.DataFrame, dict_for_df: dict, params=None, mini_df=None):
+def wait_for_joystick_press(window, Df: pandas.DataFrame, dict_for_df: dict, params=None, mini_df=None, summary_df=None):
     pygame.init()
     joy = pygame.joystick.Joystick(0)
     joy.init()
@@ -41,13 +41,13 @@ def wait_for_joystick_press(window, Df: pandas.DataFrame, dict_for_df: dict, par
         core.wait(1 / 1000)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                graceful_quitting(window, params, Df, mini_df)
+                graceful_quitting(window, params, Df, mini_df, summary_df)
                 window.close()
                 core.quit()
                 break
             if event.type == pygame.JOYBUTTONDOWN:
                 if event.button == 7:
-                    graceful_quitting(window, params, Df, mini_df)
+                    graceful_quitting(window, params, Df, mini_df, summary_df)
                     window.close()
                     core.quit()
                 else:
@@ -57,7 +57,7 @@ def wait_for_joystick_press(window, Df: pandas.DataFrame, dict_for_df: dict, par
                                 return Df
 
 
-def wait_for_space_with_replay(window, Df: pandas.DataFrame, dict_for_df: dict, io, params=None, mini_df=None):
+def wait_for_space_with_replay(window, Df: pandas.DataFrame, dict_for_df: dict, io, params=None, mini_df=None, summary_df=None):
     """
     Helper method to wait for a Spacebar keypress and keep the window open, or get 'r' keypress for replay of the
      InstructionsEnglish. Returns True if needed to replay.
@@ -77,12 +77,12 @@ def wait_for_space_with_replay(window, Df: pandas.DataFrame, dict_for_df: dict, 
             elif event.key == ' ':
                 return Df, False
             elif event.key == "escape":
-                graceful_quitting(window, params, Df, mini_df)
+                graceful_quitting(window, params, Df, mini_df, summary_df)
                 window.close()
                 core.quit()
 
 
-def wait_for_joystick_press_with_replay(window, Df: pandas.DataFrame, dict_for_df: dict, params=None, mini_df=None):
+def wait_for_joystick_press_with_replay(window, Df: pandas.DataFrame, dict_for_df: dict, params=None, mini_df=None, summary_df=None):
     """
     Helper method to wait for a joystick keypress and keep the window open, or get 'r' keypress for replay of the
      InstructionsEnglish. Returns True if needed to replay.
@@ -100,12 +100,12 @@ def wait_for_joystick_press_with_replay(window, Df: pandas.DataFrame, dict_for_d
         core.wait(1 / 1000)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                graceful_quitting(window, params, Df, mini_df)
+                graceful_quitting(window, params, Df, mini_df, summary_df)
                 window.close()
                 core.quit()
             if event.type == pygame.JOYBUTTONDOWN:
                 if event.button == 7:
-                    graceful_quitting(window, params, Df, mini_df)
+                    graceful_quitting(window, params, Df, mini_df, summary_df)
                     window.close()
                     core.quit()
                 elif event.button == 1:
@@ -120,7 +120,7 @@ def wait_for_joystick_press_with_replay(window, Df: pandas.DataFrame, dict_for_d
                                 return Df, False
 
 
-def wait_for_space_no_df(window, io, params=None, df=None, mini_df=None):
+def wait_for_space_no_df(window, io, params=None, df=None, mini_df=None, summary_df=None):
     """
     Helper method to wait for a Spacebar keypress and keep the window open, without writing to Df.
     :param window:
@@ -133,10 +133,10 @@ def wait_for_space_no_df(window, io, params=None, df=None, mini_df=None):
             if event.key == " ":
                 return
             if event.key == "escape":
-                graceful_quitting(window, params, df, mini_df)
+                graceful_quitting(window, params, df, mini_df, summary_df)
 
 
-def wait_for_joystick_no_df(window, params=None, df=None, mini_df=None):
+def wait_for_joystick_no_df(window, params=None, df=None, mini_df=None, summary_df=None):
     pygame.init()
     joy = pygame.joystick.Joystick(0)
     joy.init()
@@ -144,13 +144,13 @@ def wait_for_joystick_no_df(window, params=None, df=None, mini_df=None):
         core.wait(1 / 1000)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                graceful_quitting(window, params, df, mini_df)
+                graceful_quitting(window, params, df, mini_df, summary_df)
                 window.close()
                 core.quit()
                 break
             if event.type == pygame.JOYBUTTONDOWN:
                 if event.button == 7:
-                    graceful_quitting(window, params, df, mini_df)
+                    graceful_quitting(window, params, df, mini_df, summary_df)
                     window.close()
                     core.quit()
                 else:
@@ -260,11 +260,8 @@ def display_image_until_key(window: visual.Window, params: dict, imagePath: str,
     return Df
 
 
-def graceful_quitting(window: visual.Window, params: dict, Df: pandas.DataFrame, miniDf=None):
-    if Df is not None:
-        dataHandler.export_raw_data(params, Df)
-    if miniDf is not None:
-        dataHandler.export_summarized_dataframe(params, miniDf)
+def graceful_quitting(window: visual.Window, params: dict, Df: pandas.DataFrame, miniDf=None, summary_df=None):
+    dataHandler.export_data(params, fullDF=Df, miniDF=miniDf, summary=summary_df)
     window.close()
     core.quit()
 
