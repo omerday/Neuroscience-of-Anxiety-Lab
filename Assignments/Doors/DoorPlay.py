@@ -30,7 +30,7 @@ def practice_run(window: visual.Window, params: dict, Df: pandas.DataFrame, mini
         dict_for_df['DistanceAtStart'] = distanceFromDoor * 100
 
         # Execute Door of selected scenario
-        coinsWon, total_time, Df, miniDf, dict_for_df, lock = DoorPlayInfra.start_door(window, params, image, 0, 0,
+        coinsWon, total_time, Df, miniDf, dict_for_df, lock = DoorPlayInfra.start_door(window, params, image, 0, 0, 0,
                                                                         distanceFromDoor, Df, dict_for_df, io, 0, miniDf,
                                                                         ser)
 
