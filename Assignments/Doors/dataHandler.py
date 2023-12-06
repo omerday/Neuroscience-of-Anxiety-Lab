@@ -5,6 +5,7 @@ import datetime
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+from time import strftime, localtime
 
 HEADERS = ['Time',
            'ExpermientName',
@@ -80,6 +81,13 @@ def export_summarized_dataframe(params: dict, Df: pandas.DataFrame):
     Df = Df.drop_duplicates(keep='first')
     Df.to_csv(
         f'./data/Doors {params["Subject"]} Session {params["Session"]} - miniDF - {datetime.datetime.now().strftime("%Y-%m-%d %H-%M.csv")}')
+
+
+def save_backup(params: dict, df=None, mini_df=None):
+    if df is not None:
+        df.to_csv(f'./data/Doors {params["Subject"]} Session {params["Session"]} - fullDF - {strftime("%Y-%m-%d %H:%M", localtime(params["startTime"]))}.backup.csv')
+    if mini_df is not None:
+        mini_df.to_csv(f'./data/Doors {params["Subject"]} Session {params["Session"]} - miniDF - {strftime("%Y-%m-%d %H:%M", localtime(params["startTime"]))}.backup.csv')
 
 
 def single_subject_analysis(params: dict, ):

@@ -104,4 +104,6 @@ def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int
         miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict_for_df])])
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
 
+        dataHandler.save_backup(params, Df, miniDf)
+
     return Df, miniDf, totalCoins
