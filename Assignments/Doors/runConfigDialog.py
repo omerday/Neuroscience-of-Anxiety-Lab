@@ -36,8 +36,8 @@ def user_input_play(debug=False):
     userInput.addField('Starting Distance', choices=[50,'40-60', 'Random'])
     userInput.addField('Record Physiology', False if not configExists else loadedData['recordPhysio'])
     userInput.addField('Sensitivity (2: Less sensitive, 3: Normal, 4: More sensitive)', 1 if not configExists else loadedData['sensitivity'] - 2, choices=[2, 3, 4])
-    userInput.addField("Door Layout", "Punishment - Reward" if not configExists else loadedData['doorLayout'],
-                       choices=["Punishment - Reward", "Reward - Punishment"])
+    userInput.addField("Door Layout", "P - R" if not configExists else loadedData['doorLayout'],
+                       choices=["P - R", "R - P"])
     userInput.addField('Keyboard Mode', True if not configExists else loadedData['keyboardMode'])
     userInput.addField('Sound On?', True if not configExists else loadedData['soundOn'])
     userInput.addField('Skip Instructions', False if not configExists else loadedData['skipInstructions'])

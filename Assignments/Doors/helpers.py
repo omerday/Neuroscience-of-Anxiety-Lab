@@ -268,7 +268,7 @@ def graceful_quitting(window: visual.Window, params: dict, Df: pandas.DataFrame,
 
 def countdown_before_door_open(window: visual.Window, image: visual.ImageStim, params: dict, df: pandas.DataFrame,
                                dict_for_df: dict):
-    text_stim = visual.TextStim(window, text='3', pos=(0, 0), bold=True, height=75 * image.size[0])
+    text_stim = visual.TextStim(window, text='3', pos=(0, 0), bold=True, height=40 * image.size[0], color='black')
     print(image.size)
     for i in [3, 2, 1]:
         text_stim.text = str(i)
@@ -279,6 +279,7 @@ def countdown_before_door_open(window: visual.Window, image: visual.ImageStim, p
     del text_stim
     image.draw()
     window.flip()
+    df = wait_for_time(1, df, dict_for_df)
     return df
 
 

@@ -40,7 +40,7 @@ params = {
     'saveDataAtQuit': configDialogBank[14] if debug else True,
     'startTime': time.time(),
     'saveAsDefault': configDialogBank[15] if debug else True,
-    'doorImagePathPrefix': './img/doors1/' if configDialogBank[8] == "Punishment - Reward" else './img/doors2/',
+    'doorImagePathPrefix': './img/doors1/' if configDialogBank[8] == "P - R" else './img/doors2/',
     'outcomeImagePredix': './img/outcomes/',
     'imageSuffix': '.jpg',
     'port': 'COM4',

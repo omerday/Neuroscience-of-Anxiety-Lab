@@ -300,7 +300,8 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     if params["soundOn"] and params['beeps']:
         Df = play_sound("beep", 2, dict_for_df, Df)
     else:
-        Df = helpers.countdown_before_door_open(window, image, params, Df, dict_for_df,)
+        helpers.wait_for_time(3, Df, dict_for_df)
+        # Df = helpers.countdown_before_door_open(window, image, params, Df, dict_for_df,)
 
     # Randomize door opening chance according to location:
     doorOpenChance = random.random()
