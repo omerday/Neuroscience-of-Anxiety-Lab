@@ -3,7 +3,8 @@ from psychopy.iohub import launchHubServer
 from psychopy import visual, core, event, monitors
 import configDialog
 import json
-import helpers, instructionsScreen
+import helpers
+import instructionsScreen
 import blocksInfra
 import time
 import dataHandler
