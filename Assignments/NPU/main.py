@@ -9,6 +9,7 @@ import time
 import dataHandler
 import VAS
 import serial, serialHandler
+from ULAO import ULAO01
 
 io = launchHubServer()
 
@@ -24,6 +25,7 @@ params = {
     "firstBlock": configDialogBank[5],
     "secondBlock": configDialogBank[6],
     "shockType": configDialogBank[7],
+    "shockLevel": 2,
     "skipStartle": configDialogBank[8],
     "recordPhysio": configDialogBank[9],
     "skipInstructions": configDialogBank[10],
@@ -43,6 +45,8 @@ if params['saveConfig']:
         json.dump(params, file, indent=3)
 
 ser = serial.Serial(params['port'], 115200, bytesize=serial.EIGHTBITS, timeout=1) if params['recordPhysio'] else None
+shock_device = ULAO01() if params['shockType'] == "Shock" else None
+
 if params['recordPhysio']:
     serialHandler.report_event(ser, 255)
 
@@ -69,7 +73,7 @@ df = instructionsScreen.start_screen(window, image, params, df, io)
 
 # Run Sequence
 for ch in params["firstBlock"]:
-    df, mini_df = blocksInfra.run_condition(window, image, params, io, ch, df, mini_df,1, ser)
+    df, mini_df = blocksInfra.run_condition(window, image, params, io, ch, df, mini_df,1, ser, shock_device)
     df = instructionsScreen.blank_screen(window, image, params, df, io, 1, ch)
 
 # Additional Data Measuring
@@ -81,10 +85,13 @@ df = instructionsScreen.start_screen(window, image, params, df, io)
 
 # Run Sequence #2
 for ch in params["secondBlock"]:
-    df, mini_df = blocksInfra.run_condition(window, image, params, io, ch, df, mini_df,2, ser)
+    df, mini_df = blocksInfra.run_condition(window, image, params, io, ch, df, mini_df,2, ser, shock_device)
     df = instructionsScreen.blank_screen(window, image, params, df, io, 2, ch)
 
 df, mini_df = VAS.vas(window, params, df, mini_df, io, 3)
 
 # End of task Finalization
 df, mini_df = instructionsScreen.finalization(params, window, image, io, df, mini_df)
+dataHandler.export_data(params, FullDF=df, miniDF=mini_df)
+window.close()
+core.quit()

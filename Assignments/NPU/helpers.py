@@ -28,7 +28,7 @@ def wait_for_space_no_df(window: visual.Window, io):
                 core.quit()
 
 
-def wait_for_space(window: visual.Window, io, params: dict, df: pd.DataFrame, dict_for_df: dict):
+def wait_for_space(window: visual.Window, io, params: dict, df: pd.DataFrame, dict_for_df: dict, mini_df=None):
     keyboard = io.devices.keyboard
     while True:
         dict_for_df["CurrentTime"] = round(time.time() - params["startTime"], 2)
@@ -37,7 +37,7 @@ def wait_for_space(window: visual.Window, io, params: dict, df: pd.DataFrame, di
             if event.key == " ":
                 return df
             if event.key == "escape":
-                dataHandler.export_raw_data(params, df)
+                dataHandler.export_data(params, FullDF=df, miniDF=mini_df)
                 window.close()
                 core.quit()
 
@@ -123,7 +123,7 @@ def wait_for_calibration(window: visual.Window, params, io, df: pd.DataFrame, mi
 def play_startle_and_wait(window: visual.Window, io, params: dict, df: pd.DataFrame,
                           dict_for_df: dict):
     soundToPlay = sound.Sound("./sounds/startle_probe.wav")
-    core.wait(2)
+    core.wait(4)
     now = ptb.GetSecs()
     soundToPlay.play(when=now)
     core.wait(1)

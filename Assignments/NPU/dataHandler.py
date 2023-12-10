@@ -1,5 +1,8 @@
 import pandas as pd
 import datetime
+import os
+from time import strftime, localtime
+
 
 HEADERS = [
     'ExpermientName',  # NPU
@@ -45,6 +48,27 @@ def create_dict_for_df(params: dict, **kwargs):
         if key in dict_layout.keys():
             dict_layout[key] = value
     return dict_layout
+
+
+def export_data(params: dict, **kwargs):
+    folder = './data'
+    if params['Subject'] != "":
+        folder = f'./data/{params["Subject"]}'
+        if not os.path.exists(folder):
+            os.mkdir(folder)
+
+    for key, value in kwargs.items():
+        if isinstance(value, pd.DataFrame):
+            try:
+                df = value.drop_duplicates(keep='first')
+                df.to_csv(
+                    f'{folder}/NPU {params["Subject"]} Session {params["Session"]} - {key} - {strftime("%Y-%m-%d %H-%M", localtime(params["startTime"]))}.csv')
+            except:
+                print("Something went wrong, keeping backup")
+            else:
+                backup_path = f'{folder}/NPU {params["Subject"]} Session {params["Session"]} - {key} - {strftime("%Y-%m-%d %H-%M", localtime(params["startTime"]))}.backup.csv'
+                if os.path.exists(backup_path):
+                    os.remove(backup_path)
 
 
 def export_raw_data(params: dict, df: pd.DataFrame):

@@ -49,7 +49,7 @@ def show_instructions(params: dict, window: visual.Window, img: visual.ImageStim
                 elif i == STARTLE_SLIDE:
                     df = helpers.play_startle_and_wait(window, io, params, df, dict_for_df)
                 else:
-                    df = helpers.wait_for_space(window, io, params, df, dict_for_df)
+                    df = helpers.wait_for_space(window, io, params, df, dict_for_df, mini_df)
 
         # Last slide:
         img.image = f"{PATH}{SLIDES}{pref}{SUFFIX}"
@@ -73,7 +73,7 @@ def finalization(params: dict, window: visual.Window, img: visual.ImageStim, io,
     img.setSize((2, 2))
     img.draw()
     window.update()
-    df = helpers.wait_for_space(window, io, params, df, dict_for_df)
+    df = helpers.wait_for_space(window, io, params, df, dict_for_df, mini_df)
 
     return df, mini_df
 
@@ -90,7 +90,7 @@ def midpoint(params: dict, window: visual.Window, img: visual.ImageStim, io, df:
     img.setSize((2, 2))
     img.draw()
     window.update()
-    df = helpers.wait_for_space(window, io, params, df, dict_for_df)
+    df = helpers.wait_for_space(window, io, params, df, dict_for_df, mini_df)
 
     img.image = f"./img/plus{SUFFIX}"
     img.setSize((2, 2))
