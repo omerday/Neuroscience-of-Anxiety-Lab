@@ -37,7 +37,7 @@ def get_user_input(debug=False):
                        choices=["PNUNUNP", "UNPNPNU"])
     userInput.addField('Second Block Order', "UNPNPNU" if not configExists else loadedData["secondBlock"],
                        choices=["PNUNUNP", "UNPNPNU"])
-    userInput.addField("Shock Type", "Shock" if not configExists else loadedData["shockType"], choices=["Shock", "Sound"])
+    userInput.addField("Shock Type", "Sound" if not configExists else loadedData["shockType"], choices=["Shock", "Sound"])
     userInput.addField("Skip Startles", False if not configExists else loadedData["skipStartle"])
     userInput.addField('Record Physiology', False if not configExists else loadedData['recordPhysio'])
     userInput.addField('Skip Instructions', False if not configExists else loadedData['skipInstructions'])

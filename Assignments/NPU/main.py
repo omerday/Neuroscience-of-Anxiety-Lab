@@ -1,4 +1,6 @@
 import os
+
+import pandas as pd
 from psychopy.iohub import launchHubServer
 from psychopy import visual, core, event, monitors
 import configDialog
@@ -57,6 +59,13 @@ helpers.wait_for_space_no_df(window, io)
 
 # Setup DFs
 params, df, mini_df = dataHandler.setup_data_frame(params)
+
+# Add First Line
+params['startTime'] = time.time()
+temp_dict = dataHandler.create_dict_for_df(params, Step="Start")
+temp_dict["CurrentTime"] = 0.0
+mini_df = pd.concat([mini_df, pd.DataFrame.from_records([temp_dict])])
+del temp_dict
 
 # Initiate instructions sequence
 if not params["skipInstructions"]:

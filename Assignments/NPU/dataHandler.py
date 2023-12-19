@@ -10,6 +10,7 @@ HEADERS = [
     'Step',  # Game, Instructions or Calibration
     'Block',  # 1 or 2
     'Scenario',  # N, P or U
+    'TimeInCondition',
     'Cue',  # Is cue presented (1 or 0)
     'Startle',  # Startle played (1 or 0, mainly for the miniDF)
     'Shock',  # Shock presented (1 or 0)

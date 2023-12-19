@@ -8,7 +8,6 @@ from psychopy.visual import ratingscale
 import dataHandler
 import serialHandler
 
-
 PATH = "./img/blocks/"
 SUFFIX = ".jpg"
 
@@ -17,6 +16,8 @@ CUE_LENGTH = 12
 STARTLES_PER_BLOCK = 6
 
 FIXED_CUE_TIMES = [30, 60, 90]
+
+CONDITIONS = {"N": "Neutral", "P": "Predictable", "U": "Unpredictable"}
 
 SCENARIO_PREFIX = {"N": 0, "P": 100, "U": 200}
 STARTLE_EVENT_INDEX = 1
@@ -41,20 +42,24 @@ def run_condition(window: visual.Window, image: visual.ImageStim, params: dict, 
     else:
         startle_times = []
 
-    dict_for_df = dataHandler.create_dict_for_df(params=params, Step="Game", Block=blockNum, Scenario=condition)
+    dict_for_df = dataHandler.create_dict_for_df(params=params, Step="Game", Block=blockNum, Scenario=CONDITIONS[condition])
     dict_for_df["ScenarioIndex"] = SCENARIO_PREFIX[condition] + CONDITION_START_INDEX
     dict_for_df["CurrentTime"] = round(time.time() - dict_for_df["StartTime"], 2)
+    condition_start = time.time()
+    dict_for_df["TimeInCondition"] = round(time.time() - condition_start, 2)
     mini_df = pd.concat([mini_df, pd.DataFrame.from_records([dict_for_df])])
 
     if params["recordPhysio"]:
         serialHandler.report_event(ser, dict_for_df["ScenarioIndex"])
-    dict_for_df["ScenarioIndex"] = dict_for_df["ScenarioIndex"] - CONDITION_START_INDEX  # Remove the condition-start event, and only
+    dict_for_df["ScenarioIndex"] = dict_for_df[
+                                       "ScenarioIndex"] - CONDITION_START_INDEX  # Remove the condition-start event, and only
     # keep the condition we're in
 
     if condition == 'N':
         shock_time = 0
     else:
-        shock_time, startle_times = helpers.randomize_shock(cue_times, startle_times, True if condition == 'P' else False, params)
+        shock_time, startle_times = helpers.randomize_shock(cue_times, startle_times,
+                                                            True if condition == 'P' else False, params)
         shock_time = shock_time + time.time()
 
     cue_times, startle_times = helpers.prepare_cues_and_startles(cue_times, startle_times)
@@ -70,9 +75,11 @@ def run_condition(window: visual.Window, image: visual.ImageStim, params: dict, 
         window.update()
 
         fear_level, df, mini_df = launch_wait_sequence(params=params, window=window, image=image,
-                             end_time=cue_times[timing_index] if timing_index < 3 else start_time + BLOCK_LENGTH,
-                             startles=startle_times, io=io, shock_time=shock_time, fear_level=fear_level,
-                                          dict_for_df=dict_for_df, df=df, mini_df=mini_df, ser=ser)
+                                                       end_time=cue_times[
+                                                           timing_index] if timing_index < 3 else start_time + BLOCK_LENGTH,
+                                                       startles=startle_times, io=io, shock_time=shock_time,
+                                                       fear_level=fear_level,
+                                                       dict_for_df=dict_for_df, df=df, mini_df=mini_df, ser=ser, condition_start=condition_start)
 
         if timing_index == 3:
             pass
@@ -84,18 +91,75 @@ def run_condition(window: visual.Window, image: visual.ImageStim, params: dict, 
             image.draw()
             window.update()
 
-            fear_level, df, mini_df = launch_wait_sequence(params=params, window=window, image=image, end_time=current_cue_time + CUE_LENGTH,
-                                 startles=startle_times, io=io, shock_time=shock_time, fear_level=fear_level,
-                                              cue=True, dict_for_df=dict_for_df, df=df, mini_df=mini_df, ser=ser)
+            fear_level, df, mini_df = launch_wait_sequence(params=params, window=window, image=image,
+                                                           end_time=current_cue_time + CUE_LENGTH,
+                                                           startles=startle_times, io=io, shock_time=shock_time,
+                                                           fear_level=fear_level,
+                                                           cue=True, dict_for_df=dict_for_df, df=df, mini_df=mini_df,
+                                                           ser=ser, condition_start=condition_start)
             timing_index += 1
             print("Leaving a cue")
 
     return df, mini_df
 
 
+def launch_wait_sequence(params: dict, window: visual.Window, image: visual.ImageStim, end_time, startles: list, io,
+                         dict_for_df: dict, df: pd.DataFrame, mini_df: pd.DataFrame, shock_time=0, fear_level=5,
+                         cue=False, ser=None, condition_start=0.0):
+    """
+    The method prepares the command for launching the wait sequence from the "Helpers" module.
+    It takes the cues times, shock times (if there are any) and the end time of the current waiting sequence and organizes
+    them into a command.
+    """
+    if cue:
+        dict_for_df["CueStart"] = round(time.time() - dict_for_df["StartTime"], 2)
+        dict_for_df["ScenarioIndex"] += CUE_START_INDEX
+    else:
+        dict_for_df["ScenarioIndex"] += CUE_END_INDEX
+
+    if params["recordPhysio"]:
+        serialHandler.report_event(ser, dict_for_df["ScenarioIndex"])
+
+    dict_for_df["Cue"] = 1 if cue else 0
+    dict_for_df["CurrentTime"] = round(time.time() - dict_for_df["StartTime"], 2)
+    dict_for_df["TimeInCondition"] = round(time.time() - condition_start, 2)
+    mini_df = pd.concat([mini_df, pd.DataFrame.from_records([dict_for_df])])
+    df = pd.concat([df, pd.DataFrame.from_records([dict_for_df])])
+
+    startles_filtered = list(filter(lambda cue: time.time() <= cue <= end_time, startles))
+    print(f"startles_filtered: {startles_filtered}")
+    if shock_time != 0 and time.time() <= shock_time <= end_time:
+        print("starting wait with shock")
+        fear_level, df, mini_df = wait_in_condition(params=params, window=window, image=image,
+                                                    startle_times=startles_filtered,
+                                                    end_time=end_time, shock_time=shock_time, io=io,
+                                                    fear_level=fear_level,
+                                                    dict_for_df=dict_for_df, df=df, mini_df=mini_df, ser=ser,
+                                                    condition_start=condition_start)
+    else:
+        print("starting wait without shock")
+        fear_level, df, mini_df = wait_in_condition(window=window, image=image, startle_times=startles_filtered,
+                                                    end_time=end_time, params=params, io=io, fear_level=fear_level,
+                                                    dict_for_df=dict_for_df, df=df, mini_df=mini_df, ser=ser,
+                                                    condition_start=condition_start)
+
+    if cue:
+        dict_for_df["CueEnd"] = round(time.time() - dict_for_df["StartTime"], 2)
+        dict_for_df["CurrentTime"] = round(time.time() - dict_for_df["StartTime"], 2)
+        dict_for_df["TimeInCondition"] = round(time.time() - condition_start, 2)
+        mini_df = pd.concat([mini_df, pd.DataFrame.from_records([dict_for_df])])
+        dict_for_df.pop("CueEnd")
+        dict_for_df.pop("CueStart")
+        dict_for_df["ScenarioIndex"] -= CUE_START_INDEX
+    else:
+        dict_for_df["ScenarioIndex"] -= CUE_END_INDEX
+
+    return fear_level, df, mini_df
+
+
 def wait_in_condition(window: visual.Window, image: visual.ImageStim, startle_times: list, end_time: time,
-                     io, params: dict, dict_for_df: dict, df:pd.DataFrame, mini_df:pd.DataFrame, fear_level=5,
-                      shock_time=0, ser=None):
+                      io, params: dict, dict_for_df: dict, df: pd.DataFrame, mini_df: pd.DataFrame, fear_level=5,
+                      shock_time=0, ser=None, condition_start=0.0):
     keyboard = io.devices.keyboard
     scale = ratingscale.RatingScale(win=window, scale=None, labels=["0", "10"], low=0, high=10, markerStart=fear_level,
                                     showAccept=False, markerColor="Gray", textColor="Black", lineColor="Black",
@@ -114,6 +178,7 @@ def wait_in_condition(window: visual.Window, image: visual.ImageStim, startle_ti
         df = pd.concat([df, pd.DataFrame.from_records([dict_for_df])])
 
         # Startles and shocks
+        dict_for_df["TimeInCondition"] = round(time.time() - condition_start, 2)
         if len(startle_times) == 0:
             pass
         elif startle_times[0] <= time.time() <= startle_times[0] + 0.5:
@@ -132,54 +197,6 @@ def wait_in_condition(window: visual.Window, image: visual.ImageStim, startle_ti
 
     print(f"Scale Rating: {scale.getRating()}")
     return scale.getRating(), df, mini_df
-
-
-def launch_wait_sequence(params: dict, window: visual.Window, image: visual.ImageStim, end_time, startles: list, io,
-                         dict_for_df: dict, df:pd.DataFrame, mini_df:pd.DataFrame, shock_time=0, fear_level=5, cue=False,
-                         ser=None):
-    """
-    The method prepares the command for launching the wait sequence from the "Helpers" module.
-    It takes the cues times, shock times (if there are any) and the end time of the current waiting sequence and organizes
-    them into a command.
-    """
-    if cue:
-        dict_for_df["CueStart"] = round(time.time() - dict_for_df["StartTime"], 2)
-        dict_for_df["ScenarioIndex"] += CUE_START_INDEX
-    else:
-        dict_for_df["ScenarioIndex"] += CUE_END_INDEX
-
-    if params["recordPhysio"]:
-        serialHandler.report_event(ser, dict_for_df["ScenarioIndex"])
-
-    dict_for_df["Cue"] = 1 if cue else 0
-    dict_for_df["CurrentTime"] = round(time.time() - dict_for_df["StartTime"], 2)
-    mini_df = pd.concat([mini_df, pd.DataFrame.from_records([dict_for_df])])
-    df = pd.concat([df, pd.DataFrame.from_records([dict_for_df])])
-
-    startles_filtered = list(filter(lambda cue: time.time() <= cue <= end_time, startles))
-    print(f"startles_filtered: {startles_filtered}")
-    if shock_time != 0 and time.time() <= shock_time <= end_time:
-        print("starting wait with shock")
-        fear_level, df, mini_df = wait_in_condition(params=params, window=window, image=image, startle_times=startles_filtered,
-                                      end_time=end_time, shock_time=shock_time, io=io, fear_level=fear_level,
-                                      dict_for_df=dict_for_df, df=df, mini_df=mini_df, ser=ser)
-    else:
-        print("starting wait without shock")
-        fear_level, df, mini_df = wait_in_condition(window=window,  image=image, startle_times=startles_filtered,
-                                         end_time=end_time, params=params, io=io, fear_level=fear_level,
-                                         dict_for_df=dict_for_df, df=df, mini_df=mini_df, ser=ser)
-
-    if cue:
-        dict_for_df["CueEnd"] = round(time.time() - dict_for_df["StartTime"], 2)
-        dict_for_df["CurrentTime"] = round(time.time() - dict_for_df["StartTime"], 2)
-        mini_df = pd.concat([mini_df, pd.DataFrame.from_records([dict_for_df])])
-        dict_for_df.pop("CueEnd")
-        dict_for_df.pop("CueStart")
-        dict_for_df["ScenarioIndex"] -= CUE_START_INDEX
-    else:
-        dict_for_df["ScenarioIndex"] -= CUE_END_INDEX
-
-    return fear_level, df, mini_df
 
 
 def initiate_shock(params: dict, dict_for_df: dict, df: pd.DataFrame, mini_df: pd.DataFrame, ser=None):
