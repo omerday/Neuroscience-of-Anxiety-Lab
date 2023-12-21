@@ -1,5 +1,7 @@
 import pandas as pd
 import datetime
+import os
+from time import strftime, localtime
 
 HEADERS = [
     'ExpermientName',  # NPU
@@ -59,3 +61,37 @@ def export_summarized_dataframe(params: dict, mini_df: pd.DataFrame):
     mini_df.to_csv(
         f'./data/NPU {params["Subject"]} - miniDF - {datetime.datetime.now().strftime("%Y-%m-%d %H-%M.csv")}')
 
+
+def export_data(params: dict, **kwargs):
+    folder = './data'
+    if params['Subject'] != "":
+        folder = f'./data/{params["Subject"]}'
+        if not os.path.exists(folder):
+            os.mkdir(folder)
+
+    for key, value in kwargs.items():
+        if isinstance(value, pd.DataFrame):
+            try:
+                df = value.drop_duplicates(keep='first')
+                df.to_csv(
+                    f'{folder}/NPU {params["Subject"]} Session {params["session"]} - {key} - {strftime("%Y-%m-%d %H-%M", localtime(params["startTime"]))}.csv')
+            except:
+                print("Something went wrong, keeping backup")
+            else:
+                backup_path = f'{folder}/NPU {params["Subject"]} Session {params["session"]} - {key} - {strftime("%Y-%m-%d %H-%M", localtime(params["startTime"]))}.backup.csv'
+                if os.path.exists(backup_path):
+                    os.remove(backup_path)
+
+
+def save_backup(params: dict, **kwargs):
+    folder = './data'
+    if params['Subject'] != "":
+        folder = f'./data/{params["Subject"]}'
+        if not os.path.exists(folder):
+            os.mkdir(folder)
+
+    for key, value in kwargs.items():
+        if isinstance(value, pd.DataFrame):
+            df = value.drop_duplicates(keep='first')
+            df.to_csv(
+                f'{folder}/Doors {params["Subject"]} Session {params["session"]} - {key} - {strftime("%Y-%m-%d %H-%M", localtime(params["startTime"]))}.backup.csv')

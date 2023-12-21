@@ -100,6 +100,8 @@ def run_condition(window: visual.Window, image: visual.ImageStim, params: dict, 
             timing_index += 1
             print("Leaving a cue")
 
+    dataHandler.save_backup(params=params, fullDF=df, miniDF=mini_df)
+
     return df, mini_df
 
 
