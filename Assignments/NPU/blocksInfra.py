@@ -100,6 +100,8 @@ def run_condition(window: visual.Window, image: visual.ImageStim, params: dict, 
             timing_index += 1
             print("Leaving a cue")
 
+    dataHandler.save_backup(params=params, fullDF=df, miniDF=mini_df)
+
     return df, mini_df
 
 
@@ -112,7 +114,7 @@ def launch_wait_sequence(params: dict, window: visual.Window, image: visual.Imag
     them into a command.
     """
     if cue:
-        dict_for_df["CueStart"] = round(time.time() - dict_for_df["StartTime"], 2)
+        dict_for_df["CueStart"] = round(time.time() - condition_start, 2)
         dict_for_df["ScenarioIndex"] += CUE_START_INDEX
     else:
         dict_for_df["ScenarioIndex"] += CUE_END_INDEX
@@ -144,7 +146,7 @@ def launch_wait_sequence(params: dict, window: visual.Window, image: visual.Imag
                                                     condition_start=condition_start)
 
     if cue:
-        dict_for_df["CueEnd"] = round(time.time() - dict_for_df["StartTime"], 2)
+        dict_for_df["CueEnd"] = round(time.time() - condition_start, 2)
         dict_for_df["CurrentTime"] = round(time.time() - dict_for_df["StartTime"], 2)
         dict_for_df["TimeInCondition"] = round(time.time() - condition_start, 2)
         mini_df = pd.concat([mini_df, pd.DataFrame.from_records([dict_for_df])])

@@ -112,7 +112,7 @@ def wait_for_calibration(window: visual.Window, params, io, df: pd.DataFrame, mi
         df = pd.concat([df, pd.DataFrame.from_records([dict_for_df])])
         for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
             if event.key == "escape":
-                dataHandler.export_raw_data(params, df)
+                dataHandler.export_data(params=params, fullDF=df, miniDF=mini_df)
                 window.close()
                 core.quit()
         core.wait(0.05)

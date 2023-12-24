@@ -30,7 +30,7 @@ params = {
     "recordPhysio": configDialogBank[9],
     "skipInstructions": configDialogBank[10],
     "skipCalibration": configDialogBank[11],
-    "fullScreen": configDialogBank[12] if debug is True else True,
+    "fullScreen": configDialogBank[12] if debug is True else False,
     "saveDataAtQuit": configDialogBank[13] if debug is True else True,
     "saveConfig": configDialogBank[14] if debug is True else True,
     "screenSize": (1024, 768),
@@ -97,3 +97,5 @@ df, mini_df = VAS.vas(window, params, df, mini_df, io, 3)
 
 # End of task Finalization
 df, mini_df = instructionsScreen.finalization(params, window, image, io, df, mini_df)
+
+dataHandler.export_data(params=params, fullDF=df, miniDF=mini_df)
