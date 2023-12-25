@@ -434,7 +434,9 @@ def show_wheel(window: visual.Window, params: dict, io=None):
     else:
         helpers.wait_for_joystick_no_df(window)
 
-    movie = visual.MovieStim3(window, filename=r'./img/Spin16.mp4', size=(2, 2), units="norm")
+    award_choice = random.choice([5, 6, 7])
+    movie_path = f"./img/Wheels/{award_choice}_{params['language'][:3]}.mp4"
+    movie = visual.MovieStim3(window, filename=movie_path, size=(2, 2), units="norm")
 
     while movie.status != FINISHED:
         movie.draw()
