@@ -71,7 +71,7 @@ def display_vas(window: visual.Window, params:dict, text, labels, Df: pandas.Dat
                                         scale=None, choices=None, low=0, high=100, precision=1, tickHeight=0, size=2,
                                         markerStart=5, noMouse=True, leftKeys=1, rightKeys=2, # Dummy left and right
                                         textSize=0.6, acceptText='Continue', showValue=False, showAccept=True,
-                                        acceptPreText="לחצו על הרווח"[::-1],
+                                        acceptPreText="לחצו על הרווח"[::-1], acceptSize=1.5,
                                         markerColor="Maroon", acceptKeys=["space"], textColor="Black", lineColor="Black", disappear=False)
         textItem = visual.TextStim(window, text=text, height=.12, units='norm', pos=[0, 0.3], wrapWidth=2,
                                    languageStyle='RTL', font="Open Sans", color="Black")
@@ -82,7 +82,7 @@ def display_vas(window: visual.Window, params:dict, text, labels, Df: pandas.Dat
                                         scale=None, choices=None, low=0, high=100, precision=1, tickHeight=0, size=2,
                                         markerStart=5, noMouse=True, leftKeys=1, rightKeys=2, # Dummy left and right
                                         textSize=0.6, acceptText='Continue', showValue=False, showAccept=True,
-                                        acceptPreText="Press Spacebar",
+                                        acceptPreText="Press Spacebar", acceptSize=1.5,
                                         markerColor="Maroon", acceptKeys=["space"], textColor="Black", lineColor="Black", disappear=False)
         textItem = visual.TextStim(window, text=text, height=.12, units='norm', pos=[0, 0.3], wrapWidth=2,
                                    languageStyle="LTR", font="Open Sans", color="Black")

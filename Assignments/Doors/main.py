@@ -74,7 +74,7 @@ else:
     helpers.wait_for_joystick_no_df(window)
 
 # Run VAS
-Df, mini_df, summary_df = VAS.beginning_vas(window, params, Df, mini_df, summary_df)
+Df, mini_df, summary_df = VAS.beginning_vas(window, params, Df, mini_df, summary_df, io)
 
 if not params['skipInstructions']:
 
@@ -90,16 +90,16 @@ Df, mini_df, summary_df, totalCoins = DoorPlay.run_task(window, params, 1, 0, Df
 roundNum = 2
 while roundNum <= params['numOfTasks']:
     # Mid-VAS
-    Df, mini_df, summary_df = VAS.middle_vas(window, params, Df, mini_df, summary_df, roundNum)
+    Df, mini_df, summary_df = VAS.middle_vas(window, params, Df, mini_df, summary_df, roundNum, io)
 
     # Task 2
     Df, mini_df, summary_df, totalCoins = DoorPlay.run_task(window, params, roundNum, totalCoins, Df, mini_df, summary_df, io, ser)
 
     roundNum += 1
 
-Df, mini_df, summary_df = VAS.middle_vas(window, params, Df, mini_df, summary_df, roundNum)
+Df, mini_df, summary_df = VAS.middle_vas(window, params, Df, mini_df, summary_df, roundNum, io)
 
-Df, mini_df, summary_df = VAS.final_vas(window, params, Df, mini_df, summary_df)
+Df, mini_df, summary_df = VAS.final_vas(window, params, Df, mini_df, summary_df, io)
 DoorPlayInfra.show_screen_post_match(window, params, io, totalCoins, Df, mini_df)
 helpers.graceful_quitting(window, params, Df, mini_df, summary_df)
 
