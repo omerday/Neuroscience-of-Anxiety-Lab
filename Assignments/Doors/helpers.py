@@ -168,7 +168,7 @@ def wait_for_click(window):
     return
 
 
-def display_vas(win, params, text, labels, Df: pandas.DataFrame, questionNo: int, roundNo: int):
+def display_vas(win, params, text, labels, Df: pandas.DataFrame, questionNo: int, roundNo: int, io):
     """
     A helper method that displays VAS question (text object) and places a scale using psychopy.visual.ratingscale.
     The scale goes between two labels, and the answer (1-100) is saved to Df, along with the response time
@@ -181,32 +181,67 @@ def display_vas(win, params, text, labels, Df: pandas.DataFrame, questionNo: int
     :param labels:
     :return: The VAS rating, along with the Dataframe and dict
     """
+
+    keyboard = io.devices.keyboard
+
     if params["language"] == "Hebrew":
         scale = ratingscale.RatingScale(win,
                                         labels=[labels[0][::-1], labels[1][::-1]],  # Labels at the edges of the scale
-                                        scale=None, choices=None, low=0, high=100, precision=1, tickHeight=0, size=2,
+                                        scale=None, choices=None, low=1, high=100, precision=1, tickHeight=0, size=2,
                                         textSize=0.6, acceptText='Continue', showValue=False, showAccept=True,
-                                        markerColor="Yellow", acceptKeys=[" ", "space"], markerStart=50)
+                                        markerColor="Yellow", acceptKeys=[" ", "space"], markerStart=50,
+                                        noMouse=True, leftKeys=1, rightKeys=2, acceptPreText="לחצו על הרווח"[::-1],
+                                        acceptSize=1.5)
         textItem = visual.TextStim(win, text=text, height=.12, units='norm', pos=[0, 0.3], wrapWidth=2,
                                    languageStyle='RTL', font="Open Sans")
 
     else:
         scale = ratingscale.RatingScale(win,
                                         labels=[labels[0], labels[1]],  # Labels at the edges of the scale
-                                        scale=None, choices=None, low=0, high=100, precision=1, tickHeight=0, size=2,
+                                        scale=None, choices=None, low=1, high=100, precision=1, tickHeight=0, size=2,
                                         textSize=0.6, acceptText='Continue', showValue=False, showAccept=True,
-                                        markerColor="Yellow", acceptKeys=[" ", "space"], markerStart=50)
+                                        markerColor="Yellow", acceptKeys=[" ", "space"], markerStart=50,
+                                        noMouse=True, leftKeys=1, rightKeys=2, acceptPreText="Press Spacebar",
+                                        acceptSize=1.5)
         textItem = visual.TextStim(win, text=text, height=.12, units='norm', pos=[0, 0.3], wrapWidth=2,
                                    languageStyle="LTR", font="Open Sans")
 
     dict_for_df = dataHandler.create_dict_for_df(params, Section='VAS', VASQuestionNumber=questionNo, Round=roundNo)
-    while scale.noResponse:
+
+    accept = False
+    while scale.noResponse and not accept:
         dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
+
         scale.draw()
         textItem.draw()
         win.flip()
-        get_escape()
+        for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
+            if event.key in ["left", "right"]:
+                key_hold = True
+                step = 1 if event.key == "right" else -1
+                while key_hold:
+                    scale.markerPlacedAt = max(scale.markerPlacedAt + step, scale.low)
+                    scale.markerPlacedAt = min(scale.markerPlacedAt + step, scale.high)
+                    scale.draw()
+                    textItem.draw()
+                    win.flip()
+                    for releaseEvent in keyboard.getKeys(etype=Keyboard.KEY_RELEASE):
+                        if releaseEvent.key == event.key:
+                            key_hold = False
+                    core.wait(0.03)
+            elif event.key in [" ", "space"]:
+                accept = True
+                break
+            elif event.key == "escape":
+                win.close()
+                core.quit()
+
+            dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
+            dict_for_df['VAS_score'] = scale.markerPlacedAt
+            Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
+            core.wait(0.05)
+
     return scale.getRating(), Df, dict_for_df
 
 

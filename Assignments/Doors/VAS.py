@@ -41,17 +41,17 @@ ANSWERS_FINAL_EN = [["Won very few", "Won very many"], ["Lost very few", "Lost v
                  ["never", "all the time"], ["sad, I did badly", "happy, I did great"]]
 
 
-def beginning_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pandas.DataFrame, summary_df: pandas.DataFrame):
+def beginning_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pandas.DataFrame, summary_df: pandas.DataFrame, io):
     pygame.quit()
     window.mouseVisible = True
     for i in range(len(QUESTIONS_BEGINNING_MIDDLE_HE)):
         startTime = time.time()
         if params["language"] == "Hebrew":
             answer, Df, dict = helpers.display_vas(window, params, QUESTIONS_BEGINNING_MIDDLE_HE[i],
-                                               ANSWERS_BEGINNING_MIDDLE_HE[i], Df, questionNo=i + 1, roundNo=1)
+                                               ANSWERS_BEGINNING_MIDDLE_HE[i], Df, io=io, questionNo=i + 1, roundNo=1,)
         else:
             answer, Df, dict = helpers.display_vas(window, params, QUESTIONS_BEGINNING_MIDDLE_EN[i],
-                                                   ANSWERS_BEGINNING_MIDDLE_EN[i], Df, questionNo=i + 1, roundNo=1)
+                                                   ANSWERS_BEGINNING_MIDDLE_EN[i], Df, io=io, questionNo=i + 1, roundNo=1,)
         dict['Section'] = "VAS1"
         dict['CurrentTime'] = round(time.time() - dict['StartTime'], 2)
         dict['VAS_score'] = answer
@@ -69,16 +69,16 @@ def beginning_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: p
 
 
 def middle_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pandas.DataFrame,
-               summary_df: pandas.DataFrame, roundNum: int):
+               summary_df: pandas.DataFrame, roundNum: int, io):
     window.mouseVisible = True
     for i in range(len(QUESTIONS_BEGINNING_MIDDLE_HE)):
         startTime = time.time()
         if params["language"] == "Hebrew":
             answer, Df, dict = helpers.display_vas(window, params, QUESTIONS_BEGINNING_MIDDLE_HE[i],
-                                               ANSWERS_BEGINNING_MIDDLE_HE[i], Df, questionNo=i + 1, roundNo=2)
+                                               ANSWERS_BEGINNING_MIDDLE_HE[i], Df, questionNo=i + 1, io=io, roundNo=2)
         else:
             answer, Df, dict = helpers.display_vas(window, params, QUESTIONS_BEGINNING_MIDDLE_EN[i],
-                                                   ANSWERS_BEGINNING_MIDDLE_EN[i], Df, questionNo=i + 1, roundNo=2)
+                                                   ANSWERS_BEGINNING_MIDDLE_EN[i], Df, questionNo=i + 1, io=io, roundNo=2)
         if roundNum == 2:
             dict['Section'] = "VAS2"
         elif roundNum == 3:
@@ -100,15 +100,15 @@ def middle_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pand
     return Df, miniDf, summary_df
 
 
-def final_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pandas.DataFrame, summary_df: pandas.DataFrame):
+def final_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pandas.DataFrame, summary_df: pandas.DataFrame, io):
     window.mouseVisible = True
     for i in range(len(QUESTIONS_FINAL_HE)):
         startTime = time.time()
         if params["language"] == "Hebrew":
-            answer, Df, dict = helpers.display_vas(window, params, QUESTIONS_FINAL_HE[i], ANSWERS_FINAL_HE[i], Df, questionNo=i + 1,
+            answer, Df, dict = helpers.display_vas(window, params, QUESTIONS_FINAL_HE[i], ANSWERS_FINAL_HE[i], Df, io=io, questionNo=i + 1,
                                                roundNo=3)
         else:
-            answer, Df, dict = helpers.display_vas(window, params, QUESTIONS_FINAL_EN[i], ANSWERS_FINAL_EN[i], Df,
+            answer, Df, dict = helpers.display_vas(window, params, QUESTIONS_FINAL_EN[i], ANSWERS_FINAL_EN[i], Df, io=io,
                                                    questionNo=i + 1,
                                                    roundNo=3)
         dict["Section"] = 'Question'
