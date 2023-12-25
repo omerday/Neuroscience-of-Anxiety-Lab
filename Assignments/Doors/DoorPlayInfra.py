@@ -1,5 +1,6 @@
 import random
 import pandas
+import pandas as pd
 import sounddevice as sounddevice
 from psychopy import core, visual, event
 import time
@@ -386,8 +387,8 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     return coins, total_time, Df, miniDf, dict_for_df, lock
 
 
-def show_screen_pre_match(window: visual.Window, params: dict, session: int, io, coins=0):
-    #TODO: Add dfs here for graceful quitting!
+def show_screen_pre_match(window: visual.Window, params: dict, session: int, io, df: pd.DataFrame, mini_df: pd.DataFrame,
+                          summary_df: pd.DataFrame, coins=0):
     if session == 2 or session == 3:
         if params["language"] == "Hebrew":
             message = visual.TextStim(window,
@@ -412,9 +413,9 @@ def show_screen_pre_match(window: visual.Window, params: dict, session: int, io,
 
     window.update()
     if params["keyboardMode"]:
-        helpers.wait_for_space_no_df(window, io)
+        helpers.wait_for_space_no_df(window, io, df=df, mini_df=mini_df, summary_df=summary_df)
     else:
-        helpers.wait_for_joystick_no_df(window)
+        helpers.wait_for_joystick_no_df(window, df=df, mini_df=mini_df, summary_df=summary_df)
 
     if session == 1:
         show_wheel(window, params, io)
