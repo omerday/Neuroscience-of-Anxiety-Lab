@@ -23,6 +23,9 @@ HEADERS = [
     'InstructionScreenNum',
     'HabituationNum'
     'ShockType',
+    'VAS_score',
+    'VAS_type',
+    'VAS_RT',
 ]
 
 
