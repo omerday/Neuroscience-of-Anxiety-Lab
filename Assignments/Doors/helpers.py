@@ -187,9 +187,9 @@ def display_vas(win, params, text, labels, Df: pandas.DataFrame, questionNo: int
     if params["language"] == "Hebrew":
         scale = ratingscale.RatingScale(win,
                                         labels=[labels[0][::-1], labels[1][::-1]],  # Labels at the edges of the scale
-                                        scale=None, choices=None, low=0, high=100, precision=1, tickHeight=0, size=2,
+                                        scale=None, choices=None, low=1, high=100, precision=1, tickHeight=0, size=2,
                                         textSize=0.6, acceptText='Continue', showValue=False, showAccept=True,
-                                        markerColor="Yellow", acceptKeys=[" ", "space"], markerStart=5,
+                                        markerColor="Yellow", acceptKeys=[" ", "space"], markerStart=50,
                                         noMouse=True, leftKeys=1, rightKeys=2, acceptPreText="לחצו על הרווח"[::-1],
                                         acceptSize=1.5)
         textItem = visual.TextStim(win, text=text, height=.12, units='norm', pos=[0, 0.3], wrapWidth=2,
@@ -198,9 +198,9 @@ def display_vas(win, params, text, labels, Df: pandas.DataFrame, questionNo: int
     else:
         scale = ratingscale.RatingScale(win,
                                         labels=[labels[0], labels[1]],  # Labels at the edges of the scale
-                                        scale=None, choices=None, low=0, high=100, precision=1, tickHeight=0, size=2,
+                                        scale=None, choices=None, low=1, high=100, precision=1, tickHeight=0, size=2,
                                         textSize=0.6, acceptText='Continue', showValue=False, showAccept=True,
-                                        markerColor="Yellow", acceptKeys=[" ", "space"], markerStart=5,
+                                        markerColor="Yellow", acceptKeys=[" ", "space"], markerStart=50,
                                         noMouse=True, leftKeys=1, rightKeys=2, acceptPreText="Press Spacebar",
                                         acceptSize=1.5)
         textItem = visual.TextStim(win, text=text, height=.12, units='norm', pos=[0, 0.3], wrapWidth=2,
@@ -219,18 +219,17 @@ def display_vas(win, params, text, labels, Df: pandas.DataFrame, questionNo: int
         for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
             if event.key in ["left", "right"]:
                 key_hold = True
-                step = 0.2 if event.key == "right" else -0.2
+                step = 1 if event.key == "right" else -1
                 while key_hold:
-                    valPress = scale.markerPlacedAt
-                    scale.markerPlacedAt = max(valPress + step, scale.low)
-                    scale.markerPlacedAt = min(valPress + step, scale.high)
+                    scale.markerPlacedAt = max(scale.markerPlacedAt + step, scale.low)
+                    scale.markerPlacedAt = min(scale.markerPlacedAt + step, scale.high)
                     scale.draw()
                     textItem.draw()
                     win.flip()
                     for releaseEvent in keyboard.getKeys(etype=Keyboard.KEY_RELEASE):
                         if releaseEvent.key == event.key:
                             key_hold = False
-                    core.wait(0.05)
+                    core.wait(0.03)
             elif event.key in [" ", "space"]:
                 accept = True
                 break

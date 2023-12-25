@@ -36,7 +36,7 @@ params = {
     'beeps': False,
     'skipInstructions': configDialogBank[11],
     'language': configDialogBank[12],
-    'fullScreen': configDialogBank[13] if debug else True,
+    'fullScreen': configDialogBank[13] if debug else False,
     'saveDataAtQuit': configDialogBank[14] if debug else True,
     'startTime': time.time(),
     'saveAsDefault': configDialogBank[15] if debug else True,
