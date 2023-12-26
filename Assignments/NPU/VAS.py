@@ -110,6 +110,12 @@ def display_vas(window: visual.Window, params:dict, text, labels, Df: pandas.Dat
                     for releaseEvent in keyboard.getKeys(etype=Keyboard.KEY_RELEASE):
                         if releaseEvent.key == event.key:
                             key_hold = False
+                        elif releaseEvent.key in [' ', 'space']:
+                            key_hold = False
+                            accept = True
+                        elif releaseEvent.key == 'escape':
+                            window.close()
+                            core.quit()
                     core.wait(0.03)
             elif event.key in [" ", "space"]:
                 accept = True
