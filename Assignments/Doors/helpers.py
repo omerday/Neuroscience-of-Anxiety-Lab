@@ -209,6 +209,10 @@ def display_vas(win, params, text, labels, Df: pandas.DataFrame, questionNo: int
     dict_for_df = dataHandler.create_dict_for_df(params, Section='VAS', VASQuestionNumber=questionNo, Round=roundNo)
 
     accept = False
+
+    core.wait(0.05)
+    keyboard.getKeys()
+
     while scale.noResponse and not accept:
         dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
@@ -227,10 +231,8 @@ def display_vas(win, params, text, labels, Df: pandas.DataFrame, questionNo: int
                     textItem.draw()
                     win.flip()
                     for releaseEvent in keyboard.getKeys(etype=Keyboard.KEY_RELEASE):
-                        if releaseEvent.key == event.key:
-                            key_hold = False
-                        elif releaseEvent.key in [' ', 'space']:
-                            key_hold = False
+                        key_hold = False
+                        if releaseEvent.key in [' ', 'space']:
                             accept = True
                         elif releaseEvent.key == 'escape':
                             win.close()
