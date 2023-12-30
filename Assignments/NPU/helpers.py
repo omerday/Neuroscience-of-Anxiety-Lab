@@ -252,7 +252,7 @@ def play_startle(dict_for_df: dict, df: pd.DataFrame, mini_df: pd.DataFrame, ser
     if ser is not None:
         serialHandler.report_event(ser, dict_for_df["ScenarioIndex"])
 
-    soundToPlay = sound.Sound("./sounds/startle_probe.wav")
+    soundToPlay = sound.Sound("./sounds/startle_probe_low.wav")
     now = ptb.GetSecs()
     now_for_while = time.time()
     soundToPlay.play(when=now)
