@@ -30,7 +30,7 @@ params = {
     "recordPhysio": configDialogBank[8],
     "skipInstructions": configDialogBank[9],
     "skipCalibration": configDialogBank[10],
-    "fullScreen": configDialogBank[11] if debug is True else True,
+    "fullScreen": configDialogBank[11] if debug is True else False,
     "saveDataAtQuit": configDialogBank[12] if debug is True else True,
     "saveConfig": configDialogBank[13] if debug is True else True,
     "screenSize": (1024, 768),
@@ -50,7 +50,8 @@ if params['recordPhysio']:
 
 window = visual.Window(size=params['screenSize'], monitor="testMonitor", color=(0.6, 0.6, 0.6), winType='pyglet',
                        fullscr=True if params['fullScreen'] else False, units="pix")
-image = visual.ImageStim(win=window, image=f"./img/instructions/1{params['gender'][0]}{params['language'][0]}.jpeg", units="norm", opacity=1,
+image = visual.ImageStim(win=window, image=f"./img/instructions/1{params['gender'][0]}{params['language'][0]}.jpeg",
+                         units="norm", opacity=1,
                          size=(2, 2))
 image.draw()
 window.mouseVisible = False
@@ -77,8 +78,9 @@ df, mini_df = VAS.vas(window, params, df, mini_df, io, 1)
 df = instructionsScreen.start_screen(window, image, params, df, io)
 
 # Run Sequence
+fear_level = 5
 for ch in params["sequences"][params["sequenceOrder"] - 1]:
-    df, mini_df = blocksInfra.run_condition(window, image, params, io, ch, df, mini_df,1, ser)
+    fear_level, df, mini_df = blocksInfra.run_condition(window, image, params, io, ch, df, mini_df, 1, ser, fear_level)
     df = instructionsScreen.blank_screen(window, image, params, df, io, 1, ch)
 
 if params['blocks'] == 2:
@@ -89,9 +91,10 @@ if params['blocks'] == 2:
     df, mini_df = VAS.vas(window, params, df, mini_df, io, 2)
     df = instructionsScreen.start_screen(window, image, params, df, io)
 
+    fear_level = 5
     # Run Sequence #2
     for ch in params["sequences"][2 - params["sequenceOrder"]]:
-        df, mini_df = blocksInfra.run_condition(window, image, params, io, ch, df, mini_df,2, ser)
+        fear_level, df, mini_df = blocksInfra.run_condition(window, image, params, io, ch, df, mini_df, 2, ser, fear_level)
         df = instructionsScreen.blank_screen(window, image, params, df, io, 2, ch)
 
 df, mini_df = VAS.vas(window, params, df, mini_df, io, 3)

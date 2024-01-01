@@ -31,7 +31,7 @@ SCALE_LABEL_ENG = "Anxiety Level"
 
 
 def run_condition(window: visual.Window, image: visual.ImageStim, params: dict, io, condition: str, df: pd.DataFrame,
-                  mini_df: pd.DataFrame, blockNum: int, ser=None):
+                  mini_df: pd.DataFrame, blockNum: int, ser=None, fear_level=5):
     if condition != "N" and condition != "P" and condition != "U":
         print("Unknown condition " + condition)
         return
@@ -69,7 +69,6 @@ def run_condition(window: visual.Window, image: visual.ImageStim, params: dict, 
 
     timing_index = 0
     start_time = time.time()
-    fear_level = 5
 
     while time.time() < start_time + BLOCK_LENGTH:
         image.image = f"{PATH}{condition}_{params['language'][0]}{SUFFIX}"
@@ -105,7 +104,7 @@ def run_condition(window: visual.Window, image: visual.ImageStim, params: dict, 
 
     dataHandler.save_backup(params=params, fullDF=df, miniDF=mini_df)
 
-    return df, mini_df
+    return fear_level, df, mini_df
 
 
 def launch_wait_sequence(params: dict, window: visual.Window, image: visual.ImageStim, end_time, startles: list, io,
