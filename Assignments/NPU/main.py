@@ -23,16 +23,16 @@ params = {
     "blocks": configDialogBank[2],
     "gender": configDialogBank[3],
     "language": configDialogBank[4],
-    "firstBlock": configDialogBank[5],
-    "secondBlock": configDialogBank[6],
-    "shockType": configDialogBank[7],
-    "skipStartle": configDialogBank[8],
-    "recordPhysio": configDialogBank[9],
-    "skipInstructions": configDialogBank[10],
-    "skipCalibration": configDialogBank[11],
-    "fullScreen": configDialogBank[12] if debug is True else True,
-    "saveDataAtQuit": configDialogBank[13] if debug is True else True,
-    "saveConfig": configDialogBank[14] if debug is True else True,
+    'sequences': ["PNUNUNP", "UNPNPNU"],
+    "sequenceOrder": configDialogBank[5],
+    "shockType": configDialogBank[6],
+    "skipStartle": configDialogBank[7],
+    "recordPhysio": configDialogBank[8],
+    "skipInstructions": configDialogBank[9],
+    "skipCalibration": configDialogBank[10],
+    "fullScreen": configDialogBank[11] if debug is True else True,
+    "saveDataAtQuit": configDialogBank[12] if debug is True else True,
+    "saveConfig": configDialogBank[13] if debug is True else True,
     "screenSize": (1024, 768),
     "startTime": time.time(),
     'port': 'COM4',
@@ -77,21 +77,22 @@ df, mini_df = VAS.vas(window, params, df, mini_df, io, 1)
 df = instructionsScreen.start_screen(window, image, params, df, io)
 
 # Run Sequence
-for ch in params["firstBlock"]:
+for ch in params["sequences"][params["sequenceOrder"] - 1]:
     df, mini_df = blocksInfra.run_condition(window, image, params, io, ch, df, mini_df,1, ser)
     df = instructionsScreen.blank_screen(window, image, params, df, io, 1, ch)
 
-# Additional Data Measuring
-if not params["skipCalibration"]:
-    df, mini_df = instructionsScreen.midpoint(params, window, image, io, df, mini_df, ser)
+if params['blocks'] == 2:
+    # Additional Data Measuring
+    if not params["skipCalibration"]:
+        df, mini_df = instructionsScreen.midpoint(params, window, image, io, df, mini_df, ser)
 
-df, mini_df = VAS.vas(window, params, df, mini_df, io, 2)
-df = instructionsScreen.start_screen(window, image, params, df, io)
+    df, mini_df = VAS.vas(window, params, df, mini_df, io, 2)
+    df = instructionsScreen.start_screen(window, image, params, df, io)
 
-# Run Sequence #2
-for ch in params["secondBlock"]:
-    df, mini_df = blocksInfra.run_condition(window, image, params, io, ch, df, mini_df,2, ser)
-    df = instructionsScreen.blank_screen(window, image, params, df, io, 2, ch)
+    # Run Sequence #2
+    for ch in params["sequences"][2 - params["sequenceOrder"]]:
+        df, mini_df = blocksInfra.run_condition(window, image, params, io, ch, df, mini_df,2, ser)
+        df = instructionsScreen.blank_screen(window, image, params, df, io, 2, ch)
 
 df, mini_df = VAS.vas(window, params, df, mini_df, io, 3)
 
