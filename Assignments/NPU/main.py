@@ -21,7 +21,7 @@ params = {
     "Subject": configDialogBank[0],
     "session": configDialogBank[1],
     "blocks": configDialogBank[2],
-    "gender": "F" if configDialogBank[3] == "Female" else "M",
+    "gender": configDialogBank[3],
     "language": configDialogBank[4],
     "firstBlock": configDialogBank[5],
     "secondBlock": configDialogBank[6],
@@ -50,8 +50,8 @@ if params['recordPhysio']:
 
 window = visual.Window(size=params['screenSize'], monitor="testMonitor", color=(0.6, 0.6, 0.6), winType='pyglet',
                        fullscr=True if params['fullScreen'] else False, units="pix")
-image = visual.ImageStim(win=window, image="./img/init.jpeg", units="norm", opacity=1,
-                         size=(2, 2) if not params['fullScreen'] else None)
+image = visual.ImageStim(win=window, image=f"./img/instructions/1{params['gender'][0]}{params['language'][0]}.jpeg", units="norm", opacity=1,
+                         size=(2, 2))
 image.draw()
 window.mouseVisible = False
 window.update()

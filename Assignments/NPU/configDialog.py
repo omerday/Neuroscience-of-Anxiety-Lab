@@ -29,7 +29,7 @@ def get_user_input(debug=False):
     userInput = gui.Dlg(title="NPU Task Configuration")
     userInput.addField('Subject Number:', )
     userInput.addField('Session:', 1)
-    userInput.addField('# of Blocks:', 2 if not configExists else loadedData['blocks'] - 1, choices=[1, 2, 3])
+    userInput.addField('# of Blocks:', 2 if not configExists else loadedData['blocks'] - 1, choices=[1, 2])
     userInput.addField('Gender', "Female" if not configExists else loadedData["gender"], choices=["Male", "Female"])
     userInput.addField("Preferred Language", "Hebrew" if not configExists else loadedData["language"],
                        choices=["Hebrew", "English"])
