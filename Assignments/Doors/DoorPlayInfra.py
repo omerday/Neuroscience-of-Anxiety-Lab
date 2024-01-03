@@ -448,6 +448,21 @@ def show_wheel(window: visual.Window, params: dict, io=None):
     else:
         helpers.wait_for_joystick_no_df(window)
 
+    del movie
+
+    image = visual.ImageStim(win=window, units="norm", opacity=1, size=(2, 2))
+    if params["language"] == "Hebrew":
+        image.image = "./img/InstructionsHebrew/AfterWheel.jpg"
+    else:
+        image.image = "./img/InstructionsEnglish/AfterWheel.jpg"
+    image.draw()
+    window.update()
+
+    if params["keyboardMode"]:
+        helpers.wait_for_space_no_df(window, io)
+    else:
+        helpers.wait_for_joystick_no_df(window)
+
     return
 
 
