@@ -30,7 +30,7 @@ params = {
     "recordPhysio": configDialogBank[8],
     "skipInstructions": configDialogBank[9],
     "skipCalibration": configDialogBank[10],
-    "fullScreen": configDialogBank[11] if debug is True else False,
+    "fullScreen": configDialogBank[11] if debug is True else True,
     "saveDataAtQuit": configDialogBank[12] if debug is True else True,
     "saveConfig": configDialogBank[13] if debug is True else True,
     "screenSize": (1024, 768),
