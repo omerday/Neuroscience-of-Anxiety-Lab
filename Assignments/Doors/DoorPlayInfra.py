@@ -363,12 +363,12 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     else:
         miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict_for_df])])
 
-        doorFrameImg = visual.ImageStim(window, image=params['doorImagePathPrefix'] + 'lock' + ".png",
-                                        size=(image.size[0], image.size[1]),
-                                        pos=(0, 0), units="norm", opacity=1)
-        image.draw()
-        doorFrameImg.draw()
-        window.update()
+        # doorFrameImg = visual.ImageStim(window, image=params['doorImagePathPrefix'] + 'lock' + ".png",
+        #                                 size=(image.size[0], image.size[1]),
+        #                                 pos=(0, 0), units="norm", opacity=1)
+        # image.draw()
+        # doorFrameImg.draw()
+        # window.update()
 
         waitTimeStart = time.time()
         while time.time() < waitTimeStart + WAIT_TIME_ON_DOOR:
@@ -376,7 +376,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
             Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
             core.wait(1 / 1000)
 
-        del doorFrameImg
+        # del doorFrameImg
         window.update()
 
 
