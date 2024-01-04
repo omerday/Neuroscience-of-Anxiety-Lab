@@ -26,9 +26,12 @@ CONDITION_START_INDEX = 10
 CUE_START_INDEX = 20
 CUE_END_INDEX = 30
 
+SCALE_LABEL_HEB = "רמת חרדה"
+SCALE_LABEL_ENG = "Anxiety Level"
+
 
 def run_condition(window: visual.Window, image: visual.ImageStim, params: dict, io, condition: str, df: pd.DataFrame,
-                  mini_df: pd.DataFrame, blockNum: int, ser=None):
+                  mini_df: pd.DataFrame, blockNum: int, ser=None, fear_level=5):
     if condition != "N" and condition != "P" and condition != "U":
         print("Unknown condition " + condition)
         return
@@ -66,7 +69,6 @@ def run_condition(window: visual.Window, image: visual.ImageStim, params: dict, 
 
     timing_index = 0
     start_time = time.time()
-    fear_level = 5
 
     while time.time() < start_time + BLOCK_LENGTH:
         image.image = f"{PATH}{condition}_{params['language'][0]}{SUFFIX}"
@@ -88,8 +90,8 @@ def run_condition(window: visual.Window, image: visual.ImageStim, params: dict, 
             current_cue_time = time.time()
             image.image = f"{PATH}{condition}_{params['language'][0]}_Cue{SUFFIX}"
             image.setSize((2, 2))
-            image.draw()
-            window.update()
+            # image.draw()
+            # window.update()
 
             fear_level, df, mini_df = launch_wait_sequence(params=params, window=window, image=image,
                                                            end_time=current_cue_time + CUE_LENGTH,
@@ -102,7 +104,7 @@ def run_condition(window: visual.Window, image: visual.ImageStim, params: dict, 
 
     dataHandler.save_backup(params=params, fullDF=df, miniDF=mini_df)
 
-    return df, mini_df
+    return fear_level, df, mini_df
 
 
 def launch_wait_sequence(params: dict, window: visual.Window, image: visual.ImageStim, end_time, startles: list, io,
@@ -165,13 +167,19 @@ def wait_in_condition(window: visual.Window, image: visual.ImageStim, startle_ti
     keyboard = io.devices.keyboard
     scale = ratingscale.RatingScale(win=window, scale=None, labels=["0", "10"], low=0, high=10, markerStart=fear_level,
                                     showAccept=False, markerColor="Gray", textColor="Black", lineColor="Black",
-                                    pos=(0, -window.size[1] / 2 + 200))
+                                    pos=(0, -window.size[1] / 2 + 150))
+
+    scale_label = visual.TextStim(win=window,
+                                 text=SCALE_LABEL_ENG if params["language"] == "English" else SCALE_LABEL_HEB,
+                                 pos=(0, -window.size[1] / 2 + 250), color="Black",
+                                 languageStyle="LTR" if params["language"] == "English" else "RTL", height=40)
 
     while time.time() <= end_time:
 
         # Rating Scale
         image.draw()
         scale.draw()
+        scale_label.draw()
         window.flip()
 
         # Write to DF

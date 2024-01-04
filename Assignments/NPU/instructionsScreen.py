@@ -25,7 +25,7 @@ def show_instructions(params: dict, window: visual.Window, img: visual.ImageStim
     replay = True
     plays_again = False
     while replay:
-        for i in range(1, SLIDES):
+        for i in range(2, SLIDES):
             if params["skipCalibration"] and i in [3, 4, 5]:
                 pass
             elif params["skipStartle"] and i == STARTLE_SLIDE:
@@ -47,7 +47,7 @@ def show_instructions(params: dict, window: visual.Window, img: visual.ImageStim
                 elif i == RATING_SLIDE:
                     df = helpers.wait_for_space_with_rating_scale(window, img, io, params, df, dict_for_df)
                 elif i == STARTLE_SLIDE:
-                    df = helpers.play_startle_and_wait(window, io, params, df, dict_for_df)
+                    df = helpers.play_startle_and_wait(window, img, io, params, df, dict_for_df)
                 else:
                     df = helpers.wait_for_space(window, io, params, df, dict_for_df)
 
@@ -69,7 +69,7 @@ def finalization(params: dict, window: visual.Window, img: visual.ImageStim, io,
 
     mini_df = pd.concat([mini_df, pd.DataFrame.from_records([dict_for_df])])
 
-    img.image = f"./img/finish{params['language'][0]}{SUFFIX}"
+    img.image = f"./img/finish{params['gender'][0]}{params['language'][0]}{SUFFIX}"
     img.setSize((2, 2))
     img.draw()
     window.update()
@@ -104,7 +104,7 @@ def midpoint(params: dict, window: visual.Window, img: visual.ImageStim, io, df:
 
 def start_screen(window: visual.Window, image: visual.ImageStim, params: dict, df: pandas.DataFrame, io):
     dict_for_df = dataHandler.create_dict_for_df(params, Step="Instructions", InstructionScreenNum="Start",)
-    image.image = f"./img/start{params['language'][0]}{SUFFIX}"
+    image.image = f"./img/start{params['gender'][0]}{params['language'][0]}{SUFFIX}"
     image.setSize((2, 2))
     image.draw()
     window.update()

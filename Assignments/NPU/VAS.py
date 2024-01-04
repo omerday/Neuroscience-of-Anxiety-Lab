@@ -28,26 +28,45 @@ ANSWERS_BEGINNING_MIDDLE_EN = [["Not anxious", "Very anxious"], ["Not at all", "
                             ["Worst mood possible", "Best mood possible"]]
 
 
-def vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pandas.DataFrame, io, roundNum: int):
+def vas(window: visual.Window, params, df: pandas.DataFrame, mini_df: pandas.DataFrame, io, roundNum: int):
     pygame.quit()
     window.mouseVisible = True
+
+    image = visual.ImageStim(win=window, image=f"./img/instructions/VAS_{params['gender'][0]}{params['language'][0]}.jpg", pos=(0,0), size=(2,2), units="norm")
+    image.draw()
+    window.flip()
+
+    keyboard = io.devices.keyboard
+    keyboard.getKeys()
+    proceed = False
+    while not proceed:
+        for event in keyboard.getEvents(etype=Keyboard.KEY_PRESS):
+            if event.key == " ":
+                proceed = True
+            elif event.key == "escape":
+                dataHandler.export_data(params, fullDF=df, miniDF=mini_df)
+                window.close()
+                core.quit()
+
+    del image
+
     for i in range(len(QUESTIONS_BEGINNING_MIDDLE_HE)):
         startTime = time.time()
         if params["language"] == "Hebrew":
-            answer, Df, dict_for_df = display_vas(window, params, QUESTIONS_BEGINNING_MIDDLE_HE[i],
-                                               ANSWERS_BEGINNING_MIDDLE_HE[i], Df, io, questionNo=i + 1, roundNum=1)
+            answer, df, dict_for_df = display_vas(window, params, QUESTIONS_BEGINNING_MIDDLE_HE[i],
+                                                  ANSWERS_BEGINNING_MIDDLE_HE[i], df, io, questionNo=i + 1, roundNum=1)
         else:
-            answer, Df, dict_for_df = display_vas(window, params, QUESTIONS_BEGINNING_MIDDLE_EN[i],
-                                                   ANSWERS_BEGINNING_MIDDLE_EN[i], Df, io, questionNo=i + 1, roundNum=1)
+            answer, df, dict_for_df = display_vas(window, params, QUESTIONS_BEGINNING_MIDDLE_EN[i],
+                                                  ANSWERS_BEGINNING_MIDDLE_EN[i], df, io, questionNo=i + 1, roundNum=1)
         dict_for_df['Section'] = f"VAS{roundNum}"
         dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
         dict_for_df['VAS_score'] = answer
         dict_for_df['VAS_type'] = LABELS[i]
         dict_for_df['VAS_RT'] = time.time() - startTime
-        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
-        miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict_for_df])])
+        df = pandas.concat([df, pandas.DataFrame.from_records([dict_for_df])])
+        mini_df = pandas.concat([mini_df, pandas.DataFrame.from_records([dict_for_df])])
     window.mouseVisible = False
-    return Df, miniDf
+    return df, mini_df
 
 
 def display_vas(window: visual.Window, params:dict, text, labels, Df: pandas.DataFrame, io, questionNo: int, roundNum: int):
