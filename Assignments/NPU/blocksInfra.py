@@ -163,7 +163,7 @@ def launch_wait_sequence(params: dict, window: visual.Window, image: visual.Imag
 
 def wait_in_condition(window: visual.Window, image: visual.ImageStim, startle_times: list, end_time: time,
                       io, params: dict, dict_for_df: dict, df: pd.DataFrame, mini_df: pd.DataFrame, fear_level=5,
-                      shock_time=0, ser=None, condition_start=0.0):
+                      shock_time=0, ser=None, condition_start=0.0, sound=None):
     keyboard = io.devices.keyboard
     scale = ratingscale.RatingScale(win=window, scale=None, labels=["0", "10"], low=0, high=10, markerStart=fear_level,
                                     showAccept=False, markerColor="Gray", textColor="Black", lineColor="Black",

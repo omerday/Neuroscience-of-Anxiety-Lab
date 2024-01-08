@@ -16,7 +16,7 @@ CALIBRATION_TIME = 60
 HABITUATION_STARTLES = 9
 HABITUATION_EVENT = 80
 
-SOUNDS = ["./sounds/shock_sound_1.mp3", "./sounds/shock_sound_2.wav"]
+SOUNDS = ["./sounds/shock_sound_1.mp3", "./sounds/shock_sound_2.mp3"]
 
 
 def wait_for_space_no_df(window: visual.Window, io):
@@ -279,7 +279,7 @@ def play_startle(dict_for_df: dict, df: pd.DataFrame, mini_df: pd.DataFrame, ser
 
 
 def play_shock_sound(dict_for_df: dict, df: pd.DataFrame, sound_name=None):
-    sound_path = f"./sounds/{sound_name}" if sound_name else "./sounds/shock_sound_1.mp3"
+    sound_path = sound_name if sound_name else "./sounds/shock_sound_1.mp3"
     soundToPlay = sound.Sound(sound_path)
     now = ptb.GetSecs()
     soundToPlay.play(when=now)
@@ -329,6 +329,6 @@ def randomize_sounds():
     sounds_in_order = []
     for x in numbers:
         sounds_in_order.append(SOUNDS[x % 2])
+    print(sounds_in_order)
     return sounds_in_order
-
 
