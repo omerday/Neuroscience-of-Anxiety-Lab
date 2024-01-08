@@ -310,7 +310,7 @@ def startle_habituation_sequence(window: visual.Window, image: visual.ImageStim,
         dict_for_df["HabituationNum"] = i
         mini_df = pd.concat([mini_df, pd.DataFrame.from_records([dict_for_df])])
 
-        soundToPlay = sound.Sound("./sounds/startle_probe.wav")
+        soundToPlay = sound.Sound("./sounds/startle_probe_low.wav")
         now = ptb.GetSecs()
         soundToPlay.play(when=now)
         core.wait(0.5)
