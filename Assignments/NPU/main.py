@@ -83,7 +83,8 @@ sounds_in_order = helpers.randomize_sounds()
 for ch in params["sequences"][params["sequenceOrder"] - 1]:
     fear_level, df, mini_df = blocksInfra.run_condition(window, image, params, io, ch, df, mini_df, 1, ser, fear_level, sounds_in_order[0] if ch != 'N' else None)
     df = instructionsScreen.blank_screen(window, image, params, df, io, 1, ch)
-    sounds_in_order.pop(0)
+    if ch != 'N':
+        sounds_in_order.pop(0)
 
 if params['blocks'] == 2:
     # Additional Data Measuring
@@ -95,9 +96,12 @@ if params['blocks'] == 2:
 
     fear_level = 5
     # Run Sequence #2
+    sounds_in_order = helpers.randomize_sounds()
     for ch in params["sequences"][2 - params["sequenceOrder"]]:
-        fear_level, df, mini_df = blocksInfra.run_condition(window, image, params, io, ch, df, mini_df, 2, ser, fear_level)
+        fear_level, df, mini_df = blocksInfra.run_condition(window, image, params, io, ch, df, mini_df, 2, ser, fear_level, sounds_in_order[0] if ch != 'N' else None)
         df = instructionsScreen.blank_screen(window, image, params, df, io, 2, ch)
+        if ch != 'N':
+            sounds_in_order.pop(0)
 
 df, mini_df = VAS.vas(window, params, df, mini_df, io, 3)
 
