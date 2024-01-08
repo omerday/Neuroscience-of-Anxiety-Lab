@@ -16,6 +16,8 @@ CALIBRATION_TIME = 60
 HABITUATION_STARTLES = 9
 HABITUATION_EVENT = 80
 
+SOUNDS = ["./sounds/shock_sound_1.mp3", "./sounds/shock_sound_2.wav"]
+
 
 def wait_for_space_no_df(window: visual.Window, io):
     keyboard = io.devices.keyboard
@@ -127,7 +129,7 @@ def wait_for_calibration(window: visual.Window, params, io, df: pd.DataFrame, mi
     return df, mini_df
 
 
-def play_startle_and_wait(window: visual.Window, image:visual.ImageStim, io, params: dict, df: pd.DataFrame,
+def play_startle_and_wait(window: visual.Window, image: visual.ImageStim, io, params: dict, df: pd.DataFrame,
                           dict_for_df: dict):
     soundToPlay = sound.Sound("./sounds/startle_probe.wav")
     core.wait(5)
@@ -155,7 +157,7 @@ def play_startle_and_wait(window: visual.Window, image:visual.ImageStim, io, par
 
 def play_shock_and_wait(window: visual.Window, io, params: dict, df: pd.DataFrame,
                         dict_for_df: dict):
-    soundToPlay = sound.Sound("./sounds/shock_sound.mp3")
+    soundToPlay = sound.Sound("./sounds/shock_sound_1.mp3")
     core.wait(3)
     now = ptb.GetSecs()
     soundToPlay.play(when=now)
@@ -276,8 +278,9 @@ def play_startle(dict_for_df: dict, df: pd.DataFrame, mini_df: pd.DataFrame, ser
     return df, mini_df
 
 
-def play_shock_sound(dict_for_df: dict, df: pd.DataFrame):
-    soundToPlay = sound.Sound("./sounds/shock_sound.mp3")
+def play_shock_sound(dict_for_df: dict, df: pd.DataFrame, sound_name=None):
+    sound_path = f"./sounds/{sound_name}" if sound_name else "./sounds/shock_sound_1.mp3"
+    soundToPlay = sound.Sound(sound_path)
     now = ptb.GetSecs()
     soundToPlay.play(when=now)
     now_for_while = time.time()
@@ -289,10 +292,10 @@ def play_shock_sound(dict_for_df: dict, df: pd.DataFrame):
     return df
 
 
-def startle_habituation_sequence(window:visual.Window, image: visual.ImageStim, params: dict, io, df: pd.DataFrame,
-                                 mini_df:pd.DataFrame, ser=None):
+def startle_habituation_sequence(window: visual.Window, image: visual.ImageStim, params: dict, io, df: pd.DataFrame,
+                                 mini_df: pd.DataFrame, ser=None):
     image.image = f"./img/habituation{params['language'][0]}.jpeg"
-    image.setSize((2,2))
+    image.setSize((2, 2))
     image.draw()
     window.update()
 
@@ -315,3 +318,17 @@ def startle_habituation_sequence(window:visual.Window, image: visual.ImageStim, 
         df = wait_until_time_with_df(window, io, params, df, dict_for_df, wait_end_time)
 
     return df, mini_df
+
+
+'''
+The method creates a permutation of two of the first sound and two of the second, to go along the block.
+'''
+def randomize_sounds():
+    numbers = [0, 1, 2, 3]
+    random.shuffle(numbers)
+    sounds_in_order = []
+    for x in numbers:
+        sounds_in_order.append(SOUNDS[x % 2])
+    return sounds_in_order
+
+
