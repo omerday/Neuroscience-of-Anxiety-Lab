@@ -286,7 +286,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     dict_for_df["Door_anticipation_time"] = doorWaitTime * 1000
 
     if params['soundOn']:
-        play_sound("lock", 0.5, dict_for_df, Df)
+        play_sound("lock", 0.5, dict_for_df, Df, volume=0.7)
         if params['beeps']:
             doorWaitTime -= 2
         else:
@@ -496,12 +496,12 @@ def show_screen_post_match(window: visual.Window, params: dict, io, coins=0, df=
         helpers.wait_for_joystick_no_df(window, params, df, mini_df)
 
 
-def play_sound(soundType: str, waitTime: float, dict_for_df: dict, Df: pandas.DataFrame):
+def play_sound(soundType: str, waitTime: float, dict_for_df: dict, Df: pandas.DataFrame, volume=1.):
     """
     The method plays a sound and sleeps through it, while recording data for the DF
     """
 
-    soundToPlay = sound.Sound(SOUNDS[soundType])
+    soundToPlay = sound.Sound(SOUNDS[soundType], volume=volume)
     now = ptb.GetSecs()
     soundToPlay.play(when=now)
     startTime = time.time()

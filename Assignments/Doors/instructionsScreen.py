@@ -17,19 +17,20 @@ def show_instructions(win: visual.Window, params, img: visual.ImageStim, Df: pan
     else:
         path = INSTRUCTION_PATH_ENGLISH
     for i in range(1, SLIDES + 1):
-        image_name = str(i) + ("H" if params["language"] == "Hebrew" else "E")
-        img.image = path + image_name + SUFFIX
-        img.setSize((2, 2))  # Size needs to be reset after changing the image
-        img.draw()
-        win.update()
-        if i != SLIDES:
-            dict_for_df["Round"] = i
-            if params["keyboardMode"]:
-                Df = helpers.wait_for_space(win, Df, dict_for_df, io, params, miniDf)
-            else:
-                Df = helpers.wait_for_joystick_press(win, Df, dict_for_df, params, miniDf)
-            dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
-            miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict_for_df])])
+        if i != 18:  # Skip slide 18 showing the exit key
+            image_name = str(i) + ("H" if params["language"] == "Hebrew" else "E")
+            img.image = path + image_name + SUFFIX
+            img.setSize((2, 2))  # Size needs to be reset after changing the image
+            img.draw()
+            win.update()
+            if i != SLIDES:
+                dict_for_df["Round"] = i
+                if params["keyboardMode"]:
+                    Df = helpers.wait_for_space(win, Df, dict_for_df, io, params, miniDf)
+                else:
+                    Df = helpers.wait_for_joystick_press(win, Df, dict_for_df, params, miniDf)
+                dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
+                miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict_for_df])])
     dict_for_df["Round"] = SLIDES
     if params["keyboardMode"]:
         Df, again = helpers.wait_for_space_with_replay(win, Df, dict_for_df, io, params, miniDf)
