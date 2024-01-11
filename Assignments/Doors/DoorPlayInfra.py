@@ -282,7 +282,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
 
     # Seed randomization for waiting time and for door opening chance:
     random.seed(time.time() % 60)  # Seeding using the current second in order to have relatively random seed
-    doorWaitTime = 3 + random.random() * 2  # Randomize waiting time between 3-5 seconds
+    doorWaitTime = 3 + random.random()  # Randomize waiting time between 3-4 seconds
     dict_for_df["Door_anticipation_time"] = doorWaitTime * 1000
 
     if params['soundOn']:
