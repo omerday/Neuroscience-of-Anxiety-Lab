@@ -11,6 +11,7 @@ from psychopy.iohub.client.keyboard import Keyboard
 from psychopy.visual import Window, MovieStim3, FINISHED
 from psychopy import sound
 import psychtoolbox as ptb
+import sys
 
 import serialHandler
 
@@ -155,6 +156,7 @@ def get_movement_input_keyboard(window, params, image: visual.ImageStim, locatio
             elif event.key == ' ' or event.key == 'space':
                 space = True
                 break
+        core.wait(0.05)
 
         Df = update_movement_in_df(dict_for_df, Df, location)
     location = normalize_location(location)
@@ -213,6 +215,7 @@ def get_movement_input_joystick(window, params, image: visual.ImageStim, locatio
                                           params['sensitivity'] * 0.5 * speed)
 
         Df = update_movement_in_df(dict_for_df, Df, location)
+        core.wait(0.05)
     location = normalize_location(location)
     return location, Df, dict_for_df, not joystickButton  # NormalizedLocation
 
@@ -386,7 +389,6 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     window.update()
     start_time = time.time()
     iti_time = 1 + random.random() * 2
-    print(f"ITI Set time - {iti_time}")
     while time.time() < start_time + iti_time:
         dict_for_df["CurrentTime"] = round(time.time() - dict_for_df['StartTime'], 2)
         dict_for_df["ITI_duration"] = iti_time
@@ -395,8 +397,11 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
         image.draw()
         window.update()
         core.wait(0.03)
+    print(f"ITI Set time - {iti_time}")
     print(f"ITI actual time - {time.time() - start_time}")
-
+    print(f"Size of image object - {round(sys.getsizeof(image)/1024, 4)} Kb")
+    print(f"Size of DF object - {round(sys.getsizeof(Df) / 1024 / 1024, 2)} Mb")
+    print(f"Image object address - {id(image)}")
     return coins, total_time, Df, miniDf, dict_for_df, lock
 
 

@@ -21,6 +21,7 @@ def wait_for_space(window, Df: pandas.DataFrame, dict_for_df: dict, io, params=N
     while True:
         dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
+        core.wait(0.05)
         for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
             if event.key == " ":
                 return Df
@@ -38,7 +39,7 @@ def wait_for_joystick_press(window, Df: pandas.DataFrame, dict_for_df: dict, par
     while True:
         dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
-        core.wait(1 / 1000)
+        core.wait(0.05)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 graceful_quitting(window, params, Df, mini_df, summary_df)
@@ -70,6 +71,7 @@ def wait_for_space_with_replay(window, Df: pandas.DataFrame, dict_for_df: dict, 
     while True:
         dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
+        core.wait(0.05)
         keys = keyboard.getPresses()
         for event in keys:
             if event.key == 'r' or event.key == 'R':
@@ -97,7 +99,7 @@ def wait_for_joystick_press_with_replay(window, Df: pandas.DataFrame, dict_for_d
     while True:
         dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
-        core.wait(1 / 1000)
+        core.wait(0.05)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 graceful_quitting(window, params, Df, mini_df, summary_df)
@@ -141,7 +143,7 @@ def wait_for_joystick_no_df(window, params=None, df=None, mini_df=None, summary_
     joy = pygame.joystick.Joystick(0)
     joy.init()
     while True:
-        core.wait(1 / 1000)
+        core.wait(0.05)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 graceful_quitting(window, params, df, mini_df, summary_df)
