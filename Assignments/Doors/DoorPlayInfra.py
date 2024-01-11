@@ -12,6 +12,7 @@ from psychopy.visual import Window, MovieStim3, FINISHED
 from psychopy import sound
 import psychtoolbox as ptb
 import sys
+import inspect
 
 import serialHandler
 
@@ -404,7 +405,10 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     print(f"Image object address - {id(image)}")
     print(f"Size of IO object - {round(sys.getsizeof(io) / 1024, 2)} Kb")
     print(f"Size of DF object - {round(sys.getsizeof(Df) / 1024 / 1024, 2)} Mb")
-
+    f = inspect.currentframe()
+    for v in f.f_locals.keys():
+        if not v.startswith("_"):
+            print(v)
     return coins, total_time, Df, miniDf, dict_for_df, lock
 
 
