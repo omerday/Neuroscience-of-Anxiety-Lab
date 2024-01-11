@@ -386,6 +386,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     window.update()
     start_time = time.time()
     iti_time = 1 + random.random() * 2
+    print(f"ITI Set time - {iti_time}")
     while time.time() < start_time + iti_time:
         dict_for_df["CurrentTime"] = round(time.time() - dict_for_df['StartTime'], 2)
         dict_for_df["ITI_duration"] = iti_time
@@ -394,6 +395,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
         image.draw()
         window.update()
         core.wait(0.03)
+    print(f"ITI actual time - {time.time() - start_time}")
 
     return coins, total_time, Df, miniDf, dict_for_df, lock
 
