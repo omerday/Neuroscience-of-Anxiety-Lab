@@ -1,5 +1,5 @@
 import os
-
+import pretestVideos
 import pandas as pd
 from psychopy.iohub import launchHubServer
 from psychopy import visual, core, event, monitors
@@ -30,11 +30,13 @@ params = {
     "recordPhysio": configDialogBank[8],
     "skipInstructions": configDialogBank[9],
     "skipCalibration": configDialogBank[10],
-    "fullScreen": configDialogBank[11] if debug is True else True,
-    "saveDataAtQuit": configDialogBank[12] if debug is True else True,
-    "saveConfig": configDialogBank[13] if debug is True else True,
+    'showVideos': configDialogBank[11],
+    "fullScreen": configDialogBank[12] if debug is True else True,
+    "saveDataAtQuit": configDialogBank[13] if debug is True else True,
+    "saveConfig": configDialogBank[14] if debug is True else True,
     "screenSize": (1024, 768),
     "startTime": time.time(),
+    'videoRestTime': 10,
     'port': 'COM4',
 }
 
@@ -50,6 +52,10 @@ if params['recordPhysio']:
 
 window = visual.Window(size=params['screenSize'], monitor="testMonitor", color=(0.6, 0.6, 0.6), winType='pyglet',
                        fullscr=True if params['fullScreen'] else False, units="pix")
+
+if params['showVideos']:
+    pretestVideos.run_pretask_videos(window, params, ser)
+
 image = visual.ImageStim(win=window, image=f"./img/instructions/1{params['gender'][0]}{params['language'][0]}.jpeg",
                          units="norm", opacity=1,
                          size=(2, 2))
