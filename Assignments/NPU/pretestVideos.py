@@ -51,9 +51,9 @@ def run_pretask_videos(win: visual.Window, params: dict, ser=None):
     win.flip()
     core.wait(5)
 
-    videos = [r".\videos\scarlett-johansson-and-adam-driver-in-marriage-story-l-netflix-no-sound2.mp4",
-              r".\videos\boring-short-video_8yidKDJ9.mp4"]
-    audios = [r".\videos\Scarlett Johansson and Adam Driver in Marriage Story.mp3", r".\videos\boring-short-video_IJ43b94a2.mp3"]
+    videos = [r"C:\Users\User\Videos\scarlett-johansson-and-adam-driver-in-marriage-story-l-netflix-no-sound2.mp4",
+              r"C:\Users\User\Videos\boring-short-video_8yidKDJ9.mp4"]
+    audios = [r"C:\Users\User\Videos\Scarlett Johansson and Adam Driver in Marriage Story.mp3", r"C:\Users\User\Videos\boring-short-video_IJ43b94a2.mp3"]
     movie_category = ["Exciting", "Boring"]
 
     index = random.randint(0, 1)
