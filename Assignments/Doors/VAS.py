@@ -43,7 +43,6 @@ ANSWERS_FINAL_EN = [["Won very few", "Won very many"], ["Lost very few", "Lost v
 
 def beginning_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pandas.DataFrame, summary_df: pandas.DataFrame, io):
     pygame.quit()
-    window.mouseVisible = True
     for i in range(len(QUESTIONS_BEGINNING_MIDDLE_HE)):
         startTime = time.time()
         if params["language"] == "Hebrew":
@@ -64,13 +63,11 @@ def beginning_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: p
 
         dataHandler.save_backup(params, fullDF=Df, miniDF=miniDf, summary=summary_df)
 
-    window.mouseVisible = False
     return Df, miniDf, summary_df
 
 
 def middle_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pandas.DataFrame,
                summary_df: pandas.DataFrame, roundNum: int, io):
-    window.mouseVisible = True
     for i in range(len(QUESTIONS_BEGINNING_MIDDLE_HE)):
         startTime = time.time()
         if params["language"] == "Hebrew":
@@ -96,12 +93,10 @@ def middle_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pand
 
         dataHandler.save_backup(params, fullDF=Df, miniDF=miniDf, summary=summary_df)
 
-    window.mouseVisible = False
     return Df, miniDf, summary_df
 
 
 def final_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pandas.DataFrame, summary_df: pandas.DataFrame, io):
-    window.mouseVisible = True
     for i in range(len(QUESTIONS_FINAL_HE)):
         startTime = time.time()
         if params["language"] == "Hebrew":
@@ -123,5 +118,4 @@ def final_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: panda
 
         dataHandler.save_backup(params, fullDF=Df, miniDF=miniDf, summary=summary_df)
 
-    window.mouseVisible = False
     return Df, miniDf, summary_df

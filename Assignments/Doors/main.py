@@ -25,6 +25,7 @@ params = {
     'Session': configDialogBank[1],
     'practiceTrials': configDialogBank[2],  # Number if Practice Trials, taken from Config Dialog
     'numOfDoors': configDialogBank[3],  # Number of Screens in the 1st task, either 49 (7*7) or 36 (6*6)
+    'numOfSimulationDoors': 10,
     'numOfTasks': configDialogBank[4],
     'startingDistance': configDialogBank[5],  # Decide whether the starting distance is random, or fixed on 50
     'recordPhysio': configDialogBank[6],
@@ -83,6 +84,9 @@ if not params['skipInstructions']:
 
     # Practice run
     Df, mini_df, summary_df = DoorPlay.practice_run(window, params, Df, mini_df, summary_df, io, ser)
+
+    # Simulation run
+    Df, mini_df, summary_df, totalCoins = DoorPlay.run_task(window, params, 0, 0, Df, mini_df, summary_df, io, ser)
 
 # Task 1
 Df, mini_df, summary_df, totalCoins = DoorPlay.run_task(window, params, 1, 0, Df, mini_df, summary_df, io, ser)
