@@ -11,9 +11,8 @@ import dataHandler
 import psychtoolbox as ptb
 
 
-def run_pretask_videos(win: visual.Window, params: dict, ser=None):
+def run_pretask_videos(win: visual.Window, params: dict, io, ser=None):
     # prefs.hardware['audioLib'] = ['PTB']
-    io = launchHubServer()
     keyboard = io.devices.keyboard
     df = dataHandler.setup_videos_dataframe(params)
     dict_for_df = dataHandler.create_dict_for_videos_df(params)

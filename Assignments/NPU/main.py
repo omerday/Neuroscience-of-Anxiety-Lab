@@ -54,7 +54,7 @@ window = visual.Window(size=params['screenSize'], monitor="testMonitor", color=(
                        fullscr=True if params['fullScreen'] else False, units="pix")
 
 if params['showVideos']:
-    pretestVideos.run_pretask_videos(window, params, ser)
+    pretestVideos.run_pretask_videos(window, params, io, ser)
 
 image = visual.ImageStim(win=window, image=f"./img/instructions/1{params['gender'][0]}{params['language'][0]}.jpeg",
                          units="norm", opacity=1,
