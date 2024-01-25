@@ -8,10 +8,11 @@ import serialHandler
 import serial
 import VideosVAS
 import dataHandler
+import psychtoolbox as ptb
 
 
 def run_pretask_videos(win: visual.Window, params: dict, ser=None):
-    prefs.hardware['audioLib'] = ['PTB']
+    # prefs.hardware['audioLib'] = ['PTB']
     io = launchHubServer()
     keyboard = io.devices.keyboard
     df = dataHandler.setup_videos_dataframe(params)
@@ -49,11 +50,21 @@ def run_pretask_videos(win: visual.Window, params: dict, ser=None):
 
     # Show the window and wait 5 sec
     win.flip()
-    core.wait(5)
+    press = False
+    keyboard.getKeys()
+    while not press:
+        for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
+            if event.key == ' ':
+                press = True
+            elif event.key == 'escape':
+                win.close()
+                core.quit()
+        core.wait(0.05)
 
-    videos = [r"C:\Users\User\Videos\scarlett-johansson-and-adam-driver-in-marriage-story-l-netflix-no-sound2.mp4",
-              r"C:\Users\User\Videos\boring-short-video_8yidKDJ9.mp4"]
-    audios = [r"C:\Users\User\Videos\Scarlett Johansson and Adam Driver in Marriage Story.mp3", r"C:\Users\User\Videos\boring-short-video_IJ43b94a2.mp3"]
+    videos = [r"C:/Users/User/Videos/scarlett-johansson-and-adam-driver-in-marriage-story-l-netflix-no-sound2.mp4",
+              r"C:/Users/User/Videos/boring-short-video_8yidKDJ9.mp4"]
+    audios = [r"C:/Users/User/Videos/Scarlett Johansson and Adam Driver in Marriage Story.wav",
+              r"C:/Users/User/Videos/boring-short-video_IJ43b94a2.wav"]
     movie_category = ["Exciting", "Boring"]
 
     index = random.randint(0, 1)
@@ -68,27 +79,30 @@ def run_pretask_videos(win: visual.Window, params: dict, ser=None):
     audio_stim = sound.Sound(audio_path)
 
     # Show a text message to prompt the user to click
-    click_prompt = visual.TextStim(win, text="לחצו על העכבר להפעלת הוידאו" if params["language"] == "Hebrew"
-    else "Click the mouse to start the video", pos=(0, 0), height=0.03, wrapWidth=1, ori=0.0,
-                                   color="#000000", languageStyle='RTL' if params["language"] == "Hebrew" else "LTR")
+    click_prompt = visual.TextStim(win, text="לחצו על מקש הרווח להפעלת הוידאו" if params["language"] == "Hebrew"
+                                else "Click the spacebar to start the video", pos=(0, 0), height=0.12, wrapWidth=1, ori=0.0,
+                                   units="norm", color="#000000", languageStyle='RTL' if params["language"] == "Hebrew" else "LTR")
 
-    # Draw the text prompt and wait for a mouse click
-    click_prompt.draw()
-    win.flip()
+    press = False
+    keyboard.getKeys()
+    while not press:
+        click_prompt.draw()
+        win.flip()
+        for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
+            if event.key == ' ':
+                press = True
+            elif event.key == 'escape':
+                win.close()
+                core.quit()
+        core.wait(0.05)
 
     df = report_event_and_add_to_df(params, df, dict_for_df, 10, ser)
-
-    myMouse = event.Mouse(win=win)
-    myMouse.clickReset()
-    continueRoutine = True
-    while continueRoutine:
-        if sum(myMouse.getPressed(getTime=False)) > 0:
-            continueRoutine = False
 
     df = report_event_and_add_to_df(params, df, dict_for_df, 55, ser)
 
     # Start the audio and video playback
-    audio_stim.play()
+    now = ptb.GetSecs()
+    audio_stim.play(when=now)
     movie_stim.setAutoDraw(True)
 
     keyboard.getKeys()
@@ -111,9 +125,9 @@ def run_pretask_videos(win: visual.Window, params: dict, ser=None):
 
     df = report_event_and_add_to_df(params, df, dict_for_df, 60, ser)
 
-    VideosVAS.run_vas(win, df, dict_for_df, category, params['language'])
+    df = VideosVAS.run_vas(win, df, dict_for_df, category, params['language'])
 
-    img = visual.ImageStim(win=win, image="./plus.jpeg", units='norm', size=(2, 2))
+    img = visual.ImageStim(win=win, image="./img/plus.jpeg", units='norm', size=(2, 2))
     img.draw()
     win.flip()
 
@@ -143,16 +157,18 @@ def run_pretask_videos(win: visual.Window, params: dict, ser=None):
     df = report_event_and_add_to_df(params, df, dict_for_df, 70, ser)
 
     # Start the audio and video playback for the second video
-    audio_stim2.play()
+    now = ptb.GetSecs()
+    audio_stim2.play(when=now)
     movie_stim2.setAutoDraw(True)
 
     keyboard.getKeys()
     # Main loop to keep video playing until the second video finishes
-    while movie_stim2.status != visual.FINISHED:
+    stop = False
+    while movie_stim2.status != visual.FINISHED and not stop:
         for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
             if event.key == 'right':
-                audio_stim.stop()
-                movie_stim.stop()
+                audio_stim2.stop()
+                movie_stim2.stop()
                 stop = True
             elif event.key == 'escape':
                 win.close()
@@ -164,9 +180,9 @@ def run_pretask_videos(win: visual.Window, params: dict, ser=None):
     audio_stim2.stop()
 
     df = report_event_and_add_to_df(params, df, dict_for_df, 75, ser)
-    VideosVAS.run_vas(win, df, dict_for_df, category, params['language'])
+    df = VideosVAS.run_vas(win, df, dict_for_df, category, params['language'])
 
-    img = visual.ImageStim(win=win, image="./plus.jpeg", units='norm', size=(2, 2))
+    img = visual.ImageStim(win=win, image="./img/plus.jpeg", units='norm', size=(2, 2))
     img.draw()
     win.flip()
 
@@ -174,8 +190,13 @@ def run_pretask_videos(win: visual.Window, params: dict, ser=None):
 
     rest_end_time = time.time() + rest_time
     keyboard.getKeys()
-    while time.time() < rest_end_time:
+    stop = False
+    while time.time() < rest_end_time and not stop:
         for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
+            if event.key == 'right':
+                audio_stim2.stop()
+                movie_stim2.stop()
+                stop = True
             if event.key == 'escape':
                 print("escape key pressed, quitting")
                 win.close()
@@ -193,5 +214,6 @@ def report_event_and_add_to_df(params: dict, df: pd.DataFrame, dict_for_df: dict
         serialHandler.report_event(ser, scenario)
         dict_for_df['ScenarioIndex'] = scenario
         dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
+        df = pd.concat([df, pd.DataFrame.from_records([dict_for_df])])
         dict_for_df.pop('ScenarioIndex')
     return df

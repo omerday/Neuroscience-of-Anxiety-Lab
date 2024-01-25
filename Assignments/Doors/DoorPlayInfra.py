@@ -244,8 +244,10 @@ def update_movement_in_df(dict_for_df: dict, Df: pandas.DataFrame, location):
     return Df
 
 
-def start_door(window: visual.Window, params, image: visual.ImageStim, reward: int, punishment: int, total_coins: int, location,
-               Df: pandas.DataFrame, dict_for_df: dict, io, scenarioIndex: int, miniDf: pandas.DataFrame, summary_df=None, ser=None):
+def start_door(window: visual.Window, params, image: visual.ImageStim, reward: int, punishment: int, total_coins: int,
+               location,
+               Df: pandas.DataFrame, dict_for_df: dict, io, scenarioIndex: int, miniDf: pandas.DataFrame,
+               summary_df=None, ser=None):
     # Set end time for 10s max
     start_time = time.time()
     end_time = start_time + 10
@@ -262,10 +264,12 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     dict_for_df.pop("ScenarioIndex")
 
     if params['keyboardMode']:
-        location, Df, dict_for_df, lock = get_movement_input_keyboard(window, params, image, location, end_time, Df, dict_for_df, io,
+        location, Df, dict_for_df, lock = get_movement_input_keyboard(window, params, image, location, end_time, Df,
+                                                                      dict_for_df, io,
                                                                       miniDf, summary_df)
     else:
-        location, Df, dict_for_df, lock = get_movement_input_joystick(window, params, image, location, end_time, Df, dict_for_df,
+        location, Df, dict_for_df, lock = get_movement_input_joystick(window, params, image, location, end_time, Df,
+                                                                      dict_for_df,
                                                                       miniDf, summary_df)
 
     dict_for_df["ScenarioIndex"] = scenarioIndex + 50
@@ -379,7 +383,6 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
         del doorFrameImg
         window.update()
 
-
     image.setImage('./img/iti.jpg')
     image.setSize((3.2, 3.2))
     image.draw()
@@ -400,17 +403,25 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     return coins, total_time, Df, miniDf, dict_for_df, lock
 
 
-def show_screen_pre_match(window: visual.Window, params: dict, session: int, io, df: pd.DataFrame, mini_df: pd.DataFrame,
-                          summary_df: pd.DataFrame, coins=0):
-    if session == 2 or session == 3:
+def show_screen_pre_match(window: visual.Window, params: dict, session: int, io, df: pd.DataFrame,
+                          mini_df: pd.DataFrame,
+                          summary_df: pd.DataFrame, coins=0, simulation=False):
+    if session == 0 and simulation:
+        image = visual.ImageStim(win=window, units="norm", opacity=1, size=(2, 2))
+        image.image = ("./img/InstructionsHebrew/" if params["language"] == "Hebrew" else "./img/InstructionsEnglish/") + "SimulationRunStart.jpeg"
+        image.draw()
+
+    elif session == 2 or session == 3:
         if params["language"] == "Hebrew":
             message = visual.TextStim(window,
-                                      text=MIDDLE_SUMMARY_STR1_HE + (MIDDLE_SUMMARY_STR2Key_HE if params["keyboardMode"] else MIDDLE_SUMMARY_STR2Joy_HE),
+                                      text=MIDDLE_SUMMARY_STR1_HE + (MIDDLE_SUMMARY_STR2Key_HE if params[
+                                          "keyboardMode"] else MIDDLE_SUMMARY_STR2Joy_HE),
                                       units="norm",
                                       color=(255, 255, 255), languageStyle='RTL')
         else:
             message = visual.TextStim(window,
-                                      text=MIDDLE_SUMMARY_STR1_EN + (MIDDLE_SUMMARY_STR2Key_EN if params["keyboardMode"] else MIDDLE_SUMMARY_STR2Joy_EN),
+                                      text=MIDDLE_SUMMARY_STR1_EN + (MIDDLE_SUMMARY_STR2Key_EN if params[
+                                          "keyboardMode"] else MIDDLE_SUMMARY_STR2Joy_EN),
                                       units="norm",
                                       color=(255, 255, 255), languageStyle='LTR')
         message.draw()
@@ -432,6 +443,20 @@ def show_screen_pre_match(window: visual.Window, params: dict, session: int, io,
 
     if session == 1:
         show_wheel(window, params, io)
+
+
+def show_screen_post_simulation(window: visual.Window, params: dict, io, df=None, mini_df=None):
+    image = visual.ImageStim(win=window, units="norm", opacity=1, size=(2, 2))
+    image.image = ("./img/InstructionsHebrew/" if params[
+                                                      "language"] == "Hebrew" else "./img/InstructionsEnglish/") + "SimulationRunEnd.jpeg"
+
+    image.draw()
+    window.update()
+
+    if params["keyboardMode"]:
+        helpers.wait_for_space_no_df(window, io, params, df, mini_df)
+    else:
+        helpers.wait_for_joystick_no_df(window, params, df, mini_df)
 
 
 def show_wheel(window: visual.Window, params: dict, io=None):
