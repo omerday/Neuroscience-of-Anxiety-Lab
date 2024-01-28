@@ -10,14 +10,27 @@ import VideosVAS
 import dataHandler
 import psychtoolbox as ptb
 
+VAS_STRING_HEB = "כעת תתבקשו לענות על מספר שאלות"
+VAS_STRING_ENG = "You are now asked to answer a few questions"
 
-def run_pretask_videos(win: visual.Window, params: dict, io, ser=None):
+SECOND_VIDEO_HEB = "כעת נעבור לסרטון הבא\nלחצו על הרווח להמשך"
+SECOND_VIDEO_ENG = "We will now move on to the next video.\nPress the spacebar to proceed."
+
+STARE_AT_PLUS_1_HEB = "כעת יוצג בפניכם סימן של פלוס."
+STARE_AT_PLUS_2_HEB = "אנא הסתכלו לכיוונו עד שיעלם"
+
+STARE_AT_PLUS_ENG = "You will now be presented with a plus sign.\nPlease look directly to it until it disappears."
+
+
+def run_post_videos(win: visual.Window, params: dict, io, ser=None):
     # prefs.hardware['audioLib'] = ['PTB']
     keyboard = io.devices.keyboard
     df = dataHandler.setup_videos_dataframe(params)
     dict_for_df = dataHandler.create_dict_for_videos_df(params)
 
     rest_time = params['videoRestTime']
+
+    plus_stare_message(win, params, keyboard)
 
     img = visual.ImageStim(win=win, image="./img/plus.jpeg", units='norm', size=(2, 2))
     img.draw()
@@ -79,8 +92,10 @@ def run_pretask_videos(win: visual.Window, params: dict, io, ser=None):
 
     # Show a text message to prompt the user to click
     click_prompt = visual.TextStim(win, text="לחצו על מקש הרווח להפעלת הוידאו" if params["language"] == "Hebrew"
-                                else "Click the spacebar to start the video", pos=(0, 0), height=0.12, wrapWidth=1, ori=0.0,
-                                   units="norm", color="#000000", languageStyle='RTL' if params["language"] == "Hebrew" else "LTR")
+                                else "Click the spacebar to start the video", pos=(0, 0),
+                                   height=0.12, wrapWidth=1, ori=0.0,
+                                   units="norm", color="#000000",
+                                   languageStyle='RTL' if params["language"] == "Hebrew" else "LTR")
 
     press = False
     keyboard.getKeys()
@@ -126,6 +141,8 @@ def run_pretask_videos(win: visual.Window, params: dict, io, ser=None):
 
     df = VideosVAS.run_vas(win, df, dict_for_df, category, params['language'])
 
+    plus_stare_message(win, params, keyboard)
+
     img = visual.ImageStim(win=win, image="./img/plus.jpeg", units='norm', size=(2, 2))
     img.draw()
     win.flip()
@@ -143,6 +160,26 @@ def run_pretask_videos(win: visual.Window, params: dict, io, ser=None):
 
     del img
     win.flip()
+
+    # Show a text message to prompt the user to click
+    click_prompt = visual.TextStim(win, text=SECOND_VIDEO_HEB if params["language"] == "Hebrew"
+                                else SECOND_VIDEO_ENG, pos=(0, 0),
+                                   height=0.12, wrapWidth=1, ori=0.0,
+                                   units="norm", color="#000000",
+                                   languageStyle='RTL' if params["language"] == "Hebrew" else "LTR")
+
+    press = False
+    keyboard.getKeys()
+    while not press:
+        click_prompt.draw()
+        win.flip()
+        for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
+            if event.key == ' ':
+                press = True
+            elif event.key == 'escape':
+                win.close()
+                core.quit()
+        core.wait(0.05)
 
     # Create a new MovieStim3 object for the second video
     video_path2 = videos[1 - index]
@@ -181,6 +218,8 @@ def run_pretask_videos(win: visual.Window, params: dict, io, ser=None):
     df = report_event_and_add_to_df(params, df, dict_for_df, 75, ser)
     df = VideosVAS.run_vas(win, df, dict_for_df, category, params['language'])
 
+    plus_stare_message(win, params, keyboard)
+
     img = visual.ImageStim(win=win, image="./img/plus.jpeg", units='norm', size=(2, 2))
     img.draw()
     win.flip()
@@ -216,3 +255,44 @@ def report_event_and_add_to_df(params: dict, df: pd.DataFrame, dict_for_df: dict
         df = pd.concat([df, pd.DataFrame.from_records([dict_for_df])])
         dict_for_df.pop('ScenarioIndex')
     return df
+
+
+def plus_stare_message(win:visual.Window, params:dict, keyboard):
+    plus_stare = visual.TextStim(win=win, text=STARE_AT_PLUS_1_HEB + "\n" + STARE_AT_PLUS_2_HEB if
+                                params['language'] == 'Hebrew' else STARE_AT_PLUS_ENG,
+                                 font='Arial', pos=(0, 0), height=0.12, wrapWidth=1, ori=0.0, units="norm",
+                                 color='#000000', languageStyle='RTL' if params["language"] == "Hebrew" else "LTR"
+                                 )
+    plus_stare.draw()
+    win.flip()
+    press = False
+    keyboard.getKeys()
+    while not press:
+        for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
+            if event.key == ' ':
+                press = True
+            elif event.key == 'escape':
+                win.close()
+                core.quit()
+        core.wait(0.05)
+    del plus_stare
+
+
+def vas_message(win:visual.Window, params:dict, keyboard):
+    vas_text = visual.TextStim(win=win, text=VAS_STRING_HEB if params['language'] == 'Hebrew' else VAS_STRING_ENG,
+                                 font='Arial', pos=(0, 0), height=0.12, wrapWidth=1, ori=0.0, units="norm",
+                                 color='#000000', languageStyle='RTL' if params["language"] == "Hebrew" else "LTR"
+                                 )
+    vas_text.draw()
+    win.flip()
+    press = False
+    keyboard.getKeys()
+    while not press:
+        for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
+            if event.key == ' ':
+                press = True
+            elif event.key == 'escape':
+                win.close()
+                core.quit()
+        core.wait(0.05)
+    del vas_text

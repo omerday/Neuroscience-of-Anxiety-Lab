@@ -36,7 +36,7 @@ params = {
     "saveConfig": configDialogBank[14] if debug is True else True,
     "screenSize": (1024, 768),
     "startTime": time.time(),
-    'videoRestTime': 10,
+    'videoRestTime': 60,
     'port': 'COM4',
 }
 
@@ -52,9 +52,6 @@ if params['recordPhysio']:
 
 window = visual.Window(size=params['screenSize'], monitor="testMonitor", color=(0.6, 0.6, 0.6), winType='pyglet',
                        fullscr=True if params['fullScreen'] else False, units="pix")
-
-if params['showVideos']:
-    pretestVideos.run_pretask_videos(window, params, io, ser)
 
 image = visual.ImageStim(win=window, image=f"./img/instructions/1{params['gender'][0]}{params['language'][0]}.jpeg",
                          units="norm", opacity=1,
@@ -110,6 +107,10 @@ if params['blocks'] == 2:
             sounds_in_order.pop(0)
 
 df, mini_df = VAS.vas(window, params, df, mini_df, io, 3)
+
+# Show Post-Task Videos
+if params['showVideos']:
+    pretestVideos.run_post_videos(window, params, io, ser)
 
 # End of task Finalization
 df, mini_df = instructionsScreen.finalization(params, window, image, io, df, mini_df)
