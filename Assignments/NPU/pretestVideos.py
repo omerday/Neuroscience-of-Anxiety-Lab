@@ -11,20 +11,21 @@ import dataHandler
 import psychtoolbox as ptb
 
 VAS_STRING_HEB = "כעת תתבקשו לענות על מספר שאלות"
-VAS_STRING_ENG = "You are now asked to answer a few questions"
+VAS_STRING_ENG = "We will now ask you a few questions"
 
 SECOND_VIDEO_HEB = "כעת נעבור לסרטון הבא\nלחצו על הרווח להמשך"
 SECOND_VIDEO_ENG = "We will now move on to the next video.\nPress the spacebar to proceed."
 
-STARE_AT_PLUS_1_HEB = "כעת יוצג בפניכם סימן של פלוס."
+STARE_AT_PLUS_1_HEB = "כעת יוצג בפניכם סימן + למשך כדקה,"
 STARE_AT_PLUS_2_HEB = "אנא הסתכלו לכיוונו עד שיעלם"
 
-STARE_AT_PLUS_ENG = "You will now be presented with a plus sign.\nPlease look directly to it until it disappears."
+STARE_AT_PLUS_ENG = "You will now be presented with + sign for a minute,\nPlease look at it until it disappears"
 
 
 def run_post_videos(win: visual.Window, params: dict, io, ser=None):
     # prefs.hardware['audioLib'] = ['PTB']
     keyboard = io.devices.keyboard
+    win.mouseVisible = False
     df = dataHandler.setup_videos_dataframe(params)
     dict_for_df = dataHandler.create_dict_for_videos_df(params)
 
