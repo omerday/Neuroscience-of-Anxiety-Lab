@@ -272,9 +272,9 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
                                                                       dict_for_df,
                                                                       miniDf, summary_df)
 
-    dict_for_df["ScenarioIndex"] = scenarioIndex + 50
-    if params['recordPhysio']:
-        serialHandler.report_event(ser, dict_for_df["ScenarioIndex"])
+    # dict_for_df["ScenarioIndex"] = scenarioIndex + 50
+    # if params['recordPhysio']:
+    #     serialHandler.report_event(ser, dict_for_df["ScenarioIndex"])
     total_time = time.time() - start_time
     dict_for_df["DistanceFromDoor_SubTrial"] = location
     dict_for_df['Distance_lock'] = 1 if lock else 0
@@ -282,7 +282,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     dict_for_df["CurrentTime"] = round(time.time() - dict_for_df['StartTime'], 2)
     Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
     miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict_for_df])])
-    dict_for_df.pop("ScenarioIndex")
+    # dict_for_df.pop("ScenarioIndex")
 
     # Seed randomization for waiting time and for door opening chance:
     random.seed(time.time() % 60)  # Seeding using the current second in order to have relatively random seed
@@ -313,9 +313,9 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     isDoorOpening = doorOpenChance <= (location / 100)
     print(f"doorChance - {doorOpenChance}, location - {location / 100}, isOpening - {isDoorOpening}")
 
-    dict_for_df["ScenarioIndex"] = scenarioIndex + 100
-    if params['recordPhysio']:
-        serialHandler.report_event(ser, scenarioIndex + 100)
+    # dict_for_df["ScenarioIndex"] = scenarioIndex + 100
+    # if params['recordPhysio']:
+    #     serialHandler.report_event(ser, scenarioIndex + 100)
     dict_for_df["Door_opened"] = 1 if isDoorOpening else 0
     dict_for_df["DoorStatus"] = 'opened' if isDoorOpening else 'closed'
     dict_for_df["CurrentTime"] = round(time.time() - dict_for_df['StartTime'], 2)
