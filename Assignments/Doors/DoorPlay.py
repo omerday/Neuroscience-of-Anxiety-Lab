@@ -109,6 +109,7 @@ def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int
         dict_for_df["CurrentTime"] = round(time.time() - dict_for_df['StartTime'], 2)
 
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
+        dict_for_df["ScenarioIndex"] = scenarioIndex
         summary_df = pandas.concat([summary_df, pandas.DataFrame.from_records([dict_for_df])])
 
         dataHandler.save_backup(params, fullDF=Df, miniDF=miniDf, summary=summary_df)

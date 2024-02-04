@@ -77,11 +77,12 @@ def run_condition(window: visual.Window, image: visual.ImageStim, params: dict, 
         window.update()
 
         fear_level, df, mini_df = launch_wait_sequence(params=params, window=window, image=image,
-                                                       end_time=cue_times[
-                                                           timing_index] if timing_index < 3 else start_time + BLOCK_LENGTH,
+                                                       end_time=cue_times[timing_index] if timing_index < 3
+                                                       else start_time + BLOCK_LENGTH,
                                                        startles=startle_times, io=io, shock_time=shock_time,
                                                        fear_level=fear_level,
-                                                       dict_for_df=dict_for_df, df=df, mini_df=mini_df, ser=ser, condition_start=condition_start, sound=sound)
+                                                       dict_for_df=dict_for_df, df=df, mini_df=mini_df, ser=ser,
+                                                       condition_start=condition_start, sound=sound)
 
         if timing_index == 3:
             pass
