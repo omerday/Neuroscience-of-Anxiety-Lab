@@ -333,18 +333,18 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
 
         if rewardChance >= 0.5:
             # outcomeString = f'{reward}_reward'
-            outcome_string = "reward"
+            outcome_string = "reward" if not params['outcomeString'] else f"reward_{reward}"
             coins = reward
             dict_for_df["DidWin"] = 1
             dict_for_df["Door_outcome"] = 'reward'
         else:
             # outcomeString = f'{punishment}_punishment'
-            outcome_string = "punishment"
+            outcome_string = "punishment" if not params['outcomeString'] else f"punishment_{punishment}"
             coins = -1 * punishment
             dict_for_df["DidWin"] = 0
             dict_for_df["Door_outcome"] = 'punishment'
 
-        doorFrameImg = visual.ImageStim(window, image=params['doorImagePathPrefix'] + outcome_string + ".png",
+        doorFrameImg = visual.ImageStim(window, image=params['doorOutcomePath'] + outcome_string + ".png",
                                         size=(image.size[0], image.size[1]),
                                         pos=(0, 0), units="norm", opacity=1)
         image.draw()
@@ -412,7 +412,8 @@ def show_screen_pre_match(window: visual.Window, params: dict, session: int, io,
                           summary_df: pd.DataFrame, coins=0, simulation=False):
     if session == 0 and simulation:
         image = visual.ImageStim(win=window, units="norm", opacity=1, size=(2, 2))
-        image.image = ("./img/InstructionsHebrew/" if params["language"] == "Hebrew" else "./img/InstructionsEnglish/") + "SimulationRunStart.jpeg"
+        image.image = ("./img/InstructionsHebrew/" if params[
+                                                          "language"] == "Hebrew" else "./img/InstructionsEnglish/") + "SimulationRunStart.jpeg"
         image.draw()
 
     elif session == 2 or session == 3:

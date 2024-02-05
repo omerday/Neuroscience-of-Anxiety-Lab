@@ -35,6 +35,7 @@ params = {
     'screenSize': (1024, 768),  # Get Screen Resolution to match Full Screen
     'soundOn': configDialogBank[10],
     'beeps': False,
+    'outcomeString': True,   # True if we want to print the outcome amount, otherwise it will just show a monster / a fairy
     'skipInstructions': configDialogBank[11],
     'language': configDialogBank[12],
     'reducedEvents': False,
@@ -43,7 +44,7 @@ params = {
     'startTime': time.time(),
     'saveAsDefault': configDialogBank[15] if debug else True,
     'doorImagePathPrefix': './img/doors1/' if configDialogBank[8] == "P - R" else './img/doors2/',
-    'outcomeImagePredix': './img/outcomes/',
+    'doorOutcomePath': './img/outcomes/',
     'imageSuffix': '.jpg',
     'port': 'COM4',
 }
