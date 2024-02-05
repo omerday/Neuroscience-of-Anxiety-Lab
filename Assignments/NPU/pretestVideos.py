@@ -28,11 +28,15 @@ def run_post_videos(win: visual.Window, params: dict, io, ser=None):
     win.mouseVisible = False
     df = dataHandler.setup_videos_dataframe(params)
     dict_for_df = dataHandler.create_dict_for_videos_df(params)
-
     rest_time = params['videoRestTime']
 
-    plus_stare_message(win, params, keyboard)
+    # Show instruction screen
+    instructions(win, params, keyboard)
 
+    # Prepare subject for fixation
+    fixation_message(win, params, keyboard)
+
+    # Initiate Fixation
     img = visual.ImageStim(win=win, image="./img/plus.jpeg", units='norm', size=(2, 2))
     img.draw()
     win.flip()
@@ -52,28 +56,6 @@ def run_post_videos(win: visual.Window, params: dict, io, ser=None):
     del img
     win.flip()
 
-    textHello = visual.TextStim(win=win,
-                                text='עכשיו אתם עומדים לצפות בקטע וידאו' if params["language"] == "Hebrew"
-                                else "You are now about to watch a video clip", font='Arial',
-                                pos=(0, 0), height=0.12, wrapWidth=1, ori=0.0, units="norm",
-                                color='#000000', languageStyle='RTL' if params["language"] == "Hebrew" else "LTR")
-
-    # draw the text
-    textHello.draw()
-
-    # Show the window and wait 5 sec
-    win.flip()
-    press = False
-    keyboard.getKeys()
-    while not press:
-        for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
-            if event.key == ' ':
-                press = True
-            elif event.key == 'escape':
-                win.close()
-                core.quit()
-        core.wait(0.05)
-
     videos = [r"C:/Users/User/Videos/scarlett-johansson-and-adam-driver-in-marriage-story-l-netflix-no-sound2.mp4",
               r"C:/Users/User/Videos/boringmovie.mp4"]
     audios = [r"C:/Users/User/Videos/Scarlett Johansson and Adam Driver in Marriage Story.wav",
@@ -87,31 +69,12 @@ def run_post_videos(win: visual.Window, params: dict, io, ser=None):
     audio_path = audios[index]
     category = movie_category[index]
 
+    # Show message before first video
+    pre_video(win, params, keyboard, 1)
+
     # Create movie and sound objects
     movie_stim = visual.MovieStim3(win, video_path, flipVert=False, flipHoriz=False, name="movie", autoLog=False)
     audio_stim = sound.Sound(audio_path)
-
-    # Show a text message to prompt the user to click
-    click_prompt = visual.TextStim(win, text="לחצו על מקש הרווח להפעלת הוידאו" if params["language"] == "Hebrew"
-                                else "Click the spacebar to start the video", pos=(0, 0),
-                                   height=0.12, wrapWidth=1, ori=0.0,
-                                   units="norm", color="#000000",
-                                   languageStyle='RTL' if params["language"] == "Hebrew" else "LTR")
-
-    press = False
-    keyboard.getKeys()
-    while not press:
-        click_prompt.draw()
-        win.flip()
-        for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
-            if event.key == ' ':
-                press = True
-            elif event.key == 'escape':
-                win.close()
-                core.quit()
-        core.wait(0.05)
-
-    df = report_event_and_add_to_df(params, df, dict_for_df, 10, ser)
 
     df = report_event_and_add_to_df(params, df, dict_for_df, 55, ser)
 
@@ -140,9 +103,12 @@ def run_post_videos(win: visual.Window, params: dict, io, ser=None):
 
     df = report_event_and_add_to_df(params, df, dict_for_df, 60, ser)
 
+    # Show pre-vas message and initiate vas
+    vas_message(win, params, keyboard)
     df = VideosVAS.run_vas(win, df, dict_for_df, category, params['language'])
 
-    plus_stare_message(win, params, keyboard)
+    # Show Fixation message and initiate fixation
+    fixation_message(win, params, keyboard)
 
     img = visual.ImageStim(win=win, image="./img/plus.jpeg", units='norm', size=(2, 2))
     img.draw()
@@ -163,24 +129,7 @@ def run_post_videos(win: visual.Window, params: dict, io, ser=None):
     win.flip()
 
     # Show a text message to prompt the user to click
-    click_prompt = visual.TextStim(win, text=SECOND_VIDEO_HEB if params["language"] == "Hebrew"
-                                else SECOND_VIDEO_ENG, pos=(0, 0),
-                                   height=0.12, wrapWidth=1, ori=0.0,
-                                   units="norm", color="#000000",
-                                   languageStyle='RTL' if params["language"] == "Hebrew" else "LTR")
-
-    press = False
-    keyboard.getKeys()
-    while not press:
-        click_prompt.draw()
-        win.flip()
-        for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
-            if event.key == ' ':
-                press = True
-            elif event.key == 'escape':
-                win.close()
-                core.quit()
-        core.wait(0.05)
+    pre_video(win, params, keyboard, 2)
 
     # Create a new MovieStim3 object for the second video
     video_path2 = videos[1 - index]
@@ -217,9 +166,11 @@ def run_post_videos(win: visual.Window, params: dict, io, ser=None):
     audio_stim2.stop()
 
     df = report_event_and_add_to_df(params, df, dict_for_df, 75, ser)
+
+    vas_message(win, params, keyboard)
     df = VideosVAS.run_vas(win, df, dict_for_df, category, params['language'])
 
-    plus_stare_message(win, params, keyboard)
+    fixation_message(win, params, keyboard)
 
     img = visual.ImageStim(win=win, image="./img/plus.jpeg", units='norm', size=(2, 2))
     img.draw()
@@ -245,6 +196,14 @@ def run_post_videos(win: visual.Window, params: dict, io, ser=None):
     del img
     win.flip()
 
+    if params['videos_timing'] == 'Start':
+        next_task = visual.ImageStim(win,
+                                     f"./img/instructions/videosInstructions/nextTask{params['gender'][0]}{params['language'][0]}.jpeg",
+                                     units="norm", pos=(0, 0), size=(2,2))
+        next_task.draw()
+        win.flip()
+        wait_for_space(win, keyboard)
+
     dataHandler.export_data(params, VideosData=df)
 
 
@@ -258,42 +217,63 @@ def report_event_and_add_to_df(params: dict, df: pd.DataFrame, dict_for_df: dict
     return df
 
 
-def plus_stare_message(win:visual.Window, params:dict, keyboard):
-    plus_stare = visual.TextStim(win=win, text=STARE_AT_PLUS_1_HEB + "\n" + STARE_AT_PLUS_2_HEB if
-                                params['language'] == 'Hebrew' else STARE_AT_PLUS_ENG,
-                                 font='Arial', pos=(0, 0), height=0.12, wrapWidth=1, ori=0.0, units="norm",
-                                 color='#000000', languageStyle='RTL' if params["language"] == "Hebrew" else "LTR"
-                                 )
-    plus_stare.draw()
+def instructions(win: visual.Window, params: dict, keyboard):
+    if params['videos_timing'] == 'Start':
+        curr_instruction = visual.ImageStim(win,
+                                            f"./img/instructions/1{params['gender'][0]}{params['language'][0]}.jpeg",
+                                            units="norm", pos=(0, 0), size=(2,2))
+    else:
+        curr_instruction = visual.ImageStim(win,
+                                            f"./img/instructions/nextTask{params['gender'][0]}{params['language'][0]}.jpeg",
+                                            units="norm", pos=(0, 0), size=(2,2))
+    curr_instruction.draw()
     win.flip()
-    press = False
-    keyboard.getKeys()
-    while not press:
-        for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
-            if event.key == ' ':
-                press = True
-            elif event.key == 'escape':
-                win.close()
-                core.quit()
-        core.wait(0.05)
-    del plus_stare
+    wait_for_space(win, keyboard)
+
+    curr_instruction = visual.ImageStim(win,
+                                        f"./img/instructions/videosInstructions/instruction{params['gender'][0]}{params['language'][0]}.jpeg",
+                                        units="norm", pos=(0, 0), size=(2,2))
+    curr_instruction.draw()
+    win.flip()
+    wait_for_space(win, keyboard)
 
 
-def vas_message(win:visual.Window, params:dict, keyboard):
-    vas_text = visual.TextStim(win=win, text=VAS_STRING_HEB if params['language'] == 'Hebrew' else VAS_STRING_ENG,
-                                 font='Arial', pos=(0, 0), height=0.12, wrapWidth=1, ori=0.0, units="norm",
-                                 color='#000000', languageStyle='RTL' if params["language"] == "Hebrew" else "LTR"
-                                 )
-    vas_text.draw()
+def pre_video(win: visual.Window, params: dict, keyboard, video_num):
+    curr_instruction = visual.ImageStim(win,
+                                        f"./img/instructions/videosInstructions/video{video_num}{params['gender'][0]}{params['language'][0]}.jpeg",
+                                        units="norm", pos=(0, 0), size=(2,2))
+    curr_instruction.draw()
     win.flip()
-    press = False
+    wait_for_space(win, keyboard)
+
+
+def fixation_message(win: visual.Window, params: dict, keyboard):
+    plus_prep_message = visual.ImageStim(win,
+                                         image=f"./img/instructions/videosInstructions/plusPrep{params['gender'][0]}{params['language'][0]}.jpeg",
+                                         units="norm", pos=(0, 0), size=(2,2))
+    plus_prep_message.draw()
+    win.flip()
+    wait_for_space(win, keyboard)
+
+
+def vas_message(win: visual.Window, params: dict, keyboard):
+    message = visual.ImageStim(win,
+                               f"./img/instructions/videosInstructions/vas{params['gender'][0]}{params['language'][0]}.jpeg",
+                               units="norm", pos=(0, 0), size=(2,2))
+    message.draw()
+    win.flip()
     keyboard.getKeys()
-    while not press:
+    wait_for_space(win, keyboard)
+
+
+def wait_for_space(window: visual.Window, keyboard):
+    keyboard.getKeys()
+    core.wait(0.05)
+    while True:
         for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
             if event.key == ' ':
-                press = True
+                return
             elif event.key == 'escape':
-                win.close()
+                window.close()
                 core.quit()
         core.wait(0.05)
-    del vas_text
