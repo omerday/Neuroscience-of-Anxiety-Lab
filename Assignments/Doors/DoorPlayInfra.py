@@ -333,18 +333,18 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
 
         if rewardChance >= 0.5:
             # outcomeString = f'{reward}_reward'
-            outcome_string = "reward"
+            outcome_string = "reward" if not params['outcomeString'] else f"reward_{reward}"
             coins = reward
             dict_for_df["DidWin"] = 1
             dict_for_df["Door_outcome"] = 'reward'
         else:
             # outcomeString = f'{punishment}_punishment'
-            outcome_string = "punishment"
+            outcome_string = "punishment" if not params['outcomeString'] else f"punishment_{punishment}"
             coins = -1 * punishment
             dict_for_df["DidWin"] = 0
             dict_for_df["Door_outcome"] = 'punishment'
 
-        doorFrameImg = visual.ImageStim(window, image=params['doorImagePathPrefix'] + outcome_string + ".png",
+        doorFrameImg = visual.ImageStim(window, image=params['doorOutcomePath'] + outcome_string + ".png",
                                         size=(image.size[0], image.size[1]),
                                         pos=(0, 0), units="norm", opacity=1)
         image.draw()
@@ -392,7 +392,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     image.draw()
     window.update()
     start_time = time.time()
-    iti_time = 1 + random.random() * 2
+    iti_time = random.uniform(params['ITIDurationMin'], params['ITIDurationMax'])
     print(f"ITI Set time - {iti_time}")
     while time.time() < start_time + iti_time:
         dict_for_df["CurrentTime"] = round(time.time() - dict_for_df['StartTime'], 2)
@@ -409,13 +409,8 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
 
 def show_screen_pre_match(window: visual.Window, params: dict, session: int, io, df: pd.DataFrame,
                           mini_df: pd.DataFrame,
-                          summary_df: pd.DataFrame, coins=0, simulation=False):
-    if session == 0 and simulation:
-        image = visual.ImageStim(win=window, units="norm", opacity=1, size=(2, 2))
-        image.image = ("./img/InstructionsHebrew/" if params["language"] == "Hebrew" else "./img/InstructionsEnglish/") + "SimulationRunStart.jpeg"
-        image.draw()
-
-    elif session == 2 or session == 3:
+                          summary_df: pd.DataFrame, coins=0):
+    if session == 2 or session == 3:
         if params["language"] == "Hebrew":
             message = visual.TextStim(window,
                                       text=MIDDLE_SUMMARY_STR1_HE + (MIDDLE_SUMMARY_STR2Key_HE if params[
@@ -445,9 +440,6 @@ def show_screen_pre_match(window: visual.Window, params: dict, session: int, io,
     else:
         helpers.wait_for_joystick_no_df(window, df=df, mini_df=mini_df, summary_df=summary_df)
 
-    if session == 1:
-        show_wheel(window, params, io)
-
 
 def show_screen_post_simulation(window: visual.Window, params: dict, io, df=None, mini_df=None):
     image = visual.ImageStim(win=window, units="norm", opacity=1, size=(2, 2))
@@ -464,19 +456,6 @@ def show_screen_post_simulation(window: visual.Window, params: dict, io, df=None
 
 
 def show_wheel(window: visual.Window, params: dict, io=None):
-    image = visual.ImageStim(win=window, units="norm", opacity=1, size=(2, 2))
-    if params["language"] == "Hebrew":
-        image.image = "./img/InstructionsHebrew/BeforeWheel.jpg"
-    else:
-        image.image = "./img/InstructionsEnglish/BeforeWheel.jpg"
-    image.draw()
-    window.update()
-
-    if params["keyboardMode"]:
-        helpers.wait_for_space_no_df(window, io)
-    else:
-        helpers.wait_for_joystick_no_df(window)
-
     award_choice = random.choice([5, 6, 7])
     movie_path = f"./img/Wheels/{award_choice}_{params['language'][:3]}.mp4"
     movie = visual.MovieStim3(window, filename=movie_path, size=(2, 2), units="norm")
@@ -491,20 +470,6 @@ def show_wheel(window: visual.Window, params: dict, io=None):
         helpers.wait_for_joystick_no_df(window)
 
     del movie
-
-    image = visual.ImageStim(win=window, units="norm", opacity=1, size=(2, 2))
-    if params["language"] == "Hebrew":
-        image.image = "./img/InstructionsHebrew/AfterWheel.jpg"
-    else:
-        image.image = "./img/InstructionsEnglish/AfterWheel.jpg"
-    image.draw()
-    window.update()
-
-    if params["keyboardMode"]:
-        helpers.wait_for_space_no_df(window, io)
-    else:
-        helpers.wait_for_joystick_no_df(window)
-
     return
 
 

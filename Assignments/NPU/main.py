@@ -1,4 +1,6 @@
 import os
+import random
+
 import pretestVideos
 import pandas as pd
 from psychopy.iohub import launchHubServer
@@ -53,13 +55,18 @@ if params['recordPhysio']:
 window = visual.Window(size=params['screenSize'], monitor="testMonitor", color=(0.6, 0.6, 0.6), winType='pyglet',
                        fullscr=True if params['fullScreen'] else False, units="pix")
 
-image = visual.ImageStim(win=window, image=f"./img/instructions/1{params['gender'][0]}{params['language'][0]}.jpeg",
+image = visual.ImageStim(win=window, image=f"./img/instructions/Welcome_{params['gender'][0]}{params['language'][0]}.jpeg",
                          units="norm", opacity=1,
                          size=(2, 2))
 image.draw()
 window.mouseVisible = False
 window.update()
 helpers.wait_for_space_no_df(window, io)
+
+
+params['videos_timing'] = random.choice(['Start', 'End'])
+if params['showVideos'] and params['videos_timing'] == 'Start':
+    pretestVideos.run_post_videos(window, params, io, ser)
 
 # Setup DFs
 params, df, mini_df = dataHandler.setup_data_frame(params)
@@ -109,7 +116,7 @@ if params['blocks'] == 2:
 df, mini_df = VAS.vas(window, params, df, mini_df, io, 3)
 
 # Show Post-Task Videos
-if params['showVideos']:
+if params['showVideos'] and params['videos_timing'] == 'End':
     pretestVideos.run_post_videos(window, params, io, ser)
 
 # End of task Finalization

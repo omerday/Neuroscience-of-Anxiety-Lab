@@ -25,16 +25,19 @@ params = {
     'Session': configDialogBank[1],
     'practiceTrials': configDialogBank[2],  # Number if Practice Trials, taken from Config Dialog
     'numOfDoors': configDialogBank[3],  # Number of Screens in the 1st task, either 49 (7*7) or 36 (6*6)
-    'numOfSimulationDoors': 10,
+    'numOfSimulationDoors': 5,
     'numOfTasks': configDialogBank[4],
     'startingDistance': configDialogBank[5],  # Decide whether the starting distance is random, or fixed on 50
     'recordPhysio': configDialogBank[6],
     'sensitivity': configDialogBank[7],
     'doorLayout': configDialogBank[8],
+    'ITIDurationMin': 1,
+    'ITIDurationMax': 2.5,
     'keyboardMode': configDialogBank[9],
     'screenSize': (1024, 768),  # Get Screen Resolution to match Full Screen
     'soundOn': configDialogBank[10],
     'beeps': False,
+    'outcomeString': True,   # True if we want to print the outcome amount, otherwise it will just show a monster / a fairy
     'skipInstructions': configDialogBank[11],
     'language': configDialogBank[12],
     'reducedEvents': True,
@@ -43,7 +46,7 @@ params = {
     'startTime': time.time(),
     'saveAsDefault': configDialogBank[15] if debug else True,
     'doorImagePathPrefix': './img/doors1/' if configDialogBank[8] == "P - R" else './img/doors2/',
-    'outcomeImagePredix': './img/outcomes/',
+    'doorOutcomePath': './img/outcomes/',
     'imageSuffix': '.jpg',
     'port': 'COM4',
 }
@@ -80,14 +83,8 @@ Df, mini_df, summary_df = VAS.beginning_vas(window, params, Df, mini_df, summary
 
 if not params['skipInstructions']:
 
-    # Show Instructions
-    Df, mini_df = show_instructions(window, params, image, Df, mini_df, io)
-
-    # Practice run
-    Df, mini_df, summary_df = DoorPlay.practice_run(window, params, Df, mini_df, summary_df, io, ser)
-
-    # Simulation run
-    Df, mini_df, summary_df, totalCoins = DoorPlay.run_task(window, params, 0, 0, Df, mini_df, summary_df, io, ser)
+    # Show Instructions, practice trial and the simulation
+    Df, mini_df, summary_df = show_instructions(window, params, image, Df, mini_df, summary_df, io, ser)
 
 # Task 1
 Df, mini_df, summary_df, totalCoins = DoorPlay.run_task(window, params, 1, 0, Df, mini_df, summary_df, io, ser)

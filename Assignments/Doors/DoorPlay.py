@@ -17,7 +17,7 @@ from psychopy import visual, core
 def practice_run(window: visual.Window, params: dict, Df: pandas.DataFrame, miniDf: pandas.DataFrame,
                  summary_df: pandas.DataFrame, io, ser=None):
 
-    DoorPlayInfra.show_screen_pre_match(window, params, 0, io, df=Df, mini_df=miniDf, summary_df=summary_df)
+    # DoorPlayInfra.show_screen_pre_match(window, params, 0, io, df=Df, mini_df=miniDf, summary_df=summary_df)
 
     subtrial = 1
     while subtrial <= params['practiceTrials']:
@@ -60,7 +60,8 @@ def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int
     :param Df:
     :return:
     """
-    DoorPlayInfra.show_screen_pre_match(window, params, roundNum, io, coins=totalCoins, df=Df, mini_df=miniDf, summary_df=summary_df, simulation=True if roundNum == 0 else False)
+    if roundNum not in [0, 1]:
+        DoorPlayInfra.show_screen_pre_match(window, params, roundNum, io, coins=totalCoins, df=Df, mini_df=miniDf, summary_df=summary_df)
 
     sizeOfArray = int(math.sqrt(params[f'numOfDoors']))
     scenariosList = helpers.get_p_r_couples(sizeOfArray)
