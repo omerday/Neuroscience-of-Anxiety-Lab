@@ -83,14 +83,8 @@ Df, mini_df, summary_df = VAS.beginning_vas(window, params, Df, mini_df, summary
 
 if not params['skipInstructions']:
 
-    # Show Instructions
-    Df, mini_df = show_instructions(window, params, image, Df, mini_df, io)
-
-    # Practice run
-    Df, mini_df, summary_df = DoorPlay.practice_run(window, params, Df, mini_df, summary_df, io, ser)
-
-    # Simulation run
-    Df, mini_df, summary_df, totalCoins = DoorPlay.run_task(window, params, 0, 0, Df, mini_df, summary_df, io, ser)
+    # Show Instructions, practice trial and the simulation
+    Df, mini_df, summary_df = show_instructions(window, params, image, Df, mini_df, summary_df, io, ser)
 
 # Task 1
 Df, mini_df, summary_df, totalCoins = DoorPlay.run_task(window, params, 1, 0, Df, mini_df, summary_df, io, ser)
