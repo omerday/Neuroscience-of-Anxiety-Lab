@@ -34,7 +34,7 @@ def run_post_videos(win: visual.Window, params: dict, io, ser=None):
     instructions(win, params, keyboard)
 
     # Prepare subject for fixation
-    fixation_message(win, params, keyboard)
+    fixation_message(win, params, keyboard, 1)
 
     # Initiate Fixation
     img = visual.ImageStim(win=win, image="./img/plus.jpeg", units='norm', size=(2, 2))
@@ -108,7 +108,7 @@ def run_post_videos(win: visual.Window, params: dict, io, ser=None):
     df = VideosVAS.run_vas(win, df, dict_for_df, category, params['language'])
 
     # Show Fixation message and initiate fixation
-    fixation_message(win, params, keyboard)
+    fixation_message(win, params, keyboard, 2)
 
     img = visual.ImageStim(win=win, image="./img/plus.jpeg", units='norm', size=(2, 2))
     img.draw()
@@ -170,7 +170,7 @@ def run_post_videos(win: visual.Window, params: dict, io, ser=None):
     vas_message(win, params, keyboard)
     df = VideosVAS.run_vas(win, df, dict_for_df, category, params['language'])
 
-    fixation_message(win, params, keyboard)
+    fixation_message(win, params, keyboard, 2)
 
     img = visual.ImageStim(win=win, image="./img/plus.jpeg", units='norm', size=(2, 2))
     img.draw()
@@ -247,9 +247,9 @@ def pre_video(win: visual.Window, params: dict, keyboard, video_num):
     wait_for_space(win, keyboard)
 
 
-def fixation_message(win: visual.Window, params: dict, keyboard):
+def fixation_message(win: visual.Window, params: dict, keyboard, instruction: int):
     plus_prep_message = visual.ImageStim(win,
-                                         image=f"./img/instructions/videosInstructions/plusPrep{params['gender'][0]}{params['language'][0]}.jpeg",
+                                         image=f"./img/instructions/videosInstructions/plusPrep{params['gender'][0]}{params['language'][0]}_{instruction}.jpeg",
                                          units="norm", pos=(0, 0), size=(2,2))
     plus_prep_message.draw()
     win.flip()

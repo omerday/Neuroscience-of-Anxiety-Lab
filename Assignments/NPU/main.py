@@ -64,7 +64,7 @@ window.update()
 helpers.wait_for_space_no_df(window, io)
 
 
-params['videos_timing'] = 'Start' # random.choice(['Start', 'End'])
+params['videos_timing'] = random.choice(['Start', 'End'])
 if params['showVideos'] and params['videos_timing'] == 'Start':
     pretestVideos.run_post_videos(window, params, io, ser)
 
