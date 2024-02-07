@@ -25,7 +25,7 @@ params = {
     'Session': configDialogBank[1],
     'practiceTrials': configDialogBank[2],  # Number if Practice Trials, taken from Config Dialog
     'numOfDoors': configDialogBank[3],  # Number of Screens in the 1st task, either 49 (7*7) or 36 (6*6)
-    'numOfSimulationDoors': 6,
+    'numOfSimulationDoors': 5,
     'numOfTasks': configDialogBank[4],
     'startingDistance': configDialogBank[5],  # Decide whether the starting distance is random, or fixed on 50
     'recordPhysio': configDialogBank[6],
