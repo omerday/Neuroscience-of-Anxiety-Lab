@@ -392,7 +392,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     image.draw()
     window.update()
     start_time = time.time()
-    iti_time = 1 + random.random() * 2
+    iti_time = random.randrange(params['ITIDurationMin'], params['ITIDurationMax'])
     print(f"ITI Set time - {iti_time}")
     while time.time() < start_time + iti_time:
         dict_for_df["CurrentTime"] = round(time.time() - dict_for_df['StartTime'], 2)

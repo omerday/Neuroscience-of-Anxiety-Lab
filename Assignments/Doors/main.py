@@ -31,6 +31,8 @@ params = {
     'recordPhysio': configDialogBank[6],
     'sensitivity': configDialogBank[7],
     'doorLayout': configDialogBank[8],
+    'ITIDurationMin': 1,
+    'ITIDurationMax': 2.5,
     'keyboardMode': configDialogBank[9],
     'screenSize': (1024, 768),  # Get Screen Resolution to match Full Screen
     'soundOn': configDialogBank[10],
