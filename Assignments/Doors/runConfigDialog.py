@@ -32,7 +32,7 @@ def user_input_play(debug=False):
     # userInput.addField('Version:', choices=[1, 2])
     userInput.addField('# of Practice Trials', 3 if not configExists else loadedData['practiceTrials'])
     userInput.addField('# of Doors', choices=[49, 36])
-    userInput.addField('# of Tasks', 2 if not configExists else loadedData['numOfTasks'] - 1, choices=[1, 2, 3])
+    userInput.addField('# of Runs', 1 if not configExists else loadedData['numOfTasks'] - 1, choices=[1, 2, 3])
     userInput.addField('Starting Distance', choices=[50,'40-60', 'Random'])
     userInput.addField('Record Physiology', False if not configExists else loadedData['recordPhysio'])
     userInput.addField('Sensitivity (2: Less sensitive, 3: Normal, 4: More sensitive)', 1 if not configExists else loadedData['sensitivity'] - 2, choices=[2, 3, 4])
