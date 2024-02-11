@@ -13,9 +13,11 @@ SUFFIX = ".jpeg"
 SLIDES = 25
 
 
-def show_instructions(win: visual.Window, params, img: visual.ImageStim, Df: pandas.DataFrame, miniDf: pandas.DataFrame,
+def show_instructions(win: visual.Window, params, Df: pandas.DataFrame, miniDf: pandas.DataFrame,
                       summaryDf: pandas.DataFrame, io, ser=None):
     dict_for_df = dataHandler.create_dict_for_df(params, Section="Instructions")
+    img = visual.ImageStim(win=win, units="norm", opacity=1,
+                             size=(2, 2) if not params['fullScreen'] else None)
     if params["language"] == "Hebrew":
         path = INSTRUCTION_PATH_HEBREW
     else:
@@ -57,5 +59,6 @@ def show_instructions(win: visual.Window, params, img: visual.ImageStim, Df: pan
 
         if i == 24:   # Trigger a wheel run
             DoorPlayInfra.show_wheel(win, params, io)
+    del img
 
     return Df, miniDf, summaryDf
