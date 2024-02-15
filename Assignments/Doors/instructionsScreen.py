@@ -10,7 +10,7 @@ import DoorPlayInfra
 INSTRUCTION_PATH_HEBREW = "./img/InstructionsHebrew/"
 INSTRUCTION_PATH_ENGLISH = "./img/InstructionsEnglish/"
 SUFFIX = ".jpeg"
-SLIDES = 25
+SLIDES = 27
 
 
 def show_instructions(win: visual.Window, params, Df: pandas.DataFrame, miniDf: pandas.DataFrame,
@@ -31,7 +31,7 @@ def show_instructions(win: visual.Window, params, Df: pandas.DataFrame, miniDf: 
         win.update()
 
         dict_for_df["Round"] = i
-        if i != 23:  # Check if replay slide is on
+        if i != 25:  # Check if replay slide is on
             if params["keyboardMode"]:
                 Df = helpers.wait_for_space(win, Df, dict_for_df, io, params, miniDf)
             else:
@@ -48,16 +48,16 @@ def show_instructions(win: visual.Window, params, Df: pandas.DataFrame, miniDf: 
         dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
         miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict_for_df])])
 
-        if i == 14:  # Trigger a practice run
+        if i in [14, 15]:  # Trigger a practice run
             Df, miniDf, summaryDf = DoorPlay.practice_run(
                                 window=win, params=params, Df=Df, miniDf=miniDf, summary_df=summaryDf, io=io, ser=ser)
 
-        if i == 22:  # Trigger a simulation run
+        if i == 24:  # Trigger a simulation run
             Df, mini_df, summary_df, totalCoins = DoorPlay.run_task(
                                 window=win, params=params, roundNum=0, totalCoins=0, Df=Df, miniDf=miniDf,
                                 summary_df=summaryDf, io=io, ser=ser)
 
-        if i == 24:   # Trigger a wheel run
+        if i == 26:   # Trigger a wheel run
             DoorPlayInfra.show_wheel(win, params, io)
     del img
 

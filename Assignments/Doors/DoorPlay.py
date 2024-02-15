@@ -15,12 +15,14 @@ from psychopy import visual, core
 
 
 def practice_run(window: visual.Window, params: dict, Df: pandas.DataFrame, miniDf: pandas.DataFrame,
-                 summary_df: pandas.DataFrame, io, ser=None):
+                 summary_df: pandas.DataFrame, io, ser=None, practice_trials=0):
 
     # DoorPlayInfra.show_screen_pre_match(window, params, 0, io, df=Df, mini_df=miniDf, summary_df=summary_df)
 
     subtrial = 1
-    while subtrial <= params['practiceTrials']:
+    if practice_trials == 0:
+        practice_trials = params['practiceTrials']
+    while subtrial <= practice_trials:
         image, distanceFromDoor = DoorPlayInfra.setup_door(window, params, 0, 0)
 
         # Setup new dictionary

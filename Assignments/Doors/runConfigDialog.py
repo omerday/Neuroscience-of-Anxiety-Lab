@@ -30,7 +30,6 @@ def user_input_play(debug=False):
     userInput.addField('Subject Number', )
     userInput.addField('Session', 1)
     # userInput.addField('Version:', choices=[1, 2])
-    userInput.addField('# of Practice Trials', 3 if not configExists else loadedData['practiceTrials'])
     userInput.addField('# of Doors', choices=[49, 36])
     userInput.addField('# of Runs', 1 if not configExists else loadedData['numOfTasks'] - 1, choices=[1, 2, 3])
     userInput.addField('Starting Distance', choices=[50,'40-60', 'Random'])

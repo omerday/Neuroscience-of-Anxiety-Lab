@@ -23,28 +23,28 @@ configDialogBank = runConfigDialog.user_input_play(debug)
 params = {
     'Subject': configDialogBank[0],
     'Session': configDialogBank[1],
-    'practiceTrials': configDialogBank[2],  # Number if Practice Trials, taken from Config Dialog
-    'numOfDoors': configDialogBank[3],  # Number of Screens in the 1st task, either 49 (7*7) or 36 (6*6)
+    'practiceTrials': 1,  # Number if Practice Trials, taken from Config Dialog
+    'numOfDoors': configDialogBank[2],  # Number of Screens in the 1st task, either 49 (7*7) or 36 (6*6)
     'numOfSimulationDoors': 5,
-    'numOfTasks': configDialogBank[4],
-    'startingDistance': configDialogBank[5],  # Decide whether the starting distance is random, or fixed on 50
-    'recordPhysio': configDialogBank[6],
-    'sensitivity': configDialogBank[7],
-    'doorLayout': configDialogBank[8],
+    'numOfTasks': configDialogBank[3],
+    'startingDistance': configDialogBank[4],  # Decide whether the starting distance is random, or fixed on 50
+    'recordPhysio': configDialogBank[5],
+    'sensitivity': configDialogBank[6],
+    'doorLayout': configDialogBank[7],
     'ITIDurationMin': 1,
     'ITIDurationMax': 2.5,
-    'keyboardMode': configDialogBank[9],
+    'keyboardMode': configDialogBank[8],
     'screenSize': (1024, 768),  # Get Screen Resolution to match Full Screen
-    'soundOn': configDialogBank[10],
+    'soundOn': configDialogBank[9],
     'beeps': False,
     'outcomeString': True,   # True if we want to print the outcome amount, otherwise it will just show a monster / a fairy
-    'skipInstructions': configDialogBank[11],
-    'language': configDialogBank[12],
+    'skipInstructions': configDialogBank[10],
+    'language': configDialogBank[11],
     'reducedEvents': True,
-    'fullScreen': configDialogBank[13] if debug else True,
-    'saveDataAtQuit': configDialogBank[14] if debug else True,
+    'fullScreen': configDialogBank[12] if debug else True,
+    'saveDataAtQuit': configDialogBank[13] if debug else True,
     'startTime': time.time(),
-    'saveAsDefault': configDialogBank[15] if debug else True,
+    'saveAsDefault': configDialogBank[14] if debug else True,
     'doorImagePathPrefix': './img/doors1/' if configDialogBank[8] == "P - R" else './img/doors2/',
     'doorOutcomePath': './img/outcomes/',
     'imageSuffix': '.jpg',
