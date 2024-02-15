@@ -185,6 +185,7 @@ def display_vas(win, params, text, labels, Df: pandas.DataFrame, questionNo: int
     """
 
     keyboard = io.devices.keyboard
+    keyboard.getKeys()
 
     if params["language"] == "Hebrew":
         scale = ratingscale.RatingScale(win,

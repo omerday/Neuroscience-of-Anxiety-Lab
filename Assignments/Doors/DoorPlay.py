@@ -15,12 +15,14 @@ from psychopy import visual, core
 
 
 def practice_run(window: visual.Window, params: dict, Df: pandas.DataFrame, miniDf: pandas.DataFrame,
-                 summary_df: pandas.DataFrame, io, ser=None):
+                 summary_df: pandas.DataFrame, io, ser=None, practice_trials=0):
 
-    DoorPlayInfra.show_screen_pre_match(window, params, 0, io, df=Df, mini_df=miniDf, summary_df=summary_df)
+    # DoorPlayInfra.show_screen_pre_match(window, params, 0, io, df=Df, mini_df=miniDf, summary_df=summary_df)
 
     subtrial = 1
-    while subtrial <= params['practiceTrials']:
+    if practice_trials == 0:
+        practice_trials = params['practiceTrials']
+    while subtrial <= practice_trials:
         image, distanceFromDoor = DoorPlayInfra.setup_door(window, params, 0, 0)
 
         # Setup new dictionary
@@ -52,6 +54,7 @@ def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int
     Launch the entire doors task, with all 36/49 doors.
     Goes through an array of all the P&R combinations, and execute them one after another.
     Returns the dataframe with the collected data.
+    If roundNum == 0 - that's a simulation run, and we should run just 10 doors
     :param window:
     :param params:
     :param round:
@@ -59,11 +62,16 @@ def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int
     :param Df:
     :return:
     """
-    DoorPlayInfra.show_screen_pre_match(window, params, roundNum, io, coins=totalCoins, df=Df, mini_df=miniDf, summary_df=summary_df)
+    if roundNum not in [0, 1]:
+        DoorPlayInfra.show_screen_pre_match(window, params, roundNum, io, coins=totalCoins, df=Df, mini_df=miniDf, summary_df=summary_df)
 
     sizeOfArray = int(math.sqrt(params[f'numOfDoors']))
     scenariosList = helpers.get_p_r_couples(sizeOfArray)
 
+    if roundNum == 0:
+        for i in range(0, params[f'numOfDoors'] - params['numOfSimulationDoors']):
+            scenariosList.remove(random.choice(scenariosList))
+        print(scenariosList)
     # Scenarios List indexing method:
     # (reward - 1) * 7 + Punishment
     # For example:
@@ -74,7 +82,7 @@ def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int
     # This should be deduced from the event channel when analyzing the .acq file.
 
     subtrial = 0
-    while len(scenariosList) != 0:
+    while scenariosList:
 
         # Select a scenario and setup door
         subtrial = subtrial + 1
@@ -83,7 +91,7 @@ def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int
         image, distanceFromDoor = DoorPlayInfra.setup_door(window, params, scenario[0], scenario[1])
 
         # Setup new dictionary
-        dict_for_df = dataHandler.create_dict_for_df(params, Section=f'TaskRun{roundNum}', Round=roundNum, TotalCoins=totalCoins, )
+        dict_for_df = dataHandler.create_dict_for_df(params, Section=f'TaskRun{roundNum}' if roundNum != 0 else "Simulation", Round=roundNum, TotalCoins=totalCoins, )
         dict_for_df['Reward_magnitude'] = scenario[0]
         dict_for_df['Punishment_magnitude'] = scenario[1]
         dict_for_df['Subtrial'] = subtrial
@@ -104,8 +112,12 @@ def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int
         dict_for_df["CurrentTime"] = round(time.time() - dict_for_df['StartTime'], 2)
 
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
+        dict_for_df["ScenarioIndex"] = scenarioIndex
         summary_df = pandas.concat([summary_df, pandas.DataFrame.from_records([dict_for_df])])
 
         dataHandler.save_backup(params, fullDF=Df, miniDF=miniDf, summary=summary_df)
+
+    if roundNum == 0:
+        DoorPlayInfra.show_screen_post_simulation(window, params, io, Df, miniDf)
 
     return Df, miniDf, summary_df, totalCoins

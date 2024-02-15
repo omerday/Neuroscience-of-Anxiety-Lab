@@ -28,6 +28,17 @@ HEADERS = [
     'VAS_RT',
 ]
 
+HEADERS_VIDEOS = ['ExperimentName',
+                  'Subject',
+                  'Session',
+                  'StartTime',
+                  'CurrentTime',
+                  'MovieCategory',
+                  'VAS_score',
+                  'VAS_type',
+                  'VAS_RT',
+                  'ScenarioIndex']
+
 
 def setup_data_frame(params: dict):
     params['headers'] = HEADERS
@@ -98,3 +109,23 @@ def save_backup(params: dict, **kwargs):
             df = value.drop_duplicates(keep='first')
             df.to_csv(
                 f'{folder}/NPU {params["Subject"]} Session {params["session"]} - {key} - {strftime("%Y-%m-%d %H-%M", localtime(params["startTime"]))}.backup.csv')
+
+
+def setup_videos_dataframe(params: dict):
+    df = pd.DataFrame(columns=HEADERS_VIDEOS)
+    return df
+
+
+def create_dict_for_videos_df(params: dict, **kwargs):
+    dict_layout = {}
+    for header in HEADERS_VIDEOS:
+        dict_layout[header] = None
+
+    dict_layout['ExperimentName'] = 'NPU'
+    dict_layout['Subject'] = params['Subject']
+    dict_layout['StartTime'] = params['startTime']
+    dict_layout["Session"] = params['session']
+
+    for key, value in kwargs.items():
+        dict_layout[key] = value
+    return dict_layout
