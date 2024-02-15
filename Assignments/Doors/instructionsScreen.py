@@ -53,7 +53,7 @@ def show_instructions(win: visual.Window, params, Df: pandas.DataFrame, miniDf: 
                                 window=win, params=params, Df=Df, miniDf=miniDf, summary_df=summaryDf, io=io, ser=ser)
 
         if i == 24:  # Trigger a simulation run
-            Df, mini_df, summary_df, totalCoins = DoorPlay.run_task(
+            Df, mini_df, summaryDf, totalCoins = DoorPlay.run_task(
                                 window=win, params=params, roundNum=0, totalCoins=0, Df=Df, miniDf=miniDf,
                                 summary_df=summaryDf, io=io, ser=ser)
 
