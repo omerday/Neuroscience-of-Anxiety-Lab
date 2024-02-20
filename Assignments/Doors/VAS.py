@@ -61,7 +61,12 @@ def beginning_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: p
         miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
         summary_df = pandas.concat([summary_df, pandas.DataFrame.from_records([dict])])
 
-        dataHandler.save_backup(params, fullDF=Df, miniDF=miniDf, summary=summary_df)
+        try:
+            dataHandler.save_backup(params, fullDF=Df, miniDF=miniDf, summary=summary_df)
+        except Exception as e:
+            print(e)
+        else:
+            params, Df, miniDf, summary_df = dataHandler.setup_data_frame(params)
 
     return Df, miniDf, summary_df
 
@@ -91,7 +96,12 @@ def middle_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pand
         miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
         summary_df = pandas.concat([summary_df, pandas.DataFrame.from_records([dict])])
 
-        dataHandler.save_backup(params, fullDF=Df, miniDF=miniDf, summary=summary_df)
+        try:
+            dataHandler.save_backup(params, fullDF=Df, miniDF=miniDf, summary=summary_df)
+        except Exception as e:
+            print(e)
+        else:
+            params, Df, miniDf, summary_df = dataHandler.setup_data_frame(params)
 
     return Df, miniDf, summary_df
 
@@ -116,6 +126,11 @@ def final_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: panda
         miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
         summary_df = pandas.concat([summary_df, pandas.DataFrame.from_records([dict])])
 
-        dataHandler.save_backup(params, fullDF=Df, miniDF=miniDf, summary=summary_df)
+        try:
+            dataHandler.save_backup(params, fullDF=Df, miniDF=miniDf, summary=summary_df)
+        except Exception as e:
+            print(e)
+        else:
+            params, Df, miniDf, summary_df = dataHandler.setup_data_frame(params)
 
     return Df, miniDf, summary_df

@@ -91,7 +91,7 @@ def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int
         image, distanceFromDoor = DoorPlayInfra.setup_door(window, params, scenario[0], scenario[1])
 
         # Setup new dictionary
-        dict_for_df = dataHandler.create_dict_for_df(params, Section=f'TaskRun{roundNum}' if roundNum != 0 else "Simulation", Round=roundNum, TotalCoins=totalCoins, )
+        dict_for_df = dataHandler.create_dict_for_df(params, Section=f'TaskRun{roundNum}' if roundNum != 0 else "Simulation", Round=roundNum, TotalCoins=totalCoins, ExperimentName="Doors")
         dict_for_df['Reward_magnitude'] = scenario[0]
         dict_for_df['Punishment_magnitude'] = scenario[1]
         dict_for_df['Subtrial'] = subtrial
@@ -115,7 +115,12 @@ def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int
         dict_for_df["ScenarioIndex"] = scenarioIndex
         summary_df = pandas.concat([summary_df, pandas.DataFrame.from_records([dict_for_df])])
 
-        dataHandler.save_backup(params, fullDF=Df, miniDF=miniDf, summary=summary_df)
+        try:
+            dataHandler.save_backup(params, fullDF=Df, miniDF=miniDf, summary=summary_df)
+        except Exception as e:
+            print(e)
+        else:
+            params, Df, miniDf, summary_df = dataHandler.setup_data_frame(params)
 
     if roundNum == 0:
         DoorPlayInfra.show_screen_post_simulation(window, params, io, Df, miniDf)
