@@ -75,11 +75,6 @@ def create_dict_for_df(params: dict, **kwargs):
 
 
 def export_data(params: dict, **kwargs):
-    """
-    The method exports all the data frames given as kwargs, in the name given in the proper kwarg.
-    It checks if there's a backup, imports it and attaches it above the given df, then exports the united df.
-    @params: dictionary with all the settings of the tasks
-    """
     folder = './data'
     if params['Subject'] != "":
         folder = f'./data/{params["Subject"]}'
@@ -88,20 +83,16 @@ def export_data(params: dict, **kwargs):
 
     for key, value in kwargs.items():
         if isinstance(value, pd.DataFrame):
-            df = value
-            backup_name = f'{folder}/Doors {params["Subject"]} Session {params["Session"]} - {key} - {strftime("%Y-%m-%d %H-%M", localtime(params["startTime"]))}.backup.csv'
-            if os.path.exists(backup_name):
-                old_data = pd.read_csv(backup_name, index_col=0)
-                df = pd.concat([old_data, value])
             try:
-                df = df.drop_duplicates(keep='first')
+                df = value.drop_duplicates(keep='first')
                 df.to_csv(
                     f'{folder}/Doors {params["Subject"]} Session {params["Session"]} - {key} - {strftime("%Y-%m-%d %H-%M", localtime(params["startTime"]))}.csv')
             except:
                 print("Something went wrong, keeping backup")
             else:
-                if os.path.exists(backup_name):
-                    os.remove(backup_name)
+                backup_path = f'{folder}/Doors {params["Subject"]} Session {params["Session"]} - {key} - {strftime("%Y-%m-%d %H-%M", localtime(params["startTime"]))}.backup.csv'
+                if os.path.exists(backup_path):
+                    os.remove(backup_path)
 
 
 def save_backup(params: dict, **kwargs):
@@ -114,8 +105,24 @@ def save_backup(params: dict, **kwargs):
     for key, value in kwargs.items():
         if isinstance(value, pd.DataFrame):
             df = value.drop_duplicates(keep='first')
-            backup_name = f'{folder}/Doors {params["Subject"]} Session {params["Session"]} - {key} - {strftime("%Y-%m-%d %H-%M", localtime(params["startTime"]))}.backup.csv'
-            if os.path.exists(backup_name):
-                old_data = pd.read_csv(backup_name, index_col=0)
-                df = pd.concat([old_data, df])
-            df.to_csv(backup_name)
+            df.to_csv(
+                f'{folder}/Doors {params["Subject"]} Session {params["Session"]} - {key} - {strftime("%Y-%m-%d %H-%M", localtime(params["startTime"]))}.backup.csv')
+
+
+def single_subject_analysis(params: dict, ):
+    miniDf = pd.read_csv("data/Subject 92313 - miniDF - 2023-10-02 08-24.csv")
+    # subject = params["subjectID"]
+    dist_df = miniDf[miniDf["Section"].str.contains("TaskRun")]
+
+    # Correlation between R/P amount and the lock distance
+    sns.scatterplot(data=dist_df, x="Reward_magnitude", y="DistanceFromDoor_SubTrial", hue="Punishment_magnitude")
+    plt.show()
+
+    # Correlation between R/P amount and the lock time
+    sns.scatterplot(data=dist_df, x="Reward_magnitude", y="DoorAction_RT", hue="Punishment_magnitude")
+    plt.show()
+
+    sns.lineplot(data=dist_df, x="Punishment_magnitude", y="DistanceFromDoor_SubTrial", hue="Reward_magnitude",
+                 err_style="band", errorbar="sd")
+    plt.show()
+

@@ -398,6 +398,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     start_time = time.time()
 
     iti_time = random.uniform(params['ITIDurationMin'], params['ITIDurationMax'])
+    print(f"ITI Set time - {iti_time}")
 
     while time.time() < start_time + iti_time:
         dict_for_df["CurrentTime"] = round(time.time() - dict_for_df['StartTime'], 2)
@@ -410,7 +411,14 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
 
     print(f"ITI Set time - {iti_time}")
     print(f"ITI actual time - {time.time() - start_time}")
-
+    print(f"Size of image object - {round(sys.getsizeof(image)/1024, 4)} Kb")
+    print(f"Image object address - {id(image)}")
+    print(f"Size of IO object - {round(sys.getsizeof(io) / 1024, 2)} Kb")
+    print(f"Size of DF object - {round(sys.getsizeof(Df) / 1024 / 1024, 2)} Mb")
+    f = inspect.currentframe()
+    for v in f.f_locals.keys():
+        if not v.startswith("_"):
+            print(v)
     return coins, total_time, Df, miniDf, dict_for_df, lock
 
 
