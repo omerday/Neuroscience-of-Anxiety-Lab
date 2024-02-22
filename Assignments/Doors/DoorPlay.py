@@ -14,7 +14,7 @@ import serial
 from psychopy import visual, core
 
 
-def practice_run(window: visual.Window, params: dict, Df: pandas.DataFrame, miniDf: pandas.DataFrame,
+def practice_run(window: visual.Window, params: dict, full_df: pandas.DataFrame, mini_df: pandas.DataFrame,
                  summary_df: pandas.DataFrame, io, ser=None, practice_trials=0):
 
     # DoorPlayInfra.show_screen_pre_match(window, params, 0, io, df=Df, mini_df=miniDf, summary_df=summary_df)
@@ -33,22 +33,23 @@ def practice_run(window: visual.Window, params: dict, Df: pandas.DataFrame, mini
         dict_for_df['DistanceAtStart'] = distanceFromDoor * 100
 
         # Execute Door of selected scenario
-        coinsWon, total_time, Df, miniDf, dict_for_df, lock = DoorPlayInfra.start_door(window, params, image, 0, 0, 0,
-                                                                        distanceFromDoor, Df, dict_for_df, io, 0, miniDf, summary_df,
-                                                                        ser)
+        coinsWon, total_time, full_df, mini_df, dict_for_df, lock = DoorPlayInfra.start_door(window, params, image, 0, 0, 0,
+                                                                                             distanceFromDoor, full_df, dict_for_df, io, 0, mini_df, summary_df,
+                                                                                             ser)
 
         # Add data to Df
         dict_for_df["CurrentTime"] = round(time.time() - dict_for_df['StartTime'], 2)
-        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
+        if params['saveFullDF']:
+            full_df = pandas.concat([full_df, pandas.DataFrame.from_records([dict_for_df])])
         summary_df = pandas.concat([summary_df, pandas.DataFrame.from_records([dict_for_df])])
 
         subtrial = subtrial + 1
 
-    return Df, miniDf, summary_df
+    return full_df, mini_df, summary_df
 
 
-def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int, Df: pandas.DataFrame,
-             miniDf: pandas.DataFrame, summary_df: pandas.DataFrame, io, ser=None):
+def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int, full_df: pandas.DataFrame,
+             mini_df: pandas.DataFrame, summary_df: pandas.DataFrame, io, ser=None):
 
     """
     Launch the entire doors task, with all 36/49 doors.
@@ -59,11 +60,11 @@ def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int
     :param params:
     :param round:
     :param totalCoins:
-    :param Df:
+    :param full_df:
     :return:
     """
     if roundNum not in [0, 1]:
-        DoorPlayInfra.show_screen_pre_match(window, params, roundNum, io, coins=totalCoins, df=Df, mini_df=miniDf, summary_df=summary_df)
+        DoorPlayInfra.show_screen_pre_match(window, params, roundNum, io, coins=totalCoins, df=full_df, mini_df=mini_df, summary_df=summary_df)
 
     sizeOfArray = int(math.sqrt(params[f'numOfDoors']))
     scenariosList = helpers.get_p_r_couples(sizeOfArray)
@@ -102,8 +103,8 @@ def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int
             serialHandler.report_event(ser, scenarioIndex)
 
         # Execute Door of selected scenario
-        coinsWon, total_time, Df, miniDf, dict_for_df, lock = DoorPlayInfra.start_door(window, params, image, scenario[0], scenario[1], totalCoins,
-                                                                  distanceFromDoor, Df, dict_for_df, io, scenarioIndex, miniDf, summary_df, ser)
+        coinsWon, total_time, full_df, mini_df, dict_for_df, lock = DoorPlayInfra.start_door(window, params, image, scenario[0], scenario[1], totalCoins,
+                                                                                             distanceFromDoor, full_df, dict_for_df, io, scenarioIndex, mini_df, summary_df, ser)
         totalCoins += coinsWon
         scenariosList.remove(scenario)
 
@@ -111,13 +112,14 @@ def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int
         dict_for_df["Total_coins"] = totalCoins
         dict_for_df["CurrentTime"] = round(time.time() - dict_for_df['StartTime'], 2)
 
-        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
+        if params['saveFullDF']:
+            full_df = pandas.concat([full_df, pandas.DataFrame.from_records([dict_for_df])])
         dict_for_df["ScenarioIndex"] = scenarioIndex
         summary_df = pandas.concat([summary_df, pandas.DataFrame.from_records([dict_for_df])])
 
-        dataHandler.save_backup(params, fullDF=Df, miniDF=miniDf, summary=summary_df)
+        dataHandler.save_backup(params, fullDF=full_df, miniDF=mini_df, summary=summary_df)
 
     if roundNum == 0:
-        DoorPlayInfra.show_screen_post_simulation(window, params, io, Df, miniDf)
+        DoorPlayInfra.show_screen_post_simulation(window, params, io, full_df, mini_df)
 
-    return Df, miniDf, summary_df, totalCoins
+    return full_df, mini_df, summary_df, totalCoins

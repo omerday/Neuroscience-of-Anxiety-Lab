@@ -37,6 +37,7 @@ params = {
     'screenSize': (1024, 768),  # Get Screen Resolution to match Full Screen
     'soundOn': configDialogBank[9],
     'beeps': False,
+    'saveFullDF': False,
     'outcomeString': True,   # True if we want to print the outcome amount, otherwise it will just show a monster / a fairy
     'skipInstructions': configDialogBank[10],
     'language': configDialogBank[11],
@@ -63,7 +64,7 @@ if params['recordPhysio']:
     serialHandler.report_event(ser, 255)
 
 # Initialize DataFrame
-params, Df, mini_df, summary_df = dataHandler.setup_data_frame(params)
+params, full_df, mini_df, summary_df = dataHandler.setup_data_frame(params)
 
 # Initialize Screen
 window = visual.Window(params['screenSize'], monitor="testMonitor", color="black", winType='pyglet',
@@ -79,31 +80,31 @@ else:
     helpers.wait_for_joystick_no_df(window)
 
 # Run VAS
-Df, mini_df, summary_df = VAS.beginning_vas(window, params, Df, mini_df, summary_df, io)
+full_df, mini_df, summary_df = VAS.beginning_vas(window, params, full_df, mini_df, summary_df, io)
 
 if not params['skipInstructions']:
 
     # Show Instructions, practice trial and the simulation
-    Df, mini_df, summary_df = show_instructions(window, params, Df, mini_df, summary_df, io, ser)
+    full_df, mini_df, summary_df = show_instructions(window, params, full_df, mini_df, summary_df, io, ser)
 
 # Task 1
-Df, mini_df, summary_df, totalCoins = DoorPlay.run_task(window, params, 1, 0, Df, mini_df, summary_df, io, ser)
+full_df, mini_df, summary_df, totalCoins = DoorPlay.run_task(window, params, 1, 0, full_df, mini_df, summary_df, io, ser)
 
 roundNum = 2
 while roundNum <= params['numOfTasks']:
     # Mid-VAS
-    Df, mini_df, summary_df = VAS.middle_vas(window, params, Df, mini_df, summary_df, roundNum, io)
+    full_df, mini_df, summary_df = VAS.middle_vas(window, params, full_df, mini_df, summary_df, roundNum, io)
 
     # Task 2
-    Df, mini_df, summary_df, totalCoins = DoorPlay.run_task(window, params, roundNum, totalCoins, Df, mini_df, summary_df, io, ser)
+    full_df, mini_df, summary_df, totalCoins = DoorPlay.run_task(window, params, roundNum, totalCoins, full_df, mini_df, summary_df, io, ser)
 
     roundNum += 1
 
-Df, mini_df, summary_df = VAS.middle_vas(window, params, Df, mini_df, summary_df, roundNum, io)
+full_df, mini_df, summary_df = VAS.middle_vas(window, params, full_df, mini_df, summary_df, roundNum, io)
 
-Df, mini_df, summary_df = VAS.final_vas(window, params, Df, mini_df, summary_df, io)
-DoorPlayInfra.show_screen_post_match(window, params, io, totalCoins, Df, mini_df)
-helpers.graceful_quitting(window, params, Df, mini_df, summary_df)
+full_df, mini_df, summary_df = VAS.final_vas(window, params, full_df, mini_df, summary_df, io)
+DoorPlayInfra.show_screen_post_match(window, params, io, totalCoins, full_df, mini_df)
+helpers.graceful_quitting(window, params, full_df, mini_df, summary_df)
 
 # Recap
 window.mouseVisible = True

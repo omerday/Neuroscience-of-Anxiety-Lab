@@ -19,8 +19,9 @@ def wait_for_space(window, Df: pandas.DataFrame, dict_for_df: dict, io, params=N
     """
     keyboard = io.devices.keyboard
     while True:
-        dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
-        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
+        if params['saveFullDF']:
+            dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
+            Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
         core.wait(0.05)
         for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
             if event.key == " ":
@@ -37,8 +38,9 @@ def wait_for_joystick_press(window, Df: pandas.DataFrame, dict_for_df: dict, par
     joy.init()
 
     while True:
-        dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
-        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
+        if params['saveFullDF']:
+            dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
+            Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
         core.wait(0.05)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -69,8 +71,9 @@ def wait_for_space_with_replay(window, Df: pandas.DataFrame, dict_for_df: dict, 
     """
     keyboard = io.devices.keyboard
     while True:
-        dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
-        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
+        if params['saveFullDF']:
+            dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
+            Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
         core.wait(0.05)
         keys = keyboard.getPresses()
         for event in keys:
@@ -97,8 +100,9 @@ def wait_for_joystick_press_with_replay(window, Df: pandas.DataFrame, dict_for_d
     joy = pygame.joystick.Joystick(0)
     joy.init()
     while True:
-        dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
-        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
+        if params['saveFullDF']:
+            dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
+            Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
         core.wait(0.05)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -170,13 +174,13 @@ def wait_for_click(window):
     return
 
 
-def display_vas(win, params, text, labels, Df: pandas.DataFrame, questionNo: int, roundNo: int, io):
+def display_vas(win, params, text, labels, full_df: pandas.DataFrame, questionNo: int, roundNo: int, io):
     """
     A helper method that displays VAS question (text object) and places a scale using psychopy.visual.ratingscale.
     The scale goes between two labels, and the answer (1-100) is saved to Df, along with the response time
     :param roundNo:
     :param questionNo:
-    :param Df:
+    :param full_df:
     :param win:
     :param params:
     :param text:
@@ -217,8 +221,9 @@ def display_vas(win, params, text, labels, Df: pandas.DataFrame, questionNo: int
     keyboard.getKeys()
 
     while scale.noResponse and not accept:
-        dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
-        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
+        if params['saveFullDF']:
+            dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
+            full_df = pandas.concat([full_df, pandas.DataFrame.from_records([dict_for_df])])
 
         scale.draw()
         textItem.draw()
@@ -248,12 +253,13 @@ def display_vas(win, params, text, labels, Df: pandas.DataFrame, questionNo: int
                 win.close()
                 core.quit()
 
-            dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
-            dict_for_df['VAS_score'] = scale.markerPlacedAt
-            Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
+            if params['saveFullDF']:
+                dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
+                dict_for_df['VAS_score'] = scale.markerPlacedAt
+                full_df = pandas.concat([full_df, pandas.DataFrame.from_records([dict_for_df])])
             core.wait(0.05)
 
-    return scale.getRating(), Df, dict_for_df
+    return scale.getRating(), full_df, dict_for_df
 
 
 def get_escape():
