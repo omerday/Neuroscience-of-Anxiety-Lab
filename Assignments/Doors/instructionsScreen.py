@@ -14,7 +14,7 @@ SLIDES = 27
 
 
 def show_instructions(win: visual.Window, params, full_df: pandas.DataFrame, mini_df: pandas.DataFrame,
-                      summaryDf: pandas.DataFrame, io, ser=None):
+                      summaryDf: pandas.DataFrame, io, images: list, ser=None):
     dict_for_df = dataHandler.create_dict_for_df(params, Section="Instructions")
     img = visual.ImageStim(win=win, units="norm", opacity=1,
                              size=(2, 2) if not params['fullScreen'] else None)
@@ -50,12 +50,12 @@ def show_instructions(win: visual.Window, params, full_df: pandas.DataFrame, min
 
         if i in [14, 15]:  # Trigger a practice run
             full_df, mini_df, summaryDf = DoorPlay.practice_run(
-                                window=win, params=params, full_df=full_df, mini_df=mini_df, summary_df=summaryDf, io=io, ser=ser)
+                                window=win, params=params, full_df=full_df, mini_df=mini_df, summary_df=summaryDf, io=io, ser=ser, images=images)
 
         if i == 24:  # Trigger a simulation run
             full_df, mini_df, summaryDf, totalCoins = DoorPlay.run_task(
                                 window=win, params=params, roundNum=0, totalCoins=0, full_df=full_df, mini_df=mini_df,
-                                summary_df=summaryDf, io=io, ser=ser, simulation=True)
+                                summary_df=summaryDf, io=io, ser=ser, simulation=True, images=images)
 
         if i == 26:   # Trigger a wheel run
             DoorPlayInfra.show_wheel(win, params, io)

@@ -43,7 +43,7 @@ SOUNDS = {
 }
 
 
-def setup_door(window, params, reward: int, punishment: int):
+def setup_door(window, images, params, reward: int, punishment: int):
     """
     Show door corresponding to the reward and punishment sent as arguments. Chooses the size in which it starts
     either randomly or fixed according to the parameters in order to be able to zoom out nicely.
@@ -62,11 +62,12 @@ def setup_door(window, params, reward: int, punishment: int):
     else:
         location = 0
 
-    imagePath = params['doorImagePathPrefix'] + f"p{punishment}r{reward}" + params['imageSuffix']
-
-    image = visual.ImageStim(window, image=imagePath,
-                             size=((2 + location), (2 + location)),
-                             units="norm", opacity=1)
+    print(f"Reward - {reward}, Punishment - {punishment}")
+    if reward == 0 and punishment == 0:
+        image = images[0]
+    else:
+        image = images[(reward - 1) * 7 + punishment]
+    image.setSize((2 + location, 2 + location))
     image.draw()
 
     window.update()
@@ -405,9 +406,9 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
         del doorFrameImg
         window.update()
 
-    image.setImage('./img/iti.jpg')
-    image.setSize((3.2, 3.2))
-    image.draw()
+    iti_image = visual.ImageStim(win=window, image='./img/iti.jpg', units="norm", opacity=1)
+    iti_image.setSize((3.2, 3.2))
+    iti_image.draw()
     window.update()
     start_time = time.time()
 
@@ -419,10 +420,13 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
         dict_for_df["ITI_duration"] = iti_time
         if params['saveFullDF']:
             full_df = pandas.concat([full_df, pandas.DataFrame.from_records([dict_for_df])])
-        image.size += 0.05
-        image.draw()
+        iti_image.size += 0.05
+        iti_image.draw()
         window.update()
         core.wait(0.03)
+    print(f'ITI Actual time - {time.time() - start_time}')
+    del iti_image
+    image.setSize((2,2))
 
     return coins, total_time, full_df, mini_df, dict_for_df, lock
 

@@ -15,7 +15,7 @@ from psychopy import visual, core
 
 
 def practice_run(window: visual.Window, params: dict, full_df: pandas.DataFrame, mini_df: pandas.DataFrame,
-                 summary_df: pandas.DataFrame, io, ser=None, practice_trials=0):
+                 summary_df: pandas.DataFrame, io, images: list, ser=None, practice_trials=0):
 
     # DoorPlayInfra.show_screen_pre_match(window, params, 0, io, df=Df, mini_df=miniDf, summary_df=summary_df)
 
@@ -23,7 +23,7 @@ def practice_run(window: visual.Window, params: dict, full_df: pandas.DataFrame,
     if practice_trials == 0:
         practice_trials = params['practiceTrials']
     while subtrial <= practice_trials:
-        image, distanceFromDoor = DoorPlayInfra.setup_door(window, params, 0, 0)
+        image, distanceFromDoor = DoorPlayInfra.setup_door(window, images, params, 0, 0)
 
         # Setup new dictionary
         dict_for_df = dataHandler.create_dict_for_df(params, Section='Practice', )
@@ -48,7 +48,7 @@ def practice_run(window: visual.Window, params: dict, full_df: pandas.DataFrame,
     return full_df, mini_df, summary_df
 
 
-def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int, full_df: pandas.DataFrame,
+def run_task(window: visual.Window, images: list, params: dict, roundNum: int, totalCoins: int, full_df: pandas.DataFrame,
              mini_df: pandas.DataFrame, summary_df: pandas.DataFrame, io, ser=None, simulation=False):
 
     """
@@ -89,7 +89,7 @@ def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int
         subtrial = subtrial + 1
         scenario = random.choice(scenariosList)
         scenarioIndex = (scenario[0] - 1) * 7 + (scenario[1]) + 50
-        image, distanceFromDoor = DoorPlayInfra.setup_door(window, params, scenario[0], scenario[1])
+        image, distanceFromDoor = DoorPlayInfra.setup_door(window, images, params, scenario[0], scenario[1])
 
         # Setup new dictionary
         dict_for_df = dataHandler.create_dict_for_df(params, Section=f'TaskRun{roundNum}' if roundNum != 0 else "Simulation", Round=roundNum, TotalCoins=totalCoins, )

@@ -13,6 +13,7 @@ from instructionsScreen import show_instructions
 import VAS
 import serial
 import os
+import math
 
 io = launchHubServer()
 
@@ -69,6 +70,9 @@ params, full_df, mini_df, summary_df = dataHandler.setup_data_frame(params)
 # Initialize Screen
 window = visual.Window(params['screenSize'], monitor="testMonitor", color="black", winType='pyglet',
                        fullscr=True if params['fullScreen'] else False, units="pix")
+
+images = helpers.create_images(window, params, int(math.sqrt(params[f'numOfDoors'])))
+
 image = visual.ImageStim(win=window, image="./img/ITI_fixation.jpg", units="norm", opacity=1,
                          size=(2, 2) if not params['fullScreen'] else None)
 image.draw()
@@ -85,10 +89,10 @@ full_df, mini_df, summary_df = VAS.beginning_vas(window, params, full_df, mini_d
 if not params['skipInstructions']:
 
     # Show Instructions, practice trial and the simulation
-    full_df, mini_df, summary_df = show_instructions(window, params, full_df, mini_df, summary_df, io, ser)
+    full_df, mini_df, summary_df = show_instructions(window, params, full_df, mini_df, summary_df, io, images, ser)
 
 # Task 1
-full_df, mini_df, summary_df, totalCoins = DoorPlay.run_task(window, params, 1, 0, full_df, mini_df, summary_df, io, ser)
+full_df, mini_df, summary_df, totalCoins = DoorPlay.run_task(window, images, params, 1, 0, full_df, mini_df, summary_df, io, ser)
 
 roundNum = 2
 while roundNum <= params['numOfTasks']:
@@ -96,7 +100,7 @@ while roundNum <= params['numOfTasks']:
     full_df, mini_df, summary_df = VAS.middle_vas(window, params, full_df, mini_df, summary_df, roundNum, io)
 
     # Task 2
-    full_df, mini_df, summary_df, totalCoins = DoorPlay.run_task(window, params, roundNum, totalCoins, full_df, mini_df, summary_df, io, ser)
+    full_df, mini_df, summary_df, totalCoins = DoorPlay.run_task(window, params, roundNum, totalCoins, full_df, mini_df, summary_df, io, ser, images)
 
     roundNum += 1
 

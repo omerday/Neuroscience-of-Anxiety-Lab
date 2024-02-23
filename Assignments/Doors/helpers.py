@@ -281,6 +281,15 @@ def get_p_r_couples(size: int):
     return comboList
 
 
+def create_images(win, params, size: int):
+    images = [visual.ImageStim(win=win, image=params['doorImagePathPrefix'] + f"p0r0" + params['imageSuffix'],
+                               size=(2, 2), units="norm", opacity=1)]
+    for i in range(1, size + 1):
+        for j in range(1, size + 1):
+            images.append(visual.ImageStim(win=win, image=params['doorImagePathPrefix'] + f"p{j}r{i}" + params['imageSuffix'], size=(2, 2),
+                             units="norm", opacity=1))
+    return images
+
 def display_image_for_time(window: visual.Window, params: dict, imagePath: str, timeframe: int, Df: pandas.DataFrame,
                            dict_for_df: dict):
     image = visual.ImageStim(win=window, image=imagePath, units='pix', size=(params['screenSize'][0],
