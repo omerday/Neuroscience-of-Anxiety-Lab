@@ -49,7 +49,7 @@ def practice_run(window: visual.Window, params: dict, full_df: pandas.DataFrame,
 
 
 def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int, full_df: pandas.DataFrame,
-             mini_df: pandas.DataFrame, summary_df: pandas.DataFrame, io, ser=None):
+             mini_df: pandas.DataFrame, summary_df: pandas.DataFrame, io, ser=None, simulation=False):
 
     """
     Launch the entire doors task, with all 36/49 doors.
@@ -97,14 +97,14 @@ def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int
         dict_for_df['Punishment_magnitude'] = scenario[1]
         dict_for_df['Subtrial'] = subtrial
         dict_for_df['DistanceAtStart'] = distanceFromDoor * 100 if distanceFromDoor != 0 else 50
-        dict_for_df["ScenarioIndex"] = scenarioIndex
 
-        if params['recordPhysio']:
+        if params['recordPhysio'] and not simulation:
+            dict_for_df["ScenarioIndex"] = scenarioIndex
             serialHandler.report_event(ser, scenarioIndex)
 
         # Execute Door of selected scenario
         coinsWon, total_time, full_df, mini_df, dict_for_df, lock = DoorPlayInfra.start_door(window, params, image, scenario[0], scenario[1], totalCoins,
-                                                                                             distanceFromDoor, full_df, dict_for_df, io, scenarioIndex, mini_df, summary_df, ser)
+                                                                                             distanceFromDoor, full_df, dict_for_df, io, scenarioIndex, mini_df, summary_df, ser, simulation)
         totalCoins += coinsWon
         scenariosList.remove(scenario)
 
@@ -114,7 +114,8 @@ def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int
 
         if params['saveFullDF']:
             full_df = pandas.concat([full_df, pandas.DataFrame.from_records([dict_for_df])])
-        dict_for_df["ScenarioIndex"] = scenarioIndex
+        if not simulation:
+            dict_for_df["ScenarioIndex"] = scenarioIndex
         summary_df = pandas.concat([summary_df, pandas.DataFrame.from_records([dict_for_df])])
 
         dataHandler.save_backup(params, fullDF=full_df, miniDF=mini_df, summary=summary_df)

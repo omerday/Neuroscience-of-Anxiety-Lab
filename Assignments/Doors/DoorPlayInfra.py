@@ -258,7 +258,7 @@ def update_movement_in_df(dict_for_df: dict, Df: pandas.DataFrame, location):
 def start_door(window: visual.Window, params, image: visual.ImageStim, reward: int, punishment: int, total_coins: int,
                location,
                full_df: pandas.DataFrame, dict_for_df: dict, io, scenarioIndex: int, mini_df: pandas.DataFrame,
-               summary_df=None, ser=None):
+               summary_df=None, ser=None, simulation=False):
     # Set end time for 10s max
     start_time = time.time()
     end_time = start_time + 10
@@ -268,7 +268,8 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     dict_for_df['CurrentDistance'] = round((location + 1) * 50, 0)
     dict_for_df['Distance_max'] = round((location + 1) * 50, 0)
     dict_for_df['Distance_min'] = round((location + 1) * 50, 0)
-    dict_for_df["ScenarioIndex"] = scenarioIndex
+    if not simulation and reward != 0:
+        dict_for_df["ScenarioIndex"] = scenarioIndex
     dict_for_df["Total_coins"] = total_coins
     if params['saveFullDF']:
         full_df = pandas.concat([full_df, pandas.DataFrame.from_records([dict_for_df])])
@@ -285,9 +286,9 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
                                                                            dict_for_df,
                                                                            mini_df, summary_df)
 
-    if not params['reducedEvents']:
+    if not params['reducedEvents'] and not simulation:
         dict_for_df["ScenarioIndex"] = scenarioIndex + 50
-        if params['recordPhysio']:
+        if params['recordPhysio'] and not simulation:
             serialHandler.report_event(ser, dict_for_df["ScenarioIndex"])
     total_time = time.time() - start_time
     dict_for_df["DistanceFromDoor_SubTrial"] = location
@@ -296,7 +297,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     dict_for_df["CurrentTime"] = round(time.time() - dict_for_df['StartTime'], 2)
     if params['saveFullDF']:
         full_df = pandas.concat([full_df, pandas.DataFrame.from_records([dict_for_df])])
-    if not params['reducedEvents']:
+    if not params['reducedEvents'] and not simulation:
         mini_df = pandas.concat([mini_df, pandas.DataFrame.from_records([dict_for_df])])
         dict_for_df.pop("ScenarioIndex")
 
@@ -330,9 +331,9 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     isDoorOpening = doorOpenChance <= (location / 100)
     print(f"doorChance - {doorOpenChance}, location - {location / 100}, isOpening - {isDoorOpening}")
 
-    if not params['reducedEvents']:
+    if not params['reducedEvents'] and not simulation:
         dict_for_df["ScenarioIndex"] = scenarioIndex + 100
-        if params['recordPhysio']:
+        if params['recordPhysio'] and not simulation:
             serialHandler.report_event(ser, scenarioIndex + 100)
     dict_for_df["Door_opened"] = 1 if isDoorOpening else 0
     dict_for_df["DoorStatus"] = 'opened' if isDoorOpening else 'closed'
@@ -423,16 +424,6 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
         window.update()
         core.wait(0.03)
 
-    print(f"ITI Set time - {iti_time}")
-    print(f"ITI actual time - {time.time() - start_time}")
-    print(f"Size of image object - {round(sys.getsizeof(image)/1024, 4)} Kb")
-    print(f"Image object address - {id(image)}")
-    print(f"Size of IO object - {round(sys.getsizeof(io) / 1024, 2)} Kb")
-    print(f"Size of DF object - {round(sys.getsizeof(full_df) / 1024 / 1024, 2)} Mb")
-    f = inspect.currentframe()
-    for v in f.f_locals.keys():
-        if not v.startswith("_"):
-            print(v)
     return coins, total_time, full_df, mini_df, dict_for_df, lock
 
 
