@@ -17,7 +17,6 @@ import math
 
 io = launchHubServer()
 
-# log = LoggerSetup.set_up_logger()
 debug = False
 configDialogBank = runConfigDialog.user_input_play(debug)
 
