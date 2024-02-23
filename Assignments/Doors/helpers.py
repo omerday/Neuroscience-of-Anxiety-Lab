@@ -188,10 +188,10 @@ def display_vas(win, params, text, labels, Df: pandas.DataFrame, questionNo: int
     if params["language"] == "Hebrew":
         scale = ratingscale.RatingScale(win,
                                         labels=[labels[0][::-1], labels[1][::-1]],  # Labels at the edges of the scale
-                                        scale=None, choices=None, low=1, high=100, precision=1, tickHeight=0, size=2,
+                                        scale=None, choices=None, low=0, high=10, precision=1, tickHeight=0, size=2,
                                         textSize=0.6, acceptText='Continue', showValue=False, showAccept=True,
-                                        markerColor="Yellow", acceptKeys=[" ", "space"], markerStart=50,
-                                        noMouse=True, leftKeys=1, rightKeys=2, acceptPreText="לחצו על הרווח"[::-1],
+                                        markerColor="Yellow", acceptKeys=[" ", "space"], markerStart=5,
+                                        noMouse=True, leftKeys='left', rightKeys='right', acceptPreText="לחצו על הרווח"[::-1],
                                         acceptSize=1.5)
         textItem = visual.TextStim(win, text=text, height=.12, units='norm', pos=[0, 0.3], wrapWidth=2,
                                    languageStyle='RTL', font="Open Sans")
@@ -199,22 +199,20 @@ def display_vas(win, params, text, labels, Df: pandas.DataFrame, questionNo: int
     else:
         scale = ratingscale.RatingScale(win,
                                         labels=[labels[0], labels[1]],  # Labels at the edges of the scale
-                                        scale=None, choices=None, low=1, high=100, precision=1, tickHeight=0, size=2,
+                                        scale=None, choices=None, low=0, high=10, precision=1, tickHeight=0, size=2,
                                         textSize=0.6, acceptText='Continue', showValue=False, showAccept=True,
-                                        markerColor="Yellow", acceptKeys=[" ", "space"], markerStart=50,
-                                        noMouse=True, leftKeys=1, rightKeys=2, acceptPreText="Press Spacebar",
+                                        markerColor="Yellow", acceptKeys=[" ", "space"], markerStart=5,
+                                        noMouse=True, leftKeys='left', rightKeys='right', acceptPreText="Press Spacebar",
                                         acceptSize=1.5)
         textItem = visual.TextStim(win, text=text, height=.12, units='norm', pos=[0, 0.3], wrapWidth=2,
                                    languageStyle="LTR", font="Open Sans")
 
     dict_for_df = dataHandler.create_dict_for_df(params, Section='VAS', VASQuestionNumber=questionNo, Round=roundNo)
 
-    accept = False
-
     core.wait(0.05)
     keyboard.getKeys()
 
-    while scale.noResponse and not accept:
+    while scale.noResponse:
         dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
 
@@ -222,27 +220,7 @@ def display_vas(win, params, text, labels, Df: pandas.DataFrame, questionNo: int
         textItem.draw()
         win.flip()
         for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
-            if event.key in ["left", "right"]:
-                key_hold = True
-                step = 1 if event.key == "right" else -1
-                while key_hold:
-                    scale.markerPlacedAt = max(scale.markerPlacedAt + step, scale.low)
-                    scale.markerPlacedAt = min(scale.markerPlacedAt + step, scale.high)
-                    scale.draw()
-                    textItem.draw()
-                    win.flip()
-                    for releaseEvent in keyboard.getKeys(etype=Keyboard.KEY_RELEASE):
-                        key_hold = False
-                        if releaseEvent.key in [' ', 'space']:
-                            accept = True
-                        elif releaseEvent.key == 'escape':
-                            win.close()
-                            core.quit()
-                    core.wait(0.03)
-            elif event.key in [" ", "space"]:
-                accept = True
-                break
-            elif event.key == "escape":
+            if event.key == "escape":
                 win.close()
                 core.quit()
 
