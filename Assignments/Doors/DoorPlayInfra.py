@@ -94,7 +94,9 @@ def get_movement_input_keyboard(window, params, image: visual.ImageStim, locatio
                                 Df: pandas.DataFrame, dict_for_df: dict, io, miniDf: pandas.DataFrame, summary_df=None):
     """
     The method gets up/down key state and moves the screen accordingly.
-    The method requires pygame to be installed (and therefore imported to Psychopy if needed).
+    For the given amount of time, it loops through keyboard events looking for up/down/space keys and performs
+    the required operation.
+
     :param dict_for_df:
     :param Df:
     :param window:
@@ -163,6 +165,23 @@ def get_movement_input_keyboard(window, params, image: visual.ImageStim, locatio
 
 def get_movement_input_joystick(window, params, image: visual.ImageStim, location, end_time: time.time,
                                 Df: pandas.DataFrame, dict_for_df: dict, miniDf: pandas.DataFrame, summary_df=None):
+    """
+        The method gets movement gestures from the joystick.
+        For the given amount of time, it loops through joystick events looking for up/down/lock/quit keys and performs
+        the required operation.
+
+        :param dict_for_df:
+        :param Df:
+        :param miniDf:
+        :param summary_df:
+        :param window:
+        :param params:
+        :param image:
+        :param location:
+        :param end_time:
+        :return: location, Df and dictionary
+
+        """
     pygame.init()
     joy = pygame.joystick.Joystick(0)
     joy.init()
@@ -218,6 +237,14 @@ def get_movement_input_joystick(window, params, image: visual.ImageStim, locatio
 
 
 def normalize_location(location: int):
+    """
+    Normalizing the location in order to be in a 0-100 scale.
+    Args:
+        location:
+
+    Returns:
+
+    """
     if location > MAX_LOCATION:
         location = MAX_LOCATION
     elif location < MIN_LOCATION:
@@ -248,6 +275,32 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
                location,
                Df: pandas.DataFrame, dict_for_df: dict, io, scenarioIndex: int, miniDf: pandas.DataFrame,
                summary_df=None, ser=None):
+    """
+    The method executes the entire door logic.
+    It shows the door, executes a get_movement method, and after it's complete - it randomizes a 0-1 number that will
+    determine whether the door will open, according to the location.
+    then, if the door opens, it randomizes a 0-1 number again, to determine whether it will give a punishment or a
+    reward. odds for each are equal, 50-50, and the randomization is seeded every time.
+    Args:
+        window:
+        params:
+        image:
+        reward:
+        punishment:
+        total_coins:
+        location:
+        Df:
+        dict_for_df:
+        io:
+        scenarioIndex:
+        miniDf:
+        summary_df:
+        ser:
+
+    Returns:
+        coins, total_time, Df, miniDf, dict_for_df, lock
+
+    """
     # Set end time for 10s max
     start_time = time.time()
     end_time = start_time + 10
@@ -264,6 +317,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
         miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict_for_df])])
         dict_for_df.pop("ScenarioIndex")
 
+    # Get movement for 10 seconds or until the door is locked.
     if params['keyboardMode']:
         location, Df, dict_for_df, lock = get_movement_input_keyboard(window, params, image, location, end_time, Df,
                                                                       dict_for_df, io,
@@ -311,7 +365,9 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
         helpers.wait_for_time(3, Df, dict_for_df)
         # Df = helpers.countdown_before_door_open(window, image, params, Df, dict_for_df,)
 
-    # Randomize door opening chance according to location:
+    # Randomize door opening chance according to location.
+    # The randomized number should be between 0 to location/100 in order for the door to open.
+    # The higher the location - the greater the chances. If the subject stayed in middle - it's 50-50
     doorOpenChance = random.random()
     isDoorOpening = doorOpenChance <= (location / 100)
     print(f"doorChance - {doorOpenChance}, location - {location / 100}, isOpening - {isDoorOpening}")
@@ -410,6 +466,18 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
 def show_screen_pre_match(window: visual.Window, params: dict, session: int, io, df: pd.DataFrame,
                           mini_df: pd.DataFrame,
                           summary_df: pd.DataFrame, coins=0):
+    """
+    Show a screen according to the stage the subject is in, mostly a resting message.
+    Args:
+        window:
+        params:
+        session:
+        io:
+        df:
+        mini_df:
+        summary_df:
+        coins:
+    """
     if session == 2 or session == 3:
         if params["language"] == "Hebrew":
             message = visual.TextStim(window,
@@ -456,6 +524,17 @@ def show_screen_post_simulation(window: visual.Window, params: dict, io, df=None
 
 
 def show_wheel(window: visual.Window, params: dict, io=None):
+    """
+    A wheel video that randomizes winning 5-6-7 coins. it doesn't actually affect the amount of coins the subject starts
+    with.
+    Args:
+        window:
+        params:
+        io:
+
+    Returns:
+
+    """
     award_choice = random.choice([5, 6, 7])
     movie_path = f"./img/Wheels/{award_choice}_{params['language'][:3]}.mp4"
     movie = visual.MovieStim3(window, filename=movie_path, size=(2, 2), units="norm")

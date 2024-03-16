@@ -15,6 +15,22 @@ SLIDES = 27
 
 def show_instructions(win: visual.Window, params, Df: pandas.DataFrame, miniDf: pandas.DataFrame,
                       summaryDf: pandas.DataFrame, io, ser=None):
+    """
+    The method presents the set of instructions in the appropriate language, and launches any extra sequences needed.
+    For example it runs example runs to show how to navigate, as well as simulation run of a few doors.
+    All is based o the number of slide we're on, which can be found in ./img/instructionsHebrew
+    Args:
+        win: visual.Window object
+        params: parameters dictionary
+        Df:
+        miniDf:
+        summaryDf:
+        io: i/o component from the main code
+        ser: serial object for communication with the BioPac
+
+    Returns: Given Dataframes
+
+    """
     dict_for_df = dataHandler.create_dict_for_df(params, Section="Instructions")
     img = visual.ImageStim(win=win, units="norm", opacity=1,
                              size=(2, 2) if not params['fullScreen'] else None)
@@ -24,6 +40,7 @@ def show_instructions(win: visual.Window, params, Df: pandas.DataFrame, miniDf: 
         path = INSTRUCTION_PATH_ENGLISH
 
     for i in range(1, SLIDES + 1):
+        # Present the relevant instruction slide
         image_name = str(i) + ("H" if params["language"] == "Hebrew" else "E")
         img.image = path + image_name + SUFFIX
         img.setSize((2, 2))  # Size needs to be reset after changing the image
