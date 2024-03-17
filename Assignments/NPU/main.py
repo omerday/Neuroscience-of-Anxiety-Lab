@@ -90,6 +90,7 @@ df = instructionsScreen.start_screen(window, image, params, df, io)
 # Run Sequence
 fear_level = 5
 sounds_in_order = helpers.randomize_sounds()
+# For each letter in the given sequence (can be found in the params), we run the condition corresponding to the letter.
 for ch in params["sequences"][params["sequenceOrder"] - 1]:
     fear_level, df, mini_df = blocksInfra.run_condition(window, image, params, io, ch, df, mini_df, 1, ser, fear_level, sounds_in_order[0] if ch != 'N' else None)
     df = instructionsScreen.blank_screen(window, image, params, df, io, 1, ch)

@@ -20,27 +20,28 @@ io = launchHubServer()
 debug = False
 configDialogBank = runConfigDialog.user_input_play(debug)
 
+# Parameters and configurations for the task:
 params = {
     'Subject': configDialogBank[0],
     'Session': configDialogBank[1],
-    'practiceTrials': 1,  # Number if Practice Trials, taken from Config Dialog
-    'numOfDoors': configDialogBank[2],  # Number of Screens in the 1st task, either 49 (7*7) or 36 (6*6)
-    'numOfSimulationDoors': 5,
-    'numOfTasks': configDialogBank[3],
-    'startingDistance': configDialogBank[4],  # Decide whether the starting distance is random, or fixed on 50
+    'practiceTrials': 1,                        # Number if Practice Trials, taken from Config Dialog
+    'numOfDoors': configDialogBank[2],          # Number of Screens in every task, either 49 (7*7) or 36 (6*6)
+    'numOfSimulationDoors': 5,                  # Amount of doors to be presented in the simulation part during the instructions
+    'numOfTasks': configDialogBank[3],          # Number of Sessions (each consisting of 36-49 doors)
+    'startingDistance': configDialogBank[4],    # Decide whether the starting distance is random, or fixed on 50
     'recordPhysio': configDialogBank[5],
-    'sensitivity': configDialogBank[6],
-    'doorLayout': configDialogBank[7],
-    'ITIDurationMin': 1,
+    'sensitivity': configDialogBank[6],         # Size of each step getting closer/further from the door
+    'doorLayout': configDialogBank[7],          # Decides whether the punishment is on the left or on the right
+    'ITIDurationMin': 1,                        # Two parameters to set the duration of the in-between-doors video
     'ITIDurationMax': 2.5,
     'keyboardMode': configDialogBank[8],
-    'screenSize': (1024, 768),  # Get Screen Resolution to match Full Screen
+    'screenSize': (1024, 768),                  # Get Screen Resolution to match Full Screen
     'soundOn': configDialogBank[9],
-    'beeps': False,
+    'beeps': False,                             # An option to sound beeps before the door outcome is presented
     'outcomeString': True,   # True if we want to print the outcome amount, otherwise it will just show a monster / a fairy
     'skipInstructions': configDialogBank[10],
     'language': configDialogBank[11],
-    'reducedEvents': True,
+    'reducedEvents': True,                      # Send only one event for each doors (door presented), instead of three - door presented, locked and outcome
     'fullScreen': configDialogBank[12] if debug else True,
     'saveDataAtQuit': configDialogBank[13] if debug else True,
     'startTime': time.time(),
@@ -51,13 +52,14 @@ params = {
     'port': 'COM4',
 }
 
+# Save parameters backup to be used as default settings in the next run
 if params['saveAsDefault']:
     if not os.path.exists("./data"):
         os.mkdir("data")
     with open("./data/doorsConfig.json", 'w') as file:
         json.dump(params, file, indent=3)
 
-# Initialize serial port
+# Initialize serial port for BioPac Communication
 ser = serial.Serial(params['port'], 115200, bytesize=serial.EIGHTBITS, timeout=1) if params['recordPhysio'] else None
 if params['recordPhysio']:
     serialHandler.report_event(ser, 255)

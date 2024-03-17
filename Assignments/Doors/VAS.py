@@ -42,6 +42,22 @@ ANSWERS_FINAL_EN = [["Won very few", "Won very many"], ["Lost very few", "Lost v
 
 
 def beginning_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pandas.DataFrame, summary_df: pandas.DataFrame, io):
+    """
+    The method presents the first set of VAS Questionnaire, destined to be shown at the beginning of the task.
+    It shows each of the questions given in QUESTIONS_BEGINNING_MIDDLE_HE (or _EN given the language parameter)
+    and the corresponding answers to be put as labels at each end of the scale.
+    It returns only the Dataframes, with the answers updated.
+    Args:
+        window: visual.Window object
+        params: parameters dictionary
+        Df: Full-sized dataframe
+        miniDf: mini dataframe
+        summary_df:
+        io: i/o component from the main code.
+
+    Returns: three DataFrames with the answers updated
+
+    """
     pygame.quit()
     for i in range(len(QUESTIONS_BEGINNING_MIDDLE_HE)):
         startTime = time.time()
@@ -68,6 +84,23 @@ def beginning_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: p
 
 def middle_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pandas.DataFrame,
                summary_df: pandas.DataFrame, roundNum: int, io):
+    """
+        The method presents the next set of VAS Questionnaire, destined to be shown between different steps of the task.
+        It shows each of the questions given in QUESTIONS_BEGINNING_MIDDLE_HE (or _EN given the language parameter)
+        and the corresponding answers to be put as labels at each end of the scale.
+        It returns only the Dataframes, with the answers updated.
+        Args:
+            window: visual.Window object
+            params: parameters dictionary
+            Df: Full-sized dataframe
+            miniDf: mini dataframe
+            summary_df:
+            roundNum: number of session before-which the method was called
+            io: i/o component from the main code.
+
+        Returns: three DataFrames with the answers updated
+
+        """
     for i in range(len(QUESTIONS_BEGINNING_MIDDLE_HE)):
         startTime = time.time()
         if params["language"] == "Hebrew":
@@ -97,6 +130,22 @@ def middle_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pand
 
 
 def final_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pandas.DataFrame, summary_df: pandas.DataFrame, io):
+    """
+        The method presents the last set of VAS Questionnaire, destined to be shown at the end of the experiment.
+        It shows each of the questions given in QUESTIONS_FINAL_HE (or _EN given the language parameter)
+        and the corresponding answers to be put as labels at each end of the scale.
+        It returns only the Dataframes, with the answers updated.
+        Args:
+            window: visual.Window object
+            params: parameters dictionary
+            Df: Full-sized dataframe
+            miniDf: mini dataframe
+            summary_df:
+            io: i/o component from the main code.
+
+        Returns: three DataFrames with the answers updated
+
+        """
     for i in range(len(QUESTIONS_FINAL_HE)):
         startTime = time.time()
         if params["language"] == "Hebrew":

@@ -29,6 +29,19 @@ ANSWERS_BEGINNING_MIDDLE_EN = [["Not anxious", "Very anxious"], ["Not at all", "
 
 
 def vas(window: visual.Window, params, df: pandas.DataFrame, mini_df: pandas.DataFrame, io, roundNum: int):
+    """
+    The method loops through the questions list and calls display_vas to collect an answer from the subject for each question.
+    Args:
+        window:
+        params:
+        df:
+        mini_df:
+        io:
+        roundNum:
+
+    Returns: df, mini_df
+
+    """
     pygame.quit()
     window.mouseVisible = True
 
@@ -72,7 +85,7 @@ def vas(window: visual.Window, params, df: pandas.DataFrame, mini_df: pandas.Dat
 def display_vas(window: visual.Window, params:dict, text, labels, Df: pandas.DataFrame, io, questionNo: int, roundNum: int):
     """
     A helper method that displays VAS question (text object) and places a scale using psychopy.visual.ratingscale.
-    The scale goes between two labels, and the answer (1-100) is saved to Df, along with the response time
+    The scale goes between two labels, and the answer (0-10) is saved to Df, along with the response time
     :param roundNo:
     :param questionNo:
     :param Df:

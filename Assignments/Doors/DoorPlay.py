@@ -54,13 +54,21 @@ def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int
     Launch the entire doors task, with all 36/49 doors.
     Goes through an array of all the P&R combinations, and execute them one after another.
     Returns the dataframe with the collected data.
-    If roundNum == 0 - that's a simulation run, and we should run just 10 doors
-    :param window:
-    :param params:
-    :param round:
-    :param totalCoins:
-    :param Df:
-    :return:
+    If roundNum == 0 - that's a simulation run, and we should run just 5 doors (or however is given in the parameters)
+
+    Args:
+        window: visual.Window object
+        params: parameters dictionary
+        roundNum: number of round executed
+        totalCoins: amount of coins gathered so far
+        Df:
+        miniDf:
+        summary_df:
+        io: i/o component from the main code
+        ser: serial object for communication with BioPac. default is None.
+
+    Returns: three dataframes, as well as the total coins after running the round.
+
     """
     if roundNum not in [0, 1]:
         DoorPlayInfra.show_screen_pre_match(window, params, roundNum, io, coins=totalCoins, df=Df, mini_df=miniDf, summary_df=summary_df)
