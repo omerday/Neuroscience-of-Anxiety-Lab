@@ -43,11 +43,12 @@ def vas(window: visual.Window, params, df: pandas.DataFrame, mini_df: pandas.Dat
 
     """
     pygame.quit()
-    window.mouseVisible = True
 
     image = visual.ImageStim(win=window, image=f"./img/instructions/VAS_{params['gender'][0]}{params['language'][0]}.jpg", pos=(0,0), size=(2,2), units="norm")
     image.draw()
     window.flip()
+    window.mouseVisible = False
+
 
     keyboard = io.devices.keyboard
     keyboard.getKeys()
@@ -131,6 +132,8 @@ def display_vas(window: visual.Window, params:dict, text, labels, Df: pandas.Dat
         scale.draw()
         textItem.draw()
         window.flip()
+        window.mouseVisible = False
+
         for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
             if event.key == "escape":
                 window.close()

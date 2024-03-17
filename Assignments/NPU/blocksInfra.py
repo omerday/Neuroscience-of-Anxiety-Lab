@@ -51,6 +51,7 @@ def run_condition(window: visual.Window, image: visual.ImageStim, params: dict, 
     Returns: fear_level, df, mini_df
 
     """
+    window.mouseVisible = False
     if condition != "N" and condition != "P" and condition != "U":
         print("Unknown condition " + condition)
         return
@@ -98,6 +99,7 @@ def run_condition(window: visual.Window, image: visual.ImageStim, params: dict, 
         image.setSize((2, 2))
         image.draw()
         window.update()
+        window.mouseVisible = False
 
         fear_level, df, mini_df = launch_wait_sequence(params=params, window=window, image=image,
                                                        end_time=cue_times[timing_index] if timing_index < 3
@@ -226,6 +228,7 @@ def wait_in_condition(window: visual.Window, image: visual.ImageStim, startle_ti
         scale.draw()
         scale_label.draw()
         window.flip()
+        window.mouseVisible=False
 
         # Write to DF
         dict_for_df["CurrentTime"] = round(time.time() - dict_for_df["StartTime"], 2)

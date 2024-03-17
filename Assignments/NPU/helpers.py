@@ -140,6 +140,8 @@ def play_startle_and_wait(window: visual.Window, image: visual.ImageStim, io, pa
     image.setSize((2, 2))
     image.draw()
     window.update()
+    window.mouseVisible = False
+
     keyboard = io.devices.keyboard
     keyboard.getKeys()
     while True:
@@ -326,6 +328,7 @@ def startle_habituation_sequence(window: visual.Window, image: visual.ImageStim,
     image.setSize((2, 2))
     image.draw()
     window.update()
+    window.mouseVisible = False
 
     dict_for_df = dataHandler.create_dict_for_df(params, Step="Habituation Sequence", ScenarioIndex=HABITUATION_EVENT)
 

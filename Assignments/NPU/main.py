@@ -59,8 +59,8 @@ image = visual.ImageStim(win=window, image=f"./img/instructions/Welcome_{params[
                          units="norm", opacity=1,
                          size=(2, 2))
 image.draw()
-window.mouseVisible = False
 window.update()
+window.mouseVisible = False
 helpers.wait_for_space_no_df(window, io)
 
 

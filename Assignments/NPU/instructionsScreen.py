@@ -36,6 +36,7 @@ def show_instructions(params: dict, window: visual.Window, img: visual.ImageStim
     """
     pref = f"{params['gender'][0]}{params['language'][0]}"
     dict_for_df = dataHandler.create_dict_for_df(params, Step="Instructions")
+    window.mouseVisible = False
 
     replay = True
     plays_again = False
