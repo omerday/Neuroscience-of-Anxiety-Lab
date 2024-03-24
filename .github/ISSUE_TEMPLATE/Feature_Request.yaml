@@ -1,0 +1,49 @@
+name: Feature Request
+description: Request a new feature or modifications to any experiment
+title: "Feature: "
+labels: ["task"]
+projects: ["omerday/2"]
+assignees:
+  - omerday
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this feature request! Let us know what feature do you want, and please elaborate as much as you can so we can help you as quickly as possible!
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Details
+      description: Who are you?
+      placeholder: ex. Rany Abend
+    validations:
+      required: true
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: What do you want?
+      description: Also tell us what exactly is needed and why is it necessary.
+      placeholder: Tell us what you want!
+    validations:
+      required: true
+  - type: dropdown
+    id: task
+    attributes:
+      label: task
+      description: In Which Task?
+      options:
+        - Doors
+        - NPU
+        - TIM
+        - Cross
+      default: 3
+    validations:
+      required: true
+  - type: checkboxes
+    id: rany-certified
+    attributes:
+      label: Approval
+      description: Did Rany approve this modification?
+      options:
+        - label: Rany approved the following feature request
+          required: true
