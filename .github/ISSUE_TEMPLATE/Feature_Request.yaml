@@ -45,5 +45,5 @@ body:
       label: Approval
       description: Did Rany approve this modification?
       options:
-        - label: Rany approved the following feature request
+        - label: Rany approved the above feature request
           required: true
