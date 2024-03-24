@@ -2,7 +2,7 @@ name: Bug Report
 description: File a bug report
 title: "Bug: "
 labels: ["bug"]
-projects: ["omerday/Neuroscience-of-Anxiety-Lab"]
+projects: ["omerday/Neuroscience-of-Psychopathology"]
 assignees:
   - omerday
 body:
@@ -38,19 +38,20 @@ body:
       default: 0
     validations:
       required: true
-  - type: checkboxes
+  - type: dropdown
     id: consistent
     attributes:
       label: Consistency
       description: Does the issue happen consistently? i.e, everytime you run the task?
       options:
-        - label: Consistent
-          required: false
-        - label: Inconsistent
-          required: false
+        - True
+        - False
+      default: 0
+    validations:
+      required: true
   - type: textarea
     id: logs
     attributes:
       label: Relevant Info
-      description: Please share the output files or log files, as well as screenshots if exist.
+      description: Please share any relevant log lines that you can. After opening the bug, please attach the output files and log files.
       render: shell
