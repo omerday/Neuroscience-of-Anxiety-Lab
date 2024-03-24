@@ -44,8 +44,8 @@ body:
       label: Consistency
       description: Does the issue happen consistently? i.e, everytime you run the task?
       options:
-        - True
-        - False
+        - Consistent
+        - Inconsistent
       default: 0
     validations:
       required: true
