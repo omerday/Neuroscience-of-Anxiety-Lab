@@ -53,10 +53,9 @@ def setup_data_frame(params: dict):
         params['headers'].append('EMG')
         params['headers'].append('EDA')
 
-    Df = pandas.DataFrame(columns=params['headers'])
     miniDf = pandas.DataFrame(columns=params['headers'])
     summary_df = pandas.DataFrame(columns=params['headers'])
-    return params, Df, miniDf, summary_df
+    return params, miniDf, summary_df
 
 
 def create_dict_for_df(params: dict, **kwargs):
@@ -107,22 +106,4 @@ def save_backup(params: dict, **kwargs):
             df = value.drop_duplicates(keep='first')
             df.to_csv(
                 f'{folder}/Doors {params["Subject"]} Session {params["Session"]} - {key} - {strftime("%Y-%m-%d %H-%M", localtime(params["startTime"]))}.backup.csv')
-
-
-def single_subject_analysis(params: dict, ):
-    miniDf = pd.read_csv("data/Subject 92313 - miniDF - 2023-10-02 08-24.csv")
-    # subject = params["subjectID"]
-    dist_df = miniDf[miniDf["Section"].str.contains("TaskRun")]
-
-    # Correlation between R/P amount and the lock distance
-    sns.scatterplot(data=dist_df, x="Reward_magnitude", y="DistanceFromDoor_SubTrial", hue="Punishment_magnitude")
-    plt.show()
-
-    # Correlation between R/P amount and the lock time
-    sns.scatterplot(data=dist_df, x="Reward_magnitude", y="DoorAction_RT", hue="Punishment_magnitude")
-    plt.show()
-
-    sns.lineplot(data=dist_df, x="Punishment_magnitude", y="DistanceFromDoor_SubTrial", hue="Reward_magnitude",
-                 err_style="band", errorbar="sd")
-    plt.show()
 

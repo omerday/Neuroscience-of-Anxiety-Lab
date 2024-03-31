@@ -91,14 +91,13 @@ def move_screen(window, params, image: visual.ImageStim, location, units):
 
 
 def get_movement_input_keyboard(window, params, image: visual.ImageStim, location, end_time: time.time,
-                                Df: pandas.DataFrame, dict_for_df: dict, io, miniDf: pandas.DataFrame, summary_df=None):
+                                dict_for_df: dict, io, miniDf: pandas.DataFrame, summary_df=None):
     """
     The method gets up/down key state and moves the screen accordingly.
     For the given amount of time, it loops through keyboard events looking for up/down/space keys and performs
     the required operation.
 
     :param dict_for_df:
-    :param Df:
     :param window:
     :param params:
     :param image:
@@ -113,7 +112,7 @@ def get_movement_input_keyboard(window, params, image: visual.ImageStim, locatio
     while time.time() < end_time and not space:
         for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
             if event.key == "escape":
-                helpers.graceful_quitting(window, params, Df, miniDf, summary_df)
+                helpers.graceful_quitting(window, params, miniDf, summary_df)
                 window.close()
                 core.quit()
             if event.key == 'up':
@@ -128,14 +127,11 @@ def get_movement_input_keyboard(window, params, image: visual.ImageStim, locatio
                     if 0.25 <= location < MAX_LOCATION:
                         image, location = move_screen(window, params, image, location,
                                                       params['sensitivity'] * 0.5 * 1.5)
-                        Df = update_movement_in_df(dict_for_df, Df, location)
                     elif 0 <= location < 0.25:
                         image, location = move_screen(window, params, image, location,
                                                       params['sensitivity'] * 0.5 * 1.25)
-                        Df = update_movement_in_df(dict_for_df, Df, location)
                     elif location < 0:
                         image, location = move_screen(window, params, image, location, params['sensitivity'] * 0.5)
-                        Df = update_movement_in_df(dict_for_df, Df, location)
             elif event.key == 'down':
                 downHold = True
                 while downHold:
@@ -145,33 +141,28 @@ def get_movement_input_keyboard(window, params, image: visual.ImageStim, locatio
                     # Dividing into segments corresponding with the "down" motion
                     if MIN_LOCATION < location < 0:
                         image, location = move_screen(window, params, image, location, params['sensitivity'] * (-0.5))
-                        Df = update_movement_in_df(dict_for_df, Df, location)
                     elif 0 <= location <= 0.25:
                         image, location = move_screen(window, params, image, location,
                                                       params['sensitivity'] * (-0.5) * 1.25)
-                        Df = update_movement_in_df(dict_for_df, Df, location)
                     elif location > 0.25:
                         image, location = move_screen(window, params, image, location,
                                                       params['sensitivity'] * (-0.5) * 1.5)
-                        Df = update_movement_in_df(dict_for_df, Df, location)
             elif event.key == ' ' or event.key == 'space':
                 space = True
                 break
 
-        Df = update_movement_in_df(dict_for_df, Df, location)
     location = normalize_location(location)
-    return location, Df, dict_for_df, space  # NormalizedLocation
+    return location, dict_for_df, space  # NormalizedLocation
 
 
 def get_movement_input_joystick(window, params, image: visual.ImageStim, location, end_time: time.time,
-                                Df: pandas.DataFrame, dict_for_df: dict, miniDf: pandas.DataFrame, summary_df=None):
+                                dict_for_df: dict, miniDf: pandas.DataFrame, summary_df=None):
     """
         The method gets movement gestures from the joystick.
         For the given amount of time, it loops through joystick events looking for up/down/lock/quit keys and performs
         the required operation.
 
         :param dict_for_df:
-        :param Df:
         :param miniDf:
         :param summary_df:
         :param window:
@@ -192,12 +183,12 @@ def get_movement_input_joystick(window, params, image: visual.ImageStim, locatio
             if joystickButton:
                 break
             if event.type == pygame.QUIT:
-                helpers.graceful_quitting(window, params, Df, miniDf, summary_df)
+                helpers.graceful_quitting(window, params,miniDf, summary_df)
                 window.close()
                 core.quit()
             if event.type == pygame.JOYBUTTONDOWN:
                 if event.button == 7:
-                    helpers.graceful_quitting(window, params, Df, miniDf, summary_df)
+                    helpers.graceful_quitting(window, params,miniDf, summary_df)
                     window.close()
                     core.quit()
                 elif event.button == 0:
@@ -231,9 +222,8 @@ def get_movement_input_joystick(window, params, image: visual.ImageStim, locatio
             image, location = move_screen(window, params, image, location,
                                           params['sensitivity'] * 0.5 * speed)
 
-        Df = update_movement_in_df(dict_for_df, Df, location)
     location = normalize_location(location)
-    return location, Df, dict_for_df, not joystickButton  # NormalizedLocation
+    return location, dict_for_df, not joystickButton  # NormalizedLocation
 
 
 def normalize_location(location: int):
@@ -272,8 +262,7 @@ def update_movement_in_df(dict_for_df: dict, Df: pandas.DataFrame, location):
 
 
 def start_door(window: visual.Window, params, image: visual.ImageStim, reward: int, punishment: int, total_coins: int,
-               location,
-               Df: pandas.DataFrame, dict_for_df: dict, io, scenarioIndex: int, miniDf: pandas.DataFrame,
+               location, dict_for_df: dict, io, scenarioIndex: int, miniDf: pandas.DataFrame,
                summary_df=None, ser=None):
     """
     The method executes the entire door logic.
@@ -312,18 +301,17 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     dict_for_df['Distance_min'] = round((location + 1) * 50, 0)
     dict_for_df["ScenarioIndex"] = scenarioIndex
     dict_for_df["Total_coins"] = total_coins
-    Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
     if not params['reducedEvents']:
         miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict_for_df])])
         dict_for_df.pop("ScenarioIndex")
 
     # Get movement for 10 seconds or until the door is locked.
     if params['keyboardMode']:
-        location, Df, dict_for_df, lock = get_movement_input_keyboard(window, params, image, location, end_time, Df,
+        location, dict_for_df, lock = get_movement_input_keyboard(window, params, image, location, end_time,
                                                                       dict_for_df, io,
                                                                       miniDf, summary_df)
     else:
-        location, Df, dict_for_df, lock = get_movement_input_joystick(window, params, image, location, end_time, Df,
+        location, dict_for_df, lock = get_movement_input_joystick(window, params, image, location, end_time,
                                                                       dict_for_df,
                                                                       miniDf, summary_df)
 
@@ -336,7 +324,6 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     dict_for_df['Distance_lock'] = 1 if lock else 0
     dict_for_df["DoorAction_RT"] = round(total_time * 1000, 2) if total_time < 10 else 10
     dict_for_df["CurrentTime"] = round(time.time() - dict_for_df['StartTime'], 2)
-    Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
     if not params['reducedEvents']:
         miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict_for_df])])
         dict_for_df.pop("ScenarioIndex")
@@ -347,7 +334,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     dict_for_df["Door_anticipation_time"] = doorWaitTime * 1000
 
     if params['soundOn']:
-        play_sound("lock", 0.5, dict_for_df, Df)
+        play_sound("lock", 0.5, dict_for_df,)
         if params['beeps']:
             doorWaitTime -= 2
         else:
@@ -356,13 +343,12 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     waitStart = time.time()
     while time.time() < waitStart + doorWaitTime:
         dict_for_df["CurrentTime"] = round(time.time() - dict_for_df['StartTime'], 2)
-        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
         core.wait(1 / 100)
 
     if params["soundOn"] and params['beeps']:
-        Df = play_sound("beep", 2, dict_for_df, Df)
+        play_sound("beep", 2)
     else:
-        helpers.wait_for_time(3, Df, dict_for_df)
+        helpers.wait_for_time(3)
         # Df = helpers.countdown_before_door_open(window, image, params, Df, dict_for_df,)
 
     # Randomize door opening chance according to location.
@@ -380,7 +366,6 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     dict_for_df["DoorStatus"] = 'opened' if isDoorOpening else 'closed'
     dict_for_df["CurrentTime"] = round(time.time() - dict_for_df['StartTime'], 2)
     dict_for_df["Total_coins"] = total_coins
-    Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
     coins = 0
 
     if isDoorOpening:
@@ -412,12 +397,11 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
         miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict_for_df])])
 
         if params['soundOn']:
-            Df = play_sound(dict_for_df["Door_outcome"], WAIT_TIME_ON_DOOR, dict_for_df, Df)
+            play_sound(dict_for_df["Door_outcome"], WAIT_TIME_ON_DOOR)
         else:
             waitTimeStart = time.time()
             while time.time() < waitTimeStart + WAIT_TIME_ON_DOOR:
                 dict_for_df["CurrentTime"] = round(time.time() - dict_for_df['StartTime'], 2)
-                Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
                 core.wait(1 / 1000)
 
         # del outcomeImage
@@ -437,7 +421,6 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
         waitTimeStart = time.time()
         while time.time() < waitTimeStart + WAIT_TIME_ON_DOOR:
             dict_for_df["CurrentTime"] = round(time.time() - dict_for_df['StartTime'], 2)
-            Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
             core.wait(1 / 1000)
 
         del doorFrameImg
@@ -453,17 +436,16 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     while time.time() < start_time + iti_time:
         dict_for_df["CurrentTime"] = round(time.time() - dict_for_df['StartTime'], 2)
         dict_for_df["ITI_duration"] = iti_time
-        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
         image.size += 0.05
         image.draw()
         window.update()
         core.wait(0.03)
     print(f"ITI actual time - {time.time() - start_time}")
 
-    return coins, total_time, Df, miniDf, dict_for_df, lock
+    return coins, total_time, miniDf, dict_for_df, lock
 
 
-def show_screen_pre_match(window: visual.Window, params: dict, session: int, io, df: pd.DataFrame,
+def show_screen_pre_match(window: visual.Window, params: dict, session: int, io,
                           mini_df: pd.DataFrame,
                           summary_df: pd.DataFrame, coins=0):
     """
@@ -504,12 +486,12 @@ def show_screen_pre_match(window: visual.Window, params: dict, session: int, io,
 
     window.update()
     if params["keyboardMode"]:
-        helpers.wait_for_space_no_df(window, io, df=df, mini_df=mini_df, summary_df=summary_df)
+        helpers.wait_for_space_no_df(window, io, mini_df=mini_df, summary_df=summary_df)
     else:
-        helpers.wait_for_joystick_no_df(window, df=df, mini_df=mini_df, summary_df=summary_df)
+        helpers.wait_for_joystick_no_df(window, mini_df=mini_df, summary_df=summary_df)
 
 
-def show_screen_post_simulation(window: visual.Window, params: dict, io, df=None, mini_df=None):
+def show_screen_post_simulation(window: visual.Window, params: dict, io, mini_df=None):
     image = visual.ImageStim(win=window, units="norm", opacity=1, size=(2, 2))
     image.image = ("./img/InstructionsHebrew/" if params[
                                                       "language"] == "Hebrew" else "./img/InstructionsEnglish/") + "SimulationRunEnd.jpeg"
@@ -518,9 +500,9 @@ def show_screen_post_simulation(window: visual.Window, params: dict, io, df=None
     window.update()
 
     if params["keyboardMode"]:
-        helpers.wait_for_space_no_df(window, io, params, df, mini_df)
+        helpers.wait_for_space_no_df(window, io, params, mini_df)
     else:
-        helpers.wait_for_joystick_no_df(window, params, df, mini_df)
+        helpers.wait_for_joystick_no_df(window, params, mini_df)
 
 
 def show_wheel(window: visual.Window, params: dict, io=None):
@@ -552,7 +534,7 @@ def show_wheel(window: visual.Window, params: dict, io=None):
     return
 
 
-def show_screen_post_match(window: visual.Window, params: dict, io, coins=0, df=None, mini_df=None):
+def show_screen_post_match(window: visual.Window, params: dict, io, coins=0, mini_df=None):
     if params["language"] == "Hebrew":
         message = visual.TextStim(window,
                                   text=FINAL_SUMMARY_STR1_HE + f'{coins} ' + FINAL_SUMMARY_STR2_HE,
@@ -566,12 +548,12 @@ def show_screen_post_match(window: visual.Window, params: dict, io, coins=0, df=
     message.draw()
     window.update()
     if params["keyboardMode"]:
-        helpers.wait_for_space_no_df(window, io, params, df, mini_df)
+        helpers.wait_for_space_no_df(window, io, params, mini_df)
     else:
-        helpers.wait_for_joystick_no_df(window, params, df, mini_df)
+        helpers.wait_for_joystick_no_df(window, params, mini_df)
 
 
-def play_sound(soundType: str, waitTime: float, dict_for_df: dict, Df: pandas.DataFrame, volume=.4):
+def play_sound(soundType: str, waitTime: float, volume=.4):
     """
     The method plays a sound and sleeps through it, while recording data for the DF
     """
@@ -581,8 +563,6 @@ def play_sound(soundType: str, waitTime: float, dict_for_df: dict, Df: pandas.Da
     soundToPlay.play(when=now)
     startTime = time.time()
     while time.time() < startTime + waitTime:
-        dict_for_df["CurrentTime"] = round(time.time() - dict_for_df['StartTime'], 2)
-        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
         core.wait(1 / 1000)
     soundToPlay.stop()
-    return Df
+    return

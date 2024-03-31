@@ -9,7 +9,7 @@ import pandas
 import datetime
 
 
-def wait_for_space(window, Df: pandas.DataFrame, dict_for_df: dict, io, params=None, mini_df=None, summary_df=None):
+def wait_for_space(window, io, params=None, mini_df=None, summary_df=None):
     """
     Helper method to wait for a Spacebar keypress and keep the window open until then
     :param dict_for_df:
@@ -19,45 +19,41 @@ def wait_for_space(window, Df: pandas.DataFrame, dict_for_df: dict, io, params=N
     """
     keyboard = io.devices.keyboard
     while True:
-        dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
-        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
         for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
             if event.key == " ":
-                return Df
+                return
             if event.key == "escape":
-                graceful_quitting(window, params, Df, mini_df, summary_df)
+                graceful_quitting(window, params, mini_df, summary_df)
                 window.close()
                 core.quit()
 
 
-def wait_for_joystick_press(window, Df: pandas.DataFrame, dict_for_df: dict, params=None, mini_df=None, summary_df=None):
+def wait_for_joystick_press(window, params=None, mini_df=None, summary_df=None):
     pygame.init()
     joy = pygame.joystick.Joystick(0)
     joy.init()
 
     while True:
-        dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
-        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
         core.wait(1 / 1000)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                graceful_quitting(window, params, Df, mini_df, summary_df)
+                graceful_quitting(window, params, mini_df, summary_df)
                 window.close()
                 core.quit()
                 break
             if event.type == pygame.JOYBUTTONDOWN:
                 if event.button == 7:
-                    graceful_quitting(window, params, Df, mini_df, summary_df)
+                    graceful_quitting(window, params, mini_df, summary_df)
                     window.close()
                     core.quit()
                 else:
                     while True:
                         for currEvent in pygame.event.get():
                             if currEvent.type == pygame.JOYBUTTONUP:
-                                return Df
+                                return
 
 
-def wait_for_space_with_replay(window, Df: pandas.DataFrame, dict_for_df: dict, io, params=None, mini_df=None, summary_df=None):
+def wait_for_space_with_replay(window, io, params=None, mini_df=None, summary_df=None):
     """
     Helper method to wait for a Spacebar keypress and keep the window open, or get 'r' keypress for replay of the
      InstructionsEnglish. Returns True if needed to replay.
@@ -68,21 +64,19 @@ def wait_for_space_with_replay(window, Df: pandas.DataFrame, dict_for_df: dict, 
     """
     keyboard = io.devices.keyboard
     while True:
-        dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
-        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
         keys = keyboard.getPresses()
         for event in keys:
             if event.key == 'r' or event.key == 'R':
-                return Df, True
+                return True
             elif event.key == ' ':
-                return Df, False
+                return False
             elif event.key == "escape":
-                graceful_quitting(window, params, Df, mini_df, summary_df)
+                graceful_quitting(window, params, mini_df, summary_df)
                 window.close()
                 core.quit()
 
 
-def wait_for_joystick_press_with_replay(window, Df: pandas.DataFrame, dict_for_df: dict, params=None, mini_df=None, summary_df=None):
+def wait_for_joystick_press_with_replay(window, params=None, mini_df=None, summary_df=None):
     """
     Helper method to wait for a joystick keypress and keep the window open, or get 'r' keypress for replay of the
      InstructionsEnglish. Returns True if needed to replay.
@@ -95,32 +89,30 @@ def wait_for_joystick_press_with_replay(window, Df: pandas.DataFrame, dict_for_d
     joy = pygame.joystick.Joystick(0)
     joy.init()
     while True:
-        dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
-        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
         core.wait(1 / 1000)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                graceful_quitting(window, params, Df, mini_df, summary_df)
+                graceful_quitting(window, params, mini_df, summary_df)
                 window.close()
                 core.quit()
             if event.type == pygame.JOYBUTTONDOWN:
                 if event.button == 7:
-                    graceful_quitting(window, params, Df, mini_df, summary_df)
+                    graceful_quitting(window, params, mini_df, summary_df)
                     window.close()
                     core.quit()
                 elif event.button == 1:
                     while True:
                         for currEvent in pygame.event.get():
                             if currEvent.type == pygame.JOYBUTTONUP:
-                                return Df, True
+                                return True
                 else:
                     while True:
                         for currEvent in pygame.event.get():
                             if currEvent.type == pygame.JOYBUTTONUP:
-                                return Df, False
+                                return False
 
 
-def wait_for_space_no_df(window, io, params=None, df=None, mini_df=None, summary_df=None):
+def wait_for_space_no_df(window, io, params=None, mini_df=None, summary_df=None):
     """
     Helper method to wait for a Spacebar keypress and keep the window open, without writing to Df.
     :param window:
@@ -133,10 +125,10 @@ def wait_for_space_no_df(window, io, params=None, df=None, mini_df=None, summary
             if event.key == " ":
                 return
             if event.key == "escape":
-                graceful_quitting(window, params, df, mini_df, summary_df)
+                graceful_quitting(window, params, mini_df, summary_df)
 
 
-def wait_for_joystick_no_df(window, params=None, df=None, mini_df=None, summary_df=None):
+def wait_for_joystick_no_df(window, params=None, mini_df=None, summary_df=None):
     pygame.init()
     joy = pygame.joystick.Joystick(0)
     joy.init()
@@ -144,13 +136,13 @@ def wait_for_joystick_no_df(window, params=None, df=None, mini_df=None, summary_
         core.wait(1 / 1000)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                graceful_quitting(window, params, df, mini_df, summary_df)
+                graceful_quitting(window, params, mini_df, summary_df)
                 window.close()
                 core.quit()
                 break
             if event.type == pygame.JOYBUTTONDOWN:
                 if event.button == 7:
-                    graceful_quitting(window, params, df, mini_df, summary_df)
+                    graceful_quitting(window, params, mini_df, summary_df)
                     window.close()
                     core.quit()
                 else:
@@ -168,13 +160,12 @@ def wait_for_click(window):
     return
 
 
-def display_vas(win, params, text, labels, Df: pandas.DataFrame, questionNo: int, roundNo: int, io):
+def display_vas(win, params, text, labels, questionNo: int, roundNo: int, io):
     """
     A helper method that displays VAS question (text object) and places a scale using psychopy.visual.ratingscale.
     The scale goes between two labels, and the answer (1-100) is saved to Df, along with the response time
     :param roundNo:
     :param questionNo:
-    :param Df:
     :param win:
     :param params:
     :param text:
@@ -213,23 +204,19 @@ def display_vas(win, params, text, labels, Df: pandas.DataFrame, questionNo: int
     keyboard.getKeys()
 
     while scale.noResponse:
-        dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
-        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
 
         scale.draw()
         textItem.draw()
         win.flip()
         for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
+            #TODO: Add graceful quitting
             if event.key == "escape":
                 win.close()
                 core.quit()
 
-            dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
-            dict_for_df['VAS_score'] = scale.markerPlacedAt
-            Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
             core.wait(0.05)
 
-    return scale.getRating(), Df, dict_for_df
+    return scale.getRating(), dict_for_df
 
 
 def get_escape():
@@ -282,8 +269,8 @@ def display_image_until_key(window: visual.Window, params: dict, imagePath: str,
     return Df
 
 
-def graceful_quitting(window: visual.Window, params: dict, Df: pandas.DataFrame, miniDf=None, summary_df=None):
-    dataHandler.export_data(params, fullDF=Df, miniDF=miniDf, summary=summary_df)
+def graceful_quitting(window: visual.Window, params: dict, miniDf=None, summary_df=None):
+    dataHandler.export_data(params, miniDF=miniDf, summary=summary_df)
     window.close()
     core.quit()
 
@@ -305,10 +292,8 @@ def countdown_before_door_open(window: visual.Window, image: visual.ImageStim, p
     return df
 
 
-def wait_for_time(time_to_wait: float, df: pandas.DataFrame, dict_for_df: dict):
+def wait_for_time(time_to_wait: float):
     start_time = time.time()
     while time.time() < start_time + time_to_wait:
-        dict_for_df["CurrentTime"] = time.time()
-        df = pandas.concat([df, pandas.DataFrame.from_records([dict_for_df])])
         core.wait(0.05)
-    return df
+    return
