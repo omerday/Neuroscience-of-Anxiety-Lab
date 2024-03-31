@@ -13,7 +13,7 @@ SUFFIX = ".jpeg"
 SLIDES = 27
 
 
-def show_instructions(win: visual.Window, params, Df: pandas.DataFrame, miniDf: pandas.DataFrame,
+def show_instructions(win: visual.Window, params, miniDf: pandas.DataFrame,
                       summaryDf: pandas.DataFrame, io, ser=None):
     """
     The method presents the set of instructions in the appropriate language, and launches any extra sequences needed.
@@ -50,32 +50,32 @@ def show_instructions(win: visual.Window, params, Df: pandas.DataFrame, miniDf: 
         dict_for_df["Round"] = i
         if i != 25:  # Check if replay slide is on
             if params["keyboardMode"]:
-                Df = helpers.wait_for_space(win, Df, dict_for_df, io, params, miniDf)
+                helpers.wait_for_space(win, io, params, miniDf)
             else:
-                Df = helpers.wait_for_joystick_press(win, Df, dict_for_df, params, miniDf)
+                helpers.wait_for_joystick_press(win, params, miniDf)
         else:
             # If replay slide is on, wait for a "replay" command and reset the index accordingly to start the
             # instructions from the beginning
             if params["keyboardMode"]:
-                Df, again = helpers.wait_for_space_with_replay(win, Df, dict_for_df, io, params, miniDf)
+                again = helpers.wait_for_space_with_replay(win, io, params, miniDf)
             else:
-                Df, again = helpers.wait_for_joystick_press_with_replay(win, Df, dict_for_df, params, miniDf)
+                again = helpers.wait_for_joystick_press_with_replay(win, params, miniDf)
             if again:
                 i = 1
         dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
         miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict_for_df])])
 
         if i in [14, 15]:  # Trigger a practice run
-            Df, miniDf, summaryDf = DoorPlay.practice_run(
-                                window=win, params=params, Df=Df, miniDf=miniDf, summary_df=summaryDf, io=io, ser=ser)
+            miniDf, summaryDf = DoorPlay.practice_run(
+                                window=win, params=params, miniDf=miniDf, summary_df=summaryDf, io=io, ser=ser)
 
         if i == 24:  # Trigger a simulation run
-            Df, mini_df, summaryDf, totalCoins = DoorPlay.run_task(
-                                window=win, params=params, roundNum=0, totalCoins=0, Df=Df, miniDf=miniDf,
+            mini_df, summaryDf, totalCoins = DoorPlay.run_task(
+                                window=win, params=params, roundNum=0, totalCoins=0, miniDf=miniDf,
                                 summary_df=summaryDf, io=io, ser=ser)
 
         if i == 26:   # Trigger a wheel run
             DoorPlayInfra.show_wheel(win, params, io)
     del img
 
-    return Df, miniDf, summaryDf
+    return miniDf, summaryDf

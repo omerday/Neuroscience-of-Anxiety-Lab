@@ -41,7 +41,7 @@ ANSWERS_FINAL_EN = [["Won very few", "Won very many"], ["Lost very few", "Lost v
                  ["never", "all the time"], ["sad, I did badly", "happy, I did great"]]
 
 
-def beginning_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pandas.DataFrame, summary_df: pandas.DataFrame, io):
+def beginning_vas(window: visual.Window, params, miniDf: pandas.DataFrame, summary_df: pandas.DataFrame, io):
     """
     The method presents the first set of VAS Questionnaire, destined to be shown at the beginning of the task.
     It shows each of the questions given in QUESTIONS_BEGINNING_MIDDLE_HE (or _EN given the language parameter)
@@ -50,7 +50,6 @@ def beginning_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: p
     Args:
         window: visual.Window object
         params: parameters dictionary
-        Df: Full-sized dataframe
         miniDf: mini dataframe
         summary_df:
         io: i/o component from the main code.
@@ -62,27 +61,26 @@ def beginning_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: p
     for i in range(len(QUESTIONS_BEGINNING_MIDDLE_HE)):
         startTime = time.time()
         if params["language"] == "Hebrew":
-            answer, Df, dict = helpers.display_vas(window, params, QUESTIONS_BEGINNING_MIDDLE_HE[i],
-                                               ANSWERS_BEGINNING_MIDDLE_HE[i], Df, io=io, questionNo=i + 1, roundNo=1,)
+            answer, dict_for_df = helpers.display_vas(window, params, QUESTIONS_BEGINNING_MIDDLE_HE[i],
+                                               ANSWERS_BEGINNING_MIDDLE_HE[i], io=io, questionNo=i + 1, roundNo=1,)
         else:
-            answer, Df, dict = helpers.display_vas(window, params, QUESTIONS_BEGINNING_MIDDLE_EN[i],
-                                                   ANSWERS_BEGINNING_MIDDLE_EN[i], Df, io=io, questionNo=i + 1, roundNo=1,)
-        dict['Section'] = "VAS1"
-        dict['CurrentTime'] = round(time.time() - dict['StartTime'], 2)
-        dict['VAS_score'] = answer
-        dict['VAS_type'] = LABELS[i]
-        dict['VAS_RT'] = time.time() - startTime
+            answer, dict_for_df = helpers.display_vas(window, params, QUESTIONS_BEGINNING_MIDDLE_EN[i],
+                                                   ANSWERS_BEGINNING_MIDDLE_EN[i], io=io, questionNo=i + 1, roundNo=1,)
+        dict_for_df['Section'] = "VAS1"
+        dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
+        dict_for_df['VAS_score'] = answer
+        dict_for_df['VAS_type'] = LABELS[i]
+        dict_for_df['VAS_RT'] = time.time() - startTime
 
-        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
-        miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
-        summary_df = pandas.concat([summary_df, pandas.DataFrame.from_records([dict])])
+        miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict_for_df])])
+        summary_df = pandas.concat([summary_df, pandas.DataFrame.from_records([dict_for_df])])
 
-        dataHandler.save_backup(params, fullDF=Df, miniDF=miniDf, summary=summary_df)
+        dataHandler.save_backup(params, miniDF=miniDf, summary=summary_df)
 
-    return Df, miniDf, summary_df
+    return miniDf, summary_df
 
 
-def middle_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pandas.DataFrame,
+def middle_vas(window: visual.Window, params, miniDf: pandas.DataFrame,
                summary_df: pandas.DataFrame, roundNum: int, io):
     """
         The method presents the next set of VAS Questionnaire, destined to be shown between different steps of the task.
@@ -92,7 +90,6 @@ def middle_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pand
         Args:
             window: visual.Window object
             params: parameters dictionary
-            Df: Full-sized dataframe
             miniDf: mini dataframe
             summary_df:
             roundNum: number of session before-which the method was called
@@ -105,32 +102,31 @@ def middle_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pand
     for i in range(len(QUESTIONS_BEGINNING_MIDDLE_HE)):
         startTime = time.time()
         if params["language"] == "Hebrew":
-            answer, Df, dict = helpers.display_vas(window, params, QUESTIONS_BEGINNING_MIDDLE_HE[i],
-                                               ANSWERS_BEGINNING_MIDDLE_HE[i], Df, questionNo=i + 1, io=io, roundNo=2)
+            answer, dict_for_df = helpers.display_vas(window, params, QUESTIONS_BEGINNING_MIDDLE_HE[i],
+                                               ANSWERS_BEGINNING_MIDDLE_HE[i], questionNo=i + 1, io=io, roundNo=2)
         else:
-            answer, Df, dict = helpers.display_vas(window, params, QUESTIONS_BEGINNING_MIDDLE_EN[i],
-                                                   ANSWERS_BEGINNING_MIDDLE_EN[i], Df, questionNo=i + 1, io=io, roundNo=2)
+            answer, dict_for_df = helpers.display_vas(window, params, QUESTIONS_BEGINNING_MIDDLE_EN[i],
+                                                   ANSWERS_BEGINNING_MIDDLE_EN[i], questionNo=i + 1, io=io, roundNo=2)
         if roundNum == 2:
-            dict['Section'] = "VAS2"
+            dict_for_df['Section'] = "VAS2"
         elif roundNum == 3:
-            dict['Section'] = "VAS3"
+            dict_for_df['Section'] = "VAS3"
         else:
-            dict['Section'] = "VASpost"
-        dict['CurrentTime'] = round(time.time() - dict['StartTime'], 2)
-        dict['VAS_score'] = answer
-        dict['VAS_type'] = LABELS[i]
-        dict['VAS_RT'] = time.time() - startTime
+            dict_for_df['Section'] = "VASpost"
+        dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
+        dict_for_df['VAS_score'] = answer
+        dict_for_df['VAS_type'] = LABELS[i]
+        dict_for_df['VAS_RT'] = time.time() - startTime
 
-        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
-        miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
-        summary_df = pandas.concat([summary_df, pandas.DataFrame.from_records([dict])])
+        miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict_for_df])])
+        summary_df = pandas.concat([summary_df, pandas.DataFrame.from_records([dict_for_df])])
 
-        dataHandler.save_backup(params, fullDF=Df, miniDF=miniDf, summary=summary_df)
+        dataHandler.save_backup(params, miniDF=miniDf, summary=summary_df)
 
-    return Df, miniDf, summary_df
+    return miniDf, summary_df
 
 
-def final_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pandas.DataFrame, summary_df: pandas.DataFrame, io):
+def final_vas(window: visual.Window, params, miniDf: pandas.DataFrame, summary_df: pandas.DataFrame, io):
     """
         The method presents the last set of VAS Questionnaire, destined to be shown at the end of the experiment.
         It shows each of the questions given in QUESTIONS_FINAL_HE (or _EN given the language parameter)
@@ -139,7 +135,6 @@ def final_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: panda
         Args:
             window: visual.Window object
             params: parameters dictionary
-            Df: Full-sized dataframe
             miniDf: mini dataframe
             summary_df:
             io: i/o component from the main code.
@@ -151,22 +146,21 @@ def final_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: panda
     for i in range(len(QUESTIONS_FINAL_HE)):
         startTime = time.time()
         if params["language"] == "Hebrew":
-            answer, Df, dict = helpers.display_vas(window, params, QUESTIONS_FINAL_HE[i], ANSWERS_FINAL_HE[i], Df, io=io, questionNo=i + 1,
+            answer, dict_for_df = helpers.display_vas(window, params, QUESTIONS_FINAL_HE[i], ANSWERS_FINAL_HE[i], io=io, questionNo=i + 1,
                                                roundNo=3)
         else:
-            answer, Df, dict = helpers.display_vas(window, params, QUESTIONS_FINAL_EN[i], ANSWERS_FINAL_EN[i], Df, io=io,
+            answer, dict_for_df = helpers.display_vas(window, params, QUESTIONS_FINAL_EN[i], ANSWERS_FINAL_EN[i], io=io,
                                                    questionNo=i + 1,
                                                    roundNo=3)
-        dict["Section"] = 'Question'
-        dict['CurrentTime'] = round(time.time() - dict['StartTime'], 2)
-        dict['Q_type'] = QUESTIONS_LABEL[i]
-        dict['Q_RT'] = time.time() - startTime
-        dict['Q_score'] = answer
+        dict_for_df["Section"] = 'Question'
+        dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
+        dict_for_df['Q_type'] = QUESTIONS_LABEL[i]
+        dict_for_df['Q_RT'] = time.time() - startTime
+        dict_for_df['Q_score'] = answer
 
-        Df = pandas.concat([Df, pandas.DataFrame.from_records([dict])])
-        miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict])])
-        summary_df = pandas.concat([summary_df, pandas.DataFrame.from_records([dict])])
+        miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict_for_df])])
+        summary_df = pandas.concat([summary_df, pandas.DataFrame.from_records([dict_for_df])])
 
-        dataHandler.save_backup(params, fullDF=Df, miniDF=miniDf, summary=summary_df)
+        dataHandler.save_backup(params, miniDF=miniDf, summary=summary_df)
 
-    return Df, miniDf, summary_df
+    return miniDf, summary_df

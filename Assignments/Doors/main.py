@@ -65,7 +65,7 @@ if params['recordPhysio']:
     serialHandler.report_event(ser, 255)
 
 # Initialize DataFrame
-params, Df, mini_df, summary_df = dataHandler.setup_data_frame(params)
+params, mini_df, summary_df = dataHandler.setup_data_frame(params)
 
 # Initialize Screen
 window = visual.Window(params['screenSize'], monitor="testMonitor", color="black", winType='pyglet',
@@ -81,31 +81,31 @@ else:
     helpers.wait_for_joystick_no_df(window)
 
 # Run VAS
-Df, mini_df, summary_df = VAS.beginning_vas(window, params, Df, mini_df, summary_df, io)
+mini_df, summary_df = VAS.beginning_vas(window, params, mini_df, summary_df, io)
 
 if not params['skipInstructions']:
 
     # Show Instructions, practice trial and the simulation
-    Df, mini_df, summary_df = show_instructions(window, params, Df, mini_df, summary_df, io, ser)
+    mini_df, summary_df = show_instructions(window, params, mini_df, summary_df, io, ser)
 
 # Task 1
-Df, mini_df, summary_df, totalCoins = DoorPlay.run_task(window, params, 1, 0, Df, mini_df, summary_df, io, ser)
+mini_df, summary_df, totalCoins = DoorPlay.run_task(window, params, 1, 0, mini_df, summary_df, io, ser)
 
 roundNum = 2
 while roundNum <= params['numOfTasks']:
     # Mid-VAS
-    Df, mini_df, summary_df = VAS.middle_vas(window, params, Df, mini_df, summary_df, roundNum, io)
+    mini_df, summary_df = VAS.middle_vas(window, params, mini_df, summary_df, roundNum, io)
 
     # Task 2
-    Df, mini_df, summary_df, totalCoins = DoorPlay.run_task(window, params, roundNum, totalCoins, Df, mini_df, summary_df, io, ser)
+    mini_df, summary_df, totalCoins = DoorPlay.run_task(window, params, roundNum, totalCoins, mini_df, summary_df, io, ser)
 
     roundNum += 1
 
-Df, mini_df, summary_df = VAS.middle_vas(window, params, Df, mini_df, summary_df, roundNum, io)
+mini_df, summary_df = VAS.middle_vas(window, params, mini_df, summary_df, roundNum, io)
 
-Df, mini_df, summary_df = VAS.final_vas(window, params, Df, mini_df, summary_df, io)
-DoorPlayInfra.show_screen_post_match(window, params, io, totalCoins, Df, mini_df)
-helpers.graceful_quitting(window, params, Df, mini_df, summary_df)
+mini_df, summary_df = VAS.final_vas(window, params, mini_df, summary_df, io)
+DoorPlayInfra.show_screen_post_match(window, params, io, totalCoins, mini_df)
+helpers.graceful_quitting(window, params, mini_df, summary_df)
 
 # Recap
 window.mouseVisible = True
