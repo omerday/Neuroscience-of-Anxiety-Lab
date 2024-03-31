@@ -101,6 +101,7 @@ def middle_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: pand
         Returns: three DataFrames with the answers updated
 
         """
+    pygame.quit()
     for i in range(len(QUESTIONS_BEGINNING_MIDDLE_HE)):
         startTime = time.time()
         if params["language"] == "Hebrew":
@@ -146,6 +147,7 @@ def final_vas(window: visual.Window, params, Df: pandas.DataFrame, miniDf: panda
         Returns: three DataFrames with the answers updated
 
         """
+    pygame.quit()
     for i in range(len(QUESTIONS_FINAL_HE)):
         startTime = time.time()
         if params["language"] == "Hebrew":
