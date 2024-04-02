@@ -195,10 +195,9 @@ def get_movement_input_joystick(window, params, image: visual.ImageStim, locatio
                     joystickButton = True
 
         joystickMovement = joy.get_axis(1)
-
-        if joystickMovement > 0.5 or joystickMovement < -0.5:
+        if joystickMovement > 0.55 or joystickMovement < -0.55:
             speed = 2
-        elif joystickMovement > 0.15 or joystickMovement < -0.15:
+        elif joystickMovement > 0.25 or joystickMovement < -0.25:
             speed = 1
         else:
             speed = 0
@@ -334,7 +333,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     dict_for_df["Door_anticipation_time"] = doorWaitTime * 1000
 
     if params['soundOn']:
-        play_sound("lock", 0.5, dict_for_df,)
+        play_sound("lock", 0.5, )
         if params['beeps']:
             doorWaitTime -= 2
         else:
