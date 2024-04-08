@@ -65,7 +65,7 @@ helpers.wait_for_space_no_df(window, io)
 
 
 if params['videosTiming'] == 'Before':
-    pretestVideos.run_post_videos(window, params, io, ser)
+    pretestVideos.run_videos(window, params, io, ser)
 
 # Setup DFs
 params, df, mini_df = dataHandler.setup_data_frame(params)
@@ -117,7 +117,7 @@ df, mini_df = VAS.vas(window, params, df, mini_df, io, 3)
 
 # Show Post-Task Videos
 if params['videosTiming'] == 'After':
-    pretestVideos.run_post_videos(window, params, io, ser)
+    pretestVideos.run_videos(window, params, io, ser)
 
 # End of task Finalization
 df, mini_df = instructionsScreen.finalization(params, window, image, io, df, mini_df)
