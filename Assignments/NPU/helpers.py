@@ -140,6 +140,8 @@ def play_startle_and_wait(window: visual.Window, image: visual.ImageStim, io, pa
     image.setSize((2, 2))
     image.draw()
     window.update()
+    window.mouseVisible = False
+
     keyboard = io.devices.keyboard
     keyboard.getKeys()
     while True:
@@ -205,6 +207,19 @@ def randomize_startles(cues: list):
 
 
 def randomize_shock(cues: list, startles: list, predictable: bool, params: dict):
+    """
+    The method randomizes a timing for the shock, given the restrictions.
+    If we're in the Predicatble condition, we need to adjust the startle timing so there will be a 4-6 second diff between
+    a startle and a shock (and the startle should come first)
+    Args:
+        cues:
+        startles:
+        predictable:
+        params:
+
+    Returns: shock_time, startles
+
+    """
     random.seed()
     shock_time = 0
     resolve_cue_conflict = False
@@ -294,10 +309,26 @@ def play_shock_sound(dict_for_df: dict, df: pd.DataFrame, sound_name=None):
 
 def startle_habituation_sequence(window: visual.Window, image: visual.ImageStim, params: dict, io, df: pd.DataFrame,
                                  mini_df: pd.DataFrame, ser=None):
+    """
+    The method sounds 8 startles in a randomized time, to create habituation effect and check the general physiological response.
+    Each of the startles sends the BioPac a 80 event.
+    Args:
+        window: visual.Window component
+        image: visual.ImageStim component
+        params: parameters dictionary
+        io: i/o object from the main code
+        df:
+        mini_df:
+        ser: serial object for communication with the BioPac.
+
+    Returns:
+
+    """
     image.image = f"./img/habituation{params['language'][0]}.jpeg"
     image.setSize((2, 2))
     image.draw()
     window.update()
+    window.mouseVisible = False
 
     dict_for_df = dataHandler.create_dict_for_df(params, Step="Habituation Sequence", ScenarioIndex=HABITUATION_EVENT)
 
@@ -320,10 +351,10 @@ def startle_habituation_sequence(window: visual.Window, image: visual.ImageStim,
     return df, mini_df
 
 
-'''
-The method creates a permutation of two of the first sound and two of the second, to go along the block.
-'''
 def randomize_sounds():
+    """
+    The method creates a permutation of two of the first sound and two of the second, to go along the block.
+    """
     numbers = [0, 1, 2, 3]
     random.shuffle(numbers)
     sounds_in_order = []

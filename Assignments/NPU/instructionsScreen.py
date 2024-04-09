@@ -19,13 +19,29 @@ RATING_SLIDE = 19
 
 def show_instructions(params: dict, window: visual.Window, img: visual.ImageStim, io, df: pd.DataFrame,
                       mini_df: pd.DataFrame, ser=None):
+    """
+    The method presents the set of instructions in the appropriate language, and launches any extra sequences needed.
+
+    Args:
+        params: parameters dictionary
+        window: visual.Window component
+        img: visual.ImageStim component on which the slides will be updated
+        io: i/o object for keyboard functionality
+        df:
+        mini_df:
+        ser: serial object for Biopac communication. Defaults to None when params[recordPhysio] is False
+
+    Returns: df, mini_df
+
+    """
     pref = f"{params['gender'][0]}{params['language'][0]}"
     dict_for_df = dataHandler.create_dict_for_df(params, Step="Instructions")
+    window.mouseVisible = False
 
     replay = True
     plays_again = False
     while replay:
-        for i in range(2, SLIDES):
+        for i in range(2, SLIDES) if params['videos_timing'] == "Start" else range(1, SLIDES):
             if params["skipCalibration"] and i in [3, 4, 5]:
                 pass
             elif params["skipStartle"] and i == STARTLE_SLIDE:
@@ -39,14 +55,14 @@ def show_instructions(params: dict, window: visual.Window, img: visual.ImageStim
                 img.setSize((2,2))
                 img.draw()
                 window.update()
-                if i == 4:
+                if i == 4: # Calibration Slide
                     df, mini_df = helpers.wait_for_calibration(window, params, io, df, mini_df, dict_for_df, ser)
                     dict_for_df["Step"] = "Instructions"
-                elif i == SHOCK_SLIDE:
+                elif i == SHOCK_SLIDE:  # Shock example slide
                     df = helpers.play_shock_and_wait(window, io, params, df, dict_for_df)
-                elif i == RATING_SLIDE:
+                elif i == RATING_SLIDE:  # Rating example slide
                     df = helpers.wait_for_space_with_rating_scale(window, img, io, params, df, dict_for_df)
-                elif i == STARTLE_SLIDE:
+                elif i == STARTLE_SLIDE:  # Startle example slide
                     df = helpers.play_startle_and_wait(window, img, io, params, df, dict_for_df)
                 else:
                     df = helpers.wait_for_space(window, io, params, df, dict_for_df)

@@ -32,6 +32,26 @@ SCALE_LABEL_ENG = "Anxiety Level"
 
 def run_condition(window: visual.Window, image: visual.ImageStim, params: dict, io, condition: str, df: pd.DataFrame,
                   mini_df: pd.DataFrame, blockNum: int, ser=None, fear_level=5, sound=None):
+    """
+    The method is responsible for setting up a new condition - it randomizes cue and startle times, and shock time if necessary,
+    and loops through the different condition to launch wait_in_condition state for each of them.
+    Args:
+        window:
+        image:
+        params:
+        io:
+        condition:
+        df:
+        mini_df:
+        blockNum:
+        ser:
+        fear_level:
+        sound:
+
+    Returns: fear_level, df, mini_df
+
+    """
+    window.mouseVisible = False
     if condition != "N" and condition != "P" and condition != "U":
         print("Unknown condition " + condition)
         return
@@ -39,6 +59,7 @@ def run_condition(window: visual.Window, image: visual.ImageStim, params: dict, 
     print("Starting condition " + condition)
     print("Randomizing times")
 
+    # Randomize initial cue and startle times
     cue_times = helpers.randomize_cue_times()
     if not params["skipStartle"]:
         startle_times = helpers.randomize_startles(cue_times)
@@ -61,10 +82,13 @@ def run_condition(window: visual.Window, image: visual.ImageStim, params: dict, 
     if condition == 'N':
         shock_time = 0
     else:
+        # Randomize shock time
         shock_time, startle_times = helpers.randomize_shock(cue_times, startle_times,
                                                             True if condition == 'P' else False, params)
         shock_time = shock_time + time.time()
 
+    # Make sure cues, startles and shocks are well placed, so we will have a startle every cue onset/offset,
+    # And that the shock will be a decent amount of time after a startle, and at the appropriate timing in terms of cues
     cue_times, startle_times = helpers.prepare_cues_and_startles(cue_times, startle_times)
 
     timing_index = 0
@@ -75,13 +99,15 @@ def run_condition(window: visual.Window, image: visual.ImageStim, params: dict, 
         image.setSize((2, 2))
         image.draw()
         window.update()
+        window.mouseVisible = False
 
         fear_level, df, mini_df = launch_wait_sequence(params=params, window=window, image=image,
-                                                       end_time=cue_times[
-                                                           timing_index] if timing_index < 3 else start_time + BLOCK_LENGTH,
+                                                       end_time=cue_times[timing_index] if timing_index < 3
+                                                       else start_time + BLOCK_LENGTH,
                                                        startles=startle_times, io=io, shock_time=shock_time,
                                                        fear_level=fear_level,
-                                                       dict_for_df=dict_for_df, df=df, mini_df=mini_df, ser=ser, condition_start=condition_start, sound=sound)
+                                                       dict_for_df=dict_for_df, df=df, mini_df=mini_df, ser=ser,
+                                                       condition_start=condition_start, sound=sound)
 
         if timing_index == 3:
             pass
@@ -164,6 +190,27 @@ def launch_wait_sequence(params: dict, window: visual.Window, image: visual.Imag
 def wait_in_condition(window: visual.Window, image: visual.ImageStim, startle_times: list, end_time: time,
                       io, params: dict, dict_for_df: dict, df: pd.DataFrame, mini_df: pd.DataFrame, fear_level=5,
                       shock_time=0, ser=None, condition_start=0.0, sound=None):
+    """
+    The method waits in the condition, plays startle/shock if needed, and collects fear level from the subject at any time.
+    Args:
+        window:
+        image:
+        startle_times:
+        end_time:
+        io:
+        params:
+        dict_for_df:
+        df:
+        mini_df:
+        fear_level:
+        shock_time:
+        ser:
+        condition_start:
+        sound:
+
+    Returns: scale.getRating(), df, mini_df
+
+    """
     keyboard = io.devices.keyboard
     scale = ratingscale.RatingScale(win=window, scale=None, labels=["0", "10"], low=0, high=10, markerStart=fear_level,
                                     showAccept=False, markerColor="Gray", textColor="Black", lineColor="Black",
@@ -181,6 +228,7 @@ def wait_in_condition(window: visual.Window, image: visual.ImageStim, startle_ti
         scale.draw()
         scale_label.draw()
         window.flip()
+        window.mouseVisible=False
 
         # Write to DF
         dict_for_df["CurrentTime"] = round(time.time() - dict_for_df["StartTime"], 2)

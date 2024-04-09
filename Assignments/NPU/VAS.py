@@ -29,12 +29,26 @@ ANSWERS_BEGINNING_MIDDLE_EN = [["Not anxious", "Very anxious"], ["Not at all", "
 
 
 def vas(window: visual.Window, params, df: pandas.DataFrame, mini_df: pandas.DataFrame, io, roundNum: int):
+    """
+    The method loops through the questions list and calls display_vas to collect an answer from the subject for each question.
+    Args:
+        window:
+        params:
+        df:
+        mini_df:
+        io:
+        roundNum:
+
+    Returns: df, mini_df
+
+    """
     pygame.quit()
-    window.mouseVisible = True
 
     image = visual.ImageStim(win=window, image=f"./img/instructions/VAS_{params['gender'][0]}{params['language'][0]}.jpg", pos=(0,0), size=(2,2), units="norm")
     image.draw()
     window.flip()
+    window.mouseVisible = False
+
 
     keyboard = io.devices.keyboard
     keyboard.getKeys()
@@ -72,7 +86,7 @@ def vas(window: visual.Window, params, df: pandas.DataFrame, mini_df: pandas.Dat
 def display_vas(window: visual.Window, params:dict, text, labels, Df: pandas.DataFrame, io, questionNo: int, roundNum: int):
     """
     A helper method that displays VAS question (text object) and places a scale using psychopy.visual.ratingscale.
-    The scale goes between two labels, and the answer (1-100) is saved to Df, along with the response time
+    The scale goes between two labels, and the answer (0-10) is saved to Df, along with the response time
     :param roundNo:
     :param questionNo:
     :param Df:
@@ -87,8 +101,8 @@ def display_vas(window: visual.Window, params:dict, text, labels, Df: pandas.Dat
     if params["language"] == "Hebrew":
         scale = ratingscale.RatingScale(window,
                                         labels=[labels[0][::-1], labels[1][::-1]],  # Labels at the edges of the scale
-                                        scale=None, choices=None, low=1, high=100, precision=1, tickHeight=0, size=2,
-                                        markerStart=50, noMouse=True, leftKeys=1, rightKeys=2, # Dummy left and right
+                                        scale=None, choices=None, low=0, high=10, precision=1, tickHeight=0, size=2,
+                                        markerStart=5, noMouse=True, leftKeys='left', rightKeys='right', # Dummy left and right
                                         textSize=0.6, acceptText='Continue', showValue=False, showAccept=True,
                                         acceptPreText="לחצו על הרווח"[::-1], acceptSize=1.5,
                                         markerColor="Maroon", acceptKeys=["space"], textColor="Black", lineColor="Black", disappear=False)
@@ -98,8 +112,8 @@ def display_vas(window: visual.Window, params:dict, text, labels, Df: pandas.Dat
     else:
         scale = ratingscale.RatingScale(window,
                                         labels=[labels[0], labels[1]],  # Labels at the edges of the scale
-                                        scale=None, choices=None, low=1, high=100, precision=1, tickHeight=0, size=2,
-                                        markerStart=50, noMouse=True, leftKeys=1, rightKeys=2, # Dummy left and right
+                                        scale=None, choices=None, low=0, high=10, precision=1, tickHeight=0, size=2,
+                                        markerStart=5, noMouse=True, leftKeys='left', rightKeys='right', # Dummy left and right
                                         textSize=0.6, acceptText='Continue', showValue=False, showAccept=True,
                                         acceptPreText="Press Spacebar", acceptSize=1.5,
                                         markerColor="Maroon", acceptKeys=["space"], textColor="Black", lineColor="Black", disappear=False)
@@ -111,36 +125,17 @@ def display_vas(window: visual.Window, params:dict, text, labels, Df: pandas.Dat
     core.wait(0.05)
     keyboard.getKeys()
 
-    accept = False
-    while scale.noResponse and not accept:
+    while scale.noResponse:
         dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
         Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
 
         scale.draw()
         textItem.draw()
         window.flip()
+        window.mouseVisible = False
+
         for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
-            if event.key in ["left", "right"]:
-                key_hold = True
-                step = 1 if event.key == "right" else -1
-                while key_hold:
-                    scale.markerPlacedAt = max(scale.markerPlacedAt + step, scale.low)
-                    scale.markerPlacedAt = min(scale.markerPlacedAt + step, scale.high)
-                    scale.draw()
-                    textItem.draw()
-                    window.flip()
-                    for releaseEvent in keyboard.getKeys(etype=Keyboard.KEY_RELEASE):
-                        key_hold = False
-                        if releaseEvent.key in [' ', 'space']:
-                            accept = True
-                        elif releaseEvent.key == 'escape':
-                            window.close()
-                            core.quit()
-                    core.wait(0.03)
-            elif event.key in [" ", "space"]:
-                accept = True
-                break
-            elif event.key == "escape":
+            if event.key == "escape":
                 window.close()
                 core.quit()
 

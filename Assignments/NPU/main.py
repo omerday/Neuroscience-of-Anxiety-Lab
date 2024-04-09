@@ -1,5 +1,7 @@
 import os
+import random
 
+import pretestVideos
 import pandas as pd
 from psychopy.iohub import launchHubServer
 from psychopy import visual, core, event, monitors
@@ -30,11 +32,13 @@ params = {
     "recordPhysio": configDialogBank[8],
     "skipInstructions": configDialogBank[9],
     "skipCalibration": configDialogBank[10],
-    "fullScreen": configDialogBank[11] if debug is True else True,
-    "saveDataAtQuit": configDialogBank[12] if debug is True else True,
-    "saveConfig": configDialogBank[13] if debug is True else True,
+    'showVideos': configDialogBank[11],
+    "fullScreen": configDialogBank[12] if debug is True else True,
+    "saveDataAtQuit": configDialogBank[13] if debug is True else True,
+    "saveConfig": configDialogBank[14] if debug is True else True,
     "screenSize": (1024, 768),
     "startTime": time.time(),
+    'videoRestTime': 60,
     'port': 'COM4',
 }
 
@@ -50,13 +54,19 @@ if params['recordPhysio']:
 
 window = visual.Window(size=params['screenSize'], monitor="testMonitor", color=(0.6, 0.6, 0.6), winType='pyglet',
                        fullscr=True if params['fullScreen'] else False, units="pix")
-image = visual.ImageStim(win=window, image=f"./img/instructions/1{params['gender'][0]}{params['language'][0]}.jpeg",
+
+image = visual.ImageStim(win=window, image=f"./img/instructions/Welcome_{params['gender'][0]}{params['language'][0]}.jpeg",
                          units="norm", opacity=1,
                          size=(2, 2))
 image.draw()
-window.mouseVisible = False
 window.update()
+window.mouseVisible = False
 helpers.wait_for_space_no_df(window, io)
+
+
+params['videos_timing'] = random.choice(['Start', 'End'])
+if params['showVideos'] and params['videos_timing'] == 'Start':
+    pretestVideos.run_post_videos(window, params, io, ser)
 
 # Setup DFs
 params, df, mini_df = dataHandler.setup_data_frame(params)
@@ -80,6 +90,7 @@ df = instructionsScreen.start_screen(window, image, params, df, io)
 # Run Sequence
 fear_level = 5
 sounds_in_order = helpers.randomize_sounds()
+# For each letter in the given sequence (can be found in the params), we run the condition corresponding to the letter.
 for ch in params["sequences"][params["sequenceOrder"] - 1]:
     fear_level, df, mini_df = blocksInfra.run_condition(window, image, params, io, ch, df, mini_df, 1, ser, fear_level, sounds_in_order[0] if ch != 'N' else None)
     df = instructionsScreen.blank_screen(window, image, params, df, io, 1, ch)
@@ -104,6 +115,10 @@ if params['blocks'] == 2:
             sounds_in_order.pop(0)
 
 df, mini_df = VAS.vas(window, params, df, mini_df, io, 3)
+
+# Show Post-Task Videos
+if params['showVideos'] and params['videos_timing'] == 'End':
+    pretestVideos.run_post_videos(window, params, io, ser)
 
 # End of task Finalization
 df, mini_df = instructionsScreen.finalization(params, window, image, io, df, mini_df)

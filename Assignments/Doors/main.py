@@ -20,45 +20,52 @@ io = launchHubServer()
 debug = False
 configDialogBank = runConfigDialog.user_input_play(debug)
 
+# Parameters and configurations for the task:
 params = {
     'Subject': configDialogBank[0],
     'Session': configDialogBank[1],
-    'practiceTrials': configDialogBank[2],  # Number if Practice Trials, taken from Config Dialog
-    'numOfDoors': configDialogBank[3],  # Number of Screens in the 1st task, either 49 (7*7) or 36 (6*6)
-    'numOfTasks': configDialogBank[4],
-    'startingDistance': configDialogBank[5],  # Decide whether the starting distance is random, or fixed on 50
-    'recordPhysio': configDialogBank[6],
-    'sensitivity': configDialogBank[7],
-    'doorLayout': configDialogBank[8],
-    'keyboardMode': configDialogBank[9],
-    'screenSize': (1024, 768),  # Get Screen Resolution to match Full Screen
-    'soundOn': configDialogBank[10],
-    'beeps': False,
-    'skipInstructions': configDialogBank[11],
-    'language': configDialogBank[12],
-    'fullScreen': configDialogBank[13] if debug else True,
-    'saveDataAtQuit': configDialogBank[14] if debug else True,
+    'practiceTrials': 1,                        # Number if Practice Trials, taken from Config Dialog
+    'numOfDoors': configDialogBank[2],          # Number of Screens in every task, either 49 (7*7) or 36 (6*6)
+    'numOfSimulationDoors': 5,                  # Amount of doors to be presented in the simulation part during the instructions
+    'numOfTasks': configDialogBank[3],          # Number of Sessions (each consisting of 36-49 doors)
+    'startingDistance': configDialogBank[4],    # Decide whether the starting distance is random, or fixed on 50
+    'recordPhysio': configDialogBank[5],
+    'sensitivity': configDialogBank[6],         # Size of each step getting closer/further from the door
+    'doorLayout': configDialogBank[7],          # Decides whether the punishment is on the left or on the right
+    'ITIDurationMin': 1,                        # Two parameters to set the duration of the in-between-doors video
+    'ITIDurationMax': 2.5,
+    'keyboardMode': configDialogBank[8],
+    'screenSize': (1024, 768),                  # Get Screen Resolution to match Full Screen
+    'soundOn': configDialogBank[9],
+    'beeps': False,                             # An option to sound beeps before the door outcome is presented
+    'outcomeString': True,   # True if we want to print the outcome amount, otherwise it will just show a monster / a fairy
+    'skipInstructions': configDialogBank[10],
+    'language': configDialogBank[11],
+    'reducedEvents': True,                      # Send only one event for each doors (door presented), instead of three - door presented, locked and outcome
+    'fullScreen': configDialogBank[12] if debug else True,
+    'saveDataAtQuit': configDialogBank[13] if debug else True,
     'startTime': time.time(),
-    'saveAsDefault': configDialogBank[15] if debug else True,
+    'saveAsDefault': configDialogBank[14] if debug else True,
     'doorImagePathPrefix': './img/doors1/' if configDialogBank[8] == "P - R" else './img/doors2/',
-    'outcomeImagePredix': './img/outcomes/',
+    'doorOutcomePath': './img/outcomes/',
     'imageSuffix': '.jpg',
     'port': 'COM4',
 }
 
+# Save parameters backup to be used as default settings in the next run
 if params['saveAsDefault']:
     if not os.path.exists("./data"):
         os.mkdir("data")
     with open("./data/doorsConfig.json", 'w') as file:
         json.dump(params, file, indent=3)
 
-# Initialize serial port
+# Initialize serial port for BioPac Communication
 ser = serial.Serial(params['port'], 115200, bytesize=serial.EIGHTBITS, timeout=1) if params['recordPhysio'] else None
 if params['recordPhysio']:
     serialHandler.report_event(ser, 255)
 
 # Initialize DataFrame
-params, Df, mini_df, summary_df = dataHandler.setup_data_frame(params)
+params, mini_df, summary_df = dataHandler.setup_data_frame(params)
 
 # Initialize Screen
 window = visual.Window(params['screenSize'], monitor="testMonitor", color="black", winType='pyglet',
@@ -74,34 +81,31 @@ else:
     helpers.wait_for_joystick_no_df(window)
 
 # Run VAS
-Df, mini_df, summary_df = VAS.beginning_vas(window, params, Df, mini_df, summary_df, io)
+mini_df, summary_df = VAS.beginning_vas(window, params, mini_df, summary_df, io)
 
 if not params['skipInstructions']:
 
-    # Show Instructions
-    Df, mini_df = show_instructions(window, params, image, Df, mini_df, io)
-
-    # Practice run
-    Df, mini_df, summary_df = DoorPlay.practice_run(window, params, Df, mini_df, summary_df, io, ser)
+    # Show Instructions, practice trial and the simulation
+    mini_df, summary_df = show_instructions(window, params, mini_df, summary_df, io, ser)
 
 # Task 1
-Df, mini_df, summary_df, totalCoins = DoorPlay.run_task(window, params, 1, 0, Df, mini_df, summary_df, io, ser)
+mini_df, summary_df, totalCoins = DoorPlay.run_task(window, params, 1, 0, mini_df, summary_df, io, ser)
 
 roundNum = 2
 while roundNum <= params['numOfTasks']:
     # Mid-VAS
-    Df, mini_df, summary_df = VAS.middle_vas(window, params, Df, mini_df, summary_df, roundNum, io)
+    mini_df, summary_df = VAS.middle_vas(window, params, mini_df, summary_df, roundNum, io)
 
     # Task 2
-    Df, mini_df, summary_df, totalCoins = DoorPlay.run_task(window, params, roundNum, totalCoins, Df, mini_df, summary_df, io, ser)
+    mini_df, summary_df, totalCoins = DoorPlay.run_task(window, params, roundNum, totalCoins, mini_df, summary_df, io, ser)
 
     roundNum += 1
 
-Df, mini_df, summary_df = VAS.middle_vas(window, params, Df, mini_df, summary_df, roundNum, io)
+mini_df, summary_df = VAS.middle_vas(window, params, mini_df, summary_df, roundNum, io)
 
-Df, mini_df, summary_df = VAS.final_vas(window, params, Df, mini_df, summary_df, io)
-DoorPlayInfra.show_screen_post_match(window, params, io, totalCoins, Df, mini_df)
-helpers.graceful_quitting(window, params, Df, mini_df, summary_df)
+mini_df, summary_df = VAS.final_vas(window, params, mini_df, summary_df, io)
+DoorPlayInfra.show_screen_post_match(window, params, io, totalCoins, mini_df)
+helpers.graceful_quitting(window, params, mini_df, summary_df)
 
 # Recap
 window.mouseVisible = True
