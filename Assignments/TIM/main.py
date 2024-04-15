@@ -5,6 +5,7 @@ from psychopy.iohub import launchHubServer
 from psychopy import visual, core, event, monitors
 import configDialog
 import squareRun
+import instructions
 
 io = launchHubServer()
 
@@ -47,5 +48,10 @@ window = visual.Window(monitor="testMonitor", fullscr=True, color=(217, 217, 217
 window.flip()
 
 core.wait(0.5)
+
+#TODO: Add mood VAS
+
+if not params['skipInstructions']:
+    instructions.instructions(window, params, io)
 
 squareRun.square_run(window, params, io)
