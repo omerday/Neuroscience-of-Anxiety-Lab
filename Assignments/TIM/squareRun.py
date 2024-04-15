@@ -3,6 +3,7 @@ import heatHandler
 from psychopy import visual, core
 from psychopy.iohub.client.keyboard import Keyboard
 import random
+import VAS
 
 
 def square_run(window: visual.Window, params: dict, io):
@@ -36,8 +37,8 @@ def square_run(window: visual.Window, params: dict, io):
                 waite_for_time(window, start_time, display_time, keyboard)
 
         heatHandler.deliver_pain(window, temperature)
-        # TODO: Add Pain Rating
         # TODO: Add Post ITI
+        VAS.run_vas(window, io, params, "PainRating", params['painRateDuration'])
 
 
 def waite_for_time(window:visual.Window, start_time, display_time, keyboard):
