@@ -4,6 +4,7 @@ import pandas as pd
 from psychopy.iohub import launchHubServer
 from psychopy import visual, core, event, monitors
 import configDialog
+import squareRun
 
 io = launchHubServer()
 
@@ -16,9 +17,10 @@ params = {
     "gender": configDialogBank[2],
     "language": configDialogBank[3],
     "fmriVersion": configDialogBank[4],
-    "T2": configDialogBank[5],
-    "T4": configDialogBank[6],
-    "T6": configDialogBank[7],
+    'temps': [configDialogBank[5], configDialogBank[6], configDialogBank[7]],
+    # "T2": configDialogBank[5],
+    # "T4": configDialogBank[6],
+    # "T6": configDialogBank[7],
     # "T8": configDialogBank[8],
     "painSupport": configDialogBank[9],
     "recordPhysio": configDialogBank[10],
@@ -34,7 +36,16 @@ params = {
     'nBlocks': 6,  # number of blocks (aka runs) - need time to move electrode in between
     'painDur': 4,  # time of heat sensation (in seconds)
     'painRateDuration': 7.0,
-    'squareDurationMin': 3,  # minimum duration for each square
-    'squareDurationMax': 6,  # maximum duration for each square
+    'squareDurationMin': 4,  # minimum duration for each square
+    'squareDurationMax': 7,  # maximum duration for each square
     'colors': ['Green', 'Yellow', 'Red'],
 }
+
+io = launchHubServer()
+
+window = visual.Window(monitor="testMonitor", fullscr=True, color=(217, 217, 217))
+window.flip()
+
+core.wait(0.5)
+
+squareRun.square_run(window, params, io)
