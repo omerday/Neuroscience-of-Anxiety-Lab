@@ -31,6 +31,7 @@ params = {
     "skipStartle": configDialogBank[7],
     "recordPhysio": configDialogBank[8],
     "skipInstructions": configDialogBank[9],
+    "calibrationTime": 60,
     "skipCalibration": configDialogBank[10],
     'showVideos': configDialogBank[11],
     "fullScreen": configDialogBank[12] if debug is True else True,
