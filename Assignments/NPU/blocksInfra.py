@@ -9,7 +9,7 @@ import dataHandler
 import serialHandler
 
 PATH = "./img/blocks/"
-SUFFIX = ".jpg"
+SUFFIX = ".jpeg"
 
 BLOCK_LENGTH = 120
 CUE_LENGTH = 12
