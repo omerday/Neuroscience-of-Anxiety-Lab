@@ -50,8 +50,8 @@ def run_vas(window: visual.Window, io, params: dict, type:str, duration=float('i
         question_label = visual.TextStim(window, text=questions[i][::-1] if params['language'] == 'Hebrew' else questions[i], height=.12, units='norm', pos=[0, 0.3], wrapWidth=2,
                                    font="Open Sans", color="Black")
 
-        core.wait(0.05)
         keyboard.getKeys()
+        core.wait(0.05)
 
         end_time = time.time() + duration
         while (duration != float("inf") and time.time() < end_time) or (duration == float("inf") and scale.noResponse):
@@ -60,8 +60,8 @@ def run_vas(window: visual.Window, io, params: dict, type:str, duration=float('i
             window.flip()
             window.mouseVisible = False
 
-            for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
-                if event.key == "escape":
+            for ev in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
+                if ev.key == "escape":
                     window.close()
                     core.quit()
                 core.wait(0.05)

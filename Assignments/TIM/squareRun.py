@@ -27,21 +27,22 @@ def square_run(window: visual.Window, params: dict, io):
             window.flip()
             start_time = time.time()
             if params['continuousShape'] or i == 5:
-                waite_for_time(window, start_time, display_time, keyboard)
+                wait_for_time(window, start_time, display_time, keyboard)
             else:
+                # TODO: Add randomization period to the params
                 present_time = random.uniform(2,2.5)
-                waite_for_time(window, start_time, present_time, keyboard)
+                wait_for_time(window, start_time, present_time, keyboard)
                 square.image = "./img/squares/blank.jpg"
                 square.draw()
                 window.flip()
-                waite_for_time(window, start_time, display_time, keyboard)
+                wait_for_time(window, start_time, display_time, keyboard)
 
         heatHandler.deliver_pain(window, temperature)
         # TODO: Add Post ITI
         VAS.run_vas(window, io, params, "PainRating", params['painRateDuration'])
 
 
-def waite_for_time(window:visual.Window, start_time, display_time, keyboard):
+def wait_for_time(window:visual.Window, start_time, display_time, keyboard):
     while time.time() < start_time + display_time:
         for event in keyboard.getKeys():
             if event.key == "escape":

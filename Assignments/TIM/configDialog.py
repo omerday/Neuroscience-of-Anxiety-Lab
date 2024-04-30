@@ -41,14 +41,10 @@ def get_user_input(debug=False):
     userInput.addField("T2", 0 if not config_exists else TEMPS.index(loaded_data["T2"]), choices=TEMPS)
     userInput.addField("T4", 0 if not config_exists else TEMPS.index(loaded_data["T4"]), choices=TEMPS)
     userInput.addField("T6", 0 if not config_exists else TEMPS.index(loaded_data["T6"]), choices=TEMPS)
-    userInput.addField("T8", 0 if not config_exists else TEMPS.index(loaded_data["T8"]), choices=TEMPS)
+    # userInput.addField("T8", 0 if not config_exists else TEMPS.index(loaded_data["T8"]), choices=TEMPS)
 
     userInput.addField("Pain Support", False if not config_exists else loaded_data["painSupport"])
     userInput.addField('Record Physiology', False if not config_exists else loaded_data['recordPhysio'])
     userInput.addField('Skip Instructions', False if not config_exists else loaded_data['skipInstructions'])
     userInput.addField('Continuous Shape', False if not config_exists else loaded_data['continuousShape'])
-    if debug:
-        userInput.addField('Full Screen', True if not config_exists else loaded_data['fullScreen'])
-        userInput.addField('Save Data at Unexpected Quit', False if not config_exists else loaded_data['saveDataAtQuit'])
-        userInput.addField('Save Config as Default', False if not config_exists else loaded_data['saveConfig'])
     return userInput.show()
