@@ -1,12 +1,11 @@
 import time
-import heatHandler
 from psychopy import visual, core
 from psychopy.iohub.client.keyboard import Keyboard
 import random
 import VAS
 
 
-def square_run(window: visual.Window, params: dict, io):
+def square_run(window: visual.Window, params: dict, device, io):
     keyboard = io.devices.keyboard
     # TODO: Add pre-ITI
     repeats = params['nTrials'] // len(params['colors'])
@@ -37,7 +36,9 @@ def square_run(window: visual.Window, params: dict, io):
                 window.flip()
                 wait_for_time(window, start_time, display_time, keyboard)
 
-        heatHandler.deliver_pain(window, temperature)
+        if params['painSupport']:
+            import heatHandler
+            heatHandler.deliver_pain(window, temperature, device)
         # TODO: Add Post ITI
         VAS.run_vas(window, io, params, "PainRating", params['painRateDuration'])
 

@@ -46,6 +46,11 @@ if not os.path.exists("./data"):
 with open("./data/TIMconfig.json", 'w') as file:
     json.dump(params, file, indent=3)
 
+device = None
+if params['painSupport']:
+    import heatHandler
+    device = heatHandler.initiate_medoc_device()
+
 io = launchHubServer()
 
 window = visual.Window(monitor="testMonitor", fullscr=True, color=(217, 217, 217))
@@ -58,4 +63,4 @@ core.wait(0.5)
 if not params['skipInstructions']:
     instructions.instructions(window, params, io)
 
-squareRun.square_run(window, params, io)
+squareRun.square_run(window, params, device, io)

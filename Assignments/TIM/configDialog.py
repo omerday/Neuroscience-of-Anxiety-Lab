@@ -38,9 +38,9 @@ def get_user_input(debug=False):
     userInput.addField("Preferred Language", "Hebrew" if not config_exists else loaded_data["language"],
                        choices=["Hebrew", "English"])
     userInput.addField("fMRI Version", False if not config_exists else loaded_data["fmriVersion"])
-    userInput.addField("T2", 0 if not config_exists else TEMPS.index(loaded_data["T2"]), choices=TEMPS)
-    userInput.addField("T4", 0 if not config_exists else TEMPS.index(loaded_data["T4"]), choices=TEMPS)
-    userInput.addField("T6", 0 if not config_exists else TEMPS.index(loaded_data["T6"]), choices=TEMPS)
+    userInput.addField("T2", 0 if not config_exists else TEMPS.index(loaded_data['temps'][0]), choices=TEMPS)
+    userInput.addField("T4", 0 if not config_exists else TEMPS.index(loaded_data['temps'][1]), choices=TEMPS)
+    userInput.addField("T6", 0 if not config_exists else TEMPS.index(loaded_data['temps'][2]), choices=TEMPS)
     # userInput.addField("T8", 0 if not config_exists else TEMPS.index(loaded_data["T8"]), choices=TEMPS)
 
     userInput.addField("Pain Support", False if not config_exists else loaded_data["painSupport"])

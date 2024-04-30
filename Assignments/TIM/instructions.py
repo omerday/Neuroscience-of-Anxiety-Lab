@@ -1,5 +1,4 @@
 import time
-import heatHandler
 from psychopy import visual, core
 from psychopy.iohub.client.keyboard import Keyboard
 import random
