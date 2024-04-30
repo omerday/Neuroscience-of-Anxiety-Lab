@@ -1,16 +1,18 @@
 from medoc_api import tsa_device
 from medoc_api import enums
-import tkinter as tk
-import tkinter.messagebox as tkmb
+# import tkinter as tk
+# import tkinter.messagebox as tkmb
 import time
-from psychopy import core, visual, event
+from psychopy import core, visual, event, gui
 
 
 def initiate_medoc_device():
     #TODO: Raise Alert
-    root = tk.Tk()
-    tkmb.showwarning("Init Warning", "Thermode is about to initialize, Please keep the patient away")
-    root.mainloop()
+    messagebox = gui.Dlg(title="Initialization Warning")
+    messagebox.addText("Medoc device is initializing, please make sure the patient isn't connected to the thermode and press OK")
+    messagebox.show()
+    if not messagebox.OK:
+        core.quit()
 
     device = tsa_device.TsaDevice(auto_connect_port=True)
     print("Connecting")

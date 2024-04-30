@@ -38,7 +38,7 @@ def square_run(window: visual.Window, params: dict, device, io):
 
         if params['painSupport']:
             import heatHandler
-            heatHandler.deliver_pain(window, temperature, device)
+            heatHandler.deliver_pain(window, float(temperature), device)
         # TODO: Add Post ITI
         VAS.run_vas(window, io, params, "PainRating", params['painRateDuration'])
 
