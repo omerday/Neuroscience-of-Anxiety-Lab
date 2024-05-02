@@ -7,6 +7,8 @@ The method sends a signal according to the scenario given, to the serial port, t
 List of scenarios:
     
     255 - Initialization
+    80 - Startle Habituation
+    99 - Calibration (Staring at the + for a minute)
 
     Scenarios List indexing method:
     First digit (left):
@@ -18,7 +20,7 @@ List of scenarios:
         2 - Cue Start
         3 - No-Cue Start
     Third digit:
-        0 - No event
+        0 - Onset
         1 - Startle
         2 - Shock
 """
