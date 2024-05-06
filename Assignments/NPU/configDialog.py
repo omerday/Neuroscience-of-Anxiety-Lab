@@ -40,7 +40,7 @@ def get_user_input(debug=False):
     userInput.addField('Record Physiology', True if not configExists else loadedData['recordPhysio'])
     userInput.addField('Skip Instructions', False if not configExists else loadedData['skipInstructions'])
     userInput.addField('Skip Calibration', False if not configExists else loadedData['skipCalibration'])
-    userInput.addField('Videos Timing', 0 if not configExists else loadedData['showVideos'], choices=["No Videos", "Before", "After"])
+    userInput.addField('Videos Timing', 0 if not configExists else loadedData['videosTiming'], choices=["No Videos", "Before", "After"])
     if debug:
         userInput.addField('Full Screen', True if not configExists else loadedData['fullScreen'])
         userInput.addField('Save Data at Unexpected Quit', False if not configExists else loadedData['saveDataAtQuit'])

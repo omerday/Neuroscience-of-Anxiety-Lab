@@ -50,9 +50,7 @@ def run_videos(win: visual.Window, params: dict, io, ser=None):
     while time.time() < rest_end_time:
         for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
             if event.key == 'escape':
-                print("escape key pressed, quitting")
-                win.close()
-                core.quit()
+                quit_gracefully(win, params, df)
         core.wait(0.05)
 
     del img
@@ -100,8 +98,7 @@ def run_videos(win: visual.Window, params: dict, io, ser=None):
                 movie_stim.stop()
                 stop = True
             elif event.key == 'escape':
-                win.close()
-                core.quit()
+                quit_gracefully(win, params, df)
         movie_stim.draw()
         win.flip()
 
@@ -128,8 +125,7 @@ def run_videos(win: visual.Window, params: dict, io, ser=None):
     while time.time() < rest_end_time:
         for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
             if event.key == 'escape':
-                win.close()
-                core.quit()
+                quit_gracefully(win, params, df)
         core.wait(0.05)
 
     del img
@@ -164,8 +160,7 @@ def run_videos(win: visual.Window, params: dict, io, ser=None):
                 movie_stim2.stop()
                 stop = True
             elif event.key == 'escape':
-                win.close()
-                core.quit()
+                quit_gracefully(win, params, df)
         movie_stim2.draw()
         win.flip()
 
@@ -195,9 +190,7 @@ def run_videos(win: visual.Window, params: dict, io, ser=None):
                 movie_stim2.stop()
                 stop = True
             if event.key == 'escape':
-                print("escape key pressed, quitting")
-                win.close()
-                core.quit()
+                quit_gracefully(win, params, df)
         core.wait(0.05)
 
     del img
@@ -284,6 +277,12 @@ def wait_for_space(window: visual.Window, keyboard):
                 window.close()
                 core.quit()
         core.wait(0.05)
+
+
+def quit_gracefully(window, params, df:pd.DataFrame):
+    dataHandler.export_data(params, VideosData=df)
+    window.close()
+    core.quit()
 
 
 # Main Code
