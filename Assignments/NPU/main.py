@@ -33,7 +33,7 @@ params = {
     "skipInstructions": configDialogBank[9],
     "calibrationTime": 60,
     "skipCalibration": configDialogBank[10],
-    'showVideos': configDialogBank[11],
+    'videosTiming': configDialogBank[11],
     "fullScreen": configDialogBank[12] if debug is True else True,
     "saveDataAtQuit": configDialogBank[13] if debug is True else True,
     "saveConfig": configDialogBank[14] if debug is True else True,
@@ -65,9 +65,8 @@ window.mouseVisible = False
 helpers.wait_for_space_no_df(window, io)
 
 
-params['videos_timing'] = random.choice(['Start', 'End'])
-if params['showVideos'] and params['videos_timing'] == 'Start':
-    pretestVideos.run_post_videos(window, params, io, ser)
+if params['videosTiming'] == 'Before':
+    pretestVideos.run_videos(window, params, io, ser)
 
 # Setup DFs
 params, df, mini_df = dataHandler.setup_data_frame(params)
@@ -118,8 +117,8 @@ if params['blocks'] == 2:
 df, mini_df = VAS.vas(window, params, df, mini_df, io, 3)
 
 # Show Post-Task Videos
-if params['showVideos'] and params['videos_timing'] == 'End':
-    pretestVideos.run_post_videos(window, params, io, ser)
+if params['videosTiming'] == 'After':
+    pretestVideos.run_videos(window, params, io, ser)
 
 # End of task Finalization
 df, mini_df = instructionsScreen.finalization(params, window, image, io, df, mini_df)

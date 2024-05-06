@@ -37,13 +37,22 @@ def get_user_input(debug=False):
                        choices=[1, 2])
     userInput.addField("Shock Type", "Sound" if not configExists else loadedData["shockType"], choices=["Shock", "Sound"])
     userInput.addField("Skip Startles", False if not configExists else loadedData["skipStartle"])
-    userInput.addField('Record Physiology', False if not configExists else loadedData['recordPhysio'])
+    userInput.addField('Record Physiology', True if not configExists else loadedData['recordPhysio'])
     userInput.addField('Skip Instructions', False if not configExists else loadedData['skipInstructions'])
     userInput.addField('Skip Calibration', False if not configExists else loadedData['skipCalibration'])
-    userInput.addField('Show Videos After Task', False if not configExists else loadedData['showVideos'])
+    userInput.addField('Videos Timing', 0 if not configExists else loadedData['videosTiming'], choices=["No Videos", "Before", "After"])
     if debug:
         userInput.addField('Full Screen', True if not configExists else loadedData['fullScreen'])
         userInput.addField('Save Data at Unexpected Quit', False if not configExists else loadedData['saveDataAtQuit'])
         userInput.addField('Save Config as Default', False if not configExists else loadedData['saveConfig'])
     # userInput.addField('Sound Mode:',choices=['PTB','Others'])
+    return userInput.show()
+
+
+def get_user_input_videos():
+    userInput = gui.Dlg(title="NPU Task Configuration")
+    userInput.addField('Subject Number:', )
+    userInput.addField('VideosOrdder', 0, choices=["Random", "E-B", "B-E"])
+    userInput.addField('Record Physiology', True)
+    userInput.addField("Full Screen", True)
     return userInput.show()

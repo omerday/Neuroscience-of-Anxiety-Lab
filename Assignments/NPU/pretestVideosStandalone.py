@@ -9,6 +9,8 @@ import serial
 import VideosVAS
 import dataHandler
 import psychtoolbox as ptb
+import configDialog
+import helpers
 
 VAS_STRING_HEB = "כעת תתבקשו לענות על מספר שאלות"
 VAS_STRING_ENG = "We will now ask you a few questions"
@@ -60,8 +62,12 @@ def run_videos(win: visual.Window, params: dict, io, ser=None):
               r"C:/Users/User/Videos/boringmovie.wav"]
     movie_category = ["Exciting", "Boring"]
 
-    random.seed()
-    index = 1 if random.uniform(0, 1) > 0.5 else 0
+    if params['videosOrder'] == 'E-B':
+        index = 0
+    elif params['videosOrder'] == 'B-E':
+        index = 1
+    else:
+        index = random.randint(0, 1)
 
     # Specify the paths to the video and audio files
     video_path = videos[index]
@@ -190,7 +196,7 @@ def run_videos(win: visual.Window, params: dict, io, ser=None):
     del img
     win.flip()
 
-    if params['videosTiming'] == 'Before':
+    if params['videos_timing'] == 'Start':
         next_task = visual.ImageStim(win,
                                      f"./img/instructions/videosInstructions/nextTask{params['gender'][0]}{params['language'][0]}.jpeg",
                                      units="norm", pos=(0, 0), size=(2,2))
@@ -212,7 +218,7 @@ def report_event_and_add_to_df(params: dict, df: pd.DataFrame, dict_for_df: dict
 
 
 def instructions(win: visual.Window, params: dict, keyboard):
-    if params['videosTiming'] == 'Before':
+    if params['videos_timing'] == 'Start':
         curr_instruction = visual.ImageStim(win,
                                             f"./img/instructions/1{params['gender'][0]}{params['language'][0]}.jpeg",
                                             units="norm", pos=(0, 0), size=(2,2))
@@ -277,3 +283,31 @@ def quit_gracefully(window, params, df:pd.DataFrame):
     dataHandler.export_data(params, VideosData=df)
     window.close()
     core.quit()
+
+
+# Main Code
+io = launchHubServer()
+
+configDialogBank = configDialog.get_user_input_videos()
+params = {"Subject": configDialogBank[0],
+          "session": 1,
+          "videosOrder": configDialogBank[1],
+          "recordPhysio": configDialogBank[2],
+          "fullScreen": configDialogBank[3]
+          }
+
+ser = serial.Serial(params['port'], 115200, bytesize=serial.EIGHTBITS, timeout=1) if params['recordPhysio'] else None
+window = visual.Window(size=params['screenSize'], monitor="testMonitor", color=(0.6, 0.6, 0.6), winType='pyglet',
+                       fullscr=True if params['fullScreen'] else False, units="pix")
+window = visual.Window(size=params['screenSize'], monitor="testMonitor", color=(0.6, 0.6, 0.6), winType='pyglet',
+                       fullscr=True if params['fullScreen'] else False, units="pix")
+
+image = visual.ImageStim(win=window, image=f"./img/instructions/Welcome_{params['gender'][0]}{params['language'][0]}.jpeg",
+                         units="norm", opacity=1,
+                         size=(2, 2))
+image.draw()
+window.update()
+window.mouseVisible = False
+helpers.wait_for_space_no_df(window, io)
+
+run_videos(window, params, io, ser)
