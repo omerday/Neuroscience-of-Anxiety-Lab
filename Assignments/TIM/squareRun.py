@@ -34,9 +34,6 @@ def square_run(window: visual.Window, params: dict, device, io):
             square.flip()
             start_time = time.time()
             wait_for_time(window, start_time, display_time, keyboard)
-            if params['painSupport']:
-                import heatHandler
-                heatHandler.deliver_pain(window, float(temperature), device)
 
         if params['firstParadigm']:
             for i in range(1, 6):
@@ -56,11 +53,11 @@ def square_run(window: visual.Window, params: dict, device, io):
                     window.flip()
                     wait_for_time(window, start_time, display_time, keyboard)
 
-                if params['painSupport']:
-                    import heatHandler
-                    heatHandler.deliver_pain(window, float(temperature), device)
+        if params['painSupport']:
+            import heatHandler
+            heatHandler.deliver_pain(window, float(temperature), device)
 
-            VAS.run_vas(window, io, params, "PainRating", params['painRateDuration'])
+        VAS.run_vas(window, io, params, "PainRating", params['painRateDuration'])
 
         post_ITI(window, params, keyboard)
 
