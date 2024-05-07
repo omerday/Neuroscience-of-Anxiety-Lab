@@ -299,12 +299,11 @@ params = {"Subject": configDialogBank[0],
 ser = serial.Serial(params['port'], 115200, bytesize=serial.EIGHTBITS, timeout=1) if params['recordPhysio'] else None
 window = visual.Window(size=params['screenSize'], monitor="testMonitor", color=(0.6, 0.6, 0.6), winType='pyglet',
                        fullscr=True if params['fullScreen'] else False, units="pix")
-window = visual.Window(size=params['screenSize'], monitor="testMonitor", color=(0.6, 0.6, 0.6), winType='pyglet',
-                       fullscr=True if params['fullScreen'] else False, units="pix")
 
 image = visual.ImageStim(win=window, image=f"./img/instructions/Welcome_{params['gender'][0]}{params['language'][0]}.jpeg",
                          units="norm", opacity=1,
                          size=(2, 2))
+
 image.draw()
 window.update()
 window.mouseVisible = False
