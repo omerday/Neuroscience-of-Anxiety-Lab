@@ -3,7 +3,7 @@ from psychopy import visual, core
 from psychopy.iohub.client.keyboard import Keyboard
 import random
 import VAS
-from helpers import pre_ITI, post_ITI, wait_for_time
+import helpers
 
 
 def square_run(window: visual.Window, params: dict, device, io):
@@ -14,7 +14,7 @@ def square_run(window: visual.Window, params: dict, device, io):
         for i in range(repeats):
             colors_order.append(color)
     while colors_order:
-        pre_ITI(window, params, keyboard)
+        helpers.iti(window, params, 'pre', keyboard)
         curr_color = random.choice(colors_order)
         colors_order.remove(curr_color)
         color_index = params['colors'].index(curr_color)
@@ -27,15 +27,7 @@ def square_run(window: visual.Window, params: dict, device, io):
         and modify this section accordingly with an "if" statement.
         (Maybe dividing to two functions would be prettier?)
         """
-        if params['secondParadigm']:
-            display_time = random.uniform(params['secondParadigmMin'], params['secondParadigmMax'])
-            square = visual.ImageStim(window, image=f"./img/squares/{curr_color}_{3}.jpeg", units="norm", size=(2,2))
-            square.draw()
-            square.flip()
-            start_time = time.time()
-            wait_for_time(window, start_time, display_time, keyboard)
-
-        if params['firstParadigm']:
+        if params['paradigm'] == 1:
             for i in range(1, 6):
                 display_time = random.uniform(params['squareDurationMin'], params['squareDurationMax'])
                 square = visual.ImageStim(window, image=f"./img/squares/{curr_color}_{i}.jpeg", units="norm", size=(2,2))
@@ -43,15 +35,23 @@ def square_run(window: visual.Window, params: dict, device, io):
                 window.flip()
                 start_time = time.time()
                 if params['continuousShape'] or i == 5:
-                    wait_for_time(window, start_time, display_time, keyboard)
+                    helpers.wait_for_time(window, start_time, display_time, keyboard)
                 else:
                     # TODO: Add randomization period to the params
                     present_time = random.uniform(2,2.5)
-                    wait_for_time(window, start_time, present_time, keyboard)
+                    helpers.wait_for_time(window, start_time, present_time, keyboard)
                     square.image = "./img/squares/blank.jpg"
                     square.draw()
                     window.flip()
-                    wait_for_time(window, start_time, display_time, keyboard)
+                    helpers.wait_for_time(window, start_time, display_time, keyboard)
+
+        else:
+            display_time = random.uniform(params['secondParadigmMin'], params['secondParadigmMax'])
+            square = visual.ImageStim(window, image=f"./img/squares/{curr_color}_{3}.jpeg", units="norm", size=(2,2))
+            square.draw()
+            window.flip()
+            start_time = time.time()
+            helpers.wait_for_time(window, start_time, display_time, keyboard)
 
         if params['painSupport']:
             import heatHandler
@@ -59,7 +59,7 @@ def square_run(window: visual.Window, params: dict, device, io):
 
         VAS.run_vas(window, io, params, "PainRating", params['painRateDuration'])
 
-        post_ITI(window, params, keyboard)
+        helpers.iti(window, params, 'post', keyboard)
 
 
 
