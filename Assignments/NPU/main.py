@@ -116,6 +116,8 @@ if params['blocks'] == 2:
 
 df, mini_df = VAS.vas(window, params, df, mini_df, io, 3)
 
+dataHandler.export_data(params=params, fullDF=df, miniDF=mini_df)
+
 # Show Post-Task Videos
 if params['videosTiming'] == 'After':
     pretestVideos.run_videos(window, params, io, ser)
