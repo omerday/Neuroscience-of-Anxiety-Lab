@@ -218,7 +218,7 @@ def instructions(win: visual.Window, params: dict, keyboard):
                                             units="norm", pos=(0, 0), size=(2,2))
     else:
         curr_instruction = visual.ImageStim(win,
-                                            f"./img/instructions/nextTask{params['gender'][0]}{params['language'][0]}.jpeg",
+                                            f"./img/instructions/videosInstructions/nextTask{params['gender'][0]}{params['language'][0]}.jpeg",
                                             units="norm", pos=(0, 0), size=(2,2))
     curr_instruction.draw()
     win.flip()

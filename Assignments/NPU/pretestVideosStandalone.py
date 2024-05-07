@@ -218,17 +218,12 @@ def report_event_and_add_to_df(params: dict, df: pd.DataFrame, dict_for_df: dict
 
 
 def instructions(win: visual.Window, params: dict, keyboard):
-    if params['videos_timing'] == 'Start':
-        curr_instruction = visual.ImageStim(win,
-                                            f"./img/instructions/1{params['gender'][0]}{params['language'][0]}.jpeg",
-                                            units="norm", pos=(0, 0), size=(2,2))
-    else:
-        curr_instruction = visual.ImageStim(win,
-                                            f"./img/instructions/nextTask{params['gender'][0]}{params['language'][0]}.jpeg",
-                                            units="norm", pos=(0, 0), size=(2,2))
-    curr_instruction.draw()
-    win.flip()
-    wait_for_space(win, keyboard)
+    # curr_instruction = visual.ImageStim(win,
+    #                                     f"./img/instructions/videosInstructions/nextTask{params['gender'][0]}{params['language'][0]}.jpeg",
+    #                                     units="norm", pos=(0, 0), size=(2,2))
+    # curr_instruction.draw()
+    # win.flip()
+    # wait_for_space(win, keyboard)
 
     curr_instruction = visual.ImageStim(win,
                                         f"./img/instructions/videosInstructions/instruction{params['gender'][0]}{params['language'][0]}.jpeg",
@@ -290,10 +285,15 @@ io = launchHubServer()
 
 configDialogBank = configDialog.get_user_input_videos()
 params = {"Subject": configDialogBank[0],
+          "gender": configDialogBank[1],
+          "language": configDialogBank[2],
           "session": 1,
-          "videosOrder": configDialogBank[1],
-          "recordPhysio": configDialogBank[2],
-          "fullScreen": configDialogBank[3]
+          "videosOrder": configDialogBank[3],
+          "recordPhysio": configDialogBank[4],
+          "fullScreen": configDialogBank[5],
+          "screenSize": (1024, 768),
+          "startTime": time.time(),
+          'videoRestTime': 60,
           }
 
 ser = serial.Serial(params['port'], 115200, bytesize=serial.EIGHTBITS, timeout=1) if params['recordPhysio'] else None

@@ -52,7 +52,9 @@ def get_user_input(debug=False):
 def get_user_input_videos():
     userInput = gui.Dlg(title="NPU Task Configuration")
     userInput.addField('Subject Number:', )
-    userInput.addField('VideosOrdder', 0, choices=["Random", "E-B", "B-E"])
+    userInput.addField('Gender', 0, choices=["Male", "Female"])
+    userInput.addField("Preferred Language", 0, choices=["Hebrew", "English"])
+    userInput.addField('VideosOrder', 0, choices=["Random", "E-B", "B-E"])
     userInput.addField('Record Physiology', True)
     userInput.addField("Full Screen", True)
     return userInput.show()
