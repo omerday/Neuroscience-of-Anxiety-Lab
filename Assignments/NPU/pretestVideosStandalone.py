@@ -109,7 +109,7 @@ def run_videos(win: visual.Window, params: dict, io, ser=None):
 
     # Show pre-vas message and initiate vas
     vas_message(win, params, keyboard)
-    df = VideosVAS.run_vas(win, df, dict_for_df, category, params['language'])
+    df = VideosVAS.run_vas(win, df, dict_for_df, category, params)
 
     # Show Fixation message and initiate fixation
     fixation_message(win, params, keyboard, 2)
@@ -170,7 +170,7 @@ def run_videos(win: visual.Window, params: dict, io, ser=None):
     df = report_event_and_add_to_df(params, df, dict_for_df, 75, ser)
 
     vas_message(win, params, keyboard)
-    df = VideosVAS.run_vas(win, df, dict_for_df, category, params['language'])
+    df = VideosVAS.run_vas(win, df, dict_for_df, category, params)
 
     fixation_message(win, params, keyboard, 2)
 
@@ -196,13 +196,13 @@ def run_videos(win: visual.Window, params: dict, io, ser=None):
     del img
     win.flip()
 
-    if params['videos_timing'] == 'Start':
-        next_task = visual.ImageStim(win,
-                                     f"./img/instructions/videosInstructions/nextTask{params['gender'][0]}{params['language'][0]}.jpeg",
-                                     units="norm", pos=(0, 0), size=(2,2))
-        next_task.draw()
-        win.flip()
-        wait_for_space(win, keyboard)
+    # if params['videos_timing'] == 'Start':
+    #     next_task = visual.ImageStim(win,
+    #                                  f"./img/instructions/videosInstructions/nextTask{params['gender'][0]}{params['language'][0]}.jpeg",
+    #                                  units="norm", pos=(0, 0), size=(2,2))
+    #     next_task.draw()
+    #     win.flip()
+    #     wait_for_space(win, keyboard)
 
     dataHandler.export_data(params, VideosData=df)
 
@@ -296,7 +296,7 @@ params = {"Subject": configDialogBank[0],
           'videoRestTime': 60,
           }
 
-ser = serial.Serial(params['port'], 115200, bytesize=serial.EIGHTBITS, timeout=1) if params['recordPhysio'] else None
+ser = serial.Serial('COM4', 115200, bytesize=serial.EIGHTBITS, timeout=1) if params['recordPhysio'] else None
 window = visual.Window(size=params['screenSize'], monitor="testMonitor", color=(0.6, 0.6, 0.6), winType='pyglet',
                        fullscr=True if params['fullScreen'] else False, units="pix")
 
