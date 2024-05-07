@@ -28,6 +28,8 @@ params = {
     "recordPhysio": configDialogBank[9],
     "skipInstructions": configDialogBank[10],
     "continuousShape": configDialogBank[11],
+    "firstParadigm": configDialogBank[12],
+    "secondParadigm": configDialogBank[13],
     "fullScreen": True,
     "screenSize": (1024, 768),
     "startTime": time.time(),
@@ -39,6 +41,13 @@ params = {
     'squareDurationMin': 4,  # minimum duration for each square
     'squareDurationMax': 7,  # maximum duration for each square
     'colors': ['Green', 'Yellow', 'Red'],
+    'preITIMin': 4,
+    'preITIMax': 6,
+    'postITIMin': 7,
+    'postITIMax': 9,
+    'secondParadigmMin': 10,
+    'secondParadigmMax': 14,
+
 }
 
 if not os.path.exists("./data"):
