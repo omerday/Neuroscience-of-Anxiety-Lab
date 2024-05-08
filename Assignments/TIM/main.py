@@ -54,6 +54,9 @@ if not os.path.exists("./data"):
 with open("./data/TIMconfig.json", 'w') as file:
     json.dump(params, file, indent=3)
 
+# TODO: Create a dataframe and support saving data (@yuval)
+# Take a look at the data handler and it's usage in the NPU!
+
 device = None
 if params['painSupport']:
     import heatHandler
@@ -66,9 +69,21 @@ window.flip()
 
 core.wait(0.5)
 
-#TODO: Add mood VAS
+# TODO: Display a Welcome Message (@yuval)
+# We need to create a slide on powerpoint and export it as a JPEG
+
+# TODO: Add initial mood VAS (@yuval)
 
 if not params['skipInstructions']:
     instructions.instructions(window, params, io)
 
 squareRun.square_run(window, params, device, io)
+
+# TODO: Implement the main code (@yuval)
+"""
+What we need to do is implement the routine of the code.
+For nBlocks, we need to run the square_run function, and then run a mood VAS.
+we also need to add a function that, for the first n-1 blocks, after the end of the VAS will show a
+slide saying "Let's rest a little. Please wait for the instructor" or something like that, and wait for a spacebar
+keypress.
+"""
