@@ -151,6 +151,15 @@ def play_sound_and_wait(window: visual.Window, io, params: dict, df: pd.DataFram
                 window.close()
                 core.quit()
         core.wait(0.05)
+    while True:
+        for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
+            if event.key == "escape":
+                dataHandler.export_raw_data(params, df)
+                window.close()
+                core.quit()
+            elif event.key == " ":
+                return
+        core.wait(0.05)
 
 
 def randomize_cue_times():
