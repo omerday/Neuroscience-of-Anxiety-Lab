@@ -19,14 +19,7 @@ def square_run(window: visual.Window, params: dict, device, io):
         colors_order.remove(curr_color)
         color_index = params['colors'].index(curr_color)
         temperature = params['temps'][color_index]
-        # TODO: Add 2nd paradigm
-        """
-        In the second paradigm, only a one, medium-sized square is presented on the screen for a randomized
-        time of 10-14, following a heat pain.
-        So we need to add an argument in the opening screen to determine whether we want multiple squares or one,
-        and modify this section accordingly with an "if" statement.
-        (Maybe dividing to two functions would be prettier?)
-        """
+
         if params['paradigm'] == 1:
             for i in range(1, 6):
                 display_time = random.uniform(params['squareDurationMin'], params['squareDurationMax'])

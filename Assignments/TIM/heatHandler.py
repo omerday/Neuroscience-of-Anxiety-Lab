@@ -36,56 +36,35 @@ def initiate_medoc_device():
     return device
 
 def deliver_pain(window:visual.Window, temp, device):
-    print("Starting heat raise")
+    print(f"{round(time.time(), 2)} - Starting heat raise")
     print(f"State before Heat Increase = {device.status_state}")
     print(f"Temp before Heat Increase = {device.status_temp}")
-    device.finite_ramp_by_temperature(temp, 0.1, 0.1, is_stop_on_response_unit_yes=False, time=1000)
+    device.finite_ramp_by_temperature(temp, 0.1, 0.1, is_stop_on_response_unit_yes=False, time=500)
     print(f"State after Heat Increase = {device.status_state}")
     print(f"Temp after Heat Increase = {device.status_temp}")
     device.run_test()
-    temp_start_time = time.time()
-    while time.time() < temp_start_time + 1:
-        for curr_event in event.getKeys():
-            if curr_event == 'escape':
-                device.stop_test()
-                cool_down(device)
-        core.wait(0.05)
     device.stop_test()
 
-    print("Staying for 4 sec")
+    print(f"{round(time.time(), 2)} - Staying for 4 sec")
     print(f"State before Heat Command = {device.status_state}")
     print(f"Temp before Heat Command = {device.status_temp}")
     device.finite_ramp_by_temperature(temp, 0.1, 0.1, is_stop_on_response_unit_yes=False, time=4000)
     device.run_test()
-    temp_start_time = time.time()
-    while time.time() < temp_start_time + 4:
-        for curr_event in event.getKeys():
-            if curr_event == 'escape':
-                device.stop_test()
-                cool_down(device)
-        core.wait(0.05)
     device.stop_test()
     print(f"State After Heat Command = {device.status_state}")
     print(f"Temp After Heat Command = {device.status_temp}")
 
-    print("lowering to baseline")
-    device.finite_ramp_by_temperature(32, 0.1, 0.1, is_stop_on_response_unit_yes=False, time=1500)
+    print(f"{round(time.time(), 2)} - lowering to baseline")
+    device.finite_ramp_by_temperature(32, 0.1, 0.1, is_stop_on_response_unit_yes=False, time=500)
     print(f"State before Return to Baseline = {device.status_state}")
     print(f"Temp before Return to Baseline = {device.status_temp}")
     device.run_test()
-    temp_start_time = time.time()
-    while time.time() < temp_start_time + 1.5:
-        for curr_event in event.getKeys():
-            if curr_event == 'escape':
-                device.stop_test()
-                cool_down(device)
-        core.wait(0.05)
     print(f"State after Return to Baseline = {device.status_state}")
     print(f"Temp after Return to Baseline = {device.status_temp}")
-    lowering_test_start = time.time()
-    while device.status_temp > 32.5 and time.time() <= lowering_test_start + 4:
-        print(f"Current Temperature: {device.status_temp}")
-        core.wait(0.5)
+    # lowering_test_start = time.time()
+    # while device.status_temp > 32.5 and time.time() <= lowering_test_start + 4:
+    #     print(f"Current Temperature: {device.status_temp}")
+    #     core.wait(0.5)
     device.stop_test()
 
 

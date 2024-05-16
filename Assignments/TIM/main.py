@@ -64,7 +64,7 @@ if params['painSupport']:
 
 io = launchHubServer()
 
-window = visual.Window(monitor="testMonitor", fullscr=True, color=(217, 217, 217))
+window = visual.Window(monitor="testMonitor", fullscr=params['fullScreen'], color=(217, 217, 217))
 window.flip()
 
 core.wait(0.5)
