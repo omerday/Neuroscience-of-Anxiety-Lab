@@ -18,7 +18,7 @@ List of scenarios:
         2 - Cue Start
         3 - No-Cue Start
     Third digit:
-        0 - No event
+        0 - Onset
         1 - Startle
         2 - Shock
 """
