@@ -7,7 +7,6 @@ from psychopy import core, visual, event, gui
 
 
 def initiate_medoc_device():
-    # TODO: Test the alerts and improve if needed (@yuval)
     messagebox = gui.Dlg(title="Initialization Warning")
     messagebox.addText("Medoc device is initializing, please make sure the patient isn't connected to the thermode and press OK")
     messagebox.show()

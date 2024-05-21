@@ -7,9 +7,9 @@ import configDialog
 import squareRun
 import instructions
 import json
-import serial
 from VAS import *
 from serialHandler import *
+from helpers import *
 
 io = launchHubServer()
 
@@ -79,20 +79,8 @@ window.flip()
 
 core.wait(0.5)
 
-# TODO: Display a Welcome Message (@yuval)
-# We need to create a slide on powerpoint and export it as a JPEG
-if params['language'] == 'English':
-    name_prefix_1 = "Welcome_E"
-    name_prefix_2 = "finish_E"
-elif params['gender'] == 'Female':
-    name_prefix_1 = "Welcome_F"
-    name_prefix_2 = "finish_F"
-else:
-    name_prefix_1 = "Welcome_M"
-
-image = visual.ImageStim(window, image=f"./img/instructions/{name_prefix}.jpeg", units="norm", size=(2, 2))
+image = visual.ImageStim(window, image=f"./img/instructions/Welcome_{'E' if params['language'] == 'English' else params['gender'][0]}.jpeg", units="norm", size=(2, 2))
 image.draw()
-
 window.flip()
 
 # First mood VAS
@@ -104,18 +92,24 @@ if not params['skipInstructions']:
     instructions.instructions(window, params, io)
 
 for i in range(params['nBlocks']):
+    squareRun.square_run(window, params, device, io)
     # Middle Mood VAS
     if i == params['nBlocks']/2:
         run_vas(window, io, params, 'mood')
         if params['recordPhysio']:
             report_event(params['serialBiopac'], BIOPAC_EVENTS['MidRun_rating'])
-    squareRun.square_run(window, params, device, io)
 
 # Final Mood VAS
 run_vas(window, io, params, 'mood')
 if params['recordPhysio']:
     report_event(params['serialBiopac'], BIOPAC_EVENTS['PostRun_rating'])
 
+image = visual.ImageStim(window, image=f"./img/instructions/finish_{'E' if params['language'] == 'English' else params['gender'][0]}.jpeg", units="norm", size=(2, 2))
+image.draw()
+window.flip()
+
+keyboard = io.devices.keyboard
+wait_for_space(window, keyboard)
 # TODO: Implement the main code (@yuval)
 """
 What we need to do is implement the routine of the code.

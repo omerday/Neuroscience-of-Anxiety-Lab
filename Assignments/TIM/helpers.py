@@ -2,6 +2,7 @@ import time
 from psychopy import visual, core
 from psychopy.iohub.client.keyboard import Keyboard
 import random
+import serial, serialHandler
 import VAS
 
 
@@ -33,6 +34,17 @@ def wait_for_time(window: visual.Window, start_time, display_time, keyboard):
     while time.time() < start_time + display_time:
         for event in keyboard.getKeys():
             if event.key == "escape":
+                # TODO: Add Cooldown function
+                window.close()
+                core.quit()
+        core.wait(0.05)
+
+def wait_for_space(window: visual.Window, keyboard):
+    while True:
+        for event in keyboard.getKeys():
+            if event.key == "space":
+                return
+            elif event.key == "escape":
                 # TODO: Add Cooldown function
                 window.close()
                 core.quit()
