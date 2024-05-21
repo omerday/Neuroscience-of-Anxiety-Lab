@@ -4,7 +4,22 @@ from psychopy.iohub.client.keyboard import Keyboard
 import random
 import VAS
 import helpers
+from serialHandler import *
+'''
+Events sequence:
+* Before the pre-ITI
+* Before each of the 5 squares
+* Before the heat pain
+* Before the VAS questionnaire
+* Before the post-ITI
 
+serialHAndler.report_event(SERIAL_OBJECT, NUMBER)
+for example:
+Green Square, Square 3
+color == green
+prefix = "T2"
+BIOPAC_EVENTS[f"{prefix}_square{i}"]
+'''
 
 def square_run(window: visual.Window, params: dict, device, io):
     keyboard = io.devices.keyboard
@@ -14,12 +29,15 @@ def square_run(window: visual.Window, params: dict, device, io):
         for i in range(repeats):
             colors_order.append(color)
     while colors_order:
-        helpers.iti(window, params, 'pre', keyboard)
         curr_color = random.choice(colors_order)
         colors_order.remove(curr_color)
         color_index = params['colors'].index(curr_color)
         temperature = params['temps'][color_index]
-
+        # Set the Prefix here
+        prefix = params['Ts'][color_index]
+        if params['recordPhysio']:
+            report_event(params['serialBiopac'], BIOPAC_EVENTS[f'{prefix}_ITIpre'])
+        helpers.iti(window, params, 'pre', keyboard)
         if params['paradigm'] == 1:
             for i in range(1, 6):
                 display_time = random.uniform(params['squareDurationMin'], params['squareDurationMax'])
