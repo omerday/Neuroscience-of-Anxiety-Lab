@@ -7,6 +7,9 @@ import configDialog
 import squareRun
 import instructions
 import json
+import serial
+from VAS import *
+from serialHandler import *
 
 io = launchHubServer()
 
@@ -47,6 +50,8 @@ params = {
     'postITIMax': 9,
     'secondParadigmMin': 10,
     'secondParadigmMax': 14,
+    'continuousPresentTimeMin': 2,
+    'continuousPresentTimeMax': 2.5,
 
 }
 
@@ -55,8 +60,12 @@ if not os.path.exists("./data"):
 with open("./data/TIMconfig.json", 'w') as file:
     json.dump(params, file, indent=3)
 
-# TODO: Create a dataframe and support saving data (@yuval)
+# TODO: Create a dataframe and support saving data (@yuval) for the end
 # Take a look at the data handler and it's usage in the NPU!
+params['serialBiopac'] = serial.Serial(params['port'], 115200, bytesize=serial.EIGHTBITS, timeout=1) if params['recordPhysio'] else None
+
+if params['recordPhysio']:
+    report_event(params['serialBiopac'], 255)
 
 device = None
 if params['painSupport']:
@@ -72,13 +81,40 @@ core.wait(0.5)
 
 # TODO: Display a Welcome Message (@yuval)
 # We need to create a slide on powerpoint and export it as a JPEG
+if params['language'] == 'English':
+    name_prefix_1 = "Welcome_E"
+    name_prefix_2 = "finish_E"
+elif params['gender'] == 'Female':
+    name_prefix_1 = "Welcome_F"
+    name_prefix_2 = "finish_F"
+else:
+    name_prefix_1 = "Welcome_M"
 
-# TODO: Add initial mood VAS (@yuval)
+image = visual.ImageStim(window, image=f"./img/instructions/{name_prefix}.jpeg", units="norm", size=(2, 2))
+image.draw()
+
+window.flip()
+
+# First mood VAS
+run_vas(window, io, params, 'mood')
+if params['recordPhysio']:
+    report_event(params['serialBiopac'], BIOPAC_EVENTS['PreVas_rating'])
 
 if not params['skipInstructions']:
     instructions.instructions(window, params, io)
 
-squareRun.square_run(window, params, device, io)
+for i in range(params['nBlocks']):
+    # Middle Mood VAS
+    if i == params['nBlocks']/2:
+        run_vas(window, io, params, 'mood')
+        if params['recordPhysio']:
+            report_event(params['serialBiopac'], BIOPAC_EVENTS['MidRun_rating'])
+    squareRun.square_run(window, params, device, io)
+
+# Final Mood VAS
+run_vas(window, io, params, 'mood')
+if params['recordPhysio']:
+    report_event(params['serialBiopac'], BIOPAC_EVENTS['PostRun_rating'])
 
 # TODO: Implement the main code (@yuval)
 """

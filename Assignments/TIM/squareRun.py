@@ -40,6 +40,8 @@ def square_run(window: visual.Window, params: dict, device, io):
         helpers.iti(window, params, 'pre', keyboard)
         if params['paradigm'] == 1:
             for i in range(1, 6):
+                if params['recordPhysio']:
+                    report_event(params['serialBiopac'], BIOPAC_EVENTS[f'{prefix}_square{i}'])
                 display_time = random.uniform(params['squareDurationMin'], params['squareDurationMax'])
                 square = visual.ImageStim(window, image=f"./img/squares/{curr_color}_{i}.jpeg", units="norm", size=(2,2))
                 square.draw()
@@ -48,8 +50,7 @@ def square_run(window: visual.Window, params: dict, device, io):
                 if params['continuousShape'] or i == 5:
                     helpers.wait_for_time(window, start_time, display_time, keyboard)
                 else:
-                    # TODO: Add randomization period to the params
-                    present_time = random.uniform(2,2.5)
+                    present_time = random.uniform(params['continuousPresentTimeMin'],params['continuousPresentTimeMax'])
                     helpers.wait_for_time(window, start_time, present_time, keyboard)
                     square.image = "./img/squares/blank.jpg"
                     square.draw()
@@ -66,10 +67,16 @@ def square_run(window: visual.Window, params: dict, device, io):
 
         if params['painSupport']:
             import heatHandler
+            if params['recordPhysio']:
+                report_event(params['serialBiopac'], BIOPAC_EVENTS[f'{prefix}_heat_pulse'])
             heatHandler.deliver_pain(window, float(temperature), device)
 
+        if params['recordPhysio']:
+            report_event(params['serialBiopac'], BIOPAC_EVENTS[f'{prefix}_PainRatingScale'])
         VAS.run_vas(window, io, params, "PainRating", params['painRateDuration'])
 
+        if params['recordPhysio']:
+            report_event(params['serialBiopac'], BIOPAC_EVENTS[f'{prefix}_ITIpost'])
         helpers.iti(window, params, 'post', keyboard)
 
 
