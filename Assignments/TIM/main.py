@@ -85,11 +85,11 @@ window.flip()
 wait_for_space(window, params, device, df_mood, df_pain, io)
 
 # First mood VAS
-# TODO: Report event
-scores = run_vas(window, io, params, 'mood')
-df_mood = insert_data_mood("pre", scores, df_mood)
 if params['recordPhysio']:
     report_event(params['serialBiopac'], BIOPAC_EVENTS['PreVas_rating'])
+scores = run_vas(window, io, params, 'mood', mood_df=df_mood, pain_df=df_pain, device=device)
+df_mood = insert_data_mood("pre", scores, df_mood)
+
 
 if not params['skipInstructions']:
     instructions.instructions(window, params, io)
@@ -98,16 +98,16 @@ for i in range(1, params['nBlocks'] + 1):
     df_pain = squareRun.square_run(window, params, device, io, df_pain, df_mood, i)
     # Middle Mood VAS
     if i == params['nBlocks']/2:
-        scores = run_vas(window, io, params, 'mood')
-        df_mood = insert_data_mood("mid", scores, df_mood)
         if params['recordPhysio']:
             report_event(params['serialBiopac'], BIOPAC_EVENTS['MidRun_rating'])
+        scores = run_vas(window, io, params, 'mood', mood_df=df_mood, pain_df=df_pain, device=device)
+        df_mood = insert_data_mood("mid", scores, df_mood)
 
 # Final Mood VAS
-scores = run_vas(window, io, params, 'mood')
-df_mood = insert_data_mood("post", scores, df_mood)
 if params['recordPhysio']:
     report_event(params['serialBiopac'], BIOPAC_EVENTS['PostRun_rating'])
+scores = run_vas(window, io, params, 'mood', mood_df=df_mood, pain_df=df_pain, device=device)
+df_mood = insert_data_mood("post", scores, df_mood)
 
 image = visual.ImageStim(window, image=f"./img/instructions/finish_{'E' if params['language'] == 'English' else params['gender'][0]}.jpeg", units="norm", size=(2, 2))
 image.draw()

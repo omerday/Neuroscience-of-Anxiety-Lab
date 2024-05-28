@@ -2,6 +2,7 @@ from psychopy import core, event, logging, visual
 import time
 from psychopy.iohub.client.keyboard import Keyboard
 from psychopy.visual import ratingscale
+import helpers
 
 PAIN_RATING_QUESTION_HEBREW = ["עד כמה כאב החום?"]
 PAIN_RATING_QUESTION_ENGLISH = ["How painful was the heat?"]
@@ -26,7 +27,7 @@ ANSWERS_HEBREW = [["כלל לא", "הרבה מאוד"], ["כלל לא", "הרב�
 ANSWERS_ENGLISH = [["Not at all", "A lot"], ["Not at all", "A lot"], ["Not at all", "A lot"], ["Very good", "Very bad"], ["Not at all", "A lot"]]
 
 
-def run_vas(window: visual.Window, io, params: dict, type:str, duration=float('inf')):
+def run_vas(window: visual.Window, io, params: dict, type:str, mood_df, pain_df, device, duration=float('inf'), ):
     if type == "PainRating":
         questions = PAIN_RATING_QUESTION_HEBREW if params['language'] == 'Hebrew' else PAIN_RATING_QUESTION_ENGLISH
         answers = PAIN_RATING_ANSWERS_HEBREW if params['language'] == 'Hebrew' else PAIN_RATING_ANSWERS_ENGLISH
@@ -63,8 +64,7 @@ def run_vas(window: visual.Window, io, params: dict, type:str, duration=float('i
 
             for ev in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
                 if ev.key == "escape":
-                    window.close()
-                    core.quit()
+                    helpers.graceful_shutdown(window, params, device, mood_df, pain_df)
                 core.wait(0.05)
 
         score = scale.getRating()
@@ -72,4 +72,6 @@ def run_vas(window: visual.Window, io, params: dict, type:str, duration=float('i
             return score
         else:
             scores[LABELS[i]] = score
+
+    helpers.save_backup(params, Mood=mood_df, Pain=pain_df)
     return scores

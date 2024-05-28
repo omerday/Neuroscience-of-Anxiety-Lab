@@ -50,7 +50,7 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
 
         else:
             display_time = random.uniform(params['secondParadigmMin'], params['secondParadigmMax'])
-            square = visual.ImageStim(window, image=f"./img/squares/{curr_color}_{3}.jpeg", units="norm", size=(2,2))
+            square = visual.ImageStim(window, image=f"./img/squares/{curr_color}_{2}.jpeg", units="norm", size=(2,2))
             square.draw()
             window.flip()
             start_time = time.time()
@@ -64,12 +64,14 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
 
         if params['recordPhysio']:
             report_event(params['serialBiopac'], BIOPAC_EVENTS[f'{prefix}_PainRatingScale'])
-        pain = VAS.run_vas(window, io, params, "PainRating", params['painRateDuration'])
+        pain = VAS.run_vas(window, io, params, "PainRating", duration=params['painRateDuration'], mood_df=mood_df, pain_df=pain_df, device=device)
         pain_df = insert_data_pain(nBlock, trail, (color_index+1), curr_color, pain, pain_df)
 
         if params['recordPhysio']:
             report_event(params['serialBiopac'], BIOPAC_EVENTS[f'{prefix}_ITIpost'])
         helpers.iti(window, params, 'post', keyboard, device, mood_df, pain_df)
+
+        helpers.save_backup(params, Mood=mood_df, Pain=pain_df)
 
     return pain_df
 

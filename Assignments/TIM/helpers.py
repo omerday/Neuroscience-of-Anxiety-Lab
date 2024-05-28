@@ -17,6 +17,10 @@ def iti(window: visual.Window, params: dict, iti_type, keyboard, device, mood_df
     wait_for_time(window, params, device, mood_df, pain_df, start_time, display_time, keyboard)
 
 
+def wait_for_RA():
+
+
+
 def wait_for_time(window: visual.Window, params, device, mood_df, pain_df, start_time, display_time, keyboard):
     while time.time() < start_time + display_time:
         for event in keyboard.getKeys():
@@ -29,7 +33,7 @@ def wait_for_space(window: visual.Window, params, device, mood_df, pain_df, io):
     keyboard = io.devices.keyboard
     while True:
         for event in keyboard.getKeys():
-            if event.key == "space":
+            if event.key == " ":
                 return
             elif event.key == "escape":
                 graceful_shutdown(window, params, device, mood_df, pain_df)
