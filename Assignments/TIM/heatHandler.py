@@ -45,8 +45,8 @@ def deliver_pain(window:visual.Window, temp, device):
     # device.stop_test()
 
     print(f"{round(time.time() - start_time, 2)} - Staying for 4 sec")
-    device.finite_ramp_by_temperature(temp, 0.1, 0.1, is_stop_on_response_unit_yes=False, time=4000)
-    time.sleep(4)
+    device.finite_ramp_by_temperature(temp, 0.1, 0.1, is_stop_on_response_unit_yes=False, time=2000)
+    time.sleep(2)
     # device.run_test()
     # device.stop_test()
 
