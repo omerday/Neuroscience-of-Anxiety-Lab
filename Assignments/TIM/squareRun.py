@@ -1,34 +1,25 @@
 import time
+
+import pandas as pd
 from psychopy import visual, core
 from psychopy.iohub.client.keyboard import Keyboard
 import random
 import VAS
 import helpers
 from serialHandler import *
-'''
-Events sequence:
-* Before the pre-ITI
-* Before each of the 5 squares
-* Before the heat pain
-* Before the VAS questionnaire
-* Before the post-ITI
+from dataHandler import *
 
-serialHAndler.report_event(SERIAL_OBJECT, NUMBER)
-for example:
-Green Square, Square 3
-color == green
-prefix = "T2"
-BIOPAC_EVENTS[f"{prefix}_square{i}"]
-'''
 
-def square_run(window: visual.Window, params: dict, device, io):
+def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.DataFrame, mood_df: pd.DataFrame, nBlock: int):
     keyboard = io.devices.keyboard
     repeats = params['nTrials'] // len(params['colors'])
     colors_order = []
     for color in params['colors']:
         for i in range(repeats):
             colors_order.append(color)
+    trail = 0
     while colors_order:
+        trail += 1
         curr_color = random.choice(colors_order)
         colors_order.remove(curr_color)
         color_index = params['colors'].index(curr_color)
@@ -73,11 +64,14 @@ def square_run(window: visual.Window, params: dict, device, io):
 
         if params['recordPhysio']:
             report_event(params['serialBiopac'], BIOPAC_EVENTS[f'{prefix}_PainRatingScale'])
-        VAS.run_vas(window, io, params, "PainRating", params['painRateDuration'])
+        pain = VAS.run_vas(window, io, params, "PainRating", params['painRateDuration'])
+        pain_df = insert_data_pain(nBlock, trail, (color_index+1), curr_color, pain, pain_df)
 
         if params['recordPhysio']:
             report_event(params['serialBiopac'], BIOPAC_EVENTS[f'{prefix}_ITIpost'])
         helpers.iti(window, params, 'post', keyboard)
+
+    return pain_df
 
 
 

@@ -10,6 +10,7 @@ import json
 from VAS import *
 from serialHandler import *
 from helpers import *
+from  dataHandler import *
 
 io = launchHubServer()
 
@@ -83,24 +84,31 @@ image = visual.ImageStim(window, image=f"./img/instructions/Welcome_{'E' if para
 image.draw()
 window.flip()
 
+wait_for_space(window, io)
+
+df_pain, df_mood = setup_data_frame()
+
 # First mood VAS
-run_vas(window, io, params, 'mood')
+scores = run_vas(window, io, params, 'mood')
+df_mood = insert_data_mood("pre", scores, df_mood)
 if params['recordPhysio']:
     report_event(params['serialBiopac'], BIOPAC_EVENTS['PreVas_rating'])
 
 if not params['skipInstructions']:
     instructions.instructions(window, params, io)
 
-for i in range(params['nBlocks']):
-    squareRun.square_run(window, params, device, io)
+for i in range(1, params['nBlocks'] + 1):
+    df_pain = squareRun.square_run(window, params, device, io, df_pain, df_mood, i)
     # Middle Mood VAS
     if i == params['nBlocks']/2:
-        run_vas(window, io, params, 'mood')
+        scores = run_vas(window, io, params, 'mood')
+        df_mood = insert_data_mood("mid", scores, df_mood)
         if params['recordPhysio']:
             report_event(params['serialBiopac'], BIOPAC_EVENTS['MidRun_rating'])
 
 # Final Mood VAS
-run_vas(window, io, params, 'mood')
+scores = run_vas(window, io, params, 'mood')
+df_mood = insert_data_mood("post", scores, df_mood)
 if params['recordPhysio']:
     report_event(params['serialBiopac'], BIOPAC_EVENTS['PostRun_rating'])
 
@@ -108,13 +116,6 @@ image = visual.ImageStim(window, image=f"./img/instructions/finish_{'E' if param
 image.draw()
 window.flip()
 
-keyboard = io.devices.keyboard
-wait_for_space(window, keyboard)
-# TODO: Implement the main code (@yuval)
-"""
-What we need to do is implement the routine of the code.
-For nBlocks, we need to run the square_run function, and then run a mood VAS.
-we also need to add a function that, for the first n-1 blocks, after the end of the VAS will show a
-slide saying "Let's rest a little. Please wait for the instructor" or something like that, and wait for a spacebar
-keypress.
-"""
+wait_for_space(window, io)
+if params['painSupport']:
+    heatHandler.cool_down(device)

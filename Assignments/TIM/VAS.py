@@ -25,6 +25,7 @@ QUESTIONS_ENGLISH = ["How stressed or anxious are you feeling?",
 ANSWERS_HEBREW = [["כלל לא", "הרבה מאוד"], ["כלל לא", "הרבה מאוד"], ["כלל לא", "הרבה מאוד"], ["רע מאוד", "טוב מאוד"], ["כלל לא", "הרבה מאוד"]]
 ANSWERS_ENGLISH = [["Not at all", "A lot"], ["Not at all", "A lot"], ["Not at all", "A lot"], ["Very good", "Very bad"], ["Not at all", "A lot"]]
 
+
 def run_vas(window: visual.Window, io, params: dict, type:str, duration=float('inf')):
     if type == "PainRating":
         questions = PAIN_RATING_QUESTION_HEBREW if params['language'] == 'Hebrew' else PAIN_RATING_QUESTION_ENGLISH
