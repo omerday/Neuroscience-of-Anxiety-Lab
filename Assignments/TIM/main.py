@@ -61,8 +61,7 @@ if not os.path.exists("./data"):
 with open("./data/TIMconfig.json", 'w') as file:
     json.dump(params, file, indent=3)
 
-# TODO: Create a dataframe and support saving data (@yuval) for the end
-# Take a look at the data handler and it's usage in the NPU!
+df_pain, df_mood = setup_data_frame()
 params['serialBiopac'] = serial.Serial(params['port'], 115200, bytesize=serial.EIGHTBITS, timeout=1) if params['recordPhysio'] else None
 
 if params['recordPhysio']:
@@ -83,12 +82,10 @@ core.wait(0.5)
 image = visual.ImageStim(window, image=f"./img/instructions/Welcome_{'E' if params['language'] == 'English' else params['gender'][0]}.jpeg", units="norm", size=(2, 2))
 image.draw()
 window.flip()
-
-wait_for_space(window, io)
-
-df_pain, df_mood = setup_data_frame()
+wait_for_space(window, params, device, df_mood, df_pain, io)
 
 # First mood VAS
+# TODO: Report event
 scores = run_vas(window, io, params, 'mood')
 df_mood = insert_data_mood("pre", scores, df_mood)
 if params['recordPhysio']:
@@ -116,6 +113,5 @@ image = visual.ImageStim(window, image=f"./img/instructions/finish_{'E' if param
 image.draw()
 window.flip()
 
-wait_for_space(window, io)
-if params['painSupport']:
-    heatHandler.cool_down(device)
+wait_for_space(window, params, device, df_mood, df_pain, io)
+graceful_shutdown(window, params, device, df_mood, df_pain)

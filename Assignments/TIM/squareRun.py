@@ -28,7 +28,7 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
         prefix = params['Ts'][color_index]
         if params['recordPhysio']:
             report_event(params['serialBiopac'], BIOPAC_EVENTS[f'{prefix}_ITIpre'])
-        helpers.iti(window, params, 'pre', keyboard)
+        helpers.iti(window, params, 'pre', keyboard, device, mood_df, pain_df)
         if params['paradigm'] == 1:
             for i in range(1, 6):
                 if params['recordPhysio']:
@@ -39,14 +39,14 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
                 window.flip()
                 start_time = time.time()
                 if params['continuousShape'] or i == 5:
-                    helpers.wait_for_time(window, start_time, display_time, keyboard)
+                    helpers.wait_for_time(window, params, device, mood_df, pain_df, start_time, display_time, keyboard)
                 else:
                     present_time = random.uniform(params['continuousPresentTimeMin'],params['continuousPresentTimeMax'])
-                    helpers.wait_for_time(window, start_time, present_time, keyboard)
+                    helpers.wait_for_time(window, params, device, mood_df, pain_df, start_time, present_time, keyboard)
                     square.image = "./img/squares/blank.jpg"
                     square.draw()
                     window.flip()
-                    helpers.wait_for_time(window, start_time, display_time, keyboard)
+                    helpers.wait_for_time(window, params, device, mood_df, pain_df, start_time, display_time, keyboard)
 
         else:
             display_time = random.uniform(params['secondParadigmMin'], params['secondParadigmMax'])
@@ -54,7 +54,7 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
             square.draw()
             window.flip()
             start_time = time.time()
-            helpers.wait_for_time(window, start_time, display_time, keyboard)
+            helpers.wait_for_time(window, params, device, mood_df, pain_df, start_time, display_time, keyboard)
 
         if params['painSupport']:
             import heatHandler
@@ -69,7 +69,7 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
 
         if params['recordPhysio']:
             report_event(params['serialBiopac'], BIOPAC_EVENTS[f'{prefix}_ITIpost'])
-        helpers.iti(window, params, 'post', keyboard)
+        helpers.iti(window, params, 'post', keyboard, device, mood_df, pain_df)
 
     return pain_df
 
