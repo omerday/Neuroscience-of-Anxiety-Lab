@@ -17,7 +17,12 @@ def iti(window: visual.Window, params: dict, iti_type, keyboard, device, mood_df
     wait_for_time(window, params, device, mood_df, pain_df, start_time, display_time, keyboard)
 
 
-def wait_for_RA():
+def wait_for_RA(window, params, device, mood_df, pain_df, io):
+    image_path = f"./img/waitForRA_{'E' if params['language'] == 'English' else params['gender'][0]}.jpeg"
+    image = visual.ImageStim(window, image=image_path, units="norm", size=(2,2))
+    image.draw()
+    window.flip()
+    wait_for_space(window, params, device, mood_df, pain_df, io)
 
 
 
