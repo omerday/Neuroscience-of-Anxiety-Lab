@@ -10,7 +10,7 @@ import json
 from VAS import *
 from serialHandler import *
 from helpers import *
-from  dataHandler import *
+from dataHandler import *
 
 io = launchHubServer()
 
@@ -45,12 +45,12 @@ params = {
     'squareDurationMin': 4,  # minimum duration for each square
     'squareDurationMax': 7,  # maximum duration for each square
     'colors': ['Green', 'Yellow', 'Red'],
-    'preITIMin': 4,
-    'preITIMax': 6,
+    'preITIMin': 3,
+    'preITIMax': 5,
     'postITIMin': 7,
     'postITIMax': 9,
-    'secondParadigmMin': 10,
-    'secondParadigmMax': 14,
+    'secondParadigmMin': 8,
+    'secondParadigmMax': 10,
     'continuousPresentTimeMin': 2,
     'continuousPresentTimeMax': 2.5,
 
@@ -62,7 +62,8 @@ with open("./data/TIMconfig.json", 'w') as file:
     json.dump(params, file, indent=3)
 
 df_pain, df_mood = setup_data_frame()
-params['serialBiopac'] = serial.Serial(params['port'], 115200, bytesize=serial.EIGHTBITS, timeout=1) if params['recordPhysio'] else None
+params['serialBiopac'] = serial.Serial(params['port'], 115200, bytesize=serial.EIGHTBITS, timeout=1) if params[
+    'recordPhysio'] else None
 
 if params['recordPhysio']:
     report_event(params['serialBiopac'], 255)
@@ -74,13 +75,17 @@ if params['painSupport']:
 
 io = launchHubServer()
 
-window = visual.Window(monitor="testMonitor", fullscr=params['fullScreen'], color=(217, 217, 217))
+window = visual.Window(monitor="testMonitor", fullscr=params['fullScreen'], color=(210, 210, 210))
+window.mouseVisible = False
 window.flip()
 
 core.wait(0.5)
 
-image = visual.ImageStim(window, image=f"./img/instructions/Welcome_{'E' if params['language'] == 'English' else params['gender'][0]}.jpeg", units="norm", size=(2, 2))
+image = visual.ImageStim(window,
+                         image=f"./img/instructions/Welcome_{'E' if params['language'] == 'English' else params['gender'][0]}.jpeg",
+                         units="norm", size=(2, 2))
 image.draw()
+window.mouseVisible = False
 window.flip()
 wait_for_space(window, params, device, df_mood, df_pain, io)
 
@@ -90,14 +95,13 @@ if params['recordPhysio']:
 scores = run_vas(window, io, params, 'mood', mood_df=df_mood, pain_df=df_pain, device=device)
 df_mood = insert_data_mood("pre", scores, df_mood)
 
-
 if not params['skipInstructions']:
     instructions.instructions(window, params, io)
 
 for i in range(1, params['nBlocks'] + 1):
     df_pain = squareRun.square_run(window, params, device, io, df_pain, df_mood, i)
     # Middle Mood VAS
-    if i == params['nBlocks']/2:
+    if i == params['nBlocks'] / 2:
         if params['recordPhysio']:
             report_event(params['serialBiopac'], BIOPAC_EVENTS['MidRun_rating'])
         scores = run_vas(window, io, params, 'mood', mood_df=df_mood, pain_df=df_pain, device=device)
@@ -110,8 +114,11 @@ if params['recordPhysio']:
 scores = run_vas(window, io, params, 'mood', mood_df=df_mood, pain_df=df_pain, device=device)
 df_mood = insert_data_mood("post", scores, df_mood)
 
-image = visual.ImageStim(window, image=f"./img/instructions/finish_{'E' if params['language'] == 'English' else params['gender'][0]}.jpeg", units="norm", size=(2, 2))
+image = visual.ImageStim(window,
+                         image=f"./img/instructions/finish_{'E' if params['language'] == 'English' else params['gender'][0]}.jpeg",
+                         units="norm", size=(2, 2))
 image.draw()
+window.mouseVisible = False
 window.flip()
 
 wait_for_space(window, params, device, df_mood, df_pain, io)

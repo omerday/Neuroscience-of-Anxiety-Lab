@@ -59,8 +59,8 @@ def run_vas(window: visual.Window, io, params: dict, type:str, mood_df, pain_df,
         while (duration != float("inf") and time.time() < end_time) or (duration == float("inf") and scale.noResponse):
             scale.draw()
             question_label.draw()
-            window.flip()
             window.mouseVisible = False
+            window.flip()
 
             for ev in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
                 if ev.key == "escape":

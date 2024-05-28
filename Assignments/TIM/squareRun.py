@@ -36,6 +36,7 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
                 display_time = random.uniform(params['squareDurationMin'], params['squareDurationMax'])
                 square = visual.ImageStim(window, image=f"./img/squares/{curr_color}_{i}.jpeg", units="norm", size=(2,2))
                 square.draw()
+                window.mouseVisible = False
                 window.flip()
                 start_time = time.time()
                 if params['continuousShape'] or i == 5:
@@ -45,15 +46,26 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
                     helpers.wait_for_time(window, params, device, mood_df, pain_df, start_time, present_time, keyboard)
                     square.image = "./img/squares/blank.jpg"
                     square.draw()
+                    window.mouseVisible = False
                     window.flip()
                     helpers.wait_for_time(window, params, device, mood_df, pain_df, start_time, display_time, keyboard)
 
         else:
+            if params['recordPhysio']:
+                report_event(params['serialBiopac'], BIOPAC_EVENTS[f'{prefix}_square{5}'])
             display_time = random.uniform(params['secondParadigmMin'], params['secondParadigmMax'])
             square = visual.ImageStim(window, image=f"./img/squares/{curr_color}_{2}.jpeg", units="norm", size=(2,2))
             square.draw()
+            # Show Square
+            window.mouseVisible = False
             window.flip()
             start_time = time.time()
+            helpers.wait_for_time(window, params, device, mood_df, pain_df, start_time, 2, keyboard)
+            # Remove square from the screen
+            square.image = "./img/squares/blank.jpg"
+            square.draw()
+            window.mouseVisible = False
+            window.flip()
             helpers.wait_for_time(window, params, device, mood_df, pain_df, start_time, display_time, keyboard)
 
         if params['painSupport']:
