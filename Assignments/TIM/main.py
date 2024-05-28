@@ -90,7 +90,7 @@ elif params['gender'] == 'Female':
 else:
     name_prefix_1 = "Welcome_M"
 
-image = visual.ImageStim(window, image=f"./img/instructions/{name_prefix}.jpeg", units="norm", size=(2, 2))
+image = visual.ImageStim(window, image=f"./img/instructions/{name_prefix_1}.jpeg", units="norm", size=(2, 2))
 image.draw()
 
 window.flip()
