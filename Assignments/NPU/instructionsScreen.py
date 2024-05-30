@@ -43,7 +43,7 @@ def show_instructions(params: dict, window: visual.Window, img: visual.ImageStim
     plays_again = False
     while replay:
         for i in range(2, SLIDES) if params['videosTiming'] == "Before" else range(1, SLIDES):
-            if (params["skipCalibration"] or params["videosTiming"] == "Before") and i in [3, 4, 5]:
+            if (params["skipCalibration"] or params["videosTiming"] == "Before") and i in [2, 3, 4]:
                 pass
             elif params["skipStartle"] and i == STARTLE_SLIDE:
                 pass
