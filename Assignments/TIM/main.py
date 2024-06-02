@@ -73,8 +73,6 @@ if params['painSupport']:
     import heatHandler
     device = heatHandler.initiate_medoc_device()
 
-io = launchHubServer()
-
 window = visual.Window(monitor="testMonitor", fullscr=params['fullScreen'], color=(210, 210, 210))
 window.mouseVisible = False
 window.flip()
