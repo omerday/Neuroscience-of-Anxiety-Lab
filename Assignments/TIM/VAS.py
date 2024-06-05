@@ -7,7 +7,7 @@ import helpers
 PAIN_RATING_QUESTION_HEBREW = ["עד כמה כאב החום?"]
 PAIN_RATING_QUESTION_ENGLISH = ["How painful was the heat?"]
 
-PAIN_RATING_ANSWERS_HEBREW = [["בכלל לא", "מאוד"]]
+PAIN_RATING_ANSWERS_HEBREW = [["0", "01"]]
 PAIN_RATING_ANSWERS_ENGLISH = [["Not at all", "A lot"]]
 
 LABELS = ["Anxiety", "Tiredness", "Worry", "Mood", "PainSensitivity"]
@@ -43,7 +43,7 @@ def run_vas(window: visual.Window, io, params: dict, type:str, mood_df, pain_df,
         scale = ratingscale.RatingScale(window,
                                         labels=[answers[i][0][::-1], answers[i][1][::-1]]
                                             if params['language'] == 'Hebrew' else [answers[i][0],answers[i][1]],
-                                        scale=None, choices=None, low=0, high=10, precision=.5, tickHeight=0, size=2,
+                                        scale=None, choices=None, low=0, high=10, precision=.5, tickHeight=0.5 if type=="PainRating" else 0, size=2,
                                         markerStart=5, noMouse=True, leftKeys='left', rightKeys='right',  # Dummy left and right
                                         textSize=0.6, acceptText="לחצו על הרווח"[::-1] if params['language'] == "Hebrew" else "Press Spacebar", showValue=False, showAccept=True,
                                         acceptPreText="לחצו על הרווח"[::-1] if params['language'] == "Hebrew" else "Press Spacebar", acceptSize=1.5,
