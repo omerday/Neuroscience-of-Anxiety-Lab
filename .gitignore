@@ -130,3 +130,15 @@ dmypy.json
 ./Assignments/Doors/data/config.json
 ./Assignments/NPU/data/config.json
 Assignments/Doors/.ipynb_checkpoints
+/Assignments/Doors/data/doorsConfig.json
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/Neuroscience-of-Anxiety-Lab.iml
+/Assignments/NPU/data/NPUconfig.json
+/.idea/inspectionProfiles/profiles_settings.xml
+/.idea/inspectionProfiles/Project_Default.xml
+/.idea/rGraphicsSettings.xml
+/.idea/rSettings.xml
+/Assignments/TIM/data/TIMconfig.json
+/.idea/vcs.xml
+/.idea/.gitignore
