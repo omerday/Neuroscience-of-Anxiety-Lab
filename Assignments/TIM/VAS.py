@@ -19,7 +19,7 @@ QUESTIONS_HEBREW = ["עד כמה אתם מרגישים חרדה או לחץ כר
                     "עד כמה אתם רגישים לכאב?"]
 QUESTIONS_ENGLISH = ["How stressed or anxious are you feeling?",
                      "How tired are you?",
-                     "How worried are you from the next part?",
+                     "How worried are you for the next part?",
                      "How's your mood right now?",
                      "How sensitive are you to pain?"]
 

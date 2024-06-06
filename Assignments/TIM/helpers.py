@@ -37,6 +37,8 @@ def wait_for_time(window: visual.Window, params, device, mood_df, pain_df, start
 
 def wait_for_space(window: visual.Window, params, device, mood_df, pain_df, io):
     keyboard = io.devices.keyboard
+    keyboard.getKeys()
+    core.wait(0.1)
     while True:
         for event in keyboard.getKeys():
             if event.key == " ":
