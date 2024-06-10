@@ -5,6 +5,7 @@ import random
 import serial, serialHandler
 import VAS
 from dataHandler import *
+from serialHandler import *
 
 
 def iti(window: visual.Window, params: dict, iti_type, keyboard, device, mood_df, pain_df):
@@ -29,6 +30,17 @@ def wait_for_RA(window, params, device, mood_df, pain_df, io):
 
 def wait_for_time(window: visual.Window, params, device, mood_df, pain_df, start_time, display_time, keyboard):
     while time.time() < start_time + display_time:
+        for event in keyboard.getKeys():
+            if event.key == "escape":
+                graceful_shutdown(window, params, device, mood_df, pain_df)
+        core.wait(0.05)
+
+
+def wait_for_time_2(window: visual.Window, params, device, mood_df, pain_df, start_time, display_time, keyboard, prefix, sec):
+    while time.time() < start_time + display_time:
+        if 2 <= time.time() - start_time <= 2.05:
+            report_event(params['serialBiopac'], PARADIGM_2_BIOPAC_EVENTS[f'{prefix}_{sec}'])
+            sec += 2
         for event in keyboard.getKeys():
             if event.key == "escape":
                 graceful_shutdown(window, params, device, mood_df, pain_df)

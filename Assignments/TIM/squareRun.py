@@ -52,7 +52,7 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
 
         else:
             if params['recordPhysio']:
-                report_event(params['serialBiopac'], BIOPAC_EVENTS[f'{prefix}_square{5}'])
+                report_event(params['serialBiopac'], PARADIGM_2_BIOPAC_EVENTS[f'{prefix}_{0}'])
             display_time = random.uniform(params['secondParadigmMin'], params['secondParadigmMax'])
             square = visual.ImageStim(window, image=f"./img/squares/{curr_color}_{2}.jpeg", units="norm", size=(2,2))
             square.draw()
@@ -60,13 +60,13 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
             window.mouseVisible = False
             window.flip()
             start_time = time.time()
-            helpers.wait_for_time(window, params, device, mood_df, pain_df, start_time, 2, keyboard)
+            helpers.wait_for_time_2(window, params, device, mood_df, pain_df, start_time, 2, keyboard, prefix, 2)
             # Remove square from the screen
             square.image = "./img/squares/blank.jpg"
             square.draw()
             window.mouseVisible = False
             window.flip()
-            helpers.wait_for_time(window, params, device, mood_df, pain_df, start_time, display_time, keyboard)
+            helpers.wait_for_time_2(window, params, device, mood_df, pain_df, start_time, display_time, keyboard, prefix, 10)
 
         if params['painSupport']:
             import heatHandler

@@ -53,6 +53,62 @@ BIOPAC_EVENTS = {
         'Start_Cycle': 100
     }
 
+PARADIGM_2_BIOPAC_EVENTS = {
+        'break': 16,
+
+        'T2_ITIpre': 20,
+        'T2_0': 21,
+        'T2_2': 22,
+        'T2_4': 23,
+        'T2_6': 24,
+        'T2_8': 25,
+        'T2_10': 26,
+        'T2_heat_pulse': 27,
+        'T2_PainRatingScale': 28,
+        'T2_ITIpost': 29,
+
+        'T4_ITIpre': 40,
+        'T4_0': 41,
+        'T4_2': 42,
+        'T4_4': 43,
+        'T4_6': 44,
+        'T4_8': 45,
+        'T4_10': 46,
+        'T4_heat_pulse': 47,
+        'T4_PainRatingScale': 48,
+        'T4_ITIpost': 49,
+
+        'T6_ITIpre': 60,
+        'T6_0': 61,
+        'T6_2': 62,
+        'T6_4': 63,
+        'T6_6': 64,
+        'T6_8': 65,
+        'T6_10': 66,
+        'T6_heat_pulse': 67,
+        'T6_PainRatingScale': 68,
+        'T6_ITIpost': 69,
+
+        'T8_ITIpre': 80,
+        'T8_0': 81,
+        'T8_2': 82,
+        'T8_4': 83,
+        'T8_6': 84,
+        'T8_8': 85,
+        'T8_10': 86,
+        'T8_heat_pulse': 86,
+        'T8_PainRatingScale': 87,
+        'T8_ITIpost': 88,
+
+        'PreVas_rating': 90,
+        'MidRun_rating': 91,
+        'PostRun_rating': 92,
+
+        'Fixation_cross': 95,
+
+        'Start_Cycle': 100
+    }
+
 
 def report_event(ser: serial.Serial, event_num):
     if not ser.is_open:
