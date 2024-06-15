@@ -38,13 +38,14 @@ def wait_for_time(window: visual.Window, params, device, mood_df, pain_df, start
 
 def wait_for_time_2(window: visual.Window, params, device, mood_df, pain_df, start_time, display_time, keyboard, prefix, sec):
     while time.time() < start_time + display_time:
-        if 2 <= time.time() - start_time <= 2.05:
-            report_event(params['serialBiopac'], PARADIGM_2_BIOPAC_EVENTS[f'{prefix}_{sec}'])
+        if sec <= time.time() - start_time <= sec + 0.05:
+            report_event(params['serialBiopac'], PARADIGM_2_BIOPAC_EVENTS[f'{prefix}_{int((sec / 2) + 1)}'])
             sec += 2
         for event in keyboard.getKeys():
             if event.key == "escape":
                 graceful_shutdown(window, params, device, mood_df, pain_df)
         core.wait(0.05)
+    return sec
 
 
 def wait_for_space(window: visual.Window, params, device, mood_df, pain_df, io):
