@@ -61,7 +61,7 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
             window.flip()
             start_time = time.time()
             sec = 2
-            sec = helpers.wait_for_time_2(window, params, device, mood_df, pain_df, start_time, sec, keyboard, prefix, sec)
+            sec = helpers.wait_for_time_2(window, params, device, mood_df, pain_df, start_time, 2, keyboard, prefix, sec)
             # Remove square from the screen
             square.image = "./img/squares/blank.jpg"
             square.draw()
