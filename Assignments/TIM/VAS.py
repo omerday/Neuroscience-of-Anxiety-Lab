@@ -8,7 +8,7 @@ PAIN_RATING_QUESTION_HEBREW = ["עד כמה כאב החום?"]
 PAIN_RATING_QUESTION_ENGLISH = ["How painful was the heat?"]
 
 PAIN_RATING_ANSWERS_HEBREW = [["0", "01"]]
-PAIN_RATING_ANSWERS_ENGLISH = [["Not at all", "A lot"]]
+PAIN_RATING_ANSWERS_ENGLISH = [["0", "10"]]
 
 LABELS = ["Anxiety", "Tiredness", "Worry", "Mood", "PainSensitivity"]
 
