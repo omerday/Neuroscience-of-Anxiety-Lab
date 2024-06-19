@@ -52,7 +52,7 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
 
         else:
             if params['recordPhysio']:
-                report_event(params['serialBiopac'], PARADIGM_2_BIOPAC_EVENTS[f'{prefix}_{1}'])
+                report_event(params['serialBiopac'], PARADIGM_2_BIOPAC_EVENTS[f'{prefix}_{0}'])
             display_time = random.uniform(params['secondParadigmMin'], params['secondParadigmMax'] - 0.01)
             square = visual.ImageStim(window, image=f"./img/squares/{curr_color}_{2}.jpeg", units="norm", size=(2,2))
             square.draw()
