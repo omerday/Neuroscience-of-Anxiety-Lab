@@ -61,6 +61,8 @@ if not os.path.exists("./data"):
 with open("./data/TIMconfig.json", 'w') as file:
     json.dump(params, file, indent=3)
 
+print(f"===========================================\nStarting Run for Subject {params['subject']}\n===========================================")
+
 df_pain, df_mood = setup_data_frame()
 params['serialBiopac'] = serial.Serial(params['port'], 115200, bytesize=serial.EIGHTBITS, timeout=1) if params[
     'recordPhysio'] else None

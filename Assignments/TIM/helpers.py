@@ -53,6 +53,7 @@ def graceful_shutdown(window, params, device, mood_df, pain_df):
         from heatHandler import cool_down
         cool_down(device)
     export_data(params, Mood=mood_df, Pain=pain_df)
+    print(f"Experiment Ended\n===========================================")
     window.close()
     core.quit()
     exit()
