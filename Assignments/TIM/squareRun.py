@@ -26,8 +26,7 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
         temperature = params['temps'][color_index]
         # Set the Prefix here
         prefix = params['Ts'][color_index]
-        if params['recordPhysio']:
-            report_event(params['serialBiopac'], BIOPAC_EVENTS[f'{prefix}_ITIpre'])
+        report_event(params['serialBiopac'], BIOPAC_EVENTS[f'{prefix}_ITIpre'])
         helpers.iti(window, params, 'pre', keyboard, device, mood_df, pain_df)
         if params['paradigm'] == 1:
             for i in range(1, 6):
@@ -51,8 +50,7 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
                     helpers.wait_for_time(window, params, device, mood_df, pain_df, start_time, display_time, keyboard)
 
         else:
-            if params['recordPhysio']:
-                report_event(params['serialBiopac'], PARADIGM_2_BIOPAC_EVENTS[f'{prefix}_{0}'])
+            report_event(params['serialBiopac'], PARADIGM_2_BIOPAC_EVENTS[f'{prefix}_{0}'])
             display_time = random.uniform(params['secondParadigmMin'], params['secondParadigmMax'] - 0.01)
             square = visual.ImageStim(window, image=f"./img/squares/{curr_color}_{2}.jpeg", units="norm", size=(2,2))
             square.draw()
@@ -71,17 +69,14 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
 
         if params['painSupport']:
             import heatHandler
-            if params['recordPhysio']:
-                report_event(params['serialBiopac'], BIOPAC_EVENTS[f'{prefix}_heat_pulse'])
+            report_event(params['serialBiopac'], BIOPAC_EVENTS[f'{prefix}_heat_pulse'])
             heatHandler.deliver_pain(window, float(temperature), device)
 
-        if params['recordPhysio']:
-            report_event(params['serialBiopac'], BIOPAC_EVENTS[f'{prefix}_PainRatingScale'])
+        report_event(params['serialBiopac'], BIOPAC_EVENTS[f'{prefix}_PainRatingScale'])
         pain = VAS.run_vas(window, io, params, "PainRating", duration=params['painRateDuration'], mood_df=mood_df, pain_df=pain_df, device=device)
         pain_df = insert_data_pain(nBlock, trail, (color_index+1), curr_color, pain, pain_df)
 
-        if params['recordPhysio']:
-            report_event(params['serialBiopac'], BIOPAC_EVENTS[f'{prefix}_ITIpost'])
+        report_event(params['serialBiopac'], BIOPAC_EVENTS[f'{prefix}_ITIpost'])
         helpers.iti(window, params, 'post', keyboard, device, mood_df, pain_df)
 
         helpers.save_backup(params, Mood=mood_df, Pain=pain_df)

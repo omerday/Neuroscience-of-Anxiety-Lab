@@ -107,9 +107,11 @@ PARADIGM_2_BIOPAC_EVENTS = {
 
 
 def report_event(ser: serial.Serial, event_num):
+    print(f"{round(time.time(), 2)} - Sending event {event_num} to BioPac - {hex(event_num).encode()}")
+    if not ser:
+        return
     if not ser.is_open:
         ser.open()
-    print(f"{round(time.time(), 2)} - Sending event {event_num} to BioPac - {hex(event_num).encode()}")
     ser.write(hex(event_num).encode())
     time.sleep(0.05)
     # print(f"Sending event RR to BioPac - {'RR'.encode()}")
