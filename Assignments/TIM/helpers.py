@@ -67,3 +67,9 @@ def graceful_shutdown(window, params, device, mood_df, pain_df):
     window.close()
     core.quit()
     exit()
+
+
+def show_waiting_for_next_block(window: visual.Window, params: dict, ):
+    image = visual.ImageStim(window, f"./img/wait_E.jpeg" if params['language'] == 'English' else f"./img/wait_{params['gender'][0]}.jpeg", units="norm", size=(2, 2))
+    image.draw()
+    window.flip()

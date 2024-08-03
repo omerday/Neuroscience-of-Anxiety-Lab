@@ -18,6 +18,20 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
         for i in range(repeats):
             colors_order.append(color)
     trail = 0
+
+    if params['fmriVersion']:
+        keyboard = io.devices.keyboard
+        helpers.show_waiting_for_next_block(window, params)
+        keyboard.getKeys()
+        five = False
+        while not five:
+            for event in keyboard.getKeys():
+                if event.key == '5':
+                    five = True
+                    break
+                elif event.key == 'escape':
+                    helpers.graceful_shutdown(window, params, device, mood_df, pain_df)
+
     while colors_order:
         trail += 1
         curr_color = random.choice(colors_order)
@@ -26,6 +40,7 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
         temperature = params['temps'][color_index]
         # Set the Prefix here
         prefix = params['Ts'][color_index]
+
         report_event(params['serialBiopac'], BIOPAC_EVENTS[f'{prefix}_ITIpre'])
         helpers.iti(window, params, 'pre', keyboard, device, mood_df, pain_df)
         if params['paradigm'] == 1:
