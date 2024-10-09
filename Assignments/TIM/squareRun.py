@@ -6,6 +6,7 @@ from psychopy.iohub.client.keyboard import Keyboard
 import random
 import VAS
 import helpers
+from Assignments.TIM.helpers import fixation_before_block
 from serialHandler import *
 from dataHandler import *
 
@@ -17,8 +18,8 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
     for color in params['colors']:
         for i in range(repeats):
             colors_order.append(color)
-    trail = 0
-
+    trial = 0
+    timings = helpers.create_timing_array(params)
     if params['fmriVersion']:
         keyboard = io.devices.keyboard
         helpers.show_waiting_for_next_block(window, params)
@@ -31,9 +32,11 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
                     break
                 elif event.key == 'escape':
                     helpers.graceful_shutdown(window, params, device, mood_df, pain_df)
-
+        params['fmriStartTime'] = time.time()
+        fixation_before_block(window, params, device, mood_df, pain_df, keyboard)
     while colors_order:
-        trail += 1
+        trial += 1
+        trial_timing = timings.pop()
         curr_color = random.choice(colors_order)
         colors_order.remove(curr_color)
         color_index = params['colors'].index(curr_color)
@@ -42,7 +45,7 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
         prefix = params['Ts'][color_index]
 
         report_event(params['serialBiopac'], BIOPAC_EVENTS[f'{prefix}_ITIpre'])
-        helpers.iti(window, params, 'pre', keyboard, device, mood_df, pain_df)
+        helpers.iti(window, params, 'pre', keyboard, device, mood_df, pain_df, trial_timing['preITI'])
         if params['paradigm'] == 1:
             for i in range(1, 6):
                 if params['recordPhysio']:
@@ -74,13 +77,14 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
             window.flip()
             start_time = time.time()
             sec = 2
-            sec = helpers.wait_for_time_2(window, params, device, mood_df, pain_df, start_time, 2, keyboard, prefix, sec)
+            sec = helpers.wait_for_time_2(window, params, device, mood_df, pain_df, start_time, trial_timing['squareOnset'], keyboard, prefix, sec)
             # Remove square from the screen
             square.image = "./img/squares/blank.jpg"
             square.draw()
             window.mouseVisible = False
             window.flip()
-            helpers.wait_for_time_2(window, params, device, mood_df, pain_df, start_time, display_time, keyboard, prefix, sec)
+            blank_screen_time = trial_timing['squareBlankScreen'] + trial_timing['squareJitter']
+            helpers.wait_for_time_2(window, params, device, mood_df, pain_df, start_time, blank_screen_time , keyboard, prefix, sec)
 
         if params['painSupport']:
             import heatHandler
@@ -88,11 +92,11 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
             heatHandler.deliver_pain(window, float(temperature), device)
 
         report_event(params['serialBiopac'], BIOPAC_EVENTS[f'{prefix}_PainRatingScale'])
-        pain = VAS.run_vas(window, io, params, "PainRating", duration=params['painRateDuration'], mood_df=mood_df, pain_df=pain_df, device=device)
-        pain_df = insert_data_pain(nBlock, trail, (color_index+1), curr_color, pain, pain_df)
+        pain = VAS.run_vas(window, io, params, "PainRating", duration=trial_timing['painRating'], mood_df=mood_df, pain_df=pain_df, device=device)
+        pain_df = insert_data_pain(nBlock, trial, (color_index+1), curr_color, pain, pain_df)
 
         report_event(params['serialBiopac'], BIOPAC_EVENTS[f'{prefix}_ITIpost'])
-        helpers.iti(window, params, 'post', keyboard, device, mood_df, pain_df)
+        helpers.iti(window, params, 'post', keyboard, device, mood_df, pain_df, trial_timing['postITI'])
 
         helpers.save_backup(params, Mood=mood_df, Pain=pain_df)
 
