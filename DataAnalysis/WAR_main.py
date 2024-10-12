@@ -163,7 +163,8 @@ def display_image(image_path, min_time, max_time):
     cv2_display_image("Image", img, random_duration)
 
 
-def move_pointer_generator(scale, window, start_time, serial_value, serial_port, lower_bound, upper_bound, timeout):
+def move_pointer_generator(scale, window, scale_start_time, serial_value, serial_port, lower_bound, upper_bound, timeout,
+                           df_log, start_time):
     def move_pointer(event):
         if event.char == "1":
             scale_value = int(scale.get())
@@ -174,17 +175,17 @@ def move_pointer_generator(scale, window, start_time, serial_value, serial_port,
             if scale_value < upper_bound:
                 scale.set(scale_value + 1)
         elif event.char == "2":
-            #report_event(serial_port, serial_value)
+            report_event(serial_port, serial_value, df_log, start_time)
             global scale_final
             scale_final = scale.get()
-            elapsed_time = time.time() - start_time
+            elapsed_time = time.time() - scale_start_time
             if timeout > elapsed_time:
                 time.sleep(timeout - elapsed_time)
             window.destroy()
     return move_pointer
 
 
-def create_scale(serial_value, serial_port, scale_image_path, lower_bound, upper_bound, timeout):
+def create_scale(serial_value, serial_port, scale_image_path, lower_bound, upper_bound, timeout, df_log, start_time):
     window = tk.Tk()
     window.attributes("-fullscreen", True)
     scale_font = font.Font(family="Helvetica", size=32, weight="bold")
@@ -212,9 +213,9 @@ def create_scale(serial_value, serial_port, scale_image_path, lower_bound, upper
 
     global scale_final
     scale_final = 0
-    start_time = time.time()
-    window.bind("<Key>", move_pointer_generator(scale, window, start_time, serial_value, serial_port,
-                                                lower_bound, upper_bound, timeout))
+    scale_start_time = time.time()
+    window.bind("<Key>", move_pointer_generator(scale, window, scale_start_time, serial_value, serial_port,
+                                                lower_bound, upper_bound, timeout, df_log, start_time))
     window.focus_force()
     window.mainloop()
     return scale_final
@@ -242,21 +243,21 @@ def washout_task(serial_port, events_encoding, set_number, df_log, start_time, d
         report_event(serial_port, events_encoding["washout_task_ITI"], df_log, start_time)
         display_image(PLUS_IMAGE_PATH, ITI_times[i], ITI_times[i])
 
-        report_event(serial_port, events_encoding["washout_task_shape"], df_log, start_time)
+        report_event(serial_port, events_encoding["washout_task_shape"], df_log, start_time, images[indexes[i]])
         display_image(images[indexes[i]], shape_times[i], shape_times[i])
 
-        report_event(serial_port, events_encoding["washout_task_shape_dots"], df_log, start_time)
+        report_event(serial_port, events_encoding["washout_task_shape_dots"], df_log, start_time, images_dots[indexes[i]])
         display_image(images_dots[indexes[i]], 0.2, 0.2)
 
-        report_event(serial_port, events_encoding["washout_task_shape2"], df_log, start_time)
+        report_event(serial_port, events_encoding["washout_task_shape2"], df_log, start_time, images[indexes[i]])
         display_image(images[indexes[i]], 2, 2)
 
         # This is so it looks better after the scale windows closes
         display_image(PLUS_IMAGE_PATH, 0.01, 0.01)
 
         report_event(serial_port, events_encoding["washout_task_rate"], df_log, start_time)
-        answer = create_scale(events_encoding["block_rating_locked"], serial_port,
-                     WASHOUT_SCALE_IMAGE_PATH, 0, 5, 4)
+        answer = create_scale(events_encoding["washout_task_rate_locked"], serial_port,
+                     WASHOUT_SCALE_IMAGE_PATH, 0, 5, 4, df_log, start_time)
 
         df_results.loc[len(df_results)] = [None, None, None, None, set_number, indexes[i],
                                            int(answer == dots[indexes[i]])]
@@ -285,7 +286,7 @@ def execute_rest(events_encoding, serial_port, rest_index, df_log, start_time, d
 
 def execute_block(block_type, image_generator, events_encoding, serial_port, block_offset, df_log, start_time,
                   df_results, block_index):
-    random_times = generate_random_numbers(22, 5.0, 1)
+    random_times = generate_random_numbers(22, 4.5, 2)
     images = image_generator.get_images()
     for i in range(len(images)):
         report_event(serial_port, events_encoding["pic_base"] + i + block_offset, df_log, start_time, images[i])
@@ -295,12 +296,14 @@ def execute_block(block_type, image_generator, events_encoding, serial_port, blo
     display_image(PLUS_IMAGE_PATH, 3, 3)  # Rest
 
     report_event(serial_port, events_encoding["block_rating_neg"] + block_offset, df_log, start_time)
-    emotional_scale_neg = create_scale(events_encoding["block_rating_locked"] + block_offset, serial_port,
-                                       EMOTIONAL_SCALE_NEG_IMAGE_PATH, 1, 7, 6)
+    emotional_scale_neg = create_scale(events_encoding["block_rating_neg_locked"] + block_offset, serial_port,
+                                       EMOTIONAL_SCALE_NEG_IMAGE_PATH, 1, 7, 6,
+                                       df_log, start_time)
 
     report_event(serial_port, events_encoding["block_rating_pos"] + block_offset, df_log, start_time)
-    emotional_scale_pos = create_scale(events_encoding["block_rating_locked"] + block_offset, serial_port,
-                                       EMOTIONAL_SCALE_POS_IMAGE_PATH, 1, 7, 6)
+    emotional_scale_pos = create_scale(events_encoding["block_rating_pos_locked"] + block_offset, serial_port,
+                                       EMOTIONAL_SCALE_POS_IMAGE_PATH, 1, 7, 6,
+                                       df_log, start_time)
 
     df_results.loc[len(df_results)] = [block_type.name, block_index, emotional_scale_neg, emotional_scale_pos,
                                        None, None, None]
