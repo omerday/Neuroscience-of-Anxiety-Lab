@@ -9,7 +9,8 @@ FIRST_RUN_EVENTS_ENCODING = {
     'block_rating_neg': 16,
     'block_rating_pos': 17,
     'block_ITI': 18,
-    'block_rating_locked': 19,
+    'block_rating_neg_locked': 19,
+    'block_rating_pos_locked': 20,
     'run_rest': 2,
     'run_rest_2': 4,
     'washout_task_ITI': 60,
@@ -17,6 +18,7 @@ FIRST_RUN_EVENTS_ENCODING = {
     'washout_task_shape_dots': 62,
     'washout_task_shape2': 63,
     'washout_task_rate': 64,
+    'washout_task_rate_locked': 65
 }
 
 
