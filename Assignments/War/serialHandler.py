@@ -13,12 +13,12 @@ FIRST_RUN_EVENTS_ENCODING = {
     'block_rating_pos_locked': 20,
     'run_rest': 2,
     'run_rest_2': 4,
-    'washout_task_ITI': 60,
-    'washout_task_shape': 61,
-    'washout_task_shape_dots': 62,
-    'washout_task_shape2': 63,
-    'washout_task_rate': 64,
-    'washout_task_rate_locked': 65
+    'washout_task_ITI': 70,
+    'washout_task_shape': 71,
+    'washout_task_shape_dots': 72,
+    'washout_task_shape2': 73,
+    'washout_task_rate': 74,
+    'washout_task_rate_locked': 75
 }
 
 
