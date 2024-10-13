@@ -20,6 +20,7 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
             colors_order.append(color)
     trial = 0
     timings = helpers.create_timing_array(params)
+    event_onset_df = setup_fmri_onset_file()
     if params['fmriVersion']:
         keyboard = io.devices.keyboard
         helpers.show_waiting_for_next_block(window, params)
@@ -33,6 +34,9 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
                 elif event.key == 'escape':
                     helpers.graceful_shutdown(window, params, device, mood_df, pain_df)
         params['fmriStartTime'] = time.time()
+        event = PARADIGM_2_BIOPAC_EVENTS['start_cycle']
+        report_event(params['serialBiopac'], event)
+        event_onset_df = insert_data_fmri_events(params, 12, event, event_onset_df)
         fixation_before_block(window, params, device, mood_df, pain_df, keyboard)
     while colors_order:
         trial += 1
@@ -43,8 +47,9 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
         temperature = params['temps'][color_index]
         # Set the Prefix here
         prefix = params['Ts'][color_index]
-
-        report_event(params['serialBiopac'], BIOPAC_EVENTS[f'{prefix}_ITIpre'])
+        event = BIOPAC_EVENTS[f'{prefix}_ITIpre']
+        report_event(params['serialBiopac'], event)
+        event_onset_df = insert_data_fmri_events(params, event, trial_timing['preITI'], event_onset_df)
         helpers.iti(window, params, 'pre', keyboard, device, mood_df, pain_df, trial_timing['preITI'])
         if params['paradigm'] == 1:
             for i in range(1, 6):

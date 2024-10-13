@@ -1,4 +1,5 @@
 import os
+import time
 from time import strftime, localtime
 import pandas as pd
 
@@ -16,11 +17,20 @@ HEADERS_MOOD = [
     'Score'
 ]
 
+HEADERS_FMRI_ONSET_FILE = [
+    'onset',
+    'duration',
+    'condition'
+]
+
 
 def setup_data_frame():
     df_pain = pd.DataFrame(columns=HEADERS_PAIN)
     df_mood = pd.DataFrame(columns=HEADERS_MOOD)
     return df_pain, df_mood
+
+def setup_fmri_onset_file():
+    return pd.DataFrame(columns=HEADERS_FMRI_ONSET_FILE)
 
 
 def insert_data_pain(Block, trial, tempNumber, color, pain, pain_df: pd.DataFrame):
@@ -53,6 +63,15 @@ def insert_data_mood(round: str, scores, mood_df: pd.DataFrame):
         mood_df = pd.concat([mood_df, pd.DataFrame.from_records([dict_layout])])
 
     return mood_df
+
+def insert_data_fmri_events(params:dict, duration: float, event: int, event_onset: pd.DataFrame):
+    dict = {
+        'onset': round(time.time() - params["fmriStartTime"], 2),
+        'duration': duration,
+        'condition': event,
+        }
+
+    return pd.concat([event_onset, pd.DataFrame.from_records(dict)])
 
 def export_data(params: dict, **kwargs):
     folder = './data'
