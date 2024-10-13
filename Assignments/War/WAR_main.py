@@ -130,8 +130,10 @@ def cv2_display_image(window_name, image, timeout_seconds):
     start_time = time.time()
     cv2.imshow(window_name, image)
     while time.time() - start_time < timeout_seconds:
-        cv2.waitKey(1)
-        time.sleep(0.01)
+        key = cv2.waitKey(1)
+        if key == 27:  # esc is pressed
+            raise Exception("Esc is pressed")
+        time.sleep(0.001)
 
 
 def cv2_display_image_with_input(window_name, image_path, timeout, specific_value=None):
@@ -143,13 +145,15 @@ def cv2_display_image_with_input(window_name, image_path, timeout, specific_valu
     cv2.imshow(window_name, img)
     while True:
         user_input = cv2.waitKey(1)
+        if user_input == 27:  # esc is pressed
+            raise Exception("Esc is pressed")
         if specific_value is None:
             if user_input != -1:
                 break
         else:
             if user_input == specific_value:
                 break
-        time.sleep(0.01)
+        time.sleep(0.001)
     elapsed_time = time.time() - start_time
     if timeout > elapsed_time:
         time.sleep(timeout - elapsed_time)
@@ -252,7 +256,7 @@ def washout_task(serial_port, events_encoding, set_number, df_log, start_time, d
         display_image(images[indexes[i]], 2)
 
         # This is so it looks better after the scale windows closes
-        display_image(PLUS_IMAGE_PATH, 0.01)
+        display_image(PLUS_IMAGE_PATH, 0)
 
         report_event(serial_port, events_encoding["washout_task_rate"], df_log, start_time)
         answer = create_scale(events_encoding["washout_task_rate_locked"], serial_port,
@@ -321,43 +325,46 @@ def execute_run(run_index, neg_image_generator, neut_image_generator, pos_image_
     df_results = pd.DataFrame(columns=['BlockType', 'BlockIndex', 'NegativeEmotionalScale', 'PositiveEmotionalScale',
                                        'WashoutTaskIndex', 'WashoutImageIndex', 'IsCorrect'])
 
-    cv2_display_image_with_input("Image", START_IMAGE_PATH, 0, ord('5'))
     start_time = datetime.now()
 
-    report_event(serial_port, events_encoding["fixation"], df_log, start_time)
-    display_image(PLUS_IMAGE_PATH, 8)
+    try:
+        cv2_display_image_with_input("Image", START_IMAGE_PATH, 0, ord('5'))
+        start_time = datetime.now()
 
-    # Randomize the order of the blocks
-    block_types = [(BlockTypes.NEG, neg_image_generator), (BlockTypes.NEUT, neut_image_generator),
-                   (BlockTypes.POS, pos_image_generator)]
-    random.shuffle(block_types)
+        report_event(serial_port, events_encoding["fixation"], df_log, start_time)
+        display_image(PLUS_IMAGE_PATH, 8)
 
-    for i in range(len(block_types)):
-        block_type, image_generator = block_types[i]
-        if block_type == BlockTypes.NEG:
-            block_offset = 0
-        elif block_type == BlockTypes.NEUT:
-            block_offset = 20
-        else:
-            block_offset = 40
+        # Randomize the order of the blocks
+        block_types = [(BlockTypes.NEG, neg_image_generator), (BlockTypes.NEUT, neut_image_generator),
+                       (BlockTypes.POS, pos_image_generator)]
+        random.shuffle(block_types)
 
-        report_event(serial_port, events_encoding["emotional_slide"] + block_offset, df_log, start_time)
-        display_emotional_slide(block_type)
+        for i in range(len(block_types)):
+            block_type, image_generator = block_types[i]
+            if block_type == BlockTypes.NEG:
+                block_offset = 0
+            elif block_type == BlockTypes.NEUT:
+                block_offset = 20
+            else:
+                block_offset = 40
 
-        execute_block(block_type, image_generator, events_encoding, serial_port, block_offset, df_log, start_time,
-                      df_results, 1)
-        execute_block(block_type, image_generator, events_encoding, serial_port, block_offset, df_log, start_time,
-                      df_results, 2)
-        execute_block(block_type, image_generator, events_encoding, serial_port, block_offset, df_log, start_time,
-                      df_results, 3)
+            report_event(serial_port, events_encoding["emotional_slide"] + block_offset, df_log, start_time)
+            display_emotional_slide(block_type)
 
-        if i != len(block_types) - 1:
-            execute_rest(events_encoding, serial_port, i + 1, df_log, start_time, df_results)
+            execute_block(block_type, image_generator, events_encoding, serial_port, block_offset, df_log, start_time,
+                          df_results, 1)
+            execute_block(block_type, image_generator, events_encoding, serial_port, block_offset, df_log, start_time,
+                          df_results, 2)
+            execute_block(block_type, image_generator, events_encoding, serial_port, block_offset, df_log, start_time,
+                          df_results, 3)
 
-    start_time_str = start_time.strftime("%Y_%m_%d_%H_%M_%S")
+            if i != len(block_types) - 1:
+                execute_rest(events_encoding, serial_port, i + 1, df_log, start_time, df_results)
+    finally:
+        start_time_str = start_time.strftime("%Y_%m_%d_%H_%M_%S")
 
-    df_log.to_csv("WAR_LogFile_Subject_{}_Run_{}_{}.csv".format(subject_index, run_index, start_time_str))
-    df_results.to_csv("WAR_ResultsFile_Subject_{}_Run_{}_{}.csv".format(subject_index, run_index, start_time_str))
+        df_log.to_csv("WAR_LogFile_Subject_{}_Run_{}_{}.csv".format(subject_index, run_index, start_time_str))
+        df_results.to_csv("WAR_ResultsFile_Subject_{}_Run_{}_{}.csv".format(subject_index, run_index, start_time_str))
 
 
 def get_subject_index():
@@ -418,7 +425,10 @@ def execute_experiment():
 
 
 def main():
-    execute_experiment()
+    try:
+        execute_experiment()
+    except Exception:
+        pass
 
 
 if __name__ == "__main__":
