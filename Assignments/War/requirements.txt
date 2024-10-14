@@ -1,0 +1,4 @@
+opencv-python>=4.10.0.84
+pillow>=10.2.0
+pandas>=2.2.2
+pyserial>=3.5
