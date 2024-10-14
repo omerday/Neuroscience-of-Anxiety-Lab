@@ -264,18 +264,18 @@ def washout_task(serial_port, events_encoding, set_number, df_log, start_time, d
 
 def display_emotional_slide(block_type):
     if block_type == BlockTypes.NEG:
-        display_image(NEG_BLOCK_START_PATH, 4)
+        display_image(NEG_BLOCK_START_PATH, 6)
     elif block_type == BlockTypes.NEUT:
-        display_image(NEUT_BLOCK_START_PATH, 4)
+        display_image(NEUT_BLOCK_START_PATH, 6)
     elif block_type == BlockTypes.POS:
-        display_image(POS_BLOCK_START_PATH, 4)
+        display_image(POS_BLOCK_START_PATH, 6)
 
 
 def execute_rest(events_encoding, serial_port, rest_index, df_log, start_time, df_results):
     report_event(serial_port, events_encoding["run_rest"], df_log, start_time)
     display_image(SHORT_REST_IMAGE_PATH, 8)
 
-    display_image(WASHOUT_START_IMAGE_PATH, 4)
+    display_image(WASHOUT_START_IMAGE_PATH, 6)
 
     washout_task(serial_port, events_encoding, rest_index, df_log, start_time, df_results)
 
