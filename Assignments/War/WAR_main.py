@@ -9,6 +9,7 @@ from PIL import Image, ImageTk
 from tkinter import Canvas
 from enum import Enum
 import pandas as pd
+import ctypes
 import serial
 from serialHandler import FIRST_RUN_EVENTS_ENCODING, SECOND_RUN_EVENTS_ENCODING, report_event
 
@@ -438,10 +439,13 @@ def execute_experiment():
 
     subject_index_str = get_subject_index()
 
+    ctypes.windll.user32.ShowCursor(False)
+
     execute_run(1, neg_image_generator, neut_image_generator, pos_image_generator, serial_port, subject_index_str)
     cv2_display_image_with_input("Image", LONG_REST_PATH, 0)
     execute_run(2, neg_image_generator, neut_image_generator, pos_image_generator, serial_port, subject_index_str)
 
+    ctypes.windll.user32.ShowCursor(True)
     cv2.destroyAllWindows()
 
 
