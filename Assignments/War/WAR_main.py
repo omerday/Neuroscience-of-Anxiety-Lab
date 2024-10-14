@@ -135,7 +135,10 @@ def cv2_display_image(window_name, image, timeout_seconds):
     start_time = time.time()
     cv2.imshow(window_name, image)
     while time.time() - start_time < timeout_seconds:
-        cv2.waitKey(1)
+        key = cv2.waitKey(1)
+        if key == 27:
+            print("ESC pressed. Exiting...")
+            raise Exception("ESC pressed. Exiting...")
         time.sleep(0.01)
 
 
@@ -151,6 +154,9 @@ def cv2_display_image_with_input(window_name, image_path, timeout, specific_valu
     cv2.imshow(window_name, img)
     while True:
         user_input = cv2.waitKey(1)
+        if user_input == 27:
+            print("ESC pressed. Exiting...")
+            raise Exception("ESC pressed. Exiting...")
         if specific_value is None:
             if user_input != -1:
                 break
@@ -204,6 +210,17 @@ def scale_timeout_generator(scale, window):
     return scale_timeout
 
 
+def close_generator(window):
+    def close(event):
+        window.destroy()
+        print("ESC pressed. Exiting...")
+        # Exceptions here don't stop the program, so we need to raise them from outside the callback
+        global esc_pressed
+        esc_pressed = True
+
+    return close
+
+
 def create_scale(serial_value, serial_port, scale_image_path, lower_bound, upper_bound, timeout, df_log, start_time):
     window = tk.Tk()
     screen_width = window.winfo_screenwidth()
@@ -240,11 +257,20 @@ def create_scale(serial_value, serial_port, scale_image_path, lower_bound, upper
     global scale_final
     scale_final = 0
     scale_start_time = time.time()
+
+    global esc_pressed
+    esc_pressed = False
+
     window.bind("<Key>", move_pointer_generator(scale, window, scale_start_time, serial_value, serial_port,
                                                 lower_bound, upper_bound, timeout, df_log, start_time))
+    window.bind('<Escape>', close_generator(window))
     window.focus_force()
     window.after(timeout * 1000, scale_timeout_generator(scale, window))
     window.mainloop()
+
+    if esc_pressed:
+        raise Exception("ESC pressed. Exiting...")
+
     return scale_final
 
 
@@ -352,45 +378,47 @@ def execute_run(run_index, neg_image_generator, neut_image_generator, pos_image_
     cv2_display_image_with_input("Image", START_IMAGE_PATH, 0, ord('5'))
     start_time = datetime.now()
 
-    report_event(serial_port, events_encoding["fixation"], df_log, start_time)
-    display_image(PLUS_IMAGE_PATH, 8)
+    try:
+        report_event(serial_port, events_encoding["fixation"], df_log, start_time)
+        display_image(PLUS_IMAGE_PATH, 8)
 
-    ITI_times = generate_random_numbers(12, 3.5, 1, 3)
+        ITI_times = generate_random_numbers(12, 3.5, 1, 3)
 
-    # Randomize the order of the blocks
-    block_types = [(BlockTypes.NEG, neg_image_generator), (BlockTypes.NEUT, neut_image_generator),
-                   (BlockTypes.POS, pos_image_generator)]
-    random.shuffle(block_types)
+        # Randomize the order of the blocks
+        block_types = [(BlockTypes.NEG, neg_image_generator), (BlockTypes.NEUT, neut_image_generator),
+                       (BlockTypes.POS, pos_image_generator)]
+        random.shuffle(block_types)
 
-    for i in range(len(block_types)):
-        block_type, image_generator = block_types[i]
-        if block_type == BlockTypes.NEG:
-            block_offset = 0
-        elif block_type == BlockTypes.NEUT:
-            block_offset = 20
-        else:
-            block_offset = 40
+        for i in range(len(block_types)):
+            block_type, image_generator = block_types[i]
+            if block_type == BlockTypes.NEG:
+                block_offset = 0
+            elif block_type == BlockTypes.NEUT:
+                block_offset = 20
+            else:
+                block_offset = 40
 
-        report_event(serial_port, events_encoding["emotional_slide"] + block_offset, df_log, start_time)
-        display_emotional_slide(block_type)
+            report_event(serial_port, events_encoding["emotional_slide"] + block_offset, df_log, start_time)
+            display_emotional_slide(block_type)
 
-        execute_block(block_type, image_generator, events_encoding, serial_port, block_offset, df_log, start_time,
-                      df_results, 1, ITI_times[i])
-        execute_block(block_type, image_generator, events_encoding, serial_port, block_offset, df_log, start_time,
-                      df_results, 2, ITI_times[i])
-        execute_block(block_type, image_generator, events_encoding, serial_port, block_offset, df_log, start_time,
-                      df_results, 3, ITI_times[i])
+            execute_block(block_type, image_generator, events_encoding, serial_port, block_offset, df_log, start_time,
+                          df_results, 1, ITI_times[i])
+            execute_block(block_type, image_generator, events_encoding, serial_port, block_offset, df_log, start_time,
+                          df_results, 2, ITI_times[i])
+            execute_block(block_type, image_generator, events_encoding, serial_port, block_offset, df_log, start_time,
+                          df_results, 3, ITI_times[i])
 
-        if i != len(block_types) - 1:
-            execute_rest(events_encoding, serial_port, i + 1, df_log, start_time, df_results)
+            if i != len(block_types) - 1:
+                execute_rest(events_encoding, serial_port, i + 1, df_log, start_time, df_results)
 
-    start_time_str = start_time.strftime("%Y_%m_%d_%H_%M_%S")
+    finally:
+        start_time_str = start_time.strftime("%Y_%m_%d_%H_%M_%S")
 
-    if not os.path.exists("data"):
-        os.makedirs("data")
+        if not os.path.exists("data"):
+            os.makedirs("data")
 
-    df_log.to_csv("data/WAR_LogFile_Subject_{}_Run_{}_{}.csv".format(subject_index, run_index, start_time_str))
-    df_results.to_csv("data/WAR_ResultsFile_Subject_{}_Run_{}_{}.csv".format(subject_index, run_index, start_time_str))
+        df_log.to_csv("data/WAR_LogFile_Subject_{}_Run_{}_{}.csv".format(subject_index, run_index, start_time_str))
+        df_results.to_csv("data/WAR_ResultsFile_Subject_{}_Run_{}_{}.csv".format(subject_index, run_index, start_time_str))
 
 
 def get_subject_index():
@@ -436,7 +464,15 @@ def get_subject_index():
     name_entry.pack()
     sub_btn.pack()
 
+    global esc_pressed
+    esc_pressed = False
+
+    window.bind('<Escape>', close_generator(window))
     window.mainloop()
+
+    if esc_pressed:
+        raise Exception("ESC pressed. Exiting...")
+
     return subject_index
 
 
