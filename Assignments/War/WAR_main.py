@@ -13,6 +13,7 @@ import ctypes
 import serial
 from serialHandler import FIRST_RUN_EVENTS_ENCODING, SECOND_RUN_EVENTS_ENCODING, report_event
 
+GRID_PATH = "WAR_images/Utils/Grid.jpg"
 T1_INSTRUCTIONS_PATH = "WAR_images/Utils/T1Instructions.jpg"
 BASELINE_INSTRUCTIONS_PATH = "WAR_images/Utils/BaselineInstructions.jpg"
 USER_INPUT_IMAGE_PATH = "WAR_images/Utils/UserInput.jpg"
@@ -179,7 +180,7 @@ def display_image(image_path, timeout):
 
 
 def move_pointer_generator(scale, window, scale_start_time, serial_value, serial_port, lower_bound, upper_bound, timeout,
-                           df_log, start_time):
+                           df_log, start_time, return_on_lock):
     def move_pointer(event):
         if event.char == "b":
             scale_value = int(scale.get())
@@ -196,9 +197,10 @@ def move_pointer_generator(scale, window, scale_start_time, serial_value, serial
             report_event(serial_port, serial_value, df_log, start_time)
             global scale_final
             scale_final = scale.get()
-            elapsed_time = time.time() - scale_start_time
-            if timeout > elapsed_time:
-                time.sleep(timeout - elapsed_time)
+            if not return_on_lock:
+                elapsed_time = time.time() - scale_start_time
+                if timeout > elapsed_time:
+                    time.sleep(timeout - elapsed_time)
             window.destroy()
     return move_pointer
 
@@ -223,7 +225,8 @@ def close_generator(window):
     return close
 
 
-def create_scale(serial_value, serial_port, scale_image_path, lower_bound, upper_bound, timeout, df_log, start_time):
+def create_scale(serial_value, serial_port, scale_image_path, lower_bound, upper_bound, timeout, df_log, start_time,
+                 return_on_lock=False):
     window = tk.Tk()
     screen_width = window.winfo_screenwidth()
     screen_height = window.winfo_screenheight()
@@ -264,7 +267,7 @@ def create_scale(serial_value, serial_port, scale_image_path, lower_bound, upper
     esc_pressed = False
 
     window.bind("<Key>", move_pointer_generator(scale, window, scale_start_time, serial_value, serial_port,
-                                                lower_bound, upper_bound, timeout, df_log, start_time))
+                                                lower_bound, upper_bound, timeout, df_log, start_time, return_on_lock))
     window.bind('<Escape>', close_generator(window))
     window.focus_force()
     window.after(timeout * 1000, scale_timeout_generator(scale, window))
