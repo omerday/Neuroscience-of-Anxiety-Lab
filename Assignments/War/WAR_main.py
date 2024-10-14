@@ -13,6 +13,7 @@ import ctypes
 import serial
 from serialHandler import FIRST_RUN_EVENTS_ENCODING, SECOND_RUN_EVENTS_ENCODING, report_event
 
+BASELINE_INSTRUCTIONS_PATH = "WAR_images/Utils/BaselineInstructions.jpg"
 USER_INPUT_IMAGE_PATH = "WAR_images/Utils/UserInput.jpg"
 START_IMAGE_PATH = "WAR_images/Utils/Start.jpeg"
 NEG_IMAGES_BASE_PATH = "WAR_images/NegImages"

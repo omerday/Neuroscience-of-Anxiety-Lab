@@ -18,7 +18,9 @@ FIRST_RUN_EVENTS_ENCODING = {
     'washout_task_shape_dots': 72,
     'washout_task_shape2': 73,
     'washout_task_rate': 74,
-    'washout_task_rate_locked': 75
+    'washout_task_rate_locked': 75,
+
+    'baseline_start': 200,
 }
 
 
@@ -39,8 +41,9 @@ SECOND_RUN_EVENTS_ENCODING = {
 
 def report_event(ser, event_num, df_log, start_time, image_name=""):
     print(f"{round(time.time(), 2)} - Sending event {event_num} to BioPac - {hex(event_num).encode()}")
-    time_diff = (datetime.now() - start_time).total_seconds()
-    df_log.loc[len(df_log)] = [time_diff, event_num, image_name]
+    if df_log is not None:
+        time_diff = (datetime.now() - start_time).total_seconds()
+        df_log.loc[len(df_log)] = [time_diff, event_num, image_name]
     if not ser:
         return
     if not ser.is_open:
