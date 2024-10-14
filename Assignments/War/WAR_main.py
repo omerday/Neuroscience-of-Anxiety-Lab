@@ -72,20 +72,20 @@ class BlockTypes(Enum):
     POS = 3
 
 
-def generate_random_numbers(total, base_value, max_diff):
+def generate_random_numbers(total, base_value, max_diff, n=4):
     """
     Generates 4 random numbers between 5 and 6, that sums up to 22
     Returns:
     A list of 4 numbers
     """
-    increments = [random.uniform(0, max_diff) for _ in range(3)]
+    increments = [random.uniform(0, max_diff) for _ in range(n-1)]
 
-    last_value = total - sum(increments) - (base_value * 3)
+    last_value = total - sum(increments) - (base_value * (n-1))
 
     if base_value <= last_value <= base_value + max_diff:
         numbers = [base_value + inc for inc in increments] + [last_value]
     else:
-        return generate_random_numbers(total, base_value, max_diff)  # Retry if out of bounds
+        return generate_random_numbers(total, base_value, max_diff, n)  # Retry if out of bounds
 
     random.shuffle(numbers)
     return numbers
@@ -284,7 +284,7 @@ def execute_rest(events_encoding, serial_port, rest_index, df_log, start_time, d
 
 
 def execute_block(block_type, image_generator, events_encoding, serial_port, block_offset, df_log, start_time,
-                  df_results, block_index):
+                  df_results, block_index, ITI_time):
     random_times = generate_random_numbers(22, 4.5, 2)
     images = image_generator.get_images()
     for i in range(len(images)):
@@ -308,7 +308,7 @@ def execute_block(block_type, image_generator, events_encoding, serial_port, blo
                                        None, None, None]
 
     report_event(serial_port, events_encoding["block_ITI"] + block_offset, df_log, start_time)
-    display_image(PLUS_IMAGE_PATH, 4)  # ITI
+    display_image(PLUS_IMAGE_PATH, ITI_time)  # ITI
 
 
 def execute_run(run_index, neg_image_generator, neut_image_generator, pos_image_generator, serial_port, subject_index):
@@ -326,6 +326,8 @@ def execute_run(run_index, neg_image_generator, neut_image_generator, pos_image_
 
     report_event(serial_port, events_encoding["fixation"], df_log, start_time)
     display_image(PLUS_IMAGE_PATH, 8)
+
+    ITI_times = generate_random_numbers(12, 3.5, 1, 3)
 
     # Randomize the order of the blocks
     block_types = [(BlockTypes.NEG, neg_image_generator), (BlockTypes.NEUT, neut_image_generator),
@@ -345,11 +347,11 @@ def execute_run(run_index, neg_image_generator, neut_image_generator, pos_image_
         display_emotional_slide(block_type)
 
         execute_block(block_type, image_generator, events_encoding, serial_port, block_offset, df_log, start_time,
-                      df_results, 1)
+                      df_results, 1, ITI_times[i])
         execute_block(block_type, image_generator, events_encoding, serial_port, block_offset, df_log, start_time,
-                      df_results, 2)
+                      df_results, 2, ITI_times[i])
         execute_block(block_type, image_generator, events_encoding, serial_port, block_offset, df_log, start_time,
-                      df_results, 3)
+                      df_results, 3, ITI_times[i])
 
         if i != len(block_types) - 1:
             execute_rest(events_encoding, serial_port, i + 1, df_log, start_time, df_results)
