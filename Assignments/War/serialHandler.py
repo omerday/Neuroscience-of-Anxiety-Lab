@@ -21,6 +21,7 @@ FIRST_RUN_EVENTS_ENCODING = {
     'washout_task_rate_locked': 75,
 
     'baseline_start': 200,
+    'T1_start': 201,
 }
 
 

@@ -1,5 +1,5 @@
 from WAR_main import cv2_display_image_with_input, display_image, BASELINE_INSTRUCTIONS_PATH, PLUS_IMAGE_PATH
-from serialHandler import FIRST_RUN_EVENTS_ENCODING, SECOND_RUN_EVENTS_ENCODING, report_event
+from serialHandler import FIRST_RUN_EVENTS_ENCODING, report_event
 
 
 def baseline():
