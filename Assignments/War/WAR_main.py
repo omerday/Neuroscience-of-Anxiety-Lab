@@ -191,7 +191,7 @@ def move_pointer_generator(scale, window, scale_start_time, serial_value, serial
             if scale_value < upper_bound:
                 scale.set(scale_value + 1)
         elif event.char == "c":
-            scale.config(fg="green")
+            scale.config(bg="green")
             scale.config(highlightbackground='green', highlightcolor='green')
             window.update_idletasks()
             report_event(serial_port, serial_value, df_log, start_time)
