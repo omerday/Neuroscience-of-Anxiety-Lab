@@ -145,7 +145,7 @@ def cv2_display_image(window_name, image, timeout_seconds):
         time.sleep(0.01)
 
 
-def cv2_display_image_with_input(window_name, image_path, timeout, specific_value=None):
+def cv2_display_image_with_input(window_name, image_path, timeout, specific_values=None):
     img = cv2.imread(image_path)
     cv2.namedWindow(window_name, cv2.WINDOW_NORMAL | cv2.WINDOW_KEEPRATIO)
     window = tk.Tk()
@@ -160,11 +160,11 @@ def cv2_display_image_with_input(window_name, image_path, timeout, specific_valu
         if user_input == 27:
             print("ESC pressed. Exiting...")
             raise Exception("ESC pressed. Exiting...")
-        if specific_value is None:
+        if specific_values is None:
             if user_input != -1:
                 break
         else:
-            if user_input == specific_value:
+            if user_input in specific_values:
                 break
         time.sleep(0.01)
     elapsed_time = time.time() - start_time
@@ -380,7 +380,7 @@ def execute_run(run_index, neg_image_generator, neut_image_generator, pos_image_
     df_results = pd.DataFrame(columns=['BlockType', 'BlockIndex', 'NegativeEmotionalScale', 'PositiveEmotionalScale',
                                        'WashoutTaskIndex', 'WashoutImageIndex', 'IsCorrect'])
 
-    cv2_display_image_with_input("Image", START_IMAGE_PATH, 0, ord('5'))
+    cv2_display_image_with_input("Image", START_IMAGE_PATH, 0, [ord('5')])
     start_time = datetime.now()
 
     try:
