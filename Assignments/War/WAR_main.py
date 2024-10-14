@@ -195,6 +195,15 @@ def move_pointer_generator(scale, window, scale_start_time, serial_value, serial
     return move_pointer
 
 
+def scale_timeout_generator(scale, window):
+    def scale_timeout():
+        global scale_final
+        scale_final = scale.get()
+        window.destroy()
+
+    return scale_timeout
+
+
 def create_scale(serial_value, serial_port, scale_image_path, lower_bound, upper_bound, timeout, df_log, start_time):
     window = tk.Tk()
     screen_width = window.winfo_screenwidth()
@@ -234,6 +243,7 @@ def create_scale(serial_value, serial_port, scale_image_path, lower_bound, upper
     window.bind("<Key>", move_pointer_generator(scale, window, scale_start_time, serial_value, serial_port,
                                                 lower_bound, upper_bound, timeout, df_log, start_time))
     window.focus_force()
+    window.after(timeout * 1000, scale_timeout_generator(scale, window))
     window.mainloop()
     return scale_final
 
