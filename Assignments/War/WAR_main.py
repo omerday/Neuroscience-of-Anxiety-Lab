@@ -447,7 +447,7 @@ def get_subject_index():
 
     global subject_index
     subject_index = ""
-    def submit():
+    def submit(event):
         global subject_index
         subject_index = subject_index_var.get()
 
@@ -457,12 +457,11 @@ def get_subject_index():
 
     name_entry = tk.Entry(window, textvariable=subject_index_var, font=('calibre', 20, 'normal'))
 
-    sub_btn = tk.Button(window, text='Submit', command=submit, font=('calibre', 18))
+    window.bind('<Return>', submit)
 
     name_label.pack()
     name_entry.focus_set()
     name_entry.pack()
-    sub_btn.pack()
 
     global esc_pressed
     esc_pressed = False
@@ -483,9 +482,9 @@ def execute_experiment():
     serial_port = None
     # serial_port = serial.Serial("COM1", 115200, bytesize=serial.EIGHTBITS, timeout=1)
 
-    subject_index_str = get_subject_index()
-
     ctypes.windll.user32.ShowCursor(False)
+
+    subject_index_str = get_subject_index()
 
     execute_run(1, neg_image_generator, neut_image_generator, pos_image_generator, serial_port, subject_index_str)
     cv2_display_image_with_input("Image", LONG_REST_PATH, 0)
