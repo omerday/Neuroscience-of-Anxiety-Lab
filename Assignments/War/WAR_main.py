@@ -165,15 +165,15 @@ def display_image(image_path, timeout):
 def move_pointer_generator(scale, window, scale_start_time, serial_value, serial_port, lower_bound, upper_bound, timeout,
                            df_log, start_time):
     def move_pointer(event):
-        if event.char == "1":
+        if event.char == "b":
             scale_value = int(scale.get())
             if scale_value > lower_bound:
                 scale.set(scale_value - 1)
-        elif event.char == "3":
+        elif event.char == "d":
             scale_value = int(scale.get())
             if scale_value < upper_bound:
                 scale.set(scale_value + 1)
-        elif event.char == "2":
+        elif event.char == "c":
             report_event(serial_port, serial_value, df_log, start_time)
             global scale_final
             scale_final = scale.get()
@@ -411,7 +411,7 @@ def execute_experiment():
     neut_image_generator = ImageRandomizer(NEUT_IMAGES_BASE_PATH)
     pos_image_generator = ImageRandomizer(POS_IMAGES_BASE_PATH)
     serial_port = None
-    #serial_port = serial.Serial("COM4", 115200, bytesize=serial.EIGHTBITS, timeout=1)
+    # serial_port = serial.Serial("COM1", 115200, bytesize=serial.EIGHTBITS, timeout=1)
 
     subject_index_str = get_subject_index()
 
