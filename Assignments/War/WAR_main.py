@@ -12,44 +12,44 @@ import pandas as pd
 import serial
 from serialHandler import FIRST_RUN_EVENTS_ENCODING, SECOND_RUN_EVENTS_ENCODING, report_event
 
-USER_INPUT_IMAGE_PATH = "neutral_scary_conditions_images/Utils/UserInput.jpg"
-START_IMAGE_PATH = "neutral_scary_conditions_images/Utils/Start.jpeg"
-NEG_IMAGES_BASE_PATH = "neutral_scary_conditions_images/NegImages"
-NEUT_IMAGES_BASE_PATH = "neutral_scary_conditions_images/NeutImages"
-POS_IMAGES_BASE_PATH = "neutral_scary_conditions_images/PosImages"
-PLUS_IMAGE_PATH = "neutral_scary_conditions_images/Utils/Plus.jpeg"
-EMOTIONAL_SCALE_POS_IMAGE_PATH = "neutral_scary_conditions_images/Utils/EmotionalScalePos.jpeg"
-EMOTIONAL_SCALE_NEG_IMAGE_PATH = "neutral_scary_conditions_images/Utils/EmotionalScaleNeg.jpeg"
-NEG_BLOCK_START_PATH = "neutral_scary_conditions_images/Utils/NegBlockStart.jpg"
-NEUT_BLOCK_START_PATH = "neutral_scary_conditions_images/Utils/NeutBlockStart.jpg"
-POS_BLOCK_START_PATH = "neutral_scary_conditions_images/Utils/PosBlockStart.jpg"
-LONG_REST_PATH = "neutral_scary_conditions_images/Utils/LongRest.jpeg"
-SHORT_REST_IMAGE_PATH = "neutral_scary_conditions_images/Utils/ShortRest.jpeg"
-WASHOUT_START_IMAGE_PATH = "neutral_scary_conditions_images/Utils/WashoutStart.jpeg"
-WASHOUT_SCALE_IMAGE_PATH = "neutral_scary_conditions_images/Utils/WashoutScale.JPG"
-WASHOUT_SET1_IMAGE1_PATH = "neutral_scary_conditions_images/Utils/Set1Shape1.JPG"
-WASHOUT_SET1_IMAGE1D_PATH = "neutral_scary_conditions_images/Utils/Set1Shape1D.JPG"
+USER_INPUT_IMAGE_PATH = "WAR_images/Utils/UserInput.jpg"
+START_IMAGE_PATH = "WAR_images/Utils/Start.jpeg"
+NEG_IMAGES_BASE_PATH = "WAR_images/NegImages"
+NEUT_IMAGES_BASE_PATH = "WAR_images/NeutImages"
+POS_IMAGES_BASE_PATH = "WAR_images/PosImages"
+PLUS_IMAGE_PATH = "WAR_images/Utils/Plus.jpeg"
+EMOTIONAL_SCALE_POS_IMAGE_PATH = "WAR_images/Utils/EmotionalScalePos.jpeg"
+EMOTIONAL_SCALE_NEG_IMAGE_PATH = "WAR_images/Utils/EmotionalScaleNeg.jpeg"
+NEG_BLOCK_START_PATH = "WAR_images/Utils/NegBlockStart.jpg"
+NEUT_BLOCK_START_PATH = "WAR_images/Utils/NeutBlockStart.jpg"
+POS_BLOCK_START_PATH = "WAR_images/Utils/PosBlockStart.jpg"
+LONG_REST_PATH = "WAR_images/Utils/LongRest.jpeg"
+SHORT_REST_IMAGE_PATH = "WAR_images/Utils/ShortRest.jpeg"
+WASHOUT_START_IMAGE_PATH = "WAR_images/Utils/WashoutStart.jpeg"
+WASHOUT_SCALE_IMAGE_PATH = "WAR_images/Utils/WashoutScale.JPG"
+WASHOUT_SET1_IMAGE1_PATH = "WAR_images/Utils/Set1Shape1.JPG"
+WASHOUT_SET1_IMAGE1D_PATH = "WAR_images/Utils/Set1Shape1D.JPG"
 WASHOUT_SET1_IMAGE1_DOTS = 1
-WASHOUT_SET1_IMAGE2_PATH = "neutral_scary_conditions_images/Utils/Set1Shape2.JPG"
-WASHOUT_SET1_IMAGE2D_PATH = "neutral_scary_conditions_images/Utils/Set1Shape2D.JPG"
+WASHOUT_SET1_IMAGE2_PATH = "WAR_images/Utils/Set1Shape2.JPG"
+WASHOUT_SET1_IMAGE2D_PATH = "WAR_images/Utils/Set1Shape2D.JPG"
 WASHOUT_SET1_IMAGE2_DOTS = 3
-WASHOUT_SET1_IMAGE3_PATH = "neutral_scary_conditions_images/Utils/Set1Shape3.JPG"
-WASHOUT_SET1_IMAGE3D_PATH = "neutral_scary_conditions_images/Utils/Set1Shape3D.JPG"
+WASHOUT_SET1_IMAGE3_PATH = "WAR_images/Utils/Set1Shape3.JPG"
+WASHOUT_SET1_IMAGE3D_PATH = "WAR_images/Utils/Set1Shape3D.JPG"
 WASHOUT_SET1_IMAGE3_DOTS = 4
-WASHOUT_SET1_IMAGE4_PATH = "neutral_scary_conditions_images/Utils/Set1Shape4.JPG"
-WASHOUT_SET1_IMAGE4D_PATH = "neutral_scary_conditions_images/Utils/Set1Shape4D.JPG"
+WASHOUT_SET1_IMAGE4_PATH = "WAR_images/Utils/Set1Shape4.JPG"
+WASHOUT_SET1_IMAGE4D_PATH = "WAR_images/Utils/Set1Shape4D.JPG"
 WASHOUT_SET1_IMAGE4_DOTS = 3
-WASHOUT_SET2_IMAGE1_PATH = "neutral_scary_conditions_images/Utils/Set2Shape1.JPG"
-WASHOUT_SET2_IMAGE1D_PATH = "neutral_scary_conditions_images/Utils/Set2Shape1D.JPG"
+WASHOUT_SET2_IMAGE1_PATH = "WAR_images/Utils/Set2Shape1.JPG"
+WASHOUT_SET2_IMAGE1D_PATH = "WAR_images/Utils/Set2Shape1D.JPG"
 WASHOUT_SET2_IMAGE1_DOTS = 2
-WASHOUT_SET2_IMAGE2_PATH = "neutral_scary_conditions_images/Utils/Set2Shape2.JPG"
-WASHOUT_SET2_IMAGE2D_PATH = "neutral_scary_conditions_images/Utils/Set2Shape2D.JPG"
+WASHOUT_SET2_IMAGE2_PATH = "WAR_images/Utils/Set2Shape2.JPG"
+WASHOUT_SET2_IMAGE2D_PATH = "WAR_images/Utils/Set2Shape2D.JPG"
 WASHOUT_SET2_IMAGE2_DOTS = 2
-WASHOUT_SET2_IMAGE3_PATH = "neutral_scary_conditions_images/Utils/Set2Shape3.JPG"
-WASHOUT_SET2_IMAGE3D_PATH = "neutral_scary_conditions_images/Utils/Set2Shape3D.JPG"
+WASHOUT_SET2_IMAGE3_PATH = "WAR_images/Utils/Set2Shape3.JPG"
+WASHOUT_SET2_IMAGE3D_PATH = "WAR_images/Utils/Set2Shape3D.JPG"
 WASHOUT_SET2_IMAGE3_DOTS = 2
-WASHOUT_SET2_IMAGE4_PATH = "neutral_scary_conditions_images/Utils/Set2Shape4.JPG"
-WASHOUT_SET2_IMAGE4D_PATH = "neutral_scary_conditions_images/Utils/Set2Shape4D.JPG"
+WASHOUT_SET2_IMAGE4_PATH = "WAR_images/Utils/Set2Shape4.JPG"
+WASHOUT_SET2_IMAGE4D_PATH = "WAR_images/Utils/Set2Shape4D.JPG"
 WASHOUT_SET2_IMAGE4_DOTS = 5
 
 WASHOUT_SET1_IMAGES = [WASHOUT_SET1_IMAGE1_PATH, WASHOUT_SET1_IMAGE2_PATH, WASHOUT_SET1_IMAGE3_PATH,
@@ -358,8 +358,11 @@ def execute_run(run_index, neg_image_generator, neut_image_generator, pos_image_
 
     start_time_str = start_time.strftime("%Y_%m_%d_%H_%M_%S")
 
-    df_log.to_csv("WAR_LogFile_Subject_{}_Run_{}_{}.csv".format(subject_index, run_index, start_time_str))
-    df_results.to_csv("WAR_ResultsFile_Subject_{}_Run_{}_{}.csv".format(subject_index, run_index, start_time_str))
+    if not os.path.exists("data"):
+        os.makedirs("data")
+
+    df_log.to_csv("data/WAR_LogFile_Subject_{}_Run_{}_{}.csv".format(subject_index, run_index, start_time_str))
+    df_results.to_csv("data/WAR_ResultsFile_Subject_{}_Run_{}_{}.csv".format(subject_index, run_index, start_time_str))
 
 
 def get_subject_index():
