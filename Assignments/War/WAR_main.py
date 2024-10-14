@@ -126,7 +126,11 @@ def angles_response_user_input_to_number(user_input):
 
 def cv2_display_image(window_name, image, timeout_seconds):
     cv2.namedWindow(window_name, cv2.WINDOW_NORMAL | cv2.WINDOW_KEEPRATIO)
-    cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN | cv2.WINDOW_KEEPRATIO, cv2.WINDOW_FULLSCREEN | cv2.WINDOW_KEEPRATIO)
+    window = tk.Tk()
+    screen_width = int(window.winfo_screenwidth() * 0.9)
+    screen_height = int(window.winfo_screenheight() * 0.9)
+    window.destroy()
+    cv2.resizeWindow(window_name, screen_width, screen_height)
     start_time = time.time()
     cv2.imshow(window_name, image)
     while time.time() - start_time < timeout_seconds:
@@ -137,8 +141,11 @@ def cv2_display_image(window_name, image, timeout_seconds):
 def cv2_display_image_with_input(window_name, image_path, timeout, specific_value=None):
     img = cv2.imread(image_path)
     cv2.namedWindow(window_name, cv2.WINDOW_NORMAL | cv2.WINDOW_KEEPRATIO)
-    cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN | cv2.WINDOW_KEEPRATIO,
-                          cv2.WINDOW_FULLSCREEN | cv2.WINDOW_KEEPRATIO)
+    window = tk.Tk()
+    screen_width = int(window.winfo_screenwidth() * 0.9)
+    screen_height = int(window.winfo_screenheight() * 0.9)
+    window.destroy()
+    cv2.resizeWindow(window_name, screen_width, screen_height)
     start_time = time.time()
     cv2.imshow(window_name, img)
     while True:
@@ -186,12 +193,19 @@ def move_pointer_generator(scale, window, scale_start_time, serial_value, serial
 
 def create_scale(serial_value, serial_port, scale_image_path, lower_bound, upper_bound, timeout, df_log, start_time):
     window = tk.Tk()
-    window.attributes("-fullscreen", True)
+    screen_width = window.winfo_screenwidth()
+    screen_height = window.winfo_screenheight()
+
+    window_width = int(screen_width * 0.9)
+    window_height = int(screen_height * 0.9)
+
+    window.geometry(f"{window_width}x{window_height}+0+0")
+
     scale_font = font.Font(family="Helvetica", size=32, weight="bold")
 
     image_path = scale_image_path
     image = Image.open(image_path)
-    image = image.resize((window.winfo_screenwidth(), window.winfo_screenheight()))
+    image = image.resize((window_width, window_height))
     photo = ImageTk.PhotoImage(image)
 
     canvas1 = Canvas(window, width=400,
@@ -202,11 +216,11 @@ def create_scale(serial_value, serial_port, scale_image_path, lower_bound, upper
     canvas1.create_image(0, 0, image=photo,
                          anchor="nw")
 
-    scale = tk.Scale(window, from_=lower_bound, to=upper_bound, orient=tk.HORIZONTAL, bd=5, length=1200,
-                     sliderlength=100, width=50, font=scale_font, tickinterval=1)
+    scale = tk.Scale(window, from_=lower_bound, to=upper_bound, orient=tk.HORIZONTAL, bd=5, length=1200*0.9,
+                     sliderlength=100*0.9, width=50*0.9, font=scale_font, tickinterval=1)
     scale.set((lower_bound + upper_bound) / 2)
 
-    canvas1.create_window(140, 400,
+    canvas1.create_window(140*0.9, 400*0.9,
                           anchor="nw",
                           window=scale)
 
@@ -367,12 +381,18 @@ def execute_run(run_index, neg_image_generator, neut_image_generator, pos_image_
 
 def get_subject_index():
     window = tk.Tk()
-    window.attributes("-fullscreen", True)
+    screen_width = window.winfo_screenwidth()
+    screen_height = window.winfo_screenheight()
+
+    window_width = int(screen_width * 0.9)
+    window_height = int(screen_height * 0.9)
+
+    window.geometry(f"{window_width}x{window_height}+0+0")
 
     subject_index_var = tk.StringVar()
 
     image = Image.open(USER_INPUT_IMAGE_PATH)
-    image = image.resize((window.winfo_screenwidth(), window.winfo_screenheight()))
+    image = image.resize((window_width, window_height))
     photo = ImageTk.PhotoImage(image)
 
     canvas1 = Canvas(window, width=400,
