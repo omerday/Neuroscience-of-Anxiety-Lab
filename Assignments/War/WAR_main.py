@@ -13,6 +13,7 @@ import ctypes
 import serial
 from serialHandler import FIRST_RUN_EVENTS_ENCODING, SECOND_RUN_EVENTS_ENCODING, report_event
 
+SCALE_FACTOR = 0.9
 USER_INPUT_IMAGE_PATH = "WAR_images/Utils/UserInput.jpg"
 START_IMAGE_PATH = "WAR_images/Utils/Start.jpeg"
 NEG_IMAGES_BASE_PATH = "WAR_images/NegImages"
@@ -128,8 +129,8 @@ def angles_response_user_input_to_number(user_input):
 def cv2_display_image(window_name, image, timeout_seconds):
     cv2.namedWindow(window_name, cv2.WINDOW_NORMAL | cv2.WINDOW_KEEPRATIO)
     window = tk.Tk()
-    screen_width = int(window.winfo_screenwidth() * 0.9)
-    screen_height = int(window.winfo_screenheight() * 0.9)
+    screen_width = int(window.winfo_screenwidth() * SCALE_FACTOR)
+    screen_height = int(window.winfo_screenheight() * SCALE_FACTOR)
     window.destroy()
     cv2.resizeWindow(window_name, screen_width, screen_height)
     start_time = time.time()
@@ -146,8 +147,8 @@ def cv2_display_image_with_input(window_name, image_path, timeout, specific_valu
     img = cv2.imread(image_path)
     cv2.namedWindow(window_name, cv2.WINDOW_NORMAL | cv2.WINDOW_KEEPRATIO)
     window = tk.Tk()
-    screen_width = int(window.winfo_screenwidth() * 0.9)
-    screen_height = int(window.winfo_screenheight() * 0.9)
+    screen_width = int(window.winfo_screenwidth() * SCALE_FACTOR)
+    screen_height = int(window.winfo_screenheight() * SCALE_FACTOR)
     window.destroy()
     cv2.resizeWindow(window_name, screen_width, screen_height)
     start_time = time.time()
@@ -228,8 +229,8 @@ def create_scale(serial_value, serial_port, scale_image_path, lower_bound, upper
     screen_width = window.winfo_screenwidth()
     screen_height = window.winfo_screenheight()
 
-    window_width = int(screen_width * 0.9)
-    window_height = int(screen_height * 0.9)
+    window_width = int(screen_width * SCALE_FACTOR)
+    window_height = int(screen_height * SCALE_FACTOR)
 
     window.geometry(f"{window_width}x{window_height}+0+0")
 
@@ -248,11 +249,11 @@ def create_scale(serial_value, serial_port, scale_image_path, lower_bound, upper
     canvas1.create_image(0, 0, image=photo,
                          anchor="nw")
 
-    scale = tk.Scale(window, from_=lower_bound, to=upper_bound, orient=tk.HORIZONTAL, bd=5, length=1200*0.9,
-                     sliderlength=100*0.9, width=50*0.9, font=scale_font, tickinterval=1)
+    scale = tk.Scale(window, from_=lower_bound, to=upper_bound, orient=tk.HORIZONTAL, bd=5, length=1200*SCALE_FACTOR,
+                     sliderlength=100*SCALE_FACTOR, width=50*SCALE_FACTOR, font=scale_font, tickinterval=1)
     scale.set((lower_bound + upper_bound) / 2)
 
-    canvas1.create_window(140*0.9, 400*0.9,
+    canvas1.create_window(140*SCALE_FACTOR, 400*SCALE_FACTOR,
                           anchor="nw",
                           window=scale)
 
@@ -428,8 +429,8 @@ def get_subject_index():
     screen_width = window.winfo_screenwidth()
     screen_height = window.winfo_screenheight()
 
-    window_width = int(screen_width * 0.9)
-    window_height = int(screen_height * 0.9)
+    window_width = int(screen_width * SCALE_FACTOR)
+    window_height = int(screen_height * SCALE_FACTOR)
 
     window.geometry(f"{window_width}x{window_height}+0+0")
 

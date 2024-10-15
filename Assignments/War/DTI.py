@@ -1,4 +1,4 @@
-from WAR_main import cv2_display_image_with_input, display_image, PLUS_IMAGE_PATH, START_IMAGE_PATH
+from WAR_main import cv2_display_image_with_input, display_image, PLUS_IMAGE_PATH, START_IMAGE_PATH, SCALE_FACTOR
 from serialHandler import FIRST_RUN_EVENTS_ENCODING, report_event
 import ctypes
 import cv2
@@ -10,8 +10,8 @@ VIDEO_PATH = ""  # TODO: Fill after video found
 
 def show_video(video_path):
     window = tk.Tk()
-    screen_width = int(window.winfo_screenwidth() * 0.9)
-    screen_height = int(window.winfo_screenheight() * 0.9)
+    screen_width = int(window.winfo_screenwidth() * SCALE_FACTOR)
+    screen_height = int(window.winfo_screenheight() * SCALE_FACTOR)
     window.destroy()
 
     cap = cv2.VideoCapture(video_path)
