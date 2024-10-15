@@ -1,9 +1,9 @@
 import time
 from datetime import datetime
 
-FIRST_RUN_EVENTS_ENCODING = {
-    'fixation': 1,
-    'emotional_slide': 10,
+EVENTS_ENCODING = {
+    'fixation_run_start': 1,
+    'emotional_slide_before_images': 10,
     'pic_base': 11,
     'block_rest': 15,
     'block_rating_neg': 16,
@@ -27,19 +27,59 @@ FIRST_RUN_EVENTS_ENCODING = {
 }
 
 
-SECOND_RUN_EVENTS_ENCODING = {
-    'fixation': 101,
-    'emotional_slide': 110,
-    'pic_base': 111,
-    'block_rest': 115,
-    'block_rating_neg': 116,
-    'block_rating_pos': 117,
-    'block_ITI': 118,
-    'block_rating_locked': 119,
-    'run_rest': 102,
-    'washout_task': 103,
-    'run_rest_2': 104
-}
+"""
+Events encoding documentation - as some of the usage of the events is block agnostic, it is clearer to elaborate here 
+the value of each event:
+Main task:
+Fixation in the start of the run - 1
+Rest between 3 blocks (before washout) - 2
+Rest between 3 blocks (after washout) - 4
+Slide shown before 4 negative images - 10
+First negative image - 11 
+Second negative image - 12
+Third negative image - 13
+Forth negative image - 14
+Rest after 4 negative images - 15
+Scale of negative emotions after 4 negative images - 16
+Scale of positive emotions after 4 negative images - 17
+ITI in negative block after scales - 18
+User locked answer for negative emotional scale in negative block - 19
+User locked answer for positive emotional scale in negative block - 20
+Slide shown before 4 neutral images - 30
+First neutral image - 31 
+Second neutral image - 32
+Third neutral image - 33
+Forth neutral image - 34
+Rest after 4 neutral images - 35
+Scale of negative emotions after 4 neutral images - 36
+Scale of positive emotions after 4 neutral images - 37
+ITI in neutral block after scales - 38
+User locked answer for negative emotional scale in neutral block - 39
+User locked answer for positive emotional scale in neutral block - 40
+Slide shown before 4 positive images - 50
+First positive image - 51 
+Second positive image - 52
+Third positive image - 53
+Forth positive image - 54
+Rest after 4 positive images - 55
+Scale of negative emotions after 4 positive images - 56
+Scale of positive emotions after 4 positive images - 57
+ITI in positive block after scales - 58
+User locked answer for negative emotional scale in positive block - 59
+User locked answer for positive emotional scale in positive block - 60
+ITI in washout task - 70
+Clean shape shown in washout task - 71
+Shape with dots shown in washout task - 72
+Clean shape shown again in washout task - 73
+Scale for number of dots in washout task - 74
+User locked answer for number of dots in washout task - 75
+
+Other tasks:
+baseline start - 200
+T1 start - 201
+DTI fixation start - 202
+DTI video start - 203
+"""
 
 
 def report_event(ser, event_num, df_log, start_time, image_name=""):

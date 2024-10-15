@@ -1,5 +1,5 @@
 from WAR_main import cv2_display_image_with_input, display_image, PLUS_IMAGE_PATH, START_IMAGE_PATH, SCALE_FACTOR
-from serialHandler import FIRST_RUN_EVENTS_ENCODING, report_event
+from serialHandler import EVENTS_ENCODING, report_event
 import ctypes
 import cv2
 import tkinter as tk
@@ -46,11 +46,11 @@ def DTI():
 
     if user_input == ord('b'):  # Fixation
         cv2_display_image_with_input("Image", START_IMAGE_PATH, 0, [ord('5')])
-        report_event(serial_port, FIRST_RUN_EVENTS_ENCODING['DTI_fixation_start'], None, 0)
+        report_event(serial_port, EVENTS_ENCODING['DTI_fixation_start'], None, 0)
         display_image(PLUS_IMAGE_PATH, 15 * 60)
     else:
         cv2_display_image_with_input("Image", START_IMAGE_PATH, 0, [ord('5')])
-        report_event(serial_port, FIRST_RUN_EVENTS_ENCODING['DTI_video_start'], None, 0)
+        report_event(serial_port, EVENTS_ENCODING['DTI_video_start'], None, 0)
         show_video(VIDEO_PATH)
 
     ctypes.windll.user32.ShowCursor(True)

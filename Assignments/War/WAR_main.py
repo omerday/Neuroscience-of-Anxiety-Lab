@@ -11,7 +11,7 @@ from enum import Enum
 import pandas as pd
 import ctypes
 import serial
-from serialHandler import FIRST_RUN_EVENTS_ENCODING, SECOND_RUN_EVENTS_ENCODING, report_event
+from serialHandler import EVENTS_ENCODING, report_event
 
 SCALE_FACTOR = 0.9
 USER_INPUT_IMAGE_PATH = "WAR_images/Utils/UserInput.jpg"
@@ -369,10 +369,7 @@ def execute_block(block_type, image_generator, events_encoding, serial_port, blo
 
 
 def execute_run(run_index, neg_image_generator, neut_image_generator, pos_image_generator, serial_port, subject_index):
-    if run_index == 1:
-        events_encoding = FIRST_RUN_EVENTS_ENCODING
-    else:
-        events_encoding = FIRST_RUN_EVENTS_ENCODING
+    events_encoding = EVENTS_ENCODING
 
     df_log = pd.DataFrame(columns=['Time', 'Biopac', 'ImageName'])
     df_results = pd.DataFrame(columns=['BlockType', 'BlockIndex', 'NegativeEmotionalScale', 'PositiveEmotionalScale',
@@ -382,7 +379,7 @@ def execute_run(run_index, neg_image_generator, neut_image_generator, pos_image_
     start_time = datetime.now()
 
     try:
-        report_event(serial_port, events_encoding["fixation"], df_log, start_time)
+        report_event(serial_port, events_encoding["fixation_run_start"], df_log, start_time)
         display_image(PLUS_IMAGE_PATH, 8)
 
         ITI_times = generate_random_numbers(12, 3.5, 1, 3)
@@ -401,7 +398,7 @@ def execute_run(run_index, neg_image_generator, neut_image_generator, pos_image_
             else:
                 block_offset = 40
 
-            report_event(serial_port, events_encoding["emotional_slide"] + block_offset, df_log, start_time)
+            report_event(serial_port, events_encoding["emotional_slide_before_images"] + block_offset, df_log, start_time)
             display_emotional_slide(block_type)
 
             execute_block(block_type, image_generator, events_encoding, serial_port, block_offset, df_log, start_time,
