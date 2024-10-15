@@ -1,6 +1,8 @@
-from WAR_main import cv2_display_image_with_input, display_image, GRID_PATH, create_scale
+from WAR_main import cv2_display_image_with_input, create_scale
 import ctypes
 import cv2
+
+GRID_PATH = "WAR_images/Utils/Grid.jpg"
 
 
 def training():

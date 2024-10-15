@@ -22,6 +22,8 @@ FIRST_RUN_EVENTS_ENCODING = {
 
     'baseline_start': 200,
     'T1_start': 201,
+    'DTI_fixation_start': 202,
+    'DTI_video_start': 203,
 }
 
 

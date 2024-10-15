@@ -1,7 +1,9 @@
-from WAR_main import cv2_display_image_with_input, display_image, BASELINE_INSTRUCTIONS_PATH, PLUS_IMAGE_PATH
+from WAR_main import cv2_display_image_with_input, display_image, PLUS_IMAGE_PATH
 from serialHandler import FIRST_RUN_EVENTS_ENCODING, report_event
 import ctypes
 import cv2
+
+BASELINE_INSTRUCTIONS_PATH = "WAR_images/Utils/BaselineInstructions.jpg"
 
 
 def baseline():
