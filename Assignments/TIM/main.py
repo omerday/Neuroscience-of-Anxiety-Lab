@@ -11,6 +11,7 @@ from VAS import *
 from serialHandler import *
 from helpers import *
 from dataHandler import *
+import logging
 
 io = launchHubServer()
 
@@ -45,6 +46,7 @@ params = {
     'squareDurationMin': 4,  # minimum duration for each square
     'squareDurationMax': 7,  # maximum duration for each square
     'colors': ['Green', 'Yellow', 'Red'],
+    'fixationBeforeBlock': 8,
     'preITIMin': 3,
     'preITIMax': 5,
     'postITIMin': 7,

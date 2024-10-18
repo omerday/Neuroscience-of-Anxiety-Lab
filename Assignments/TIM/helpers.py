@@ -4,13 +4,14 @@ from psychopy.iohub.client.keyboard import Keyboard
 import random
 import serial, serialHandler
 import VAS
+from Assignments.NPU.SoundSequences import event
 from dataHandler import *
 from serialHandler import *
 
 PRE_BLOCK_FIXATION_TIME = 8
 
 
-def iti(window: visual.Window, params: dict, iti_type, keyboard, device, mood_df, pain_df, display_time):
+def iti(window: visual.Window, params: dict, iti_type, keyboard, device, mood_df, pain_df, display_time, event_onset_df=None):
     # display_time = random.uniform(params[f'{iti_type}ITIMin'], params[f'{iti_type}ITIMax'])
     image = "./img/blank.jpeg" if iti_type == "post" else "./img/plus.jpeg"
     square = visual.ImageStim(window, image=image, units="norm", size=(2, 2))
@@ -18,7 +19,7 @@ def iti(window: visual.Window, params: dict, iti_type, keyboard, device, mood_df
     window.mouseVisible = False
     window.flip()
     start_time = time.time()
-    wait_for_time(window, params, device, mood_df, pain_df, start_time, display_time, keyboard)
+    wait_for_time(window, params, device, mood_df, pain_df, start_time, display_time, keyboard, event_onset_df)
 
 
 def wait_for_RA(window, params, device, mood_df, pain_df, io):
@@ -30,33 +31,35 @@ def wait_for_RA(window, params, device, mood_df, pain_df, io):
     wait_for_space(window, params, device, mood_df, pain_df, io)
 
 
-def wait_for_time(window: visual.Window, params, device, mood_df, pain_df, start_time, display_time, keyboard):
+def wait_for_time(window: visual.Window, params, device, mood_df, pain_df, start_time, display_time, keyboard, event_onset_df=None):
     while time.time() < start_time + display_time:
         for event in keyboard.getKeys():
             if event.key == "escape":
-                graceful_shutdown(window, params, device, mood_df, pain_df)
+                graceful_shutdown(window, params, device, mood_df, pain_df, event_onset_df)
         core.wait(0.05)
 
-def fixation_before_block(window:visual.Window, params, device, mood_df, pain_df, keyboard):
+def fixation_before_block(window:visual.Window, params, device, mood_df, pain_df, keyboard, event_onset_df=None):
     image = visual.ImageStim(window, f"./img/plus.jpeg", units="norm", size=(2,2))
     image.draw()
     window.mouseVisible = False
     window.flip()
-    wait_for_time(window, params, device, mood_df, pain_df, time.time(), 8, keyboard)
+    wait_for_time(window, params, device, mood_df, pain_df, time.time(), params['fixationBeforeBlock'], keyboard, event_onset_df)
 
-def wait_for_time_2(window: visual.Window, params, device, mood_df, pain_df, start_time, display_time, keyboard, prefix, sec):
+def wait_for_time_with_periodic_events(window: visual.Window, params, device, mood_df, pain_df, start_time, display_time, keyboard, prefix, sec, event_onset_df: pd.DataFrame):
     while time.time() < start_time + display_time:
         if sec <= time.time() - start_time <= sec + 0.1:
+            event = PARADIGM_2_BIOPAC_EVENTS[f'{prefix}_{sec}']
+            event_onset_df = add_event(params, event, 2, event_onset_df)
             report_event(params['serialBiopac'], PARADIGM_2_BIOPAC_EVENTS[f'{prefix}_{sec}'])
             sec += 2
-        for event in keyboard.getKeys():
-            if event.key == "escape":
-                graceful_shutdown(window, params, device, mood_df, pain_df)
+        for ev in keyboard.getKeys():
+            if ev.key == "escape":
+                graceful_shutdown(window, params, device, mood_df, pain_df, event_onset_df)
         core.wait(0.02)
-    return sec
+    return sec, event_onset_df
 
 
-def wait_for_space(window: visual.Window, params, device, mood_df, pain_df, io):
+def wait_for_space(window: visual.Window, params, device, mood_df, pain_df, io, event_onset_df=None):
     keyboard = io.devices.keyboard
     keyboard.getKeys()
     core.wait(0.1)
@@ -65,15 +68,16 @@ def wait_for_space(window: visual.Window, params, device, mood_df, pain_df, io):
             if event.key == " ":
                 return
             elif event.key == "escape":
-                graceful_shutdown(window, params, device, mood_df, pain_df)
+                graceful_shutdown(window, params, device, mood_df, pain_df, event_onset_df)
         core.wait(0.05)
 
 
-def graceful_shutdown(window, params, device, mood_df, pain_df):
+def graceful_shutdown(window, params, device, mood_df, pain_df, event_onset_df=None):
     if params['painSupport']:
         from heatHandler import cool_down
         cool_down(device)
     export_data(params, Mood=mood_df, Pain=pain_df)
+    save_fmri_event_onset(params, event_onset_df, "backup")
     print(f"Experiment Ended\n===========================================")
     window.close()
     core.quit()
@@ -101,7 +105,6 @@ def create_timing_array(params):
                 'postITI': random.uniform(params['postITIMin'], params['postITIMax']),
             }
             timings.append(timing_dict)
-        print(timings)
         timings_sum = sum_timing_array(timings) + PRE_BLOCK_FIXATION_TIME
         print(f"Timing Sum = {timings_sum}\n==================================")
         if timings_sum <= 240:

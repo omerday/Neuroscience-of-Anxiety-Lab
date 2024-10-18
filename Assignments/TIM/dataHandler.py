@@ -33,15 +33,15 @@ def setup_fmri_onset_file():
     return pd.DataFrame(columns=HEADERS_FMRI_ONSET_FILE)
 
 
-def insert_data_pain(Block, trial, tempNumber, color, pain, pain_df: pd.DataFrame):
+def insert_data_pain(block, trial, temp_number, color, pain, pain_df: pd.DataFrame):
     dict_layout = {}
 
     for header in HEADERS_PAIN:
         dict_layout[header] = None
 
-    dict_layout['Block'] = Block
+    dict_layout['Block'] = block
     dict_layout['Trial'] = trial
-    dict_layout['TempNumber'] = tempNumber
+    dict_layout['TempNumber'] = temp_number
     dict_layout["Color"] = color
     dict_layout["Pain"] = pain
 
@@ -73,6 +73,16 @@ def insert_data_fmri_events(params:dict, duration: float, event: int, event_onse
 
     return pd.concat([event_onset, pd.DataFrame.from_records(dict)])
 
+def save_fmri_event_onset(params:dict, event_onset_df: pd.DataFrame, block):
+    if event_onset_df == None:
+        return
+    folder = './data'
+    if params['subject'] != "":
+        folder = f'./data/{params["subject"]}'
+        if not os.path.exists(folder):
+            os.mkdir(folder)
+    event_onset_df.to_csv(f'{folder}/TIM_event_onset_subject_{params["subject"]}_block_{block}.tsv', sep="\t")
+
 def export_data(params: dict, **kwargs):
     folder = './data'
     if params['subject'] != "":
@@ -92,7 +102,6 @@ def export_data(params: dict, **kwargs):
                 backup_path = f'{folder}/TIM {params["subject"]} Session {params["session"]} - {key} - {strftime("%d-%m-%Y %H-%M", localtime(params["startTime"]))}.backup.csv'
                 if os.path.exists(backup_path):
                     os.remove(backup_path)
-
 
 def save_backup(params: dict, **kwargs):
     folder = './data'
