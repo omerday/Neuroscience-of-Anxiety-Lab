@@ -113,7 +113,8 @@ for i in range(1, params['nBlocks'] + 1):
             report_event(params['serialBiopac'], BIOPAC_EVENTS['MidRun_rating'])
         scores = run_vas(window, io, params, 'mood', mood_df=df_mood, pain_df=df_pain, device=device)
         df_mood = insert_data_mood("mid", scores, df_mood)
-    helpers.wait_for_RA(window, params, device, df_mood, df_pain, io)
+    if not params['fmriVersion']:
+        helpers.wait_for_RA(window, params, device, df_mood, df_pain, io)
 
 # Final Mood VAS
 if params['recordPhysio']:

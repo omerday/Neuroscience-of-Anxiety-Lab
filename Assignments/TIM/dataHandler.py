@@ -71,7 +71,7 @@ def insert_data_fmri_events(params:dict, duration: float, event: int, event_onse
         dict_to_add[header] = None
 
     dict_to_add['onset'] = round(time.time() - params["fmriStartTime"], 2)
-    dict_to_add['duration'] = duration,
+    dict_to_add['duration'] = round(duration, 2),
     dict_to_add['condition'] = event
 
     return pd.concat([event_onset, pd.DataFrame.from_records(dict_to_add)])

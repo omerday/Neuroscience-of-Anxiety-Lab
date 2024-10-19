@@ -117,4 +117,4 @@ def sum_timing_array(timings: list):
 def add_event(params: dict, event_name: str, event_time, event_onset_file: pd.DataFrame):
     event = PARADIGM_2_BIOPAC_EVENTS[event_name]
     report_event(params['serialBiopac'], event)
-    return insert_data_fmri_events(params, event, event_time, event_onset_file)
+    return insert_data_fmri_events(params, event_time, event, event_onset_file)
