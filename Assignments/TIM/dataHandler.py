@@ -20,7 +20,8 @@ HEADERS_MOOD = [
 HEADERS_FMRI_ONSET_FILE = [
     'onset',
     'duration',
-    'condition'
+    'condition',
+    'amplitude'
 ]
 
 
@@ -64,7 +65,7 @@ def insert_data_mood(round: str, scores, mood_df: pd.DataFrame):
 
     return mood_df
 
-def insert_data_fmri_events(params:dict, duration: float, event: int, event_onset: pd.DataFrame):
+def insert_data_fmri_events(params:dict, duration: float, event: int, heat_level: int, event_onset: pd.DataFrame):
     dict_to_add = {}
 
     for header in HEADERS_FMRI_ONSET_FILE:
@@ -73,6 +74,7 @@ def insert_data_fmri_events(params:dict, duration: float, event: int, event_onse
     dict_to_add['onset'] = round(time.time() - params["fmriStartTime"], 2)
     dict_to_add['duration'] = round(duration, 2),
     dict_to_add['condition'] = event
+    dict_to_add['amplitude'] = heat_level
 
     return pd.concat([event_onset, pd.DataFrame.from_records(dict_to_add)])
 

@@ -4,6 +4,8 @@ from psychopy.iohub.client.keyboard import Keyboard
 import random
 import serial, serialHandler
 import VAS
+import squareRun
+from Assignments.TIM.squareRun import square_run
 from dataHandler import *
 from serialHandler import *
 
@@ -47,7 +49,7 @@ def fixation_before_block(window:visual.Window, params, device, mood_df, pain_df
 def wait_for_time_with_periodic_events(window: visual.Window, params, device, mood_df, pain_df, start_time, display_time, keyboard, prefix, sec, event_onset_df: pd.DataFrame):
     while time.time() < start_time + display_time:
         if sec <= time.time() - start_time <= sec + 0.1:
-            event_onset_df = add_event(params, f'{prefix}_{sec}', 2, event_onset_df)
+            event_onset_df = add_event(params, f'{prefix}_{sec}', 2, squareRun.T_TO_HEAT[prefix], event_onset_df)
             sec += 2
         for ev in keyboard.getKeys():
             if ev.key == "escape":
@@ -114,7 +116,7 @@ def sum_timing_array(timings: list):
         time_sum += sum(timing_dict.values())
     return time_sum
 
-def add_event(params: dict, event_name: str, event_time, event_onset_file: pd.DataFrame):
+def add_event(params: dict, event_name: str, event_time, heat_level, event_onset_file: pd.DataFrame):
     event = PARADIGM_2_BIOPAC_EVENTS[event_name]
     report_event(params['serialBiopac'], event)
-    return insert_data_fmri_events(params, event_time, event, event_onset_file)
+    return insert_data_fmri_events(params, event_time, event, heat_level, event_onset_file)
