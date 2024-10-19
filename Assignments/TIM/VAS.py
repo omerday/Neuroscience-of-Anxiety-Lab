@@ -27,7 +27,7 @@ ANSWERS_HEBREW = [["כלל לא", "הרבה מאוד"], ["כלל לא", "הרב�
 ANSWERS_ENGLISH = [["Not at all", "A lot"], ["Not at all", "A lot"], ["Not at all", "A lot"], ["Very good", "Very bad"], ["Not at all", "A lot"]]
 
 
-def run_vas(window: visual.Window, io, params: dict, type:str, mood_df, pain_df, device, duration=float('inf'), ):
+def run_vas(window: visual.Window, io, params: dict, type:str, mood_df, pain_df, device, duration=float('inf'), event_onset_df=None):
     if type == "PainRating":
         questions = PAIN_RATING_QUESTION_HEBREW if params['language'] == 'Hebrew' else PAIN_RATING_QUESTION_ENGLISH
         answers = PAIN_RATING_ANSWERS_HEBREW if params['language'] == 'Hebrew' else PAIN_RATING_ANSWERS_ENGLISH
@@ -64,7 +64,7 @@ def run_vas(window: visual.Window, io, params: dict, type:str, mood_df, pain_df,
 
             for ev in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
                 if ev.key == "escape":
-                    helpers.graceful_shutdown(window, params, device, mood_df, pain_df)
+                    helpers.graceful_shutdown(window, params, device, mood_df, pain_df, event_onset_df)
                 core.wait(0.05)
 
         score = scale.getRating()

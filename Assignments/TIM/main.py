@@ -11,6 +11,7 @@ from VAS import *
 from serialHandler import *
 from helpers import *
 from dataHandler import *
+import logging
 
 io = launchHubServer()
 
@@ -34,7 +35,7 @@ params = {
     "recordPhysio": configDialogBank[10],
     "skipInstructions": configDialogBank[11],
     "continuousShape": configDialogBank[12],
-    "fullScreen": False,
+    "fullScreen": True,
     "screenSize": (1024, 768),
     "startTime": time.time(),
     'port': 'COM4',
@@ -45,10 +46,16 @@ params = {
     'squareDurationMin': 4,  # minimum duration for each square
     'squareDurationMax': 7,  # maximum duration for each square
     'colors': ['Green', 'Yellow', 'Red'],
+    'fixationBeforeBlock': 8,
     'preITIMin': 3,
     'preITIMax': 5,
     'postITIMin': 7,
     'postITIMax': 9,
+    'secondParadigmSquareOnset': 2,
+    'secondParadigmSquareBlankScreen': 8,
+    'secondParadigmJitterMin': 0,
+    'secondParadigmJitterMax': 1,
+    'preRatingITI': 2,
     'secondParadigmMin': 8,
     'secondParadigmMax': 10,
     'continuousPresentTimeMin': 2,
@@ -106,7 +113,8 @@ for i in range(1, params['nBlocks'] + 1):
             report_event(params['serialBiopac'], BIOPAC_EVENTS['MidRun_rating'])
         scores = run_vas(window, io, params, 'mood', mood_df=df_mood, pain_df=df_pain, device=device)
         df_mood = insert_data_mood("mid", scores, df_mood)
-    helpers.wait_for_RA(window, params, device, df_mood, df_pain, io)
+    if not params['fmriVersion']:
+        helpers.wait_for_RA(window, params, device, df_mood, df_pain, io)
 
 # Final Mood VAS
 if params['recordPhysio']:
