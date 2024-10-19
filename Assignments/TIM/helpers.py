@@ -4,7 +4,6 @@ from psychopy.iohub.client.keyboard import Keyboard
 import random
 import serial, serialHandler
 import VAS
-from Assignments.NPU.SoundSequences import event
 from dataHandler import *
 from serialHandler import *
 
@@ -48,9 +47,7 @@ def fixation_before_block(window:visual.Window, params, device, mood_df, pain_df
 def wait_for_time_with_periodic_events(window: visual.Window, params, device, mood_df, pain_df, start_time, display_time, keyboard, prefix, sec, event_onset_df: pd.DataFrame):
     while time.time() < start_time + display_time:
         if sec <= time.time() - start_time <= sec + 0.1:
-            event = PARADIGM_2_BIOPAC_EVENTS[f'{prefix}_{sec}']
-            event_onset_df = add_event(params, event, 2, event_onset_df)
-            report_event(params['serialBiopac'], PARADIGM_2_BIOPAC_EVENTS[f'{prefix}_{sec}'])
+            event_onset_df = add_event(params, f'{prefix}_{sec}', 2, event_onset_df)
             sec += 2
         for ev in keyboard.getKeys():
             if ev.key == "escape":

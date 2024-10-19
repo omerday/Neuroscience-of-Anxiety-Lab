@@ -34,8 +34,7 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
                     helpers.graceful_shutdown(window, params, device, mood_df, pain_df)
         params['fmriStartTime'] = time.time()
 
-        event = PARADIGM_2_BIOPAC_EVENTS['start_cycle']
-        event_onset_df = helpers.add_event(params, event, params['fixationBeforeBlock'], event_onset_df)
+        event_onset_df = helpers.add_event(params, 'Start_Cycle', params['fixationBeforeBlock'], event_onset_df)
         
         helpers.fixation_before_block(window, params, device, mood_df, pain_df, keyboard, event_onset_df)
     while colors_order:
@@ -48,8 +47,7 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
 
         # Set the Prefix here
         prefix = params['Ts'][color_index]
-        event = BIOPAC_EVENTS[f'{prefix}_ITIpre']
-        event_onset_df = helpers.add_event(params, event, trial_timing['preITI'], event_onset_df)
+        event_onset_df = helpers.add_event(params, f'{prefix}_ITIpre', trial_timing['preITI'], event_onset_df)
 
         helpers.iti(window, params, 'pre', keyboard, device, mood_df, pain_df, trial_timing['preITI'], event_onset_df)
 
@@ -78,8 +76,7 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
                     helpers.wait_for_time(window, params, device, mood_df, pain_df, start_time, display_time, keyboard)
 
         else:
-            event = PARADIGM_2_BIOPAC_EVENTS[f'{prefix}_{0}']
-            event_onset_df = helpers.add_event(params, event, trial_timing['squareOnset'], event_onset_df)
+            event_onset_df = helpers.add_event(params, f'{prefix}_{0}', trial_timing['squareOnset'], event_onset_df)
 
             square = visual.ImageStim(window, image=f"./img/squares/{curr_color}_{2}.jpeg", units="norm", size=(2,2))
             square.draw()
@@ -99,20 +96,17 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
 
         if params['painSupport']:
             import heatHandler
-            event = BIOPAC_EVENTS[f'{prefix}_heat_pulse']
-            event_onset_df = helpers.add_event(params, event, 6, event_onset_df)
+            event_onset_df = helpers.add_event(params, f'{prefix}_heat_pulse', 6, event_onset_df)
             heatHandler.deliver_pain(window, float(temperature), device)
 
         helpers.iti(window, params, "post", keyboard, device, mood_df, pain_df, trial_timing['preRatingITI'], event_onset_df)
 
-        event = PARADIGM_2_BIOPAC_EVENTS[f'{prefix}_PainRatingScale']
-        event_onset_df = helpers.add_event(params, event, params['painRateDuration'], event_onset_df)
+        event_onset_df = helpers.add_event(params, f'{prefix}_PainRatingScale', params['painRateDuration'], event_onset_df)
 
         pain = VAS.run_vas(window, io, params, "PainRating", duration=trial_timing['painRating'], mood_df=mood_df, pain_df=pain_df, device=device)
         pain_df = insert_data_pain(block_number, trial, (color_index + 1), curr_color, pain, pain_df)
 
-        event = PARADIGM_2_BIOPAC_EVENTS[f'{prefix}_ITIpost']
-        event_onset_df = helpers.add_event(params, event, trial_timing['postITI'], event_onset_df)
+        event_onset_df = helpers.add_event(params, f'{prefix}_ITIpost', trial_timing['postITI'], event_onset_df)
         helpers.iti(window, params, 'post', keyboard, device, mood_df, pain_df, trial_timing['postITI'], event_onset_df)
 
         helpers.save_backup(params, Mood=mood_df, Pain=pain_df)

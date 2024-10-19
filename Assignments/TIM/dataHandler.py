@@ -65,16 +65,19 @@ def insert_data_mood(round: str, scores, mood_df: pd.DataFrame):
     return mood_df
 
 def insert_data_fmri_events(params:dict, duration: float, event: int, event_onset: pd.DataFrame):
-    dict = {
-        'onset': round(time.time() - params["fmriStartTime"], 2),
-        'duration': duration,
-        'condition': event,
-        }
+    dict_to_add = {}
 
-    return pd.concat([event_onset, pd.DataFrame.from_records(dict)])
+    for header in HEADERS_FMRI_ONSET_FILE:
+        dict_to_add[header] = None
+
+    dict_to_add['onset'] = round(time.time() - params["fmriStartTime"], 2)
+    dict_to_add['duration'] = duration,
+    dict_to_add['condition'] = event
+
+    return pd.concat([event_onset, pd.DataFrame.from_records(dict_to_add)])
 
 def save_fmri_event_onset(params:dict, event_onset_df: pd.DataFrame, block):
-    if event_onset_df == None:
+    if event_onset_df is None:
         return
     folder = './data'
     if params['subject'] != "":
