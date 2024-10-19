@@ -35,7 +35,7 @@ params = {
     "recordPhysio": configDialogBank[10],
     "skipInstructions": configDialogBank[11],
     "continuousShape": configDialogBank[12],
-    "fullScreen": False,
+    "fullScreen": True,
     "screenSize": (1024, 768),
     "startTime": time.time(),
     'port': 'COM4',
