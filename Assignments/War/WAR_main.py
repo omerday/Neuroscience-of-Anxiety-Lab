@@ -76,9 +76,9 @@ class BlockTypes(Enum):
 
 def generate_random_numbers(total, base_value, max_diff, n=4):
     """
-    Generates 4 random numbers between 5 and 6, that sums up to 22
+    Generates n random numbers between base_value and base_value+max_diff, that sums up to total
     Returns:
-    A list of 4 numbers
+    A list of n numbers
     """
     increments = [random.uniform(0, max_diff) for _ in range(n-1)]
 
@@ -110,28 +110,17 @@ class ImageRandomizer(object):
         return images
 
 
-def emotional_scale_user_input_to_number(user_input):
-    if ord('1') <= user_input <= ord('7'):
-        return user_input - ord('0')
-    else:
-        print("Invalid input. Please press a number from 1 to 7.")
-        return None
-
-
-def angles_response_user_input_to_number(user_input):
-    if ord('0') <= user_input <= ord('9'):
-        return user_input - ord('0')
-    else:
-        print("Invalid input. Please press a number from 0 to 9.")
-        return None
-
-
 def cv2_display_image(window_name, image, timeout_seconds):
+    """
+    Shows image for timeout_seconds
+    """
     cv2.namedWindow(window_name, cv2.WINDOW_NORMAL | cv2.WINDOW_KEEPRATIO)
+
     window = tk.Tk()
     screen_width = int(window.winfo_screenwidth() * SCALE_FACTOR)
     screen_height = int(window.winfo_screenheight() * SCALE_FACTOR)
     window.destroy()
+
     cv2.resizeWindow(window_name, screen_width, screen_height)
     start_time = time.time()
     cv2.imshow(window_name, image)
@@ -144,12 +133,20 @@ def cv2_display_image(window_name, image, timeout_seconds):
 
 
 def cv2_display_image_with_input(window_name, image_path, timeout, specific_values=None):
+    """
+    Displays image_path until a user pressed a key, returns the user input as int.
+    If specific_values is not None, only returns if the value pressed is in specific_values (list)
+    If timeout is larger than the time passed, waits the difference and only then returns
+    """
+
     img = cv2.imread(image_path)
     cv2.namedWindow(window_name, cv2.WINDOW_NORMAL | cv2.WINDOW_KEEPRATIO)
+
     window = tk.Tk()
     screen_width = int(window.winfo_screenwidth() * SCALE_FACTOR)
     screen_height = int(window.winfo_screenheight() * SCALE_FACTOR)
     window.destroy()
+
     cv2.resizeWindow(window_name, screen_width, screen_height)
     start_time = time.time()
     cv2.imshow(window_name, img)
@@ -168,11 +165,15 @@ def cv2_display_image_with_input(window_name, image_path, timeout, specific_valu
     elapsed_time = time.time() - start_time
     if timeout > elapsed_time:
         time.sleep(timeout - elapsed_time)
+    # Reset the keyboard buffer so if the user pressed many keys the next call for cv2.waitKey will work properly
     cv2.waitKey(1)
     return user_input
 
 
 def display_image(image_path, timeout):
+    """
+    Shows image_path for timeout (seconds)
+    """
     img = cv2.imread(image_path)
     cv2_display_image("Image", img, timeout)
 
@@ -225,6 +226,12 @@ def close_generator(window):
 
 def create_scale(serial_value, serial_port, scale_image_path, lower_bound, upper_bound, timeout, df_log, start_time,
                  return_on_lock=False):
+    """
+    Shows scale_image_path with a scale on it, scale is from lower_bound to upper_bound.
+    Shows image for timeout (seconds).
+    Returns the answer the user locked in (int). If user didn't lock answer before timeout, returns the current value
+    of the scale.
+    """
     window = tk.Tk()
     screen_width = window.winfo_screenwidth()
     screen_height = window.winfo_screenheight()
@@ -249,6 +256,7 @@ def create_scale(serial_value, serial_port, scale_image_path, lower_bound, upper
     canvas1.create_image(0, 0, image=photo,
                          anchor="nw")
 
+    # Makes so the scale is proportional to SCALE_FACTOR, places it in the lower middle part of the screen
     scale = tk.Scale(window, from_=lower_bound, to=upper_bound, orient=tk.HORIZONTAL, bd=5, length=1200*SCALE_FACTOR,
                      sliderlength=100*SCALE_FACTOR, width=50*SCALE_FACTOR, font=scale_font, tickinterval=1)
     scale.set((lower_bound + upper_bound) / 2)
@@ -257,6 +265,8 @@ def create_scale(serial_value, serial_port, scale_image_path, lower_bound, upper
                           anchor="nw",
                           window=scale)
 
+    # These variables need to be edited from the bounded functions that runs as a callback when keys are pressed, so
+    # they're defined as globals
     global scale_final
     scale_final = 0
     scale_start_time = time.time()
@@ -264,10 +274,15 @@ def create_scale(serial_value, serial_port, scale_image_path, lower_bound, upper
     global esc_pressed
     esc_pressed = False
 
+    # window.bind expects a function as a second argument, to pass the current variables to that function, we use a
+    # function generator that returns a function with the current variables as a parameter
+    # In this case, the function moves the scale pointer, and locks in the answer when needed
     window.bind("<Key>", move_pointer_generator(scale, window, scale_start_time, serial_value, serial_port,
                                                 lower_bound, upper_bound, timeout, df_log, start_time, return_on_lock))
+    # In this case, the function closes the window and sets esc_pressed to true, so we know to stop the experiment
     window.bind('<Escape>', close_generator(window))
     window.focus_force()
+    # Closes window after timeout and saves the current state as the answer
     window.after(timeout * 1000, scale_timeout_generator(scale, window))
     window.mainloop()
 
@@ -278,6 +293,7 @@ def create_scale(serial_value, serial_port, scale_image_path, lower_bound, upper
 
 
 def washout_task(serial_port, events_encoding, set_number, df_log, start_time, df_results):
+    # Uses different image set for each run
     if set_number == 1:
         images = WASHOUT_SET1_IMAGES
         images_dots = WASHOUT_SET1D_IMAGES
@@ -308,18 +324,22 @@ def washout_task(serial_port, events_encoding, set_number, df_log, start_time, d
         report_event(serial_port, events_encoding["washout_task_shape2"], df_log, start_time, images[indexes[i]])
         display_image(images[indexes[i]], 2)
 
-        # This is so it looks better after the scale windows closes
+        # This is so it looks better after the scale windows closes (otherwise the previous image is shown shortly)
         display_image(PLUS_IMAGE_PATH, 0.01)
 
         report_event(serial_port, events_encoding["washout_task_rate"], df_log, start_time)
         answer = create_scale(events_encoding["washout_task_rate_locked"], serial_port,
                      WASHOUT_SCALE_IMAGE_PATH, 0, 5, 4, df_log, start_time)
 
+        # Log the user answers
         df_results.loc[len(df_results)] = [None, None, None, None, set_number, indexes[i],
                                            int(answer == dots[indexes[i]])]
 
 
 def display_emotional_slide(block_type):
+    """
+    Shows the opening slide that tell what kind of pictures will be shown (NEG/NEUT/POS)
+    """
     if block_type == BlockTypes.NEG:
         display_image(NEG_BLOCK_START_PATH, 6)
     elif block_type == BlockTypes.NEUT:
@@ -342,6 +362,7 @@ def execute_rest(events_encoding, serial_port, rest_index, df_log, start_time, d
 
 def execute_block(block_type, image_generator, events_encoding, serial_port, block_offset, df_log, start_time,
                   df_results, block_index, ITI_time):
+    # Generate random times for displaying emotional images
     random_times = generate_random_numbers(22, 4.5, 2)
     images = image_generator.get_images()
     for i in range(len(images)):
@@ -361,6 +382,7 @@ def execute_block(block_type, image_generator, events_encoding, serial_port, blo
                                        EMOTIONAL_SCALE_POS_IMAGE_PATH, 1, 7, 6,
                                        df_log, start_time)
 
+    # Log the user responses
     df_results.loc[len(df_results)] = [block_type.name, block_index, emotional_scale_neg, emotional_scale_pos,
                                        None, None, None]
 
@@ -375,6 +397,7 @@ def execute_run(run_index, neg_image_generator, neut_image_generator, pos_image_
     df_results = pd.DataFrame(columns=['BlockType', 'BlockIndex', 'NegativeEmotionalScale', 'PositiveEmotionalScale',
                                        'WashoutTaskIndex', 'WashoutImageIndex', 'IsCorrect'])
 
+    # Shows START_IMAGE_PATH until '5' is pressed
     cv2_display_image_with_input("Image", START_IMAGE_PATH, 0, [ord('5')])
     start_time = datetime.now()
 
@@ -382,6 +405,7 @@ def execute_run(run_index, neg_image_generator, neut_image_generator, pos_image_
         report_event(serial_port, events_encoding["fixation_run_start"], df_log, start_time)
         display_image(PLUS_IMAGE_PATH, 8)
 
+        # Generate random ITI times
         ITI_times = generate_random_numbers(12, 3.5, 1, 3)
 
         # Randomize the order of the blocks
@@ -391,6 +415,7 @@ def execute_run(run_index, neg_image_generator, neut_image_generator, pos_image_
 
         for i in range(len(block_types)):
             block_type, image_generator = block_types[i]
+            # Set block offset for events encoding
             if block_type == BlockTypes.NEG:
                 block_offset = 0
             elif block_type == BlockTypes.NEUT:
@@ -408,20 +433,28 @@ def execute_run(run_index, neg_image_generator, neut_image_generator, pos_image_
             execute_block(block_type, image_generator, events_encoding, serial_port, block_offset, df_log, start_time,
                           df_results, 3, ITI_times[i])
 
+            # Execute rest period if not last blocks
             if i != len(block_types) - 1:
                 execute_rest(events_encoding, serial_port, i + 1, df_log, start_time, df_results)
 
     finally:
+        # Will be called either if run is finished or if esc is pressed and an exception is raised.
+        # If esc is pressed, will log the answers and logs saved until that point
         start_time_str = start_time.strftime("%Y_%m_%d_%H_%M_%S")
 
         if not os.path.exists("data"):
             os.makedirs("data")
 
+        # Saved dfs to data directory with unique file names for each run
         df_log.to_csv("data/WAR_LogFile_Subject_{}_Run_{}_{}.csv".format(subject_index, run_index, start_time_str))
         df_results.to_csv("data/WAR_ResultsFile_Subject_{}_Run_{}_{}.csv".format(subject_index, run_index, start_time_str))
 
 
 def get_subject_index():
+    """
+    Opens a window to get the subject index.
+    When 'Enter' is pressed the answer is submitted
+    """
     window = tk.Tk()
     screen_width = window.winfo_screenwidth()
     screen_height = window.winfo_screenheight()
@@ -429,6 +462,7 @@ def get_subject_index():
     window_width = int(screen_width * SCALE_FACTOR)
     window_height = int(screen_height * SCALE_FACTOR)
 
+    # Create the window pinned to the upper left corner, with size SCALE_FACTOR relative from fullscreen
     window.geometry(f"{window_width}x{window_height}+0+0")
 
     subject_index_var = tk.StringVar()
@@ -445,12 +479,15 @@ def get_subject_index():
     canvas1.create_image(0, 0, image=photo,
                          anchor="nw")
 
+    # This variable needs to be edited from the submit function that runs as a callback when 'Enter' is pressed, so it's
+    # defined as a global
     global subject_index
     subject_index = ""
     def submit(event):
         global subject_index
         subject_index = subject_index_var.get()
 
+        # Close the window when answer is submitted
         window.destroy()
 
     name_label = tk.Label(window, text='Subject Index', font=('calibre', 20, 'bold'))
@@ -466,6 +503,9 @@ def get_subject_index():
     global esc_pressed
     esc_pressed = False
 
+    # window.bind expects a function as a second argument, to pass the current window to that function, we use a
+    # function generator that returns a function with the current window variable as a parameter
+    # In this case, the function closes the window and sets esc_pressed to true, so we know to stop the experiment
     window.bind('<Escape>', close_generator(window))
     window.mainloop()
 
@@ -476,6 +516,7 @@ def get_subject_index():
 
 
 def execute_experiment():
+    # Images should be random and don't repeat for whole experiment, so we randomize them here
     neg_image_generator = ImageRandomizer(NEG_IMAGES_BASE_PATH)
     neut_image_generator = ImageRandomizer(NEUT_IMAGES_BASE_PATH)
     pos_image_generator = ImageRandomizer(POS_IMAGES_BASE_PATH)

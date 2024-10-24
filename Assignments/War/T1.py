@@ -17,7 +17,8 @@ def T1():
 
     ctypes.windll.user32.ShowCursor(True)
     cv2.destroyAllWindows()
-    
+
+
 def main():
     T1()
 

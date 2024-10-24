@@ -14,6 +14,7 @@ def training():
     ctypes.windll.user32.ShowCursor(True)
     cv2.destroyAllWindows()
 
+
 def main():
     training()
 
