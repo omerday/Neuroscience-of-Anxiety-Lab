@@ -14,6 +14,14 @@ import serial
 from serialHandler import EVENTS_ENCODING, report_event
 
 SCALE_FACTOR = 0.9
+GRID_PATH = "WAR_images/Utils/Grid.jpg"
+OPENING_SLIDE1_PATH = "WAR_images/Utils/OpeningSlide1.JPG"
+OPENING_SLIDE2_PATH = "WAR_images/Utils/OpeningSlide2.JPG"
+OPENING_SLIDE3_PATH = "WAR_images/Utils/OpeningSlide3.JPG"
+OPENING_SLIDE4_PATH = "WAR_images/Utils/OpeningSlide4.JPG"
+OPENING_SLIDE5_PATH = "WAR_images/Utils/OpeningSlide5.JPG"
+OPENING_SLIDES = [OPENING_SLIDE1_PATH, OPENING_SLIDE2_PATH, OPENING_SLIDE3_PATH, OPENING_SLIDE4_PATH,
+                  OPENING_SLIDE5_PATH]
 USER_INPUT_IMAGE_PATH = "WAR_images/Utils/UserInput.jpg"
 START_IMAGE_PATH = "WAR_images/Utils/Start.jpeg"
 NEG_IMAGES_BASE_PATH = "WAR_images/NegImages"
@@ -22,6 +30,7 @@ POS_IMAGES_BASE_PATH = "WAR_images/PosImages"
 PLUS_IMAGE_PATH = "WAR_images/Utils/Plus.jpeg"
 EMOTIONAL_SCALE_POS_IMAGE_PATH = "WAR_images/Utils/EmotionalScalePos.jpeg"
 EMOTIONAL_SCALE_NEG_IMAGE_PATH = "WAR_images/Utils/EmotionalScaleNeg.jpeg"
+EMOTIONAL_SLIDE_PREVIEW_PATH = "WAR_images/Utils/EmotionalSlidesPreview.JPG"
 NEG_BLOCK_START_PATH = "WAR_images/Utils/NegBlockStart.jpg"
 NEUT_BLOCK_START_PATH = "WAR_images/Utils/NeutBlockStart.jpg"
 POS_BLOCK_START_PATH = "WAR_images/Utils/PosBlockStart.jpg"
@@ -340,6 +349,7 @@ def display_emotional_slide(block_type):
     """
     Shows the opening slide that tell what kind of pictures will be shown (NEG/NEUT/POS)
     """
+    display_image(EMOTIONAL_SLIDE_PREVIEW_PATH, 4)
     if block_type == BlockTypes.NEG:
         display_image(NEG_BLOCK_START_PATH, 6)
     elif block_type == BlockTypes.NEUT:
@@ -515,6 +525,14 @@ def get_subject_index():
     return subject_index
 
 
+def execute_experiment_opening():
+    subject_index_str = get_subject_index()
+    for slide in OPENING_SLIDES:
+        cv2_display_image_with_input("Image", slide, 0, [ord(' ')])
+    create_scale(0, None, GRID_PATH, 0, 6, 1000, None, 0, True)
+    return subject_index_str
+
+
 def execute_experiment():
     # Images should be random and don't repeat for whole experiment, so we randomize them here
     neg_image_generator = ImageRandomizer(NEG_IMAGES_BASE_PATH)
@@ -525,7 +543,7 @@ def execute_experiment():
 
     ctypes.windll.user32.ShowCursor(False)
 
-    subject_index_str = get_subject_index()
+    subject_index_str = execute_experiment_opening()
 
     execute_run(1, neg_image_generator, neut_image_generator, pos_image_generator, serial_port, subject_index_str)
     cv2_display_image_with_input("Image", LONG_REST_PATH, 0)
