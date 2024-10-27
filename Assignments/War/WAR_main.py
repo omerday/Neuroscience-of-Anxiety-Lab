@@ -12,6 +12,8 @@ import pandas as pd
 import ctypes
 import serial
 from serialHandler import EVENTS_ENCODING, report_event
+import win32gui
+
 
 SCALE_FACTOR = 0.9
 GRID_PATH = "WAR_images/Utils/Grid.jpg"
@@ -241,6 +243,11 @@ def create_scale(serial_value, serial_port, scale_image_path, lower_bound, upper
     Returns the answer the user locked in (int). If user didn't lock answer before timeout, returns the current value
     of the scale.
     """
+    hwnd = win32gui.FindWindow(None, "Image")
+    rect = win32gui.GetWindowRect(hwnd)
+    x, y, right, bottom = rect
+    width = right - x
+    height = bottom - y
     window = tk.Tk()
     screen_width = window.winfo_screenwidth()
     screen_height = window.winfo_screenheight()
@@ -248,7 +255,7 @@ def create_scale(serial_value, serial_port, scale_image_path, lower_bound, upper
     window_width = int(screen_width * SCALE_FACTOR)
     window_height = int(screen_height * SCALE_FACTOR)
 
-    window.geometry(f"{window_width}x{window_height}+0+0")
+    window.geometry(f"{width}x{height}+{x}+{y}")
 
     scale_font = font.Font(family="Helvetica", size=32, weight="bold")
 
