@@ -546,7 +546,7 @@ def execute_experiment():
     neut_image_generator = ImageRandomizer(NEUT_IMAGES_BASE_PATH)
     pos_image_generator = ImageRandomizer(POS_IMAGES_BASE_PATH)
     serial_port = None
-    # serial_port = serial.Serial("COM1", 115200, bytesize=serial.EIGHTBITS, timeout=1)
+    serial_port = serial.Serial("COM1", 115200, bytesize=serial.EIGHTBITS, timeout=1)
 
     ctypes.windll.user32.ShowCursor(False)
 
