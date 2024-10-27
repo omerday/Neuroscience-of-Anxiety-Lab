@@ -1,8 +1,6 @@
-from WAR_main import cv2_display_image_with_input, create_scale
+from WAR_main import cv2_display_image_with_input, create_scale, GRID_PATH
 import ctypes
 import cv2
-
-GRID_PATH = "WAR_images/Utils/Grid.jpg"
 
 
 def training():
@@ -13,6 +11,7 @@ def training():
 
     ctypes.windll.user32.ShowCursor(True)
     cv2.destroyAllWindows()
+
 
 def main():
     training()
