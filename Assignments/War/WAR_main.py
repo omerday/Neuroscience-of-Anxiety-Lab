@@ -38,6 +38,7 @@ NEUT_BLOCK_START_PATH = "WAR_images/Utils/NeutBlockStart.jpg"
 POS_BLOCK_START_PATH = "WAR_images/Utils/PosBlockStart.jpg"
 LONG_REST_PATH = "WAR_images/Utils/LongRest.jpeg"
 SHORT_REST_IMAGE_PATH = "WAR_images/Utils/ShortRest.jpeg"
+END_SLIDE_PATH = "WAR_images/Utils/EndSlide.jpg"
 WASHOUT_START_IMAGE_PATH = "WAR_images/Utils/WashoutStart.jpeg"
 WASHOUT_SCALE_IMAGE_PATH = "WAR_images/Utils/WashoutScale.JPG"
 WASHOUT_SET1_IMAGE1_PATH = "WAR_images/Utils/Set1Shape1.JPG"
@@ -555,6 +556,8 @@ def execute_experiment():
     execute_run(1, neg_image_generator, neut_image_generator, pos_image_generator, serial_port, subject_index_str)
     cv2_display_image_with_input("Image", LONG_REST_PATH, 0)
     execute_run(2, neg_image_generator, neut_image_generator, pos_image_generator, serial_port, subject_index_str)
+
+    cv2_display_image_with_input("Image", END_SLIDE_PATH, 0)
 
     ctypes.windll.user32.ShowCursor(True)
     cv2.destroyAllWindows()
