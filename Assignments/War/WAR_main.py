@@ -39,6 +39,7 @@ POS_BLOCK_START_PATH = "WAR_images/Utils/PosBlockStart.jpg"
 LONG_REST_PATH = "WAR_images/Utils/LongRest.jpeg"
 SHORT_REST_IMAGE_PATH = "WAR_images/Utils/ShortRest.jpeg"
 END_SLIDE_PATH = "WAR_images/Utils/EndSlide.jpg"
+BACKGROUND_SLIDE_PATH = "WAR_images/Utils/Background.jpg"
 WASHOUT_START_IMAGE_PATH = "WAR_images/Utils/WashoutStart.jpeg"
 WASHOUT_SCALE_IMAGE_PATH = "WAR_images/Utils/WashoutScale.JPG"
 WASHOUT_SET1_IMAGE1_PATH = "WAR_images/Utils/Set1Shape1.JPG"
@@ -122,18 +123,23 @@ class ImageRandomizer(object):
         return images
 
 
-def cv2_display_image(window_name, image, timeout_seconds):
+def cv2_display_image(window_name, image, timeout_seconds, scale_factor=SCALE_FACTOR):
     """
     Shows image for timeout_seconds
     """
     cv2.namedWindow(window_name, cv2.WINDOW_NORMAL | cv2.WINDOW_KEEPRATIO)
 
-    window = tk.Tk()
-    screen_width = int(window.winfo_screenwidth() * SCALE_FACTOR)
-    screen_height = int(window.winfo_screenheight() * SCALE_FACTOR)
-    window.destroy()
+    if scale_factor == 1:
+        cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN | cv2.WINDOW_KEEPRATIO,
+                              cv2.WINDOW_FULLSCREEN | cv2.WINDOW_KEEPRATIO)
+    else:
+        window = tk.Tk()
+        screen_width = int(window.winfo_screenwidth() * scale_factor)
+        screen_height = int(window.winfo_screenheight() * scale_factor)
+        window.destroy()
 
-    cv2.resizeWindow(window_name, screen_width, screen_height)
+        cv2.resizeWindow(window_name, screen_width, screen_height)
+        
     start_time = time.time()
     cv2.imshow(window_name, image)
     while time.time() - start_time < timeout_seconds:
@@ -541,6 +547,11 @@ def execute_experiment_opening():
     return subject_index_str
 
 
+def show_background():
+    img = cv2.imread(BACKGROUND_SLIDE_PATH)
+    cv2_display_image("Background", img, 0.1, 1)
+
+
 def execute_experiment():
     # Images should be random and don't repeat for whole experiment, so we randomize them here
     neg_image_generator = ImageRandomizer(NEG_IMAGES_BASE_PATH)
@@ -550,6 +561,8 @@ def execute_experiment():
     serial_port = serial.Serial("COM1", 115200, bytesize=serial.EIGHTBITS, timeout=1)
 
     ctypes.windll.user32.ShowCursor(False)
+
+    show_background()
 
     subject_index_str = execute_experiment_opening()
 
