@@ -82,14 +82,14 @@ DTI video start - 203
 """
 
 
-def report_event(ser, event_num, df_log, start_time, image_name=""):
+def report_event(ser, event_num, df_log, start_time, image_name="", duration=None):
     """
     Reports event event_num in 3 ways - print to console, writes to df_log, and sends to ser Serial object
     """
     print(f"{round(time.time(), 2)} - Sending event {event_num} to BioPac - {hex(event_num).encode()}")
     if df_log is not None:
         time_diff = (datetime.now() - start_time).total_seconds()
-        df_log.loc[len(df_log)] = [time_diff, event_num, image_name]
+        df_log.loc[len(df_log)] = [time_diff, event_num, image_name, duration]
     if not ser:
         return
     if not ser.is_open:
