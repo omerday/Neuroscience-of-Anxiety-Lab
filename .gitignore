@@ -130,3 +130,6 @@ dmypy.json
 ./Assignments/Doors/data/config.json
 ./Assignments/NPU/data/config.json
 Assignments/Doors/.ipynb_checkpoints
+
+.gitattributes
+.idea/
