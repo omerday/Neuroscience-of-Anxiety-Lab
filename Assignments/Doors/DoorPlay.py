@@ -71,11 +71,12 @@ def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int
     if roundNum not in [0, 1]:
         DoorPlayInfra.show_screen_pre_match(window, params, roundNum, io, coins=totalCoins, mini_df=miniDf, summary_df=summary_df)
 
-    sizeOfArray = int(math.sqrt(params[f'numOfDoors']))
+    numOfDoors = 36 if params[f'numOfDoors'] == "36 (6x6)" else 49
+    sizeOfArray = int(math.sqrt(numOfDoors))
     scenariosList = helpers.get_p_r_couples(sizeOfArray)
 
     if roundNum == 0:
-        for i in range(0, params[f'numOfDoors'] - params['numOfSimulationDoors']):
+        for i in range(0, numOfDoors - params['numOfSimulationDoors']):
             scenariosList.remove(random.choice(scenariosList))
         print(scenariosList)
     # Scenarios List indexing method:
@@ -88,7 +89,7 @@ def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int
     # This should be deduced from the event channel when analyzing the .acq file.
 
     subtrial = 0
-    while scenariosList:
+    while scenariosList or (params[f'numOfDoors'] == "36 (7x7)" and subtrial < 36):
 
         # Select a scenario and setup door
         subtrial = subtrial + 1

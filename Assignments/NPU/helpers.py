@@ -12,7 +12,6 @@ import blocksInfra
 import dataHandler
 import serialHandler
 
-CALIBRATION_TIME = 60
 HABITUATION_STARTLES = 9
 HABITUATION_EVENT = 80
 
@@ -116,7 +115,7 @@ def wait_for_calibration(window: visual.Window, params, io, df: pd.DataFrame, mi
     mini_df = pd.concat([mini_df, pd.DataFrame.from_records([dict_for_df])])
     dict_for_df.pop("ScenarioIndex")
 
-    while time.time() < start_time + CALIBRATION_TIME:
+    while time.time() < start_time + params["calibrationTime"]:
         dict_for_df["CurrentTime"] = round(time.time() - params["startTime"], 2)
         df = pd.concat([df, pd.DataFrame.from_records([dict_for_df])])
         for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
@@ -129,41 +128,18 @@ def wait_for_calibration(window: visual.Window, params, io, df: pd.DataFrame, mi
     return df, mini_df
 
 
-def play_startle_and_wait(window: visual.Window, image: visual.ImageStim, io, params: dict, df: pd.DataFrame,
-                          dict_for_df: dict):
-    soundToPlay = sound.Sound("./sounds/startle_probe.wav")
-    core.wait(5)
-    now = ptb.GetSecs()
-    soundToPlay.play(when=now)
-    core.wait(1)
-    image.image = f"./img/instructions/startle{params['gender'][0]}{params['language'][0]}_2.jpeg"
-    image.setSize((2, 2))
-    image.draw()
-    window.update()
-    window.mouseVisible = False
-
-    keyboard = io.devices.keyboard
-    keyboard.getKeys()
-    while True:
-        dict_for_df["CurrentTime"] = round(time.time() - params["startTime"], 2)
-        df = pd.concat([df, pd.DataFrame.from_records([dict_for_df])])
-        for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
-            if event.key == " ":
-                soundToPlay.stop()
-                return df
-            if event.key == "escape":
-                dataHandler.export_raw_data(params, df)
-                window.close()
-                core.quit()
-
-
-def play_shock_and_wait(window: visual.Window, io, params: dict, df: pd.DataFrame,
-                        dict_for_df: dict):
-    soundToPlay = sound.Sound("./sounds/shock_sound_1.mp3")
+def play_sound_and_wait(window: visual.Window, io, params: dict, df: pd.DataFrame,
+                        dict_for_df: dict, sound_type: str):
+    sound_path = ""
+    if sound_type == "Scream":
+        sound_path = "./sounds/shock_sound_1.mp3"
+    elif sound_type == "Startle":
+        sound_path = "./sounds/startle_probe.wav"
+    soundToPlay = sound.Sound(sound_path)
     core.wait(3)
     now = ptb.GetSecs()
     soundToPlay.play(when=now)
-    time_to_finish = time.time() + 3
+    time_to_finish = time.time() + 2
     keyboard = io.devices.keyboard
     while time.time() < time_to_finish:
         dict_for_df["CurrentTime"] = round(time.time() - params["startTime"], 2)
@@ -174,6 +150,15 @@ def play_shock_and_wait(window: visual.Window, io, params: dict, df: pd.DataFram
                 dataHandler.export_raw_data(params, df)
                 window.close()
                 core.quit()
+        core.wait(0.05)
+    while True:
+        for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
+            if event.key == "escape":
+                dataHandler.export_raw_data(params, df)
+                window.close()
+                core.quit()
+            elif event.key == " ":
+                return
         core.wait(0.05)
 
 

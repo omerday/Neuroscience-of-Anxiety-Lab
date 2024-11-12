@@ -1,0 +1,48 @@
+{
+   "subject": "",
+   "session": 1,
+   "gender": "Female",
+   "language": "Hebrew",
+   "fmriVersion": false,
+   "temps": [
+      "34.0",
+      "34.0",
+      "34.0"
+   ],
+   "Ts": [
+      "T2",
+      "T4",
+      "T8"
+   ],
+   "paradigm": 2,
+   "painSupport": false,
+   "recordPhysio": false,
+   "skipInstructions": true,
+   "continuousShape": false,
+   "fullScreen": true,
+   "screenSize": [
+      1024,
+      768
+   ],
+   "startTime": 1717598040.477354,
+   "port": "COM4",
+   "nTrials": 6,
+   "nBlocks": 6,
+   "painDur": 4,
+   "painRateDuration": 7.0,
+   "squareDurationMin": 4,
+   "squareDurationMax": 7,
+   "colors": [
+      "Green",
+      "Yellow",
+      "Red"
+   ],
+   "preITIMin": 3,
+   "preITIMax": 5,
+   "postITIMin": 7,
+   "postITIMax": 9,
+   "secondParadigmMin": 8,
+   "secondParadigmMax": 10,
+   "continuousPresentTimeMin": 2,
+   "continuousPresentTimeMax": 2.5
+}

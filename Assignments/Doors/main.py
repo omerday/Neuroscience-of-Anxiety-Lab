@@ -41,7 +41,7 @@ params = {
     'outcomeString': True,   # True if we want to print the outcome amount, otherwise it will just show a monster / a fairy
     'skipInstructions': configDialogBank[10],
     'language': configDialogBank[11],
-    'reducedEvents': True,                      # Send only one event for each doors (door presented), instead of three - door presented, locked and outcome
+    'reducedEvents': False,                      # Send only one event for each doors (door presented), instead of three - door presented, locked and outcome
     'fullScreen': configDialogBank[12] if debug else True,
     'saveDataAtQuit': configDialogBank[13] if debug else True,
     'startTime': time.time(),

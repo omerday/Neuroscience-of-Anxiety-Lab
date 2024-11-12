@@ -11,10 +11,11 @@ from psychopy.iohub.client.keyboard import Keyboard
 
 PATH = "./img/instructions/"
 SUFFIX = ".jpeg"
-SLIDES = 21
-SHOCK_SLIDE = 7
-STARTLE_SLIDE = 20
-RATING_SLIDE = 19
+SLIDES = 36
+SHOCK_SLIDE = 6
+STARTLE_SLIDE = 30
+RATING_SLIDE = 29
+CALIBRATION_SLIDE = 3
 
 
 def show_instructions(params: dict, window: visual.Window, img: visual.ImageStim, io, df: pd.DataFrame,
@@ -41,12 +42,12 @@ def show_instructions(params: dict, window: visual.Window, img: visual.ImageStim
     replay = True
     plays_again = False
     while replay:
-        for i in range(2, SLIDES) if params['videos_timing'] == "Start" else range(1, SLIDES):
-            if params["skipCalibration"] and i in [3, 4, 5]:
+        for i in range(2, SLIDES) if params['videosTiming'] == "Before" else range(1, SLIDES):
+            if (params["skipCalibration"] or params["videosTiming"] == "Before") and i in [2, 3, 4]:
                 pass
             elif params["skipStartle"] and i == STARTLE_SLIDE:
                 pass
-            elif not plays_again or (plays_again and i not in [3, 4, 5]):
+            elif not plays_again or (plays_again and i not in [2, 3, 4]):
                 dict_for_df["InstructionScreenNum"] = i
                 dict_for_df["CurrentTime"] = round(time.time() - params["startTime"], 2)
                 mini_df = pd.concat([mini_df, pd.DataFrame.from_records([dict_for_df])])
@@ -55,15 +56,15 @@ def show_instructions(params: dict, window: visual.Window, img: visual.ImageStim
                 img.setSize((2,2))
                 img.draw()
                 window.update()
-                if i == 4: # Calibration Slide
+                if i == CALIBRATION_SLIDE: # Calibration Slide
                     df, mini_df = helpers.wait_for_calibration(window, params, io, df, mini_df, dict_for_df, ser)
                     dict_for_df["Step"] = "Instructions"
                 elif i == SHOCK_SLIDE:  # Shock example slide
-                    df = helpers.play_shock_and_wait(window, io, params, df, dict_for_df)
+                    df = helpers.play_sound_and_wait(window, io, params, df, dict_for_df, "Scream")
                 elif i == RATING_SLIDE:  # Rating example slide
                     df = helpers.wait_for_space_with_rating_scale(window, img, io, params, df, dict_for_df)
                 elif i == STARTLE_SLIDE:  # Startle example slide
-                    df = helpers.play_startle_and_wait(window, img, io, params, df, dict_for_df)
+                    df = helpers.play_sound_and_wait(window, io, params, df, dict_for_df, "Startle")
                 else:
                     df = helpers.wait_for_space(window, io, params, df, dict_for_df)
 

@@ -22,7 +22,7 @@ STARE_AT_PLUS_2_HEB = "אנא הסתכלו לכיוונו עד שיעלם"
 STARE_AT_PLUS_ENG = "You will now be presented with + sign for a minute,\nPlease look at it until it disappears"
 
 
-def run_post_videos(win: visual.Window, params: dict, io, ser=None):
+def run_videos(win: visual.Window, params: dict, io, ser=None):
     # prefs.hardware['audioLib'] = ['PTB']
     keyboard = io.devices.keyboard
     win.mouseVisible = False
@@ -31,10 +31,10 @@ def run_post_videos(win: visual.Window, params: dict, io, ser=None):
     rest_time = params['videoRestTime']
 
     # Show instruction screen
-    instructions(win, params, keyboard)
+    instructions(win, params, keyboard, df)
 
     # Prepare subject for fixation
-    fixation_message(win, params, keyboard, 1)
+    fixation_message(win, params, keyboard, 1, df)
 
     # Initiate Fixation
     img = visual.ImageStim(win=win, image="./img/plus.jpeg", units='norm', size=(2, 2))
@@ -48,9 +48,7 @@ def run_post_videos(win: visual.Window, params: dict, io, ser=None):
     while time.time() < rest_end_time:
         for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
             if event.key == 'escape':
-                print("escape key pressed, quitting")
-                win.close()
-                core.quit()
+                quit_gracefully(win, params, df)
         core.wait(0.05)
 
     del img
@@ -62,7 +60,8 @@ def run_post_videos(win: visual.Window, params: dict, io, ser=None):
               r"C:/Users/User/Videos/boringmovie.wav"]
     movie_category = ["Exciting", "Boring"]
 
-    index = random.randint(0, 1)
+    random.seed()
+    index = 1 if random.uniform(0, 1) > 0.5 else 0
 
     # Specify the paths to the video and audio files
     video_path = videos[index]
@@ -70,7 +69,7 @@ def run_post_videos(win: visual.Window, params: dict, io, ser=None):
     category = movie_category[index]
 
     # Show message before first video
-    pre_video(win, params, keyboard, 1)
+    pre_video(win, params, keyboard, 1, df)
 
     # Create movie and sound objects
     movie_stim = visual.MovieStim3(win, video_path, flipVert=False, flipHoriz=False, name="movie", autoLog=False)
@@ -93,8 +92,9 @@ def run_post_videos(win: visual.Window, params: dict, io, ser=None):
                 movie_stim.stop()
                 stop = True
             elif event.key == 'escape':
-                win.close()
-                core.quit()
+                audio_stim.stop()
+                movie_stim.stop()
+                quit_gracefully(win, params, df)
         movie_stim.draw()
         win.flip()
 
@@ -104,11 +104,11 @@ def run_post_videos(win: visual.Window, params: dict, io, ser=None):
     df = report_event_and_add_to_df(params, df, dict_for_df, 60, ser)
 
     # Show pre-vas message and initiate vas
-    vas_message(win, params, keyboard)
-    df = VideosVAS.run_vas(win, df, dict_for_df, category, params['language'])
+    vas_message(win, params, keyboard, df)
+    df = VideosVAS.run_vas(win, df, dict_for_df, category, params)
 
     # Show Fixation message and initiate fixation
-    fixation_message(win, params, keyboard, 2)
+    fixation_message(win, params, keyboard, 2, df)
 
     img = visual.ImageStim(win=win, image="./img/plus.jpeg", units='norm', size=(2, 2))
     img.draw()
@@ -121,15 +121,14 @@ def run_post_videos(win: visual.Window, params: dict, io, ser=None):
     while time.time() < rest_end_time:
         for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
             if event.key == 'escape':
-                win.close()
-                core.quit()
+                quit_gracefully(win, params, df)
         core.wait(0.05)
 
     del img
     win.flip()
 
     # Show a text message to prompt the user to click
-    pre_video(win, params, keyboard, 2)
+    pre_video(win, params, keyboard, 2, df)
 
     # Create a new MovieStim3 object for the second video
     video_path2 = videos[1 - index]
@@ -157,8 +156,9 @@ def run_post_videos(win: visual.Window, params: dict, io, ser=None):
                 movie_stim2.stop()
                 stop = True
             elif event.key == 'escape':
-                win.close()
-                core.quit()
+                audio_stim2.stop()
+                movie_stim2.stop()
+                quit_gracefully(win, params, df)
         movie_stim2.draw()
         win.flip()
 
@@ -167,10 +167,10 @@ def run_post_videos(win: visual.Window, params: dict, io, ser=None):
 
     df = report_event_and_add_to_df(params, df, dict_for_df, 75, ser)
 
-    vas_message(win, params, keyboard)
-    df = VideosVAS.run_vas(win, df, dict_for_df, category, params['language'])
+    vas_message(win, params, keyboard, df)
+    df = VideosVAS.run_vas(win, df, dict_for_df, category, params)
 
-    fixation_message(win, params, keyboard, 2)
+    fixation_message(win, params, keyboard, 2, df)
 
     img = visual.ImageStim(win=win, image="./img/plus.jpeg", units='norm', size=(2, 2))
     img.draw()
@@ -188,21 +188,21 @@ def run_post_videos(win: visual.Window, params: dict, io, ser=None):
                 movie_stim2.stop()
                 stop = True
             if event.key == 'escape':
-                print("escape key pressed, quitting")
-                win.close()
-                core.quit()
+                audio_stim2.stop()
+                movie_stim2.stop()
+                quit_gracefully(win, params, df)
         core.wait(0.05)
 
     del img
     win.flip()
 
-    if params['videos_timing'] == 'Start':
+    if params['videosTiming'] == 'Before':
         next_task = visual.ImageStim(win,
                                      f"./img/instructions/videosInstructions/nextTask{params['gender'][0]}{params['language'][0]}.jpeg",
                                      units="norm", pos=(0, 0), size=(2,2))
         next_task.draw()
         win.flip()
-        wait_for_space(win, keyboard)
+        wait_for_space(win, params, keyboard, df)
 
     dataHandler.export_data(params, VideosData=df)
 
@@ -217,56 +217,56 @@ def report_event_and_add_to_df(params: dict, df: pd.DataFrame, dict_for_df: dict
     return df
 
 
-def instructions(win: visual.Window, params: dict, keyboard):
-    if params['videos_timing'] == 'Start':
+def instructions(win: visual.Window, params: dict, keyboard, df):
+    if params['videosTiming'] == 'Before':
         curr_instruction = visual.ImageStim(win,
                                             f"./img/instructions/1{params['gender'][0]}{params['language'][0]}.jpeg",
                                             units="norm", pos=(0, 0), size=(2,2))
     else:
         curr_instruction = visual.ImageStim(win,
-                                            f"./img/instructions/nextTask{params['gender'][0]}{params['language'][0]}.jpeg",
+                                            f"./img/instructions/videosInstructions/nextTask{params['gender'][0]}{params['language'][0]}.jpeg",
                                             units="norm", pos=(0, 0), size=(2,2))
     curr_instruction.draw()
     win.flip()
-    wait_for_space(win, keyboard)
+    wait_for_space(win, params, keyboard, df)
 
     curr_instruction = visual.ImageStim(win,
                                         f"./img/instructions/videosInstructions/instruction{params['gender'][0]}{params['language'][0]}.jpeg",
                                         units="norm", pos=(0, 0), size=(2,2))
     curr_instruction.draw()
     win.flip()
-    wait_for_space(win, keyboard)
+    wait_for_space(win, params, keyboard, df)
 
 
-def pre_video(win: visual.Window, params: dict, keyboard, video_num):
+def pre_video(win: visual.Window, params: dict, keyboard, video_num, df):
     curr_instruction = visual.ImageStim(win,
                                         f"./img/instructions/videosInstructions/video{video_num}{params['gender'][0]}{params['language'][0]}.jpeg",
                                         units="norm", pos=(0, 0), size=(2,2))
     curr_instruction.draw()
     win.flip()
-    wait_for_space(win, keyboard)
+    wait_for_space(win, params, keyboard, df)
 
 
-def fixation_message(win: visual.Window, params: dict, keyboard, instruction: int):
+def fixation_message(win: visual.Window, params: dict, keyboard, instruction: int, df):
     plus_prep_message = visual.ImageStim(win,
                                          image=f"./img/instructions/videosInstructions/plusPrep{params['gender'][0]}{params['language'][0]}_{instruction}.jpeg",
                                          units="norm", pos=(0, 0), size=(2,2))
     plus_prep_message.draw()
     win.flip()
-    wait_for_space(win, keyboard)
+    wait_for_space(win, params, keyboard, df)
 
 
-def vas_message(win: visual.Window, params: dict, keyboard):
+def vas_message(win: visual.Window, params: dict, keyboard, df):
     message = visual.ImageStim(win,
                                f"./img/instructions/videosInstructions/vas{params['gender'][0]}{params['language'][0]}.jpeg",
                                units="norm", pos=(0, 0), size=(2,2))
     message.draw()
     win.flip()
     keyboard.getKeys()
-    wait_for_space(win, keyboard)
+    wait_for_space(win, params, keyboard, df)
 
 
-def wait_for_space(window: visual.Window, keyboard):
+def wait_for_space(window: visual.Window, params, keyboard, df):
     keyboard.getKeys()
     core.wait(0.05)
     while True:
@@ -274,6 +274,11 @@ def wait_for_space(window: visual.Window, keyboard):
             if event.key == ' ':
                 return
             elif event.key == 'escape':
-                window.close()
-                core.quit()
+                quit_gracefully(window, params, df)
         core.wait(0.05)
+
+
+def quit_gracefully(window, params, df:pd.DataFrame):
+    dataHandler.export_data(params, VideosData=df)
+    window.close()
+    core.quit()

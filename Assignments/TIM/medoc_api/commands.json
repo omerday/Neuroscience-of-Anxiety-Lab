@@ -1,0 +1,121 @@
+	{
+		"Commands": [
+			{
+				"name": "GetVersion",
+				"commandId": 37
+			},
+			{
+				"name": "GetStatusTCU",
+				"commandId": 33
+			},
+			{
+				"name": "EnableTermode",
+				"commandId": 83,
+				"m_thermodeType": 1,
+				"m_isEnabled": true
+			},
+			{
+				"name": "GetStatusTCU",
+				"commandId": 33
+			},
+			{
+				"name": "SetTcuState",
+				"commandId": 41,
+				"m_state": 2,
+				"m_runSelfTest": true
+			},
+			{
+				"name": "GetStatusTCU",
+				"commandId": 33
+			},
+			{
+				"name": "GetActiveThermode",
+				"commandId": 19,
+				"m_thermodeId": 0
+			},
+			{
+				"name": "GetStatusTCU",
+				"commandId": 33
+			},
+			{
+				"name": "SetTcuState",
+				"commandId": 41,
+				"m_state": 3,
+				"m_runSelfTest": true
+			},
+			{
+				"name": "GetStatusTCU",
+				"commandId": 33
+			},
+			{
+				"name": "ClearCommandBuffer",
+				"commandId": 27
+			},
+			{
+				"name": "RunTest",
+				"commandId": 22,
+				"m_isResetClock": true
+			},
+			{
+				"commandId": 28,
+				"name": "FiniteRampByTime",
+				"m_allowSafeDurationOffset": false,
+				"m_isWaitForTrigger": false,
+				"m_isPeakDetect": false,
+				"m_isCreateTimeMark": false,
+				"m_isUseTimeMark": false,
+				"m_isDynamicFactor": false,
+				"m_isAllowEmptyBuffer": true,
+				"m_ignoreKdPidParameter": false,
+				"m_isStopOnResponseUnitNo": false,
+				"m_isStopOnResponseUnitYes": false,
+				"m_temperature": 32,
+				"m_time": 100
+			},{
+				"name": "StopTest",
+				"commandId": 47
+			},{
+				"commandId": 29,
+				"name": "FiniteRampByTemperature",
+				"m_allowSafeDurationOffset": false,
+				"m_isWaitForTrigger": false,
+				"m_isPeakDetect": false,
+				"m_isCreateTimeMark": false,
+				"m_isDynamicFactor": false,
+				"m_isAllowEmptyBuffer": true,
+				"m_ignoreKdPidParameter": false,
+				"m_isStopOnResponseUnitNo": false,
+				"m_isStopOnResponseUnitYes": false,
+				"m_temperature": 32,
+				"m_time": 100
+			},{
+				"commandId": 28,
+				"name": "FiniteRampByTime",
+				"m_allowSafeDurationOffset": false,
+				"m_isWaitForTrigger": false,
+				"m_isPeakDetect": false,
+				"m_isCreateTimeMark": false,
+				"m_isUseTimeMark": false,
+				"m_isDynamicFactor": false,
+				"m_isAllowEmptyBuffer": true,
+				"m_ignoreKdPidParameter": false,
+				"m_isStopOnResponseUnitNo": false,
+				"m_isStopOnResponseUnitYes": false,
+				"m_temperature": 32,
+				"m_time": 100
+			},{
+				"name": "EndTest",
+				"commandId": 25
+			},{
+				"name": "SimulateResponseUnit",
+				"commandId": 45,
+				"m_isYesPressed": false,
+				"m_isNoPressed": false
+			},
+			{
+				"name": "RunTest",
+				"commandId": 22,
+				"m_isResetClock": true
+			}
+		]
+	}

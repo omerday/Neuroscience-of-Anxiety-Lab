@@ -32,8 +32,8 @@ YES_NO_HEBREW = ["לא", "כן"]
 YES_NO_ENGLISH = ["No", "Yes"]
 
 
-def run_vas(window: visual.Window, df:pd.DataFrame, dict_for_df: dict, category: str, language="Hebrew"):
-
+def run_vas(window: visual.Window, df:pd.DataFrame, dict_for_df: dict, category: str, params):
+    language = params['language']
     dict_for_df['MovieCategory'] = category
     i = 0
 
