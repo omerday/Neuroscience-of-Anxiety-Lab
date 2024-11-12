@@ -45,7 +45,9 @@ params = {
     'painRateDuration': 7.0,
     'squareDurationMin': 4,  # minimum duration for each square
     'squareDurationMax': 7,  # maximum duration for each square
-    'colors': ['Green', 'Yellow', 'Red'],
+    'colors': ['Green', 'Black', 'Red'],
+    'pre_vas': ['Green', 'Green', 'Green', 'Red', 'Red', 'Red'],
+    'post_vas': ['Green', 'Green', 'Green', 'Red', 'Red', 'Red'],
     'fixationBeforeBlock': 8,
     'preITIMin': 3,
     'preITIMax': 5,

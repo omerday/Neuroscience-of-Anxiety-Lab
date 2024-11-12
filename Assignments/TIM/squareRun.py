@@ -45,6 +45,13 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
         trial_timing = timings.pop()
         curr_color = random.choice(colors_order)
         colors_order.remove(curr_color)
+        if curr_color == 'Black':
+            if block_number <= 3:
+                curr_color = random.choice(params['pre_vas'])
+                params['pre_vas'].remove(curr_color)
+            else:
+                curr_color = random.choice(params['post_vas'])
+                params['post_vas'].remove(curr_color)
         color_index = params['colors'].index(curr_color)
         temperature = params['temps'][color_index]
 
