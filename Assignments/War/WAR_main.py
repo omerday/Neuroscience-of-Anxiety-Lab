@@ -434,7 +434,7 @@ def execute_run(run_index, neg_image_generator, neut_image_generator, pos_image_
         display_image(PLUS_IMAGE_PATH, 8)
 
         # Generate random ITI times
-        ITI_times = generate_random_numbers(12, 3.5, 1, 3)
+        ITI_times = generate_random_numbers(12, 3, 2, 3)
 
         # Randomize the order of the blocks
         block_types = [(BlockTypes.NEG, neg_image_generator), (BlockTypes.NEUT, neut_image_generator),
