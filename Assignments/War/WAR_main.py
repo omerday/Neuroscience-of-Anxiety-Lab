@@ -280,11 +280,12 @@ def create_scale(serial_value, serial_port, scale_image_path, lower_bound, upper
                          anchor="nw")
 
     # Makes so the scale is proportional to SCALE_FACTOR, places it in the lower middle part of the screen
-    scale = tk.Scale(window, from_=lower_bound, to=upper_bound, orient=tk.HORIZONTAL, bd=5, length=1200*SCALE_FACTOR,
-                     sliderlength=100*SCALE_FACTOR, width=50*SCALE_FACTOR, font=scale_font, tickinterval=1)
+    scale = tk.Scale(window, from_=lower_bound, to=upper_bound, orient=tk.HORIZONTAL, bd=5,
+                     length=0.86*window_width*SCALE_FACTOR, sliderlength=0.072*window_width*SCALE_FACTOR,
+                     width=0.064*window_height*SCALE_FACTOR, font=scale_font, tickinterval=1)
     scale.set((lower_bound + upper_bound) / 2)
 
-    canvas1.create_window(140*SCALE_FACTOR, 400*SCALE_FACTOR,
+    canvas1.create_window(0.13 * window_width * SCALE_FACTOR, 0.5 * window_height * SCALE_FACTOR,
                           anchor="nw",
                           window=scale)
 
