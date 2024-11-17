@@ -1,4 +1,5 @@
 from WAR_main import cv2_display_image_with_input, display_image, PLUS_IMAGE_PATH, show_background
+from training import training
 from serialHandler import EVENTS_ENCODING, report_event
 import ctypes
 import cv2
@@ -10,6 +11,8 @@ T1_INSTRUCTIONS_PATH = "WAR_images/Utils/T1Instructions.jpg"
 def T1():
     ctypes.windll.user32.ShowCursor(False)
     show_background()
+
+    training()
 
     serial_port = None
     serial_port = serial.Serial("COM1", 115200, bytesize=serial.EIGHTBITS, timeout=1)
