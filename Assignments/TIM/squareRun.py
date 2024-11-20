@@ -47,16 +47,22 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
         colors_order.remove(curr_color)
         if curr_color == 'Black':
             if block_number <= 3:
-                curr_color = random.choice(params['pre_vas'])
-                params['pre_vas'].remove(curr_color)
+                heat_color = random.choice(params['pre_vas'])
+                params['pre_vas'].remove(heat_color)
             else:
-                curr_color = random.choice(params['post_vas'])
-                params['post_vas'].remove(curr_color)
-        color_index = params['colors'].index(curr_color)
+                heat_color = random.choice(params['post_vas'])
+                params['post_vas'].remove(heat_color)
+            prefix = f"Black_{heat_color}"
+        else:
+            heat_color = curr_color
+            prefix = params['Ts'][heat_color]
+
+        if heat_color == 'Green':
+            color_index = 0
+        else:
+            color_index = 1
         temperature = params['temps'][color_index]
 
-        # Set the Prefix here
-        prefix = params['Ts'][color_index]
         heat_level = T_TO_HEAT[prefix]
         event_onset_df = helpers.add_event(params, f'{prefix}_ITIpre', trial_timing['preITI'], heat_level, event_onset_df)
 
