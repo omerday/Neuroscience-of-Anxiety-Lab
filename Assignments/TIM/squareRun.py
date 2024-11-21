@@ -9,9 +9,9 @@ import helpers
 from serialHandler import *
 from dataHandler import *
 
-T_TO_HEAT = {'T2': 1,
+T_TO_HEAT = {'Green': 1,
              'T4': 2,
-             'T8': 3}
+             'Red': 3}
 
 def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.DataFrame, mood_df: pd.DataFrame, block_number: int):
     keyboard = io.devices.keyboard
