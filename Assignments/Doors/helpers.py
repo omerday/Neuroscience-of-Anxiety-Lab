@@ -207,6 +207,7 @@ def display_vas(win, params, text, labels, questionNo: int, roundNo: int, io):
 
         scale.draw()
         textItem.draw()
+        win.mouseVisible = False
         win.flip()
         for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
             #TODO: Add graceful quitting
@@ -244,6 +245,7 @@ def display_image_for_time(window: visual.Window, params: dict, imagePath: str, 
                                                                              params['screenSize'][1]),
                              opacity=1)
     image.draw()
+    window.mouseVisible = False
     window.update()
     key = event.getKeys()
     endTime = time.time() + timeframe
@@ -260,6 +262,7 @@ def display_image_until_key(window: visual.Window, params: dict, imagePath: str,
                                                                              params['screenSize'][1]),
                              opacity=1)
     image.draw()
+    window.mouseVisible = False
     window.update()
     pressedKey = event.getKeys()
     while key not in pressedKey:
@@ -283,10 +286,12 @@ def countdown_before_door_open(window: visual.Window, image: visual.ImageStim, p
         text_stim.text = str(i)
         image.draw()
         text_stim.draw()
+        window.mouseVisible = False
         window.flip()
         df = wait_for_time(1, df, dict_for_df)
     del text_stim
     image.draw()
+    window.mouseVisible = False
     window.flip()
     df = wait_for_time(1, df, dict_for_df)
     return df

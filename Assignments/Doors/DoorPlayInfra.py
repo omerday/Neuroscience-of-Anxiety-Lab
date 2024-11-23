@@ -66,7 +66,7 @@ def setup_door(window, params, reward: int, punishment: int):
                              size=((2 + location), (2 + location)),
                              units="norm", opacity=1)
     image.draw()
-
+    window.mouseVisible = False
     window.update()
     return image, location
 
@@ -86,6 +86,7 @@ def move_screen(window, params, image: visual.ImageStim, location, units):
     location = location + (units / 100)
     image.size = (2 + location, 2 + location)
     image.draw()
+    window.mouseVisible = False
     window.update()
     return image, location
 
@@ -390,6 +391,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
         image.draw()
         # outcomeImage.draw()
         doorFrameImg.draw()
+        window.mouseVisible = False
         window.update()
 
         dict_for_df["Total_coins"] += coins
@@ -405,6 +407,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
 
         # del outcomeImage
         del doorFrameImg
+        window.mouseVisible = False
         window.update()
 
     else:
@@ -415,6 +418,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
                                         pos=(0, 0), units="norm", opacity=1)
         image.draw()
         doorFrameImg.draw()
+        window.mouseVisible = False
         window.update()
 
         waitTimeStart = time.time()
@@ -423,11 +427,13 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
             core.wait(1 / 1000)
 
         del doorFrameImg
+        window.mouseVisible = False
         window.update()
 
     image.setImage('./img/iti.jpg')
     image.setSize((3.2, 3.2))
     image.draw()
+    window.mouseVisible = False
     window.update()
     start_time = time.time()
     iti_time = random.uniform(params['ITIDurationMin'], params['ITIDurationMax'])
@@ -437,6 +443,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
         dict_for_df["ITI_duration"] = iti_time
         image.size += 0.05
         image.draw()
+        window.mouseVisible = False
         window.update()
         core.wait(0.03)
     print(f"ITI actual time - {time.time() - start_time}")
@@ -482,7 +489,7 @@ def show_screen_pre_match(window: visual.Window, params: dict, session: int, io,
         else:
             image.image = "./img/InstructionsEnglish/" + screenNames[session] + ".jpeg"
         image.draw()
-
+    window.mouseVisible = False
     window.update()
     if params["keyboardMode"]:
         helpers.wait_for_space_no_df(window, io, mini_df=mini_df, summary_df=summary_df)
@@ -496,6 +503,7 @@ def show_screen_post_simulation(window: visual.Window, params: dict, io, mini_df
                                                       "language"] == "Hebrew" else "./img/InstructionsEnglish/") + "SimulationRunEnd.jpeg"
 
     image.draw()
+    window.mouseVisible = False
     window.update()
 
     if params["keyboardMode"]:
@@ -522,6 +530,7 @@ def show_wheel(window: visual.Window, params: dict, io=None):
 
     while movie.status != FINISHED:
         movie.draw()
+        window.mouseVisible = False
         window.flip()
 
     if params["keyboardMode"]:
@@ -545,6 +554,7 @@ def show_screen_post_match(window: visual.Window, params: dict, io, coins=0, min
                                   units="norm",
                                   color=(255, 255, 255), languageStyle='LTR')
     message.draw()
+    window.mouseVisible = False
     window.update()
     if params["keyboardMode"]:
         helpers.wait_for_space_no_df(window, io, params, mini_df)

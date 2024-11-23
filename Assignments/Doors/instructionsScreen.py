@@ -45,6 +45,7 @@ def show_instructions(win: visual.Window, params, miniDf: pandas.DataFrame,
         img.image = path + image_name + SUFFIX
         img.setSize((2, 2))  # Size needs to be reset after changing the image
         img.draw()
+        win.mouseVisible = False
         win.update()
 
         dict_for_df["Round"] = i
