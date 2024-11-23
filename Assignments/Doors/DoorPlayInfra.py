@@ -14,8 +14,8 @@ import psychtoolbox as ptb
 
 import serialHandler
 
-MIN_LOCATION = -1.5
-MAX_LOCATION = 1.75
+MIN_LOCATION = -1.1
+MAX_LOCATION = 1.85
 
 WAIT_TIME_ON_DOOR = 4
 
@@ -153,7 +153,8 @@ def get_movement_input_keyboard(window, params, image: visual.ImageStim, locatio
                 break
 
     location = normalize_location(location)
-    return location, dict_for_df, space  # NormalizedLocation
+    dict_for_df = update_movement_in_dict(dict_for_df, location)
+    return location, dict_for_df, space
 
 
 def get_movement_input_joystick(window, params, image: visual.ImageStim, location, end_time: time.time,
@@ -221,9 +222,9 @@ def get_movement_input_joystick(window, params, image: visual.ImageStim, locatio
         elif joystickMovement < 0 and location < 0:
             image, location = move_screen(window, params, image, location,
                                           params['sensitivity'] * 0.5 * speed)
-
     location = normalize_location(location)
-    return location, dict_for_df, not joystickButton  # NormalizedLocation
+    dict_for_df = update_movement_in_dict(dict_for_df, location)
+    return location, dict_for_df, joystickButton
 
 
 def normalize_location(location: int):
@@ -247,18 +248,15 @@ def normalize_location(location: int):
     return locationNormalized
 
 
-def update_movement_in_df(dict_for_df: dict, Df: pandas.DataFrame, location):
+def update_movement_in_dict(dict_for_df: dict, locationNormalized):
     dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
-    locationNormalized = normalize_location(location)
     dict_for_df['CurrentDistance'] = locationNormalized
     if locationNormalized > dict_for_df['Distance_max']:
         dict_for_df['Distance_max'] = locationNormalized
     if locationNormalized < dict_for_df['Distance_min']:
         dict_for_df['Distance_min'] = locationNormalized
 
-    # Update Df:
-    Df = pandas.concat([Df, pandas.DataFrame.from_records([dict_for_df])])
-    return Df
+    return dict_for_df
 
 
 def start_door(window: visual.Window, params, image: visual.ImageStim, reward: int, punishment: int, total_coins: int,
@@ -296,14 +294,13 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
 
     # Add initial dict parameters
     dict_for_df['RoundStartTime'] = round(time.time() - dict_for_df['StartTime'], 2)
-    dict_for_df['CurrentDistance'] = round((location + 1) * 50, 0)
-    dict_for_df['Distance_max'] = round((location + 1) * 50, 0)
-    dict_for_df['Distance_min'] = round((location + 1) * 50, 0)
     dict_for_df["ScenarioIndex"] = scenarioIndex
     dict_for_df["Total_coins"] = total_coins
     if not params['reducedEvents']:
         miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict_for_df])])
         dict_for_df.pop("ScenarioIndex")
+    dict_for_df['Distance_max'] = round(normalize_location(location))
+    dict_for_df['Distance_min'] = round(normalize_location(location))
 
     # Get movement for 10 seconds or until the door is locked.
     if params['keyboardMode']:
