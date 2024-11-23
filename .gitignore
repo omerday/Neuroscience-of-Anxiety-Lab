@@ -151,3 +151,5 @@ Assignments/TIM/data/TIMconfig.json
 
 .gitattributes
 .idea/
+
+*/data/
