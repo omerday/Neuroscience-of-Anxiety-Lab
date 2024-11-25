@@ -71,6 +71,9 @@ def run_task(window: visual.Window, params: dict, blockNumber: int, totalCoins: 
     if blockNumber not in [0, 1]:
         DoorPlayInfra.show_screen_pre_match(window, params, blockNumber, io, coins=totalCoins, mini_df=miniDf, summary_df=summary_df)
 
+    if blockNumber in [1, 2]:
+        helpers.show_version_specific_message(window, params, blockNumber, io)
+
     numOfDoors = 36 if params[f'numOfDoors'] == "36 (6x6)" else 49
     sizeOfArray = int(math.sqrt(numOfDoors))
     scenariosList = helpers.get_p_r_couples(sizeOfArray)

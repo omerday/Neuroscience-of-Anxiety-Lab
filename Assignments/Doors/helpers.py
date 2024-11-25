@@ -306,9 +306,9 @@ def wait_for_time(time_to_wait: float):
 def show_version_specific_message(window: visual.Window, params: dict, block:int, io):
     cond = "act" if params["ACTBlock"] == block else "neut"
     if params["screamVersion"]:
-        if cond == "act" and block == 1:
+        if cond == "neut" and block == 1:
             path = f"./img/versionSpecificInstructions/scream_neut_1_{params['language'][0]}.jpeg"
-        elif cond == "act" and block == 2:
+        elif cond == "neut" and block == 2:
             path = f"./img/versionSpecificInstructions/scream_neut_2_{params['language'][0]}.jpeg"
         else:
             path = f"./img/versionSpecificInstructions/scream_{cond}_{params['language'][0]}.jpeg"
