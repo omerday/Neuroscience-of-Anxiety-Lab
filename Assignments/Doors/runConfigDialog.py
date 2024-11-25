@@ -39,6 +39,8 @@ def user_input_play(debug=False):
                        choices=["P - R", "R - P"])
     userInput.addField('Keyboard Mode', True if not configExists else loadedData['keyboardMode'])
     userInput.addField('Sound On?', True if not configExists else loadedData['soundOn'])
+    userInput.addField("Version", "None", choices=["None", "SCR", "CAM", "HV"])
+    userInput.addField("Order", "NEUT-ACT", choices=["NEUT-ACT", "ACT-NEUT"])
     userInput.addField('Skip Instructions', False if not configExists else loadedData['skipInstructions'])
     userInput.addField("Preferred Language", "Hebrew" if not configExists else loadedData["language"], choices=["Hebrew", "English"])
     if debug:

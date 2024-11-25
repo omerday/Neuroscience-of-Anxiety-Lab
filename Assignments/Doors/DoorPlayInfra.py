@@ -37,7 +37,8 @@ SOUNDS = {
     "lock": "./sounds/click_1s.wav",
     "reward": "./sounds/new_reward.mp3",
     "punishment": "./sounds/monster.mp3",
-    "beep": "./sounds/beep_for_anticipation.mp3"
+    "beep": "./sounds/beep_for_anticipation.mp3",
+    "scream": "./sounds/shock_sound_1.mp3"
 }
 
 
@@ -261,7 +262,7 @@ def update_movement_in_dict(dict_for_df: dict, locationNormalized):
 
 def start_door(window: visual.Window, params, image: visual.ImageStim, reward: int, punishment: int, total_coins: int,
                location, dict_for_df: dict, io, scenarioIndex: int, miniDf: pandas.DataFrame,
-               summary_df=None, ser=None):
+               summary_df=None, ser=None, scream=False):
     """
     The method executes the entire door logic.
     It shows the door, executes a get_movement method, and after it's complete - it randomizes a 0-1 number that will
@@ -332,21 +333,11 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
 
     if params['soundOn']:
         play_sound("lock", 0.5, )
-        if params['beeps']:
-            doorWaitTime -= 2
-        else:
-            doorWaitTime -= 3
 
-    waitStart = time.time()
-    while time.time() < waitStart + doorWaitTime:
-        dict_for_df["CurrentTime"] = round(time.time() - dict_for_df['StartTime'], 2)
-        core.wait(1 / 100)
-
-    if params["soundOn"] and params['beeps']:
-        play_sound("beep", 2)
+    if scream:
+        play_scream(doorWaitTime)
     else:
-        helpers.wait_for_time(3)
-        # Df = helpers.countdown_before_door_open(window, image, params, Df, dict_for_df,)
+        helpers.wait_for_time(doorWaitTime)
 
     # Randomize door opening chance according to location.
     # The randomized number should be between 0 to location/100 in order for the door to open.
@@ -558,6 +549,18 @@ def show_screen_post_match(window: visual.Window, params: dict, io, coins=0, min
     else:
         helpers.wait_for_joystick_no_df(window, params, mini_df)
 
+def play_scream(waitTime: float, volume=.4):
+    core.wait(1)
+    now = ptb.GetSecs()
+    soundToPlay = sound.Sound(SOUNDS["scream"], volume=volume)
+    soundToPlay.play(when=now)
+    startTime = time.time()
+    while time.time() < startTime + 1.5:
+        core.wait(1/500)
+    soundToPlay.stop()
+    while time.time() < startTime + waitTime - 1:
+        core.wait(1/500)
+    return
 
 def play_sound(soundType: str, waitTime: float, volume=.4):
     """
