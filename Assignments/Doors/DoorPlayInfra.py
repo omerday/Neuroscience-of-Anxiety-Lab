@@ -262,7 +262,7 @@ def update_movement_in_dict(dict_for_df: dict, locationNormalized):
 
 def start_door(window: visual.Window, params, image: visual.ImageStim, reward: int, punishment: int, total_coins: int,
                location, dict_for_df: dict, io, scenarioIndex: int, miniDf: pandas.DataFrame,
-               summary_df=None, ser=None, scream=False):
+               summary_df=None, ser=None, scream=False, highValue=False):
     """
     The method executes the entire door logic.
     It shows the door, executes a get_movement method, and after it's complete - it randomizes a 0-1 number that will
@@ -373,6 +373,8 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
             dict_for_df["DidWin"] = 0
             dict_for_df["Door_outcome"] = 'punishment'
 
+        if highValue:
+            outcome_string += "0"
         doorFrameImg = visual.ImageStim(window, image=params['doorOutcomePath'] + outcome_string + ".png",
                                         size=(image.size[0], image.size[1]),
                                         pos=(0, 0), units="norm", opacity=1)

@@ -120,9 +120,10 @@ def run_task(window: visual.Window, params: dict, blockNumber: int, totalCoins: 
         if params['recordPhysio']:
             serialHandler.report_event(ser, scenarioIndex)
 
+        highValue = True if params["highValue"] and params["ACTBlock"] == blockNumber else False
         # Execute Door of selected scenario
         coinsWon, total_time, miniDf, dict_for_df, lock = DoorPlayInfra.start_door(window, params, image, scenario[0], scenario[1], totalCoins,
-                                                                  distanceFromDoor, dict_for_df, io, scenarioIndex, miniDf, summary_df, ser, subtrial in screamDoors)
+                                                                  distanceFromDoor, dict_for_df, io, scenarioIndex, miniDf, summary_df, ser, subtrial in screamDoors, highValue)
         totalCoins += coinsWon
         scenariosList.remove(scenario)
 
