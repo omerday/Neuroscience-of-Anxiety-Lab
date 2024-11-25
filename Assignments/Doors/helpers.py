@@ -302,3 +302,27 @@ def wait_for_time(time_to_wait: float):
     while time.time() < start_time + time_to_wait:
         core.wait(0.05)
     return
+
+def show_version_specific_message(window: visual.Window, params: dict, block:int, io):
+    cond = "act" if params["ACTBlock"] == block else "neut"
+    if params["screamVersion"]:
+        if cond == "act" and block == 1:
+            path = f"./img/versionSpecificInstructions/scream_neut_1_{params['language'][0]}.jpeg"
+        elif cond == "act" and block == 2:
+            path = f"./img/versionSpecificInstructions/scream_neut_2_{params['language'][0]}.jpeg"
+        else:
+            path = f"./img/versionSpecificInstructions/scream_{cond}_{params['language'][0]}.jpeg"
+    elif params["cameraVersion"]:
+        path = f"./img/versionSpecificInstructions/camera_{cond}_{params['language'][0]}.jpeg"
+    elif params["highValue"]:
+        path = f"./img/versionSpecificInstructions/high_value_{cond}_{params['language'][0]}.jpeg"
+    else:
+        return
+    image = visual.ImageStim(window, image=path, size=(2,2), units='norm')
+    image.draw()
+    window.mouseVisible = False
+    window.update()
+    if params['keyboardMode']:
+        wait_for_space_no_df(window, io)
+    else:
+        wait_for_joystick_no_df(window)
