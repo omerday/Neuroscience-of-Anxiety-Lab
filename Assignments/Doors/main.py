@@ -39,10 +39,10 @@ params = {
     'soundOn': configDialogBank[9],
     'beeps': False,                             # An option to sound beeps before the door outcome is presented
     'outcomeString': True,   # True if we want to print the outcome amount, otherwise it will just show a monster / a fairy
-    'screamVersion': True if configDialogBank[10] == "SCR" else False, #TODO: Get from config dialog
+    'screamVersion': True if configDialogBank[10] == "SCR" else False,
     'cameraVersion': True if configDialogBank[10] == "CAM" else False,
     'highValue': True if configDialogBank[10] == "HV" else False,
-    'ACTBlock': 1 if configDialogBank[11] == "ACT-NEUT" else 2, #TODO: Get from config dialog
+    'ACTBlock': 1 if configDialogBank[11] == "ACT-NEUT" else 2,
     'skipInstructions': configDialogBank[12],
     'language': configDialogBank[13],
     'reducedEvents': False,                      # Send only one event for each doors (door presented), instead of three - door presented, locked and outcome
