@@ -346,10 +346,6 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
     isDoorOpening = doorOpenChance <= (location / 100)
     print(f"doorChance - {doorOpenChance}, location - {location / 100}, isOpening - {isDoorOpening}")
 
-    if not params['reducedEvents']:
-        dict_for_df["ScenarioIndex"] = scenarioIndex + 100
-        if params['recordPhysio']:
-            serialHandler.report_event(ser, scenarioIndex + 100)
     dict_for_df["Door_opened"] = 1 if isDoorOpening else 0
     dict_for_df["DoorStatus"] = 'opened' if isDoorOpening else 'closed'
     dict_for_df["CurrentTime"] = round(time.time() - dict_for_df['StartTime'], 2)
@@ -384,6 +380,10 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
         window.mouseVisible = False
         window.update()
 
+        dict_for_df["ScenarioIndex"] = 150 + coins
+        if params['recordPhysio']:
+            serialHandler.report_event(ser, dict_for_df["ScenarioIndex"])
+
         dict_for_df["Total_coins"] += coins
         miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict_for_df])])
 
@@ -401,6 +401,7 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
         window.update()
 
     else:
+        dict_for_df["ScenarioIndex"] = 150
         miniDf = pandas.concat([miniDf, pandas.DataFrame.from_records([dict_for_df])])
 
         doorFrameImg = visual.ImageStim(window, image=params['doorImagePathPrefix'] + 'lock' + ".png",
@@ -410,6 +411,9 @@ def start_door(window: visual.Window, params, image: visual.ImageStim, reward: i
         doorFrameImg.draw()
         window.mouseVisible = False
         window.update()
+
+        if params['recordPhysio']:
+            serialHandler.report_event(ser, 150)
 
         waitTimeStart = time.time()
         while time.time() < waitTimeStart + WAIT_TIME_ON_DOOR:
