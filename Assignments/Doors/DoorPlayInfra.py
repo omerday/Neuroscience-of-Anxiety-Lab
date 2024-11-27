@@ -555,7 +555,7 @@ def show_screen_post_match(window: visual.Window, params: dict, io, coins=0, min
     else:
         helpers.wait_for_joystick_no_df(window, params, mini_df)
 
-def play_scream(waitTime: float, volume=.4):
+def play_scream(waitTime: float, volume=.5):
     core.wait(1)
     now = ptb.GetSecs()
     soundToPlay = sound.Sound(SOUNDS["scream"], volume=volume)
