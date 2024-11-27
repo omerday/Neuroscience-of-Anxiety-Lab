@@ -384,8 +384,8 @@ def execute_rest(events_encoding, serial_port, rest_index, df_log, start_time, d
 
     washout_task(serial_port, events_encoding, rest_index, df_log, start_time, df_results)
 
-    report_event(serial_port, events_encoding["run_rest_2"], df_log, start_time, duration=10)
-    display_image(SHORT_REST_IMAGE_PATH, 10)
+    report_event(serial_port, events_encoding["run_rest_2"], df_log, start_time, duration=22)
+    display_image(SHORT_REST_IMAGE_PATH, 22)
 
 
 def execute_block(block_type, image_generator, events_encoding, serial_port, block_offset, df_log, start_time,
