@@ -10,7 +10,8 @@ from serialHandler import *
 from dataHandler import *
 
 T_TO_HEAT = {'Green': 1,
-             'T4': 2,
+             'Black_Green' :1,
+             'Black_Red': 3,
              'Red': 3}
 
 def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.DataFrame, mood_df: pd.DataFrame, block_number: int):
@@ -55,7 +56,7 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
             prefix = f"Black_{heat_color}"
         else:
             heat_color = curr_color
-            prefix = params['Ts'][heat_color]
+            prefix = f"{heat_color}"
 
         if heat_color == 'Green':
             color_index = 0
@@ -110,6 +111,7 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
             window.flip()
             blank_screen_time = trial_timing['squareBlankScreen'] + trial_timing['squareJitter']
             _, event_onset_df = helpers.wait_for_time_with_periodic_events(window, params, device, mood_df, pain_df, start_time, blank_screen_time, keyboard, prefix, sec, event_onset_df)
+            print(f"About to deliver heat - {temperature} deg.")
 
         if params['painSupport']:
             import heatHandler
