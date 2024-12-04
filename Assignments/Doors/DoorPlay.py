@@ -46,7 +46,7 @@ def practice_run(window: visual.Window, params: dict, miniDf: pandas.DataFrame,
     return miniDf, summary_df
 
 
-def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int,
+def run_task(window: visual.Window, params: dict, blockNumber: int, totalCoins: int,
              miniDf: pandas.DataFrame, summary_df: pandas.DataFrame, io, ser=None):
 
     """
@@ -58,7 +58,7 @@ def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int
     Args:
         window: visual.Window object
         params: parameters dictionary
-        roundNum: number of round executed
+        blockNumber: number of round executed
         totalCoins: amount of coins gathered so far
         miniDf:
         summary_df:
@@ -68,14 +68,17 @@ def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int
     Returns: three dataframes, as well as the total coins after running the round.
 
     """
-    if roundNum not in [0, 1]:
-        DoorPlayInfra.show_screen_pre_match(window, params, roundNum, io, coins=totalCoins, mini_df=miniDf, summary_df=summary_df)
+    if blockNumber not in [0, 1]:
+        DoorPlayInfra.show_screen_pre_match(window, params, blockNumber, io, coins=totalCoins, mini_df=miniDf, summary_df=summary_df)
+
+    if blockNumber in [1, 2]:
+        helpers.show_version_specific_message(window, params, blockNumber, io)
 
     numOfDoors = 36 if params[f'numOfDoors'] == "36 (6x6)" else 49
     sizeOfArray = int(math.sqrt(numOfDoors))
     scenariosList = helpers.get_p_r_couples(sizeOfArray)
 
-    if roundNum == 0:
+    if blockNumber == 0:
         for i in range(0, numOfDoors - params['numOfSimulationDoors']):
             scenariosList.remove(random.choice(scenariosList))
         print(scenariosList)
@@ -89,16 +92,25 @@ def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int
     # This should be deduced from the event channel when analyzing the .acq file.
 
     subtrial = 0
-    while scenariosList or (params[f'numOfDoors'] == "36 (7x7)" and subtrial < 36):
 
+    screamDoors = []
+    if params['screamVersion'] and blockNumber == params['ACTBlock']:
+        screamDoors = [
+            random.randint(5, 8),
+            random.randint(13, 16),
+            random.randint(28, 31)
+        ]
+    print(f"Scream was set for the following doors - {screamDoors}")
+
+    while scenariosList or (params[f'numOfDoors'] == "36 (7x7)" and subtrial < 36):
         # Select a scenario and setup door
-        subtrial = subtrial + 1
+        subtrial += 1
         scenario = random.choice(scenariosList)
         scenarioIndex = (scenario[0] - 1) * 7 + (scenario[1]) + 50
         image, distanceFromDoor = DoorPlayInfra.setup_door(window, params, scenario[0], scenario[1])
 
         # Setup new dictionary
-        dict_for_df = dataHandler.create_dict_for_df(params, Section=f'TaskRun{roundNum}' if roundNum != 0 else "Simulation", Round=roundNum, TotalCoins=totalCoins, )
+        dict_for_df = dataHandler.create_dict_for_df(params, Section=f'TaskRun{blockNumber}' if blockNumber != 0 else "Simulation", Round=blockNumber, TotalCoins=totalCoins, )
         dict_for_df['Reward_magnitude'] = scenario[0]
         dict_for_df['Punishment_magnitude'] = scenario[1]
         dict_for_df['Subtrial'] = subtrial
@@ -108,9 +120,10 @@ def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int
         if params['recordPhysio']:
             serialHandler.report_event(ser, scenarioIndex)
 
+        highValue = True if params["highValue"] and params["ACTBlock"] == blockNumber else False
         # Execute Door of selected scenario
         coinsWon, total_time, miniDf, dict_for_df, lock = DoorPlayInfra.start_door(window, params, image, scenario[0], scenario[1], totalCoins,
-                                                                  distanceFromDoor, dict_for_df, io, scenarioIndex, miniDf, summary_df, ser)
+                                                                  distanceFromDoor, dict_for_df, io, scenarioIndex, miniDf, summary_df, ser, subtrial in screamDoors, highValue)
         totalCoins += coinsWon
         scenariosList.remove(scenario)
 
@@ -123,7 +136,7 @@ def run_task(window: visual.Window, params: dict, roundNum: int, totalCoins: int
 
         dataHandler.save_backup(params, miniDF=miniDf, summary=summary_df)
 
-    if roundNum == 0:
+    if blockNumber == 0:
         DoorPlayInfra.show_screen_post_simulation(window, params, io, miniDf)
 
     return miniDf, summary_df, totalCoins
