@@ -9,9 +9,10 @@ import helpers
 from serialHandler import *
 from dataHandler import *
 
-T_TO_HEAT = {'T2': 1,
-             'T4': 2,
-             'T8': 3}
+T_TO_HEAT = {'Green': 1,
+             'Black_Green' :1,
+             'Black_Red': 3,
+             'Red': 3}
 
 def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.DataFrame, mood_df: pd.DataFrame, block_number: int):
     keyboard = io.devices.keyboard
@@ -45,11 +46,24 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
         trial_timing = timings.pop()
         curr_color = random.choice(colors_order)
         colors_order.remove(curr_color)
-        color_index = params['colors'].index(curr_color)
+        if curr_color == 'Black':
+            if block_number <= 3:
+                heat_color = random.choice(params['pre_vas'])
+                params['pre_vas'].remove(heat_color)
+            else:
+                heat_color = random.choice(params['post_vas'])
+                params['post_vas'].remove(heat_color)
+            prefix = f"Black_{heat_color}"
+        else:
+            heat_color = curr_color
+            prefix = f"{heat_color}"
+
+        if heat_color == 'Green':
+            color_index = 0
+        else:
+            color_index = 1
         temperature = params['temps'][color_index]
 
-        # Set the Prefix here
-        prefix = params['Ts'][color_index]
         heat_level = T_TO_HEAT[prefix]
         event_onset_df = helpers.add_event(params, f'{prefix}_ITIpre', trial_timing['preITI'], heat_level, event_onset_df)
 
@@ -97,6 +111,7 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
             window.flip()
             blank_screen_time = trial_timing['squareBlankScreen'] + trial_timing['squareJitter']
             _, event_onset_df = helpers.wait_for_time_with_periodic_events(window, params, device, mood_df, pain_df, start_time, blank_screen_time, keyboard, prefix, sec, event_onset_df)
+            print(f"About to deliver heat - {temperature} deg.")
 
         if params['painSupport']:
             import heatHandler
