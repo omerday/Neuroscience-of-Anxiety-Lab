@@ -1,0 +1,10 @@
+ {
+    "port": "COM20",
+    "baudrate":115200,
+    "parity":"None",
+    "stopbits":1,
+    "bytesize":8,
+    "timeout": 1, 
+    "write_timeout": 1
+}
+
