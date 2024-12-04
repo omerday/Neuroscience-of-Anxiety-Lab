@@ -30,6 +30,7 @@ NEG_IMAGES_BASE_PATH = "WAR_images/NegImages"
 NEUT_IMAGES_BASE_PATH = "WAR_images/NeutImages"
 POS_IMAGES_BASE_PATH = "WAR_images/PosImages"
 PLUS_IMAGE_PATH = "WAR_images/Utils/Plus.jpeg"
+ANXIETY_SCALE_IMAGE_PATH = "WAR_images/Utils/AnxietyScale.JPG"
 EMOTIONAL_SCALE_POS_IMAGE_PATH = "WAR_images/Utils/EmotionalScalePos.jpeg"
 EMOTIONAL_SCALE_NEG_IMAGE_PATH = "WAR_images/Utils/EmotionalScaleNeg.jpeg"
 EMOTIONAL_SLIDE_PREVIEW_PATH = "WAR_images/Utils/EmotionalSlidesPreview.JPG"
@@ -242,8 +243,13 @@ def close_generator(window):
     return close
 
 
+def create_anxiety_scale():
+    return create_scale(0, None, ANXIETY_SCALE_IMAGE_PATH, 0, 20,
+                        1000, None, 0, True, False)
+
+
 def create_scale(serial_value, serial_port, scale_image_path, lower_bound, upper_bound, timeout, df_log, start_time,
-                 return_on_lock=False):
+                 return_on_lock=False, show_ticks=True):
     """
     Shows scale_image_path with a scale on it, scale is from lower_bound to upper_bound.
     Shows image for timeout (seconds).
@@ -282,7 +288,8 @@ def create_scale(serial_value, serial_port, scale_image_path, lower_bound, upper
     # Makes so the scale is proportional to SCALE_FACTOR, places it in the lower middle part of the screen
     scale = tk.Scale(window, from_=lower_bound, to=upper_bound, orient=tk.HORIZONTAL, bd=5,
                      length=0.86*window_width*SCALE_FACTOR, sliderlength=0.072*window_width*SCALE_FACTOR,
-                     width=0.064*window_height*SCALE_FACTOR, font=scale_font, tickinterval=1)
+                     width=0.064*window_height*SCALE_FACTOR, font=scale_font, tickinterval=1 if show_ticks else 0,
+                     showvalue=show_ticks)
     scale.set((lower_bound + upper_bound) / 2)
 
     canvas1.create_window(0.13 * window_width * SCALE_FACTOR, 0.5 * window_height * SCALE_FACTOR,

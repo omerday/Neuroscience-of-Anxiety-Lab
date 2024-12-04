@@ -1,4 +1,4 @@
-from WAR_main import cv2_display_image_with_input, display_image, PLUS_IMAGE_PATH, show_background
+from WAR_main import cv2_display_image_with_input, display_image, PLUS_IMAGE_PATH, show_background, create_anxiety_scale
 from serialHandler import EVENTS_ENCODING, report_event
 import ctypes
 import cv2
@@ -13,6 +13,10 @@ def baseline():
 
     serial_port = None
     serial_port = serial.Serial("COM1", 115200, bytesize=serial.EIGHTBITS, timeout=1)
+
+    display_image(PLUS_IMAGE_PATH, 0)
+    anxiety_level = create_anxiety_scale()
+
     cv2_display_image_with_input("Image", BASELINE_INSTRUCTIONS_PATH, 0, [ord('5')])
     report_event(serial_port, EVENTS_ENCODING['baseline_start'], None, 0)
     display_image(PLUS_IMAGE_PATH, (8 * 60) + 12)
