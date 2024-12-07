@@ -244,7 +244,7 @@ def close_generator(window):
 
 
 def create_anxiety_scale():
-    return create_scale(0, None, ANXIETY_SCALE_IMAGE_PATH, 0, 20,
+    return create_scale(0, None, ANXIETY_SCALE_IMAGE_PATH, 0, 50,
                         1000, None, 0, True, False)
 
 
