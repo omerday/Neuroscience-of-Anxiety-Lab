@@ -9,10 +9,10 @@ List of scenarios:
     255 - Initialization
 
     # Scenarios List indexing method:
-    # (reward - 1) * 7 + Punishment - 1
+    # (reward - 1) * 7 + Punishment
     # For example:
-    # Reward 1 Punishment 1 - index 0
-    # Reward 5 Punishment 2 - index 29
+    # Reward 1 Punishment 1 - index 1
+    # Reward 5 Punishment 2 - index 30
     
     51-99 - Door start
     101-149 - Door lock
