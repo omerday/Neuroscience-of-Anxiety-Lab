@@ -25,6 +25,7 @@ OPENING_SLIDE5_PATH = "WAR_images/Utils/OpeningSlide5.JPG"
 OPENING_SLIDES = [OPENING_SLIDE1_PATH, OPENING_SLIDE2_PATH, OPENING_SLIDE3_PATH, OPENING_SLIDE4_PATH,
                   OPENING_SLIDE5_PATH]
 USER_INPUT_IMAGE_PATH = "WAR_images/Utils/UserInput.jpg"
+SESSION_INPUT_IMAGE_PATH = "WAR_images/Utils/SessionInput.jpg"
 START_IMAGE_PATH = "WAR_images/Utils/Start.jpeg"
 NEG_IMAGES_BASE_PATH = "WAR_images/NegImages"
 NEUT_IMAGES_BASE_PATH = "WAR_images/NeutImages"
@@ -488,7 +489,7 @@ def execute_run(run_index, neg_image_generator, neut_image_generator, pos_image_
                                                                                  start_time_str))
 
 
-def get_subject_index():
+def get_subject_index(image_path=USER_INPUT_IMAGE_PATH):
     """
     Opens a window to get the subject index.
     When 'Enter' is pressed the answer is submitted
@@ -505,7 +506,7 @@ def get_subject_index():
 
     subject_index_var = tk.StringVar()
 
-    image = Image.open(USER_INPUT_IMAGE_PATH)
+    image = Image.open(image_path)
     image = image.resize((window_width, window_height))
     photo = ImageTk.PhotoImage(image)
 
@@ -545,6 +546,9 @@ def get_subject_index():
     # function generator that returns a function with the current window variable as a parameter
     # In this case, the function closes the window and sets esc_pressed to true, so we know to stop the experiment
     window.bind('<Escape>', close_generator(window))
+    window.lift()
+    window.focus_force()
+    name_entry.focus_set()
     window.mainloop()
 
     if esc_pressed:
