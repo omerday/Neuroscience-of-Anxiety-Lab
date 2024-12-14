@@ -136,11 +136,17 @@ def cv2_display_image(window_name, image, timeout_seconds, scale_factor=SCALE_FA
                               cv2.WINDOW_FULLSCREEN | cv2.WINDOW_KEEPRATIO)
     else:
         window = tk.Tk()
-        screen_width = int(window.winfo_screenwidth() * scale_factor)
-        screen_height = int(window.winfo_screenheight() * scale_factor)
+        screen_width = window.winfo_screenwidth()
+        screen_height = window.winfo_screenheight()
+        window_width = int(window.winfo_screenwidth() * scale_factor)
+        window_height = int(window.winfo_screenheight() * scale_factor)
         window.destroy()
 
-        cv2.resizeWindow(window_name, screen_width, screen_height)
+        x = int(screen_width / 2 - window_width / 2)
+        # y = int(screen_height / 2 - window_height / 2)
+        y = 0
+        cv2.resizeWindow(window_name, window_width, window_height)
+        cv2.moveWindow(window_name, x, y)
         
     start_time = time.time()
     cv2.imshow(window_name, image)
@@ -563,6 +569,7 @@ def get_subject_index(image_path=USER_INPUT_IMAGE_PATH):
 
 
 def execute_experiment_opening():
+    display_image(PLUS_IMAGE_PATH, 0)
     subject_index_str = get_subject_index()
     for slide in OPENING_SLIDES:
         cv2_display_image_with_input("Image", slide, 0, [ord(' ')])

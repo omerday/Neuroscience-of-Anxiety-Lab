@@ -8,6 +8,7 @@ import ctypes
 import cv2
 import serial
 
+T1_SCAN_START_PATH = "WAR_images/Utils/T1ScanStart.jpg"
 T1_INSTRUCTIONS_PATH = "WAR_images/Utils/T1Instructions.jpg"
 
 
@@ -26,6 +27,7 @@ def T1():
 
     df_results = pd.DataFrame(columns=['SubjectIndex', 'SessionIndex', 'ExperimentName', 'AnxietyLevel'])
 
+    cv2_display_image_with_input("Image", T1_SCAN_START_PATH, 0, [ord(' ')])
     anxiety_level = create_anxiety_scale()
     df_results.loc[len(df_results)] = [subject_index, session_index, "T1", anxiety_level]
 
