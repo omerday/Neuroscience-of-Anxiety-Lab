@@ -249,6 +249,15 @@ def create_anxiety_scale():
                         1000, None, 0, True, False)
 
 
+def get_windows_location():
+    hwnd = win32gui.FindWindow(None, "Image")
+    rect = win32gui.GetWindowRect(hwnd)
+    x, y, right, bottom = rect
+    width = right - x
+    height = bottom - y
+    return width, height, x, y
+
+
 def create_scale(serial_value, serial_port, scale_image_path, lower_bound, upper_bound, timeout, df_log, start_time,
                  return_on_lock=False, show_ticks=True):
     """
@@ -257,11 +266,7 @@ def create_scale(serial_value, serial_port, scale_image_path, lower_bound, upper
     Returns the answer the user locked in (int). If user didn't lock answer before timeout, returns the current value
     of the scale.
     """
-    hwnd = win32gui.FindWindow(None, "Image")
-    rect = win32gui.GetWindowRect(hwnd)
-    x, y, right, bottom = rect
-    width = right - x
-    height = bottom - y
+    width, height, x, y = get_windows_location()
     window = tk.Tk()
     screen_width = window.winfo_screenwidth()
     screen_height = window.winfo_screenheight()
@@ -494,6 +499,7 @@ def get_subject_index(image_path=USER_INPUT_IMAGE_PATH):
     Opens a window to get the subject index.
     When 'Enter' is pressed the answer is submitted
     """
+    width, height, x, y = get_windows_location()
     window = tk.Tk()
     screen_width = window.winfo_screenwidth()
     screen_height = window.winfo_screenheight()
@@ -501,8 +507,7 @@ def get_subject_index(image_path=USER_INPUT_IMAGE_PATH):
     window_width = int(screen_width * SCALE_FACTOR)
     window_height = int(screen_height * SCALE_FACTOR)
 
-    # Create the window pinned to the upper left corner, with size SCALE_FACTOR relative from fullscreen
-    window.geometry(f"{window_width}x{window_height}+0+0")
+    window.geometry(f"{width}x{height}+{x}+{y}")
 
     subject_index_var = tk.StringVar()
 

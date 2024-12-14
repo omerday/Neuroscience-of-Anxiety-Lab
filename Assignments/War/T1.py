@@ -17,7 +17,6 @@ def T1():
 
     display_image(PLUS_IMAGE_PATH, 0)
     subject_index = get_subject_index()
-    display_image(PLUS_IMAGE_PATH, 0)
     session_index = get_subject_index(SESSION_INPUT_IMAGE_PATH)
 
     training()
