@@ -117,7 +117,7 @@ def run_task(window: visual.Window, params: dict, blockNumber: int, totalCoins: 
         dict_for_df['DistanceAtStart'] = distanceFromDoor * 100 if distanceFromDoor != 0 else 50
         dict_for_df["ScenarioIndex"] = scenarioIndex
         block_type = ""
-        if blockNumber == params:
+        if blockNumber == params['ACTBlock']:
             block_type = "ACTIVE"
         elif blockNumber in [1, 2]:
             block_type = "NEUTRAL"
