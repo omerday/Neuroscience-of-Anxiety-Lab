@@ -116,6 +116,12 @@ def run_task(window: visual.Window, params: dict, blockNumber: int, totalCoins: 
         dict_for_df['Subtrial'] = subtrial
         dict_for_df['DistanceAtStart'] = distanceFromDoor * 100 if distanceFromDoor != 0 else 50
         dict_for_df["ScenarioIndex"] = scenarioIndex
+        block_type = ""
+        if blockNumber == params:
+            block_type = "ACTIVE"
+        elif blockNumber in [1, 2]:
+            block_type = "NEUTRAL"
+        dict_for_df["BlockType"] = block_type
 
         if params['recordPhysio']:
             serialHandler.report_event(ser, scenarioIndex)
