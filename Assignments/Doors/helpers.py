@@ -118,8 +118,9 @@ def wait_for_space_no_df(window, io, params=None, mini_df=None, summary_df=None)
     :param window:
     :return:
     """
-
     keyboard = io.devices.keyboard
+    keyboard.getKeys()
+    core.wait(0.1)
     while True:
         for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
             if event.key == " ":
@@ -132,6 +133,7 @@ def wait_for_joystick_no_df(window, params=None, mini_df=None, summary_df=None):
     pygame.init()
     joy = pygame.joystick.Joystick(0)
     joy.init()
+    core.wait(0.1)
     while True:
         core.wait(1 / 1000)
         for event in pygame.event.get():
