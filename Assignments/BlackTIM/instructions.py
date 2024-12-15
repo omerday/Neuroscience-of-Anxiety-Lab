@@ -28,7 +28,7 @@ def instructions(window: visual.Window, params, io):
 
         # Clearing events list
         keyboard.getKeys()
-        core.wait(0.05)
+        core.wait(0.1)
 
         space = False
         while not space:
