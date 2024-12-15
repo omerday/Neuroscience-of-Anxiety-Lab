@@ -86,7 +86,7 @@ def save_fmri_event_onset(params:dict, event_onset_df: pd.DataFrame, block):
         folder = f'./data/{params["subject"]}'
         if not os.path.exists(folder):
             os.mkdir(folder)
-    event_onset_df.to_csv(f'{folder}/TIM_event_onset_subject_{params["subject"]}_block_{block}.tsv', sep="\t")
+    event_onset_df.to_csv(f'{folder}/Black_TIM_event_onset_subject_{params["subject"]}_block_{block}.tsv', sep="\t")
 
 def export_data(params: dict, **kwargs):
     folder = './data'
@@ -100,11 +100,11 @@ def export_data(params: dict, **kwargs):
             try:
                 df = value.drop_duplicates(keep='first')
                 df.to_csv(
-                    f'{folder}/TIM {params["subject"]} Session {params["session"]} - {key} - {strftime("%d-%m-%Y %H-%M", localtime(params["startTime"]))}.csv')
+                    f'{folder}/Black_TIM {params["subject"]} Session {params["session"]} - {key} - {strftime("%d-%m-%Y %H-%M", localtime(params["startTime"]))}.csv')
             except:
                 print("Something went wrong, keeping backup")
             else:
-                backup_path = f'{folder}/TIM {params["subject"]} Session {params["session"]} - {key} - {strftime("%d-%m-%Y %H-%M", localtime(params["startTime"]))}.backup.csv'
+                backup_path = f'{folder}/Black_TIM {params["subject"]} Session {params["session"]} - {key} - {strftime("%d-%m-%Y %H-%M", localtime(params["startTime"]))}.backup.csv'
                 if os.path.exists(backup_path):
                     os.remove(backup_path)
 
@@ -119,5 +119,5 @@ def save_backup(params: dict, **kwargs):
         if isinstance(value, pd.DataFrame):
             df = value.drop_duplicates(keep='first')
             df.to_csv(
-                f'{folder}/TIM {params["subject"]} Session {params["session"]} - {key} - {strftime("%d-%m-%Y %H-%M", localtime(params["startTime"]))}.backup.csv')
+                f'{folder}/Black_TIM {params["subject"]} Session {params["session"]} - {key} - {strftime("%d-%m-%Y %H-%M", localtime(params["startTime"]))}.backup.csv')
 
