@@ -5,7 +5,6 @@ import random
 import serial, serialHandler
 import VAS
 import squareRun
-from squareRun import square_run
 from dataHandler import *
 from serialHandler import *
 
