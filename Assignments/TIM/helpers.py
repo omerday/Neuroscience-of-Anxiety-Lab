@@ -5,6 +5,7 @@ import random
 import serial, serialHandler
 import VAS
 import squareRun
+from Assignments.TIM.squareRun import square_run
 from dataHandler import *
 from serialHandler import *
 
