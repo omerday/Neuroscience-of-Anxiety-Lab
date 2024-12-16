@@ -118,8 +118,9 @@ def wait_for_space_no_df(window, io, params=None, mini_df=None, summary_df=None)
     :param window:
     :return:
     """
-
     keyboard = io.devices.keyboard
+    keyboard.getKeys()
+    core.wait(0.1)
     while True:
         for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
             if event.key == " ":
@@ -132,6 +133,7 @@ def wait_for_joystick_no_df(window, params=None, mini_df=None, summary_df=None):
     pygame.init()
     joy = pygame.joystick.Joystick(0)
     joy.init()
+    core.wait(0.1)
     while True:
         core.wait(1 / 1000)
         for event in pygame.event.get():
@@ -207,6 +209,7 @@ def display_vas(win, params, text, labels, questionNo: int, roundNo: int, io):
 
         scale.draw()
         textItem.draw()
+        win.mouseVisible = False
         win.flip()
         for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
             #TODO: Add graceful quitting
@@ -244,6 +247,7 @@ def display_image_for_time(window: visual.Window, params: dict, imagePath: str, 
                                                                              params['screenSize'][1]),
                              opacity=1)
     image.draw()
+    window.mouseVisible = False
     window.update()
     key = event.getKeys()
     endTime = time.time() + timeframe
@@ -260,6 +264,7 @@ def display_image_until_key(window: visual.Window, params: dict, imagePath: str,
                                                                              params['screenSize'][1]),
                              opacity=1)
     image.draw()
+    window.mouseVisible = False
     window.update()
     pressedKey = event.getKeys()
     while key not in pressedKey:
@@ -283,10 +288,12 @@ def countdown_before_door_open(window: visual.Window, image: visual.ImageStim, p
         text_stim.text = str(i)
         image.draw()
         text_stim.draw()
+        window.mouseVisible = False
         window.flip()
         df = wait_for_time(1, df, dict_for_df)
     del text_stim
     image.draw()
+    window.mouseVisible = False
     window.flip()
     df = wait_for_time(1, df, dict_for_df)
     return df
@@ -297,3 +304,27 @@ def wait_for_time(time_to_wait: float):
     while time.time() < start_time + time_to_wait:
         core.wait(0.05)
     return
+
+def show_version_specific_message(window: visual.Window, params: dict, block:int, io):
+    cond = "act" if params["ACTBlock"] == block else "neut"
+    if params["screamVersion"]:
+        if cond == "neut" and block == 1:
+            path = f"./img/versionSpecificInstructions/scream_neut_1_{params['language'][0]}.jpeg"
+        elif cond == "neut" and block == 2:
+            path = f"./img/versionSpecificInstructions/scream_neut_2_{params['language'][0]}.jpeg"
+        else:
+            path = f"./img/versionSpecificInstructions/scream_{cond}_{params['language'][0]}.jpeg"
+    elif params["cameraVersion"]:
+        path = f"./img/versionSpecificInstructions/camera_{cond}_{params['language'][0]}.jpeg"
+    elif params["highValue"]:
+        path = f"./img/versionSpecificInstructions/high_value_{cond}_{params['language'][0]}.jpeg"
+    else:
+        return
+    image = visual.ImageStim(window, image=path, size=(2,2), units='norm')
+    image.draw()
+    window.mouseVisible = False
+    window.update()
+    if params['keyboardMode']:
+        wait_for_space_no_df(window, io)
+    else:
+        wait_for_joystick_no_df(window)

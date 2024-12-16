@@ -12,6 +12,8 @@ import pandas as pd
 import ctypes
 import serial
 from serialHandler import EVENTS_ENCODING, report_event
+import win32gui
+
 
 SCALE_FACTOR = 0.9
 GRID_PATH = "WAR_images/Utils/Grid.jpg"
@@ -36,6 +38,8 @@ NEUT_BLOCK_START_PATH = "WAR_images/Utils/NeutBlockStart.jpg"
 POS_BLOCK_START_PATH = "WAR_images/Utils/PosBlockStart.jpg"
 LONG_REST_PATH = "WAR_images/Utils/LongRest.jpeg"
 SHORT_REST_IMAGE_PATH = "WAR_images/Utils/ShortRest.jpeg"
+END_SLIDE_PATH = "WAR_images/Utils/EndSlide.jpg"
+BACKGROUND_SLIDE_PATH = "WAR_images/Utils/Background.jpg"
 WASHOUT_START_IMAGE_PATH = "WAR_images/Utils/WashoutStart.jpeg"
 WASHOUT_SCALE_IMAGE_PATH = "WAR_images/Utils/WashoutScale.JPG"
 WASHOUT_SET1_IMAGE1_PATH = "WAR_images/Utils/Set1Shape1.JPG"
@@ -119,18 +123,23 @@ class ImageRandomizer(object):
         return images
 
 
-def cv2_display_image(window_name, image, timeout_seconds):
+def cv2_display_image(window_name, image, timeout_seconds, scale_factor=SCALE_FACTOR):
     """
     Shows image for timeout_seconds
     """
     cv2.namedWindow(window_name, cv2.WINDOW_NORMAL | cv2.WINDOW_KEEPRATIO)
 
-    window = tk.Tk()
-    screen_width = int(window.winfo_screenwidth() * SCALE_FACTOR)
-    screen_height = int(window.winfo_screenheight() * SCALE_FACTOR)
-    window.destroy()
+    if scale_factor == 1:
+        cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN | cv2.WINDOW_KEEPRATIO,
+                              cv2.WINDOW_FULLSCREEN | cv2.WINDOW_KEEPRATIO)
+    else:
+        window = tk.Tk()
+        screen_width = int(window.winfo_screenwidth() * scale_factor)
+        screen_height = int(window.winfo_screenheight() * scale_factor)
+        window.destroy()
 
-    cv2.resizeWindow(window_name, screen_width, screen_height)
+        cv2.resizeWindow(window_name, screen_width, screen_height)
+        
     start_time = time.time()
     cv2.imshow(window_name, image)
     while time.time() - start_time < timeout_seconds:
@@ -241,6 +250,11 @@ def create_scale(serial_value, serial_port, scale_image_path, lower_bound, upper
     Returns the answer the user locked in (int). If user didn't lock answer before timeout, returns the current value
     of the scale.
     """
+    hwnd = win32gui.FindWindow(None, "Image")
+    rect = win32gui.GetWindowRect(hwnd)
+    x, y, right, bottom = rect
+    width = right - x
+    height = bottom - y
     window = tk.Tk()
     screen_width = window.winfo_screenwidth()
     screen_height = window.winfo_screenheight()
@@ -248,7 +262,7 @@ def create_scale(serial_value, serial_port, scale_image_path, lower_bound, upper
     window_width = int(screen_width * SCALE_FACTOR)
     window_height = int(screen_height * SCALE_FACTOR)
 
-    window.geometry(f"{window_width}x{window_height}+0+0")
+    window.geometry(f"{width}x{height}+{x}+{y}")
 
     scale_font = font.Font(family="Helvetica", size=32, weight="bold")
 
@@ -266,11 +280,12 @@ def create_scale(serial_value, serial_port, scale_image_path, lower_bound, upper
                          anchor="nw")
 
     # Makes so the scale is proportional to SCALE_FACTOR, places it in the lower middle part of the screen
-    scale = tk.Scale(window, from_=lower_bound, to=upper_bound, orient=tk.HORIZONTAL, bd=5, length=1200*SCALE_FACTOR,
-                     sliderlength=100*SCALE_FACTOR, width=50*SCALE_FACTOR, font=scale_font, tickinterval=1)
+    scale = tk.Scale(window, from_=lower_bound, to=upper_bound, orient=tk.HORIZONTAL, bd=5,
+                     length=0.86*window_width*SCALE_FACTOR, sliderlength=0.072*window_width*SCALE_FACTOR,
+                     width=0.064*window_height*SCALE_FACTOR, font=scale_font, tickinterval=1)
     scale.set((lower_bound + upper_bound) / 2)
 
-    canvas1.create_window(140*SCALE_FACTOR, 400*SCALE_FACTOR,
+    canvas1.create_window(0.13 * window_width * SCALE_FACTOR, 0.5 * window_height * SCALE_FACTOR,
                           anchor="nw",
                           window=scale)
 
@@ -321,22 +336,25 @@ def washout_task(serial_port, events_encoding, set_number, df_log, start_time, d
     shape_times = generate_random_numbers(10, 2.0, 1)
 
     for i in range(len(indexes)):
-        report_event(serial_port, events_encoding["washout_task_ITI"], df_log, start_time)
+        report_event(serial_port, events_encoding["washout_task_ITI"], df_log, start_time, duration=ITI_times[i])
         display_image(PLUS_IMAGE_PATH, ITI_times[i])
 
-        report_event(serial_port, events_encoding["washout_task_shape"], df_log, start_time, images[indexes[i]])
+        report_event(serial_port, events_encoding["washout_task_shape"], df_log, start_time, images[indexes[i]],
+                     duration=shape_times[i])
         display_image(images[indexes[i]], shape_times[i])
 
-        report_event(serial_port, events_encoding["washout_task_shape_dots"], df_log, start_time, images_dots[indexes[i]])
+        report_event(serial_port, events_encoding["washout_task_shape_dots"], df_log, start_time,
+                     images_dots[indexes[i]], duration=0.2)
         display_image(images_dots[indexes[i]], 0.2)
 
-        report_event(serial_port, events_encoding["washout_task_shape2"], df_log, start_time, images[indexes[i]])
+        report_event(serial_port, events_encoding["washout_task_shape2"], df_log, start_time, images[indexes[i]],
+                     duration=2)
         display_image(images[indexes[i]], 2)
 
         # This is so it looks better after the scale windows closes (otherwise the previous image is shown shortly)
         display_image(PLUS_IMAGE_PATH, 0.01)
 
-        report_event(serial_port, events_encoding["washout_task_rate"], df_log, start_time)
+        report_event(serial_port, events_encoding["washout_task_rate"], df_log, start_time, duration=4)
         answer = create_scale(events_encoding["washout_task_rate_locked"], serial_port,
                      WASHOUT_SCALE_IMAGE_PATH, 0, 5, 4, df_log, start_time)
 
@@ -359,15 +377,15 @@ def display_emotional_slide(block_type):
 
 
 def execute_rest(events_encoding, serial_port, rest_index, df_log, start_time, df_results):
-    report_event(serial_port, events_encoding["run_rest"], df_log, start_time)
+    report_event(serial_port, events_encoding["run_rest"], df_log, start_time, duration=14)
     display_image(SHORT_REST_IMAGE_PATH, 8)
 
     display_image(WASHOUT_START_IMAGE_PATH, 6)
 
     washout_task(serial_port, events_encoding, rest_index, df_log, start_time, df_results)
 
-    report_event(serial_port, events_encoding["run_rest_2"], df_log, start_time)
-    display_image(SHORT_REST_IMAGE_PATH, 10)
+    report_event(serial_port, events_encoding["run_rest_2"], df_log, start_time, duration=22)
+    display_image(SHORT_REST_IMAGE_PATH, 22)
 
 
 def execute_block(block_type, image_generator, events_encoding, serial_port, block_offset, df_log, start_time,
@@ -376,18 +394,19 @@ def execute_block(block_type, image_generator, events_encoding, serial_port, blo
     random_times = generate_random_numbers(22, 4.5, 2)
     images = image_generator.get_images()
     for i in range(len(images)):
-        report_event(serial_port, events_encoding["pic_base"] + i + block_offset, df_log, start_time, images[i])
+        report_event(serial_port, events_encoding["pic_base"] + i + block_offset, df_log, start_time, images[i],
+                     duration=random_times[i])
         display_image(images[i], random_times[i])
 
-    report_event(serial_port, events_encoding["block_rest"] + block_offset, df_log, start_time)
+    report_event(serial_port, events_encoding["block_rest"] + block_offset, df_log, start_time, duration=3)
     display_image(PLUS_IMAGE_PATH, 3)  # Rest
 
-    report_event(serial_port, events_encoding["block_rating_neg"] + block_offset, df_log, start_time)
+    report_event(serial_port, events_encoding["block_rating_neg"] + block_offset, df_log, start_time, duration=6)
     emotional_scale_neg = create_scale(events_encoding["block_rating_neg_locked"] + block_offset, serial_port,
                                        EMOTIONAL_SCALE_NEG_IMAGE_PATH, 1, 7, 6,
                                        df_log, start_time)
 
-    report_event(serial_port, events_encoding["block_rating_pos"] + block_offset, df_log, start_time)
+    report_event(serial_port, events_encoding["block_rating_pos"] + block_offset, df_log, start_time, duration=6)
     emotional_scale_pos = create_scale(events_encoding["block_rating_pos_locked"] + block_offset, serial_port,
                                        EMOTIONAL_SCALE_POS_IMAGE_PATH, 1, 7, 6,
                                        df_log, start_time)
@@ -396,14 +415,14 @@ def execute_block(block_type, image_generator, events_encoding, serial_port, blo
     df_results.loc[len(df_results)] = [block_type.name, block_index, emotional_scale_neg, emotional_scale_pos,
                                        None, None, None]
 
-    report_event(serial_port, events_encoding["block_ITI"] + block_offset, df_log, start_time)
+    report_event(serial_port, events_encoding["block_ITI"] + block_offset, df_log, start_time, duration=ITI_time)
     display_image(PLUS_IMAGE_PATH, ITI_time)  # ITI
 
 
 def execute_run(run_index, neg_image_generator, neut_image_generator, pos_image_generator, serial_port, subject_index):
     events_encoding = EVENTS_ENCODING
 
-    df_log = pd.DataFrame(columns=['Time', 'Biopac', 'ImageName'])
+    df_log = pd.DataFrame(columns=['Time', 'Biopac', 'ImageName', 'Duration'])
     df_results = pd.DataFrame(columns=['BlockType', 'BlockIndex', 'NegativeEmotionalScale', 'PositiveEmotionalScale',
                                        'WashoutTaskIndex', 'WashoutImageIndex', 'IsCorrect'])
 
@@ -412,11 +431,11 @@ def execute_run(run_index, neg_image_generator, neut_image_generator, pos_image_
     start_time = datetime.now()
 
     try:
-        report_event(serial_port, events_encoding["fixation_run_start"], df_log, start_time)
+        report_event(serial_port, events_encoding["fixation_run_start"], df_log, start_time, duration=8)
         display_image(PLUS_IMAGE_PATH, 8)
 
         # Generate random ITI times
-        ITI_times = generate_random_numbers(12, 3.5, 1, 3)
+        ITI_times = generate_random_numbers(12, 3, 2, 3)
 
         # Randomize the order of the blocks
         block_types = [(BlockTypes.NEG, neg_image_generator), (BlockTypes.NEUT, neut_image_generator),
@@ -433,7 +452,8 @@ def execute_run(run_index, neg_image_generator, neut_image_generator, pos_image_
             else:
                 block_offset = 40
 
-            report_event(serial_port, events_encoding["emotional_slide_before_images"] + block_offset, df_log, start_time)
+            report_event(serial_port, events_encoding["emotional_slide_before_images"] + block_offset, df_log,
+                         start_time, duration=10)
             display_emotional_slide(block_type)
 
             execute_block(block_type, image_generator, events_encoding, serial_port, block_offset, df_log, start_time,
@@ -457,7 +477,8 @@ def execute_run(run_index, neg_image_generator, neut_image_generator, pos_image_
 
         # Saved dfs to data directory with unique file names for each run
         df_log.to_csv("data/WAR_LogFile_Subject_{}_Run_{}_{}.csv".format(subject_index, run_index, start_time_str))
-        df_results.to_csv("data/WAR_ResultsFile_Subject_{}_Run_{}_{}.csv".format(subject_index, run_index, start_time_str))
+        df_results.to_csv("data/WAR_ResultsFile_Subject_{}_Run_{}_{}.csv".format(subject_index, run_index,
+                                                                                 start_time_str))
 
 
 def get_subject_index():
@@ -533,21 +554,30 @@ def execute_experiment_opening():
     return subject_index_str
 
 
+def show_background():
+    img = cv2.imread(BACKGROUND_SLIDE_PATH)
+    cv2_display_image("Background", img, 0.1, 1)
+
+
 def execute_experiment():
     # Images should be random and don't repeat for whole experiment, so we randomize them here
     neg_image_generator = ImageRandomizer(NEG_IMAGES_BASE_PATH)
     neut_image_generator = ImageRandomizer(NEUT_IMAGES_BASE_PATH)
     pos_image_generator = ImageRandomizer(POS_IMAGES_BASE_PATH)
     serial_port = None
-    # serial_port = serial.Serial("COM1", 115200, bytesize=serial.EIGHTBITS, timeout=1)
+    serial_port = serial.Serial("COM1", 115200, bytesize=serial.EIGHTBITS, timeout=1)
 
     ctypes.windll.user32.ShowCursor(False)
+
+    show_background()
 
     subject_index_str = execute_experiment_opening()
 
     execute_run(1, neg_image_generator, neut_image_generator, pos_image_generator, serial_port, subject_index_str)
     cv2_display_image_with_input("Image", LONG_REST_PATH, 0)
     execute_run(2, neg_image_generator, neut_image_generator, pos_image_generator, serial_port, subject_index_str)
+
+    cv2_display_image_with_input("Image", END_SLIDE_PATH, 0)
 
     ctypes.windll.user32.ShowCursor(True)
     cv2.destroyAllWindows()

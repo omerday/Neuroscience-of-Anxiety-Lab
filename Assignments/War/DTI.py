@@ -1,8 +1,9 @@
-from WAR_main import cv2_display_image_with_input, display_image, PLUS_IMAGE_PATH, START_IMAGE_PATH, SCALE_FACTOR
+from WAR_main import cv2_display_image_with_input, display_image, PLUS_IMAGE_PATH, START_IMAGE_PATH, SCALE_FACTOR, show_background
 from serialHandler import EVENTS_ENCODING, report_event
 import ctypes
 import cv2
 import tkinter as tk
+import serial
 
 DTI_INSTRUCTIONS_PATH = "WAR_images/Utils/DTIInstructions.jpg"
 VIDEO_PATH = ""  # TODO: Fill after video found
@@ -39,9 +40,10 @@ def show_video(video_path):
 
 def DTI():
     ctypes.windll.user32.ShowCursor(False)
+    show_background()
 
     serial_port = None
-    # serial_port = serial.Serial("COM1", 115200, bytesize=serial.EIGHTBITS, timeout=1)
+    serial_port = serial.Serial("COM1", 115200, bytesize=serial.EIGHTBITS, timeout=1)
     user_input = cv2_display_image_with_input("Image", DTI_INSTRUCTIONS_PATH, 0, [ord('b'), ord('c')])
 
     if user_input == ord('b'):  # Fixation
