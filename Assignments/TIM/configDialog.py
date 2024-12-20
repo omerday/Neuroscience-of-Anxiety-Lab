@@ -47,4 +47,6 @@ def get_user_input(debug=False):
     userInput.addField('Record Physiology', False if not config_exists else loaded_data['recordPhysio'])
     userInput.addField('Skip Instructions', False if not config_exists else loaded_data['skipInstructions'])
     userInput.addField('Continuous Shape', False if not config_exists else loaded_data['continuousShape'])
+    userInput.addField("Don't Sleep After Temp", False)
+    userInput.addField('More Ramp-Up Time', False)
     return userInput.show()

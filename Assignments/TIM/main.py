@@ -60,7 +60,8 @@ params = {
     'secondParadigmMax': 10,
     'continuousPresentTimeMin': 2,
     'continuousPresentTimeMax': 2.5,
-
+    'dontSleepAfterTemp': configDialogBank[13],
+    'tempRampUpTime': 750 if configDialogBank[14] else 500,
 }
 
 if not os.path.exists("./data"):
