@@ -126,7 +126,7 @@ def middle_vas(window: visual.Window, params, miniDf: pandas.DataFrame,
     return miniDf, summary_df
 
 
-def final_vas(window: visual.Window, params, miniDf: pandas.DataFrame, summary_df: pandas.DataFrame, io):
+def final_vas(window: visual.Window, params, block: int, miniDf: pandas.DataFrame, summary_df: pandas.DataFrame, io):
     """
         The method presents the last set of VAS Questionnaire, destined to be shown at the end of the experiment.
         It shows each of the questions given in QUESTIONS_FINAL_HE (or _EN given the language parameter)
@@ -153,6 +153,7 @@ def final_vas(window: visual.Window, params, miniDf: pandas.DataFrame, summary_d
                                                    questionNo=i + 1,
                                                    roundNo=3)
         dict_for_df["Section"] = 'Question'
+        dict_for_df["Round"] = block
         dict_for_df['CurrentTime'] = round(time.time() - dict_for_df['StartTime'], 2)
         dict_for_df['Q_type'] = QUESTIONS_LABEL[i]
         dict_for_df['Q_RT'] = time.time() - startTime

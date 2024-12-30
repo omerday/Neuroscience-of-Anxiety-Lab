@@ -98,6 +98,7 @@ mini_df, summary_df, totalCoins = DoorPlay.run_task(window, params, 1, 0, mini_d
 roundNum = 2
 while roundNum <= params['numOfTasks']:
     # Mid-VAS
+    mini_df, summary_df = VAS.final_vas(window, params, roundNum - 1, mini_df, summary_df, io)
     mini_df, summary_df = VAS.middle_vas(window, params, mini_df, summary_df, roundNum, io)
 
     # Task 2
@@ -105,9 +106,8 @@ while roundNum <= params['numOfTasks']:
 
     roundNum += 1
 
+mini_df, summary_df = VAS.final_vas(window, params, roundNum - 1, mini_df, summary_df, io)
 mini_df, summary_df = VAS.middle_vas(window, params, mini_df, summary_df, roundNum, io)
-
-mini_df, summary_df = VAS.final_vas(window, params, mini_df, summary_df, io)
 DoorPlayInfra.show_screen_post_match(window, params, io, totalCoins, mini_df)
 helpers.graceful_quitting(window, params, mini_df, summary_df)
 
