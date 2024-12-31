@@ -122,6 +122,8 @@ if params['recordPhysio']:
 scores = run_vas(window, io, params, 'mood', mood_df=df_mood, pain_df=df_pain, device=device)
 df_mood = insert_data_mood("post", scores, df_mood)
 
+export_data(params, Mood=df_mood, Pain=df_pain)
+
 image = visual.ImageStim(window,
                          image=f"./img/instructions/finish_{'E' if params['language'] == 'English' else params['gender'][0]}.jpeg",
                          units="norm", size=(2, 2))
