@@ -101,7 +101,7 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
         if params['painSupport']:
             import heatHandler
             event_onset_df = helpers.add_event(params, f'{prefix}_heat_pulse', 6, heat_level, event_onset_df)
-            heatHandler.deliver_pain(window, float(temperature), device)
+            heatHandler.deliver_pain(window, float(temperature), device, params)
 
         helpers.iti(window, params, "post", keyboard, device, mood_df, pain_df, trial_timing['preRatingITI'], event_onset_df)
 
