@@ -1,13 +1,13 @@
-from medoc_api import enums
+import enums
 import logging
-from medoc_api.commands.m_command import command
+from commands.m_command import command
 
 logger = logging.getLogger(__name__)
 
 
 class get_errors_command(command):
-    def __init__(self):
-        command.__init__(self)
+    def __init__(self, command_tag: enums.DEVICE_TAG = enums.DEVICE_TAG.Master):
+        command.__init__(self, command_tag)
         self.response = None
         self.is_generated = True
         self.command_id = enums.COMMAND_ID.GetErrors

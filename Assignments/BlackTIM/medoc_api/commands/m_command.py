@@ -1,14 +1,15 @@
-from medoc_api import crc8
+import crc8
 import logging
-from medoc_api import enums
-from medoc_api.commands import m_message
-from medoc_api.Utilities import converters
-from medoc_api.commands.r_finite_ramp_by_temperature import finite_ramp_by_temperature_response
-from medoc_api.commands.r_finite_ramp_by_time import finite_ramp_by_time_response
-from medoc_api.commands.r_get_errors_command import get_errors_response
-from medoc_api.commands.r_get_status_TCU import get_statusTCU_response
-from medoc_api.commands.r_get_version_command import get_version_response
-from medoc_api.commands.response import response
+import enums
+from commands import m_message
+from Utilities import converters
+from commands.r_finite_ramp_by_temperature import finite_ramp_by_temperature_response
+from commands.r_finite_ramp_by_time import finite_ramp_by_time_response
+from commands.r_get_errors_command import get_errors_response
+from commands.r_get_status_TCU import get_statusTCU_response
+from commands.r_get_version_command import get_version_response
+from commands.r_get_conditional_event import get_conditional_event_response
+from commands.response import response
 
 logger = logging.getLogger(__name__)
 
@@ -24,8 +25,8 @@ EXTRA_DATA_RESPONSE_INDEX = ACK_CODE_INDEX + 1
 
 class command(m_message.message):
 
-    def __init__(self):
-        m_message.message.__init__(self)
+    def __init__(self, command_tag: enums.DEVICE_TAG = enums.DEVICE_TAG.Master):
+        m_message.message.__init__(self, command_tag)
         self.response = None
 
     def to_bytes(self):
@@ -128,7 +129,6 @@ class command(m_message.message):
         if self.command_id.value != buffer[ID_INDEX]:
             raise ValueError("Invalid command id")
 
-        # TODO create response command
         self.create_response(buffer)
 
     def create_response(self, buffer):
@@ -159,31 +159,38 @@ class command(m_message.message):
         """
         if command_id == 18:  # get GetActiveThermode
             self.response = response()
-        if command_id == 19:  # get GetActiveThermode
+        elif command_id == 19:  # get GetActiveThermode
             self.response = response()
-        if command_id == 22:  # RunTest
+        elif command_id == 22:  # RunTest
             self.response = response()
-        if command_id == 25:  # EndTest
+        elif command_id == 25:  # EndTest
             self.response = response()
-        if command_id == 27:  # ClearCommandBuffer
+        elif command_id == 27:  # ClearCommandBuffer
             self.response = response()
-        if command_id == 28:  # FiniteRampBytime
+        elif command_id == 28:  # FiniteRampBytime
             self.response = finite_ramp_by_time_response()
-        if command_id == 29:  # FiniteRampBytemperature
+        elif command_id == 29:  # FiniteRampBytemperature
             self.response = finite_ramp_by_temperature_response()
-        if command_id == 33:  # get status TCU
+        elif command_id == 33:  # get status TCU
             self.response = get_statusTCU_response()
-        if command_id == 35:  # GetErrors
+        elif command_id == 35:  # GetErrors
             self.response = get_errors_response()
-        if command_id == 36:  # EraseErrors
+        elif command_id == 36:  # EraseErrors
             self.response = response()
-        if command_id == 37:
+        elif command_id == 37:
             self.response = get_version_response()
-        if command_id == 41:  # SetTcuState
+        elif command_id == 41:  # SetTcuState
             self.response = response()
-        if command_id == 45:  # SimulateResponseUnit
+        elif command_id == 45:  # SimulateResponseUnit
             self.response = response()
-        if command_id == 47:  # StopTest
+        elif command_id == 47:  # StopTest
             self.response = response()
-        if command_id == 83:  # enable termode
+        elif command_id == 83:  # enable termode
             self.response = response()
+        elif command_id == 32:
+            self.response = response()
+        elif command_id == 34:
+            self.response = get_conditional_event_response()
+        elif command_id == 38:
+            self.response = response()
+

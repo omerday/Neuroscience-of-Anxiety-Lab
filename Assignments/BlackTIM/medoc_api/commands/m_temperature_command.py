@@ -1,4 +1,5 @@
-from medoc_api.commands.m_command import command
+from commands.m_command import command
+import enums
 
 
 class temperature_command(command):
@@ -12,14 +13,13 @@ class temperature_command(command):
     ALLOW_EMPTY_BUFFER_BIT = 7
     ALLOW_SAFE_DURATION_OFFSET = 3
 
-    def __init__(self):
-        command.__init__(self)
+    def __init__(self, command_tag: enums.DEVICE_TAG = enums.DEVICE_TAG.Master):
+        command.__init__(self, command_tag)
         #from temperuture command
         self.m_isWaitForTrigger = False
         self.m_isAllowEmptyBuffer = True
         self.m_ignoreKdPidParameter = False
         self.m_condEventsNo = 0
-        #TODO need implementation
         self.m_conditionEventsLength = 0
 
         # from FiniteRampCommand

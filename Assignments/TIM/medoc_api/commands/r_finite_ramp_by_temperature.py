@@ -1,6 +1,6 @@
-from medoc_api.Utilities import converters, temp_converter
-from medoc_api.commands.m_message import message
-from medoc_api.commands.response import response
+from Utilities import converters, temp_converter
+from commands.m_message import message
+from commands.response import response
 import logging
 
 logger = logging.getLogger(__name__)
@@ -58,7 +58,6 @@ class finite_ramp_by_temperature_response(response):
         # start_position += 1
         # self.m_isStopOnResponseUnitYes = converters.get_bit(stopConditionsByte, self.STOP_ON_YES_BIT)
         # self.m_isStopOnResponseUnitNo = converters.get_bit(stopConditionsByte, self.STOP_ON_NO_BIT)
-        # # TODO ConditionEventsCount = reader.ReadByte();
         # self.m_condEventsNo = buffer[start_position]
         # start_position += 1
 

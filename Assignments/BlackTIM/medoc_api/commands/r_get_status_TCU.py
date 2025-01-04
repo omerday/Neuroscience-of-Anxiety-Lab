@@ -1,10 +1,10 @@
 import logging
-from medoc_api import enums
-from medoc_api.Utilities import temp_converter, converters
-from medoc_api.commands.m_message import message
-from medoc_api.enums import COMMAND_ID
-from medoc_api.commands.r_get_pid_calculation_response import get_pid_calculation_response
-from medoc_api.commands.r_status import get_status_response
+import enums
+from Utilities import temp_converter, converters
+from commands.m_message import message
+from enums import COMMAND_ID
+from commands.r_get_pid_calculation_response import get_pid_calculation_response
+from commands.r_status import get_status_response
 
 logger = logging.getLogger(__name__)
 
@@ -170,7 +170,6 @@ class get_statusTCU_response(get_status_response):
             start_position += 2
             self.m_atsResponse = temp_converter.tcu2pc(val)
 
-        # TODO Here check on TSA3 based device
         val = buffer[start_position]
         start_position += 1
         self.m_mainThermodeModel = val
@@ -194,7 +193,6 @@ class get_statusTCU_response(get_status_response):
         start_position += 1
         self.m_pid_data = []
         for x in range(0, cnt):
-            # TODO Need implementation new GetPIDCalculationsResponse(reader, type)
             pid_position = start_position
             pid_response = get_pid_calculation_response()
             start_position = pid_response.read_data(buffer, pid_position)
@@ -204,7 +202,6 @@ class get_statusTCU_response(get_status_response):
         start_position += 1
         self.m_slave_pid_data = []
         for x in range(0, cnt):
-            # TODO Need implementation new GetPIDCalculationsResponse(reader, type)
             pid_position = start_position
             slave_pid_response = get_pid_calculation_response()
             start_position = slave_pid_response.read_data(buffer, pid_position)

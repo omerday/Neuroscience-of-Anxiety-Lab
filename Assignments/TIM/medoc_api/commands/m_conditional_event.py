@@ -1,0 +1,44 @@
+import enums
+from commands import m_command, m_message
+import logging
+
+from commands.m_command import command
+
+logger = logging.getLogger(__name__)
+
+
+class conditional_event_command(command):
+    def __init__(self, command_tag: enums.DEVICE_TAG = enums.DEVICE_TAG.Master):
+        command.__init__(self, command_tag)
+        self.response = None
+        self.command_id = enums.COMMAND_ID.ConditionalEvent
+        self.m_condition = enums.EventCondition.Unconditional
+        self.m_ttl = 0
+
+    def build_command(self, data):
+        """
+        build parameters from json file
+        :param data: instance of command from json file from him parameters
+        :return:
+        """
+        if 'm_condition' in data.keys():
+            self.m_condition = data['m_condition']
+        if 'm_ttl' in data.keys():
+            self.m_ttl = data['m_ttl']
+
+
+    def write_data(self):
+        command.write_data(self)
+        extra_data = [0x00] * 2
+
+        extra_data[0] = self.m_condition.value
+        extra_data[1] = self.m_ttl
+
+        return extra_data
+
+    def send_message(self):
+        # command.send_message(self)
+        logger.info(str(self))
+
+    def __str__(self):
+        return f'\t{command.__str__(self)}'

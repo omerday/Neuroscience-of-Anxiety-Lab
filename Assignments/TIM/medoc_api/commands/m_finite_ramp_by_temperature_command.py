@@ -1,17 +1,17 @@
 import logging
 
-from medoc_api import enums
-from medoc_api.commands.m_command import command
-from medoc_api.commands.m_finite_ramp_safe_duration_command import *
-from medoc_api.Utilities import temp_converter, converters
+import enums
+from commands.m_command import command
+from commands.m_finite_ramp_safe_duration_command import *
+from Utilities import temp_converter, converters
 
 logger = logging.getLogger(__name__)
 
 
 class finite_ramp_by_temperature_command(finite_ramp_safe_duration_command):
 
-    def __init__(self):
-        finite_ramp_safe_duration_command.__init__(self)
+    def __init__(self, command_tag: enums.DEVICE_TAG = enums.DEVICE_TAG.Master):
+        finite_ramp_safe_duration_command.__init__(self, command_tag)
         self.m_lowMargin = 0
         self.m_highMargin = 0
         self.response = None

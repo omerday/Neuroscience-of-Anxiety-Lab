@@ -1,13 +1,14 @@
-from medoc_api.commands.m_temperature_command import *
+from commands.m_temperature_command import *
+import enums
 
 
 class finite_ramp_command(temperature_command):
     STOP_ON_YES_BIT = 0
     STOP_ON_NO_BIT = 1
 
-    def __init__(self):
+    def __init__(self, command_tag: enums.DEVICE_TAG = enums.DEVICE_TAG.Master):
         # super(command, self).__init__()
-        temperature_command.__init__(self)
+        temperature_command.__init__(self, command_tag)
         self.m_temperature = 0
         self.m_time = 0
         self.m_isPeakDetect = False

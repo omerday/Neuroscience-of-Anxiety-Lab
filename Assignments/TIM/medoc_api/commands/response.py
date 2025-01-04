@@ -1,12 +1,13 @@
 import logging
-from medoc_api.commands.m_message import message
+import enums
+from commands.m_message import message
 
 logger = logging.getLogger(__name__)
 
 
 class response(message):
     def __init__(self, command_id=None):
-        message.__init__(self)
+        message.__init__(self, enums.DEVICE_TAG.Master)
         self.command_ack_code = None
 
     def read_data(self, buffer, start_position=0):

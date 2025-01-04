@@ -112,6 +112,7 @@ class DEVICE_TAG(Enum):
 class COMMAND_ID(Enum):
     Undefined = -1
     ProtocolError = 0
+    SetTTLOUTPulseDuration = 9
     SetActiveThermode = 18
     GetActiveThermode = 19
     RunTest = 22
@@ -120,10 +121,13 @@ class COMMAND_ID(Enum):
     FiniteRampByTime = 28
     FiniteRampByTemperature = 29
     InfiniteRamp = 30
+    ConditionalEvent = 32
     GetStatusTCU = 33
+    GetConditionalEvents = 34
     GetErrors = 35
     EraseErrors = 36
     GetVersion = 37
+    EraseConditionalEvents = 38
     SetTcuState = 41
     SimulateResponseUnit = 45
     StopTest = 47
@@ -307,3 +311,19 @@ class TcuErrorCode(Enum):
 
     def __str__(self):
         return str(self.name)
+
+
+class EventCondition(Enum):
+    Unconditional = 0
+    StartPoint = 1
+    EndPoint = 2
+    Time = 3
+    TemperatureRaise = 4
+    TemperatureDrop = 5
+    Peak = 6
+    PeakLow = 7
+
+class TTLOUTChannel(Enum):
+	TTLOUT = 0
+	AuxilaryTTLOUT = 1
+	MultyBitTTLOUT = 2

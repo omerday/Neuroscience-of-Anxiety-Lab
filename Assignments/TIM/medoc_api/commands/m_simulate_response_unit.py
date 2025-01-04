@@ -1,9 +1,9 @@
-from medoc_api import enums
-from medoc_api.Utilities import converters
-from medoc_api.commands import m_command, m_message
+import enums
+from Utilities import converters
+from commands import m_command, m_message
 import logging
 
-from medoc_api.commands.m_command import command
+from commands.m_command import command
 
 logger = logging.getLogger(__name__)
 
@@ -12,8 +12,8 @@ class simulate_unit_response_command(command):
     BIT_YES = 0
     BIT_NO = 1
 
-    def __init__(self):
-        command.__init__(self)
+    def __init__(self, command_tag: enums.DEVICE_TAG = enums.DEVICE_TAG.Master):
+        command.__init__(self, command_tag)
         self.response = None
         self.m_isYesPressed = False
         self.m_isNoPressed = False

@@ -4,7 +4,7 @@
     "parity":"None",
     "stopbits":1,
     "bytesize":8,
-    "timeout": 1, 
-    "write_timeout": 1
+    "timeout": 0.2,
+    "write_timeout": 0.2
 }
 
