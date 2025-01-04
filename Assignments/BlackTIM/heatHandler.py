@@ -43,7 +43,8 @@ def deliver_pain(window:visual.Window, temp, device, params:dict):
 
     print(f"{round(time.time() - start_time, 2)} - Raising to temp {temp}")
 
-    device.finite_ramp_by_temperature(temp, 0.1, 0.1, is_stop_on_response_unit_yes=False, time=params['tempRampUpTime'])
+    resp = device.finite_ramp_by_temperature(temp, 0.1, 0.1, is_stop_on_response_unit_yes=False, time=params['tempRampUpTime'])
+    print(resp)
     device.run_test()
 
     if not params['dontSleepAfterTemp']:
@@ -52,7 +53,8 @@ def deliver_pain(window:visual.Window, temp, device, params:dict):
 
     print(f"{round(time.time() - start_time, 2)} - staying for 4 sec")
 
-    device.finite_ramp_by_temperature(temp, 0.1, 0.1, is_stop_on_response_unit_yes=False, time=4000)
+    resp = device.finite_ramp_by_time(temp, 0.1, 0.1, is_stop_on_response_unit_yes=False, time=4000)
+    print(resp)
     device.run_test()
 
     if not params['dontSleepAfterTemp']:
@@ -61,7 +63,8 @@ def deliver_pain(window:visual.Window, temp, device, params:dict):
 
     print(f"{round(time.time() - start_time, 2)} - lowering temp")
 
-    device.finite_ramp_by_temperature(32, 0.1, 0.1, is_stop_on_response_unit_yes=False, time=params['tempRampUpTime'])
+    resp = device.finite_ramp_by_temperature(32, 0.1, 0.1, is_stop_on_response_unit_yes=False, time=params['tempRampUpTime'])
+    print(resp)
     device.run_test()
 
     if not params['dontSleepAfterTemp']:
