@@ -1,7 +1,7 @@
 import logging
 
-from Utilities import temp_converter, converters
-from commands.response import response
+from medoc_api.Utilities import temp_converter, converters
+from medoc_api.commands.response import response
 
 logger = logging.getLogger(__name__)
 

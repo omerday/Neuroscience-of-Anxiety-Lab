@@ -1,4 +1,4 @@
-from enums import DEVICE_TAG, COMMAND_ID
+from medoc_api.enums import (DEVICE_TAG, COMMAND_ID)
 
 
 MAX_LENGTH = 512

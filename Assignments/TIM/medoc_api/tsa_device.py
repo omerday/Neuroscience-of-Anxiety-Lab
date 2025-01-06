@@ -3,36 +3,36 @@ import sys
 import logging
 import threading
 
-from token_holder import TokenHolder
-from command_api import CommandAPI
-from event import Event
-from event import TypedEvent
+from medoc_api.token_holder import TokenHolder
+from medoc_api.command_api import CommandAPI
+from medoc_api.event import Event
+from medoc_api.event import TypedEvent
 
-from c_api import CApi
+from medoc_api.c_api import CApi
 
-from connector import connector
-from commands.response import response
-import enums
+from medoc_api.connector import connector
+from medoc_api.commands.response import response
+import medoc_api.enums as enums
 
 
 ########################## Command imports #######################################
-from commands.m_getVersion_command import getVersion_command
-from commands.m_getstatusTCU_command import get_status_TCU_command
-from commands.m_set_TCU_state import set_TCU_state_command
-from commands.m_clear_command_buffer import clear_command_buffer_command
-from commands.m_enable_termode import enable_termode_command
-from commands.m_end_test_command import end_test_command
-from commands.m_finite_ramp_by_temperature_command import finite_ramp_by_temperature_command
-from commands.m_finite_ramp_by_time_command import finite_ramp_by_time_command
-from commands.m_get_active_thermode import get_active_thermode_command
-from commands.m_set_active_thermode import set_active_thermode_command
-from commands.m_run_test import run_test_command
-from commands.m_simulate_response_unit import simulate_unit_response_command
-from commands.m_stop_test_command import stop_test_command
-from commands.m_conditional_event import conditional_event_command
-from commands.m_get_conditional_events import get_conditional_events_command
-from commands.m_erase_conditional_events import erase_conditional_events_command
-from commands.m_ttl_out_pulse_duration import set_TTL_out_pulse_duration_command
+from medoc_api.commands.m_getVersion_command import getVersion_command
+from medoc_api.commands.m_getstatusTCU_command import get_status_TCU_command
+from medoc_api.commands.m_set_TCU_state import set_TCU_state_command
+from medoc_api.commands.m_clear_command_buffer import clear_command_buffer_command
+from medoc_api.commands.m_enable_termode import enable_termode_command
+from medoc_api.commands.m_end_test_command import end_test_command
+from medoc_api.commands.m_finite_ramp_by_temperature_command import finite_ramp_by_temperature_command
+from medoc_api.commands.m_finite_ramp_by_time_command import finite_ramp_by_time_command
+from medoc_api.commands.m_get_active_thermode import get_active_thermode_command
+from medoc_api.commands.m_set_active_thermode import set_active_thermode_command
+from medoc_api.commands.m_run_test import run_test_command
+from medoc_api.commands.m_simulate_response_unit import simulate_unit_response_command
+from medoc_api.commands.m_stop_test_command import stop_test_command
+from medoc_api.commands.m_conditional_event import conditional_event_command
+from medoc_api.commands.m_get_conditional_events import get_conditional_events_command
+from medoc_api.commands.m_erase_conditional_events import erase_conditional_events_command
+from medoc_api.commands.m_ttl_out_pulse_duration import set_TTL_out_pulse_duration_command
 ##################################################################################
 
 class TsaDevice:

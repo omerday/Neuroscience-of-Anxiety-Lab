@@ -1,7 +1,7 @@
-import enums
+import medoc_api.enums as enums
 import logging
 
-from commands.m_command import command
+from medoc_api.commands.m_command import command
 
 logger = logging.getLogger(__name__)
 

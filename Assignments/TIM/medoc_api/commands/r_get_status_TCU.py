@@ -1,10 +1,10 @@
 import logging
-import enums
-from Utilities import temp_converter, converters
-from commands.m_message import message
-from enums import COMMAND_ID
-from commands.r_get_pid_calculation_response import get_pid_calculation_response
-from commands.r_status import get_status_response
+import medoc_api.enums as enums
+from medoc_api.Utilities import temp_converter, converters
+from medoc_api.commands.m_message import message
+from medoc_api.enums import COMMAND_ID
+from medoc_api.commands.r_get_pid_calculation_response import get_pid_calculation_response
+from medoc_api.commands.r_status import get_status_response
 
 logger = logging.getLogger(__name__)
 

@@ -4,15 +4,15 @@ import logging
 import json
 import os
 import sys
-from token_holder import TokenHolder
-from commands.m_getVersion_command import getVersion_command
-from command_api import CommandAPI
-from commands.response import response
-import enums
+from medoc_api.token_holder import TokenHolder
+from medoc_api.commands.m_getVersion_command import getVersion_command
+from medoc_api.command_api import CommandAPI
+from medoc_api.commands.response import response
+import medoc_api.enums as enums
 
 logger = logging.getLogger(__name__)
 
-from commands.m_getstatusTCU_command import get_status_TCU_command
+from medoc_api.commands.m_getstatusTCU_command import get_status_TCU_command
 
 class connector:
     MAX_PORT_DEFAULT = 20

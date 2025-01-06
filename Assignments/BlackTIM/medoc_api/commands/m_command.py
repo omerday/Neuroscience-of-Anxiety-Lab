@@ -1,15 +1,15 @@
-import crc8
+import medoc_api.crc8
 import logging
-import enums
-from commands import m_message
-from Utilities import converters
-from commands.r_finite_ramp_by_temperature import finite_ramp_by_temperature_response
-from commands.r_finite_ramp_by_time import finite_ramp_by_time_response
-from commands.r_get_errors_command import get_errors_response
-from commands.r_get_status_TCU import get_statusTCU_response
-from commands.r_get_version_command import get_version_response
-from commands.r_get_conditional_event import get_conditional_event_response
-from commands.response import response
+from medoc_api import enums
+from medoc_api.commands import m_message
+from medoc_api.Utilities import converters
+from medoc_api.commands.r_finite_ramp_by_temperature import finite_ramp_by_temperature_response
+from medoc_api.commands.r_finite_ramp_by_time import finite_ramp_by_time_response
+from medoc_api.commands.r_get_errors_command import get_errors_response
+from medoc_api.commands.r_get_status_TCU import get_statusTCU_response
+from medoc_api.commands.r_get_version_command import get_version_response
+from medoc_api.commands.r_get_conditional_event import get_conditional_event_response
+from medoc_api.commands.response import response
 
 logger = logging.getLogger(__name__)
 

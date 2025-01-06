@@ -1,23 +1,23 @@
 import time
 from datetime import datetime
-import enums
-from commands.erase_error_command import erase_error_command
-from commands.m_clear_command_buffer import clear_command_buffer_command
-from commands.m_enable_termode import enable_termode_command
-from commands.m_end_test_command import end_test_command
-from commands.m_finite_ramp_by_temperature_command import finite_ramp_by_temperature_command
-from commands.m_finite_ramp_by_time_command import finite_ramp_by_time_command
-from commands.m_get_active_thermode import get_active_thermode_command
-from commands.m_get_error_command import get_errors_command
-from commands.m_getstatusTCU_command import get_status_TCU_command
-from commands.m_run_test import run_test_command
-from commands.m_simulate_response_unit import simulate_unit_response_command
-from commands.m_stop_test_command import stop_test_command
-from input_commands import *
-from connector import connector
-from commands import m_getVersion_command, m_set_TCU_state
+import medoc_api.enums as enums
+from medoc_api.commands.erase_error_command import erase_error_command
+from medoc_api.commands.m_clear_command_buffer import clear_command_buffer_command
+from medoc_api.commands.m_enable_termode import enable_termode_command
+from medoc_api.commands.m_end_test_command import end_test_command
+from medoc_api.commands.m_finite_ramp_by_temperature_command import finite_ramp_by_temperature_command
+from medoc_api.commands.m_finite_ramp_by_time_command import finite_ramp_by_time_command
+from medoc_api.commands.m_get_active_thermode import get_active_thermode_command
+from medoc_api.commands.m_get_error_command import get_errors_command
+from medoc_api.commands.m_getstatusTCU_command import get_status_TCU_command
+from medoc_api.commands.m_run_test import run_test_command
+from medoc_api.commands.m_simulate_response_unit import simulate_unit_response_command
+from medoc_api.commands.m_stop_test_command import stop_test_command
+from medoc_api.input_commands import *
+from medoc_api.connector import connector
+from medoc_api.commands import m_getVersion_command, m_set_TCU_state
 
-from token_holder import TokenHolder
+from medoc_api.token_holder import TokenHolder
 
 INTERVAL = 50  # ms
 

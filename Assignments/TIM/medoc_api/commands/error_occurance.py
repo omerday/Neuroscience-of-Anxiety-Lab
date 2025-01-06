@@ -1,5 +1,5 @@
-from Utilities import converters
-from enums import DeviceType, TcuErrorCode
+from medoc_api.Utilities import converters
+from medoc_api.enums import DeviceType, TcuErrorCode
 
 
 class error_item:

@@ -1,5 +1,5 @@
-from commands.m_command import command
-import enums
+from medoc_api.commands.m_command import command
+import medoc_api.enums as enums
 
 
 class temperature_command(command):

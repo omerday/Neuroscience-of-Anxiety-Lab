@@ -1,9 +1,9 @@
 import logging
 
-import enums
-from commands.m_command import command
-from commands.m_finite_ramp_safe_duration_command import *
-from Utilities import temp_converter, converters
+import medoc_api.enums as enums
+from medoc_api.commands.m_command import command
+from medoc_api.commands.m_finite_ramp_safe_duration_command import *
+from medoc_api.Utilities import temp_converter, converters
 
 logger = logging.getLogger(__name__)
 

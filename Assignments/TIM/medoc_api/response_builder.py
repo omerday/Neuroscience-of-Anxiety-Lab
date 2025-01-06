@@ -1,7 +1,7 @@
-from commands.r_finite_ramp_by_time import finite_ramp_by_time_response
-from commands.r_get_status_TCU import get_statusTCU_response
-from commands.r_get_version_command import get_version_response
-from commands.response import response
+from medoc_api.commands.r_finite_ramp_by_time import finite_ramp_by_time_response
+from medoc_api.commands.r_get_status_TCU import get_statusTCU_response
+from medoc_api.commands.r_get_version_command import get_version_response
+from medoc_api.commands.response import response
 
 
 def build_response(command_id):

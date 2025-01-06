@@ -1,8 +1,8 @@
 import logging
 
-import enums
-from commands.m_command import command
-from Utilities  import converters
+import medoc_api.enums as enums
+from medoc_api.commands.m_command import command
+from medoc_api.Utilities  import converters
 
 class set_TTL_out_pulse_duration_command(command):
     def __init__(self, command_tag: enums.DEVICE_TAG = enums.DEVICE_TAG.Master):

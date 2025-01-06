@@ -1,10 +1,10 @@
 # from event import Event
-from commands.m_command import command
-from token_holder import TokenHolder
+from medoc_api.commands.m_command import command
+from medoc_api.token_holder import TokenHolder
 import time
 import logging
 import serial
-from commands import response
+from medoc_api.commands import response
 
 logger = logging.getLogger()
 

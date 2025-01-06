@@ -1,8 +1,8 @@
-from tsa_device import TsaDevice
+from medoc_api.tsa_device import TsaDevice
 import logging
 import sys
 import os
-import enums
+import medoc_api.enums as enums
 import tkinter as tk
 from tkinter import messagebox
 import time

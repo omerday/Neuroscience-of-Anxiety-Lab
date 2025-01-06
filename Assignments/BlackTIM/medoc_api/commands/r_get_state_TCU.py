@@ -1,4 +1,4 @@
-from commands.response import response
+from medoc_api.commands.response import response
 import logging
 
 logger = logging.getLogger(__name__)
