@@ -34,4 +34,6 @@ def get_user_input(debug=False):
                        choices=["Hebrew", "English"])
     userInput.addField('Record Physiology', False if not config_exists else loaded_data['recordPhysio'])
     userInput.addField('Skip Instructions', False if not config_exists else loaded_data['skipInstructions'])
+    userInput.addField('PreCond', False if not config_exists else loaded_data['preCond'])
+    userInput.addField('Test', False if not config_exists else loaded_data['test'])
     return userInput.show()
