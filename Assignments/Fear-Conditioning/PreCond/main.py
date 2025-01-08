@@ -50,9 +50,9 @@ params = {
     "blockDuration": 24,
     "relaxSlideDuration": 12,
     "blankSlideDuration": 30,
-    "faceDurationMin": 4,
-    "faceDurationMax": 5,
-    "testBlockDuration": 14,
+    "faceDurationMin": 8,
+    "faceDurationMax": 9,
+    "testBlockDuration": 18,
 
 
 }

@@ -18,6 +18,15 @@ def test(params, window: visual.Window, io, keyboard):
             temp_naturals.remove(curr_n)
             img_name = params['natural'].index(curr_n)
 
+            # displaying the plus image before the shape
+            display_time_plus = random.uniform(params['plusDurationMin'], params['plusDurationMax'])
+            plus = visual.ImageStim(window, image=f"./img/plus.jpeg", units="norm", size=(2, 2))
+            plus.draw()
+            window.mouseVisible = False
+            window.flip()
+            start_time = time.time()
+            helpers.wait_for_time(window, params, start_time, display_time_plus, keyboard)
+
             # displaying the natural face
             display_time_n = random.uniform(params['faceDurationMin'], params['faceDurationMax'])
             shape = visual.ImageStim(window, image=f"./img/natural/{img_name}.jpeg", units="norm", size=(2, 2))
