@@ -25,6 +25,7 @@ import helpers
 from psychopy.iohub.client.keyboard import Keyboard
 import preCond
 import test
+import cond
 
 io = launchHubServer()
 
@@ -41,8 +42,8 @@ params = {
     "preCond": configDialogBank[6],
     "test": configDialogBank[7],
     "shapes": ['square', 'circle', 'triangle', 'rhombus'],
-    "natural": ['N1', 'N2', 'N3', 'N4', 'N5', 'N6', 'N7', 'N8'],
-    "angry": ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8'],
+    "natural": ['N1_F', 'N2_F', 'N3_F', 'N4_F', 'N5_M', 'N6_M', 'N7_M', 'N8_M'],
+    "angry": ['A1_F', 'A2_F', 'A3_F', 'A4_F', 'A5_M', 'A6_M', 'A7_M', 'A8_M'],
     "plusDurationMin": 2,
     "plusDurationMax": 4,
     "shapeDurationMin": 8,
@@ -97,7 +98,8 @@ if params['preCond']:
     # calling the preCond function
     preCond.pre_cond(params, window, io, keyboard)
 
-    # TODO: calling the cond function
+    # calling the cond function
+    cond.pre_cond(params, window, io, keyboard)
 
 if params['Test']:
     # TODO: instructions
