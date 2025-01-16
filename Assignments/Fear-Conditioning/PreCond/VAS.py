@@ -23,13 +23,9 @@ ANSWERS_HEBREW = [["כלל לא", "הרבה מאוד"], ["כלל לא", "הרב�
 ANSWERS_ENGLISH = [["Not at all", "A lot"], ["Not at all", "A lot"], ["Not at all", "A lot"], ["Very good", "Very bad"]]
 
 
-def run_vas(window: visual.Window, io, params: dict, type:str, mood_df, pain_df, device, duration=float('inf'), event_onset_df=None):
-    if type == "PainRating":
-        questions = PAIN_RATING_QUESTION_HEBREW if params['language'] == 'Hebrew' else PAIN_RATING_QUESTION_ENGLISH
-        answers = PAIN_RATING_ANSWERS_HEBREW if params['language'] == 'Hebrew' else PAIN_RATING_ANSWERS_ENGLISH
-    else:
-        questions = QUESTIONS_HEBREW if params['language'] == 'Hebrew' else QUESTIONS_ENGLISH
-        answers = ANSWERS_HEBREW if params['language'] == 'Hebrew' else ANSWERS_ENGLISH
+def run_vas(window: visual.Window, io, params: dict, type:str, mood_df, duration=float('inf')):
+    questions = QUESTIONS_HEBREW if params['language'] == 'Hebrew' else QUESTIONS_ENGLISH
+    answers = ANSWERS_HEBREW if params['language'] == 'Hebrew' else ANSWERS_ENGLISH
 
     keyboard = io.devices.keyboard
 
@@ -64,7 +60,8 @@ def run_vas(window: visual.Window, io, params: dict, type:str, mood_df, pain_df,
                 core.wait(0.05)
 
         score = scale.getRating()
+        scores[LABELS[i]] = score
 
 
-    dataHadler.save_backup(params, Mood=mood_df, Pain=pain_df)
+    dataHadler.save_backup(params, Mood=mood_df)
     return scores

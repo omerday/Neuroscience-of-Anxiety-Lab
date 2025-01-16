@@ -15,8 +15,10 @@ vas
 
 שקף ריק??
 """
+import os
 import time
 
+import json
 from psychopy import visual
 from psychopy.iohub.client.connect import launchHubServer
 import configDialog
@@ -26,7 +28,9 @@ from psychopy.iohub.client.keyboard import Keyboard
 import preCond
 import test
 import cond
-
+import dataHadler
+import VAS
+import instructions
 io = launchHubServer()
 
 debug = False
@@ -57,6 +61,12 @@ params = {
 
 
 }
+if not os.path.exists("./data"):
+    os.mkdir("data")
+with open("./data/TIMconfig.json", 'w') as file:
+    json.dump(params, file, indent=3)
+
+df_mood = dataHadler.setup_data_frame()
 
 # window
 window = visual.Window(monitor="testMonitor", fullscr=params['fullScreen'], color=(210, 210, 210))
@@ -67,11 +77,12 @@ core.wait(0.5)
 
 keyboard = io.devices.keyboard
 
-# TODO: First mood VAS
+# TODO: EVENTS
+# First mood VAS
 if params['recordPhysio']:
     report_event(params['serialBiopac'], BIOPAC_EVENTS['PreVas_rating'])
-scores = run_vas(window, io, params, 'mood', mood_df=df_mood, pain_df=df_pain, device=device)
-df_mood = insert_data_mood("pre", scores, df_mood)
+scores = VAS.run_vas(window, io, params, 'mood', mood_df=df_mood)
+df_mood = dataHadler.insert_data_mood("pre", scores, df_mood)
 
 if params['preCond']:
     # TODO: instructions
@@ -101,7 +112,7 @@ if params['preCond']:
     # calling the cond function
     cond.pre_cond(params, window, io, keyboard)
 
-if params['Test']:
+if params['test']:
     # TODO: instructions
     if not params['skipInstructions']:
         instructions.instructions(window, params, io)
@@ -126,7 +137,22 @@ if params['Test']:
     # calling the test function
     test.test(params, window, io, keyboard)
 
-# TODO: last mood VAS
+# TODO: EVENTS
+# Last mood VAS
+if params['recordPhysio']:
+    report_event(params['serialBiopac'], BIOPAC_EVENTS['PreVas_rating'])
+scores = VAS.run_vas(window, io, params, 'mood', mood_df=df_mood)
+df_mood = dataHadler.insert_data_mood("post", scores, df_mood)
+
+image = visual.ImageStim(window,
+                         image=f"./img/instructions/finish_{'E' if params['language'] == 'English' else 'H'}.jpeg",
+                         units="norm", size=(2, 2))
+image.draw()
+window.mouseVisible = False
+window.flip()
+
+helpers.wait_for_space(window, params, df_mood, io)
+helpers.graceful_shutdown(window, params, df_mood)
 
 
 
