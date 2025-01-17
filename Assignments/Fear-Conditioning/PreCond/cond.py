@@ -43,7 +43,7 @@ def pre_cond(params, window: visual.Window, io, keyboard):
 
             # displaying the img
             display_time_img = random.uniform(params['faceDurationMin'], params['faceDurationMax'])
-            img = visual.ImageStim(window, image=f"./img/natural/{img_name}.jpeg", units="norm", size=(2, 2))
+            img = visual.ImageStim(window, image=f"./img/Natural/{img_name}.jpg", units="norm", size=(2, 2))
             img.draw()
             window.mouseVisible = False
             window.flip()
@@ -52,7 +52,7 @@ def pre_cond(params, window: visual.Window, io, keyboard):
 
             if len(temp_naturals) == 4:
                 display_time_img_angry = 2
-                angry_img = visual.ImageStim(window, image=f"./img/Angry/{angry_img_name}.jpeg", units="norm", size=(2, 2))
+                angry_img = visual.ImageStim(window, image=f"./img/Angry/{angry_img_name}.jpg", units="norm", size=(2, 2))
                 angry_img.draw()
                 # TODO: צעקה
                 window.mouseVisible = False
