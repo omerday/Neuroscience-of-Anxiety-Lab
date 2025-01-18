@@ -3,57 +3,65 @@
 OPTIND=1
 #Indicate the session that needs to be analysed
 session=1
+num_procs=1
 compute_sswarper=false
+num_jobs=0
 
-while getopts "h?s:" opt; do
+while getopts "hsn:" opt; do
     case "$opt" in
-    h|\?)
-        echo "Usage: $0 [-s] sub-??*"
+    h)
+        echo "Usage: $0 [-s] [-n nprocs] sub-??*"
         exit 1
         ;;
     s)
         compute_sswarper=true
-        echo "Computing SSWarper"
-    shift
+        echo "++Set to compute SSWarper"
+        ;;
+    n)
+        num_procs=$OPTARG
+        echo "++Running $num_procs processes in parallel"
     esac
 done
 
-if ["$#" -e 0]; then
+shift $((OPTIND - 1))
+
+if [ "$#" -eq 0 ]; then
     echo "No subjects provided"
     exit 1
 fi
 
-for subj in "$@"; do
-    echo "Preparing timing files for subject ${subj}"
-    echo ${subj} > subjList.txt
+task() {
+    echo "Started running for ${subj} with PID $PID"
+    echo "Preparing timing files for subject "$1""
+    echo "$1" > subjList.txt
     sh convert_event_onset_files.sh
 
     if [ $compute_sswarper = true ]; then
-    echo "Running SSWarper on ${subj}"
-    sswarper2 -input ${subj}/ses-${session}/anat/${subj}_ses-${session}_T1w.nii.gz -base MNI152_2009_template_SSW.nii.gz -subid ${subj} -odir ${subj}/ses-${session}/anat_warped -giant_move
+    echo "Running SSWarper on "$1""
+    sswarper2 -input "$1"/ses-${session}/anat/"$1"_ses-${session}_T1w.nii.gz -base MNI152_2009_template_SSW.nii.gz -subid "$1" -odir "$1"/ses-${session}/anat_warped -giant_move
     fi
 
     echo "Moving previous outputs for subject"
     time=`date +"%H"`.`date +%M`
-    mv ${subj}.results ${subj}.results.old.${time}
-    mv proc.${subj} ${subj}.results.old.${time}/proc.${subj}
-    mv output.proc.${subj} ${subj}.results.old.${time}/output.proc.${subj}
+    mv "$1".results "$1".results.old.${time}
+    mv proc."$1" "$1".results.old.${time}/proc."$1"
+    mv output.proc."$1" "$1".results.old.${time}/output.proc."$1"
 
-    echo "Running afni_proc.py for subject ${subj}"
+    echo "Running afni_proc.py for subject "$1""
     afni_proc.py \
-        -subj_id ${subj} \
+        -subj_id "$1" \
         -dsets_me_run \
-            ${subj}/ses-${session}/func/${subj}_ses-${session}_task-war_run-1_echo-1_bold.nii.gz \
-            ${subj}/ses-${session}/func/${subj}_ses-${session}_task-war_run-1_echo-2_bold.nii.gz \
-            ${subj}/ses-${session}/func/${subj}_ses-${session}_task-war_run-1_echo-3_bold.nii.gz \
+            "$1"/ses-${session}/func/"$1"_ses-${session}_task-war_run-1_echo-1_bold.nii.gz \
+            "$1"/ses-${session}/func/"$1"_ses-${session}_task-war_run-1_echo-2_bold.nii.gz \
+            "$1"/ses-${session}/func/"$1"_ses-${session}_task-war_run-1_echo-3_bold.nii.gz \
         -echo_times 13.6 25.96 38.3 \
         -dsets_me_run \
-            ${subj}/ses-${session}/func/${subj}_ses-${session}_task-war_run-2_echo-1_bold.nii.gz \
-            ${subj}/ses-${session}/func/${subj}_ses-${session}_task-war_run-2_echo-2_bold.nii.gz \
-            ${subj}/ses-${session}/func/${subj}_ses-${session}_task-war_run-2_echo-3_bold.nii.gz \
+            "$1"/ses-${session}/func/"$1"_ses-${session}_task-war_run-2_echo-1_bold.nii.gz \
+            "$1"/ses-${session}/func/"$1"_ses-${session}_task-war_run-2_echo-2_bold.nii.gz \
+            "$1"/ses-${session}/func/"$1"_ses-${session}_task-war_run-2_echo-3_bold.nii.gz \
         -echo_times 13.6 25.96 38.3 \
         -copy_anat \
-            ${subj}/ses-${session}/anat/${subj}_ses-${session}_T1w.nii.gz \
+            "$1"/ses-${session}/anat/"$1"_ses-${session}_T1w.nii.gz \
         -blocks \
             tshift align tlrc volreg mask blur scale combine regress \
         -mask_epi_anat yes \
@@ -74,16 +82,16 @@ for subj in "$@"; do
         -tlrc_base MNI152_2009_template.nii.gz \
         -tlrc_NL_warp \
         -tlrc_NL_warped_dsets \
-            ${subj}/ses-${session}/anat_warped/anatQQ.${subj}.nii \
-            ${subj}/ses-${session}/anat_warped/anatQQ.${subj}.aff12.1D \
-            ${subj}/ses-${session}/anat_warped/anatQQ.${subj}_WARP.nii \
+            "$1"/ses-${session}/anat_warped/anatQQ."$1".nii \
+            "$1"/ses-${session}/anat_warped/anatQQ."$1".aff12.1D \
+            "$1"/ses-${session}/anat_warped/anatQQ."$1"_WARP.nii \
         -regress_stim_times       \
-            ${subj}/ses-${session}/func/negative_block.1D \
-            ${subj}/ses-${session}/func/positive_block.1D \
-            ${subj}/ses-${session}/func/neutral_block.1D \
-            ${subj}/ses-${session}/func/rest.1D \
+            "$1"/ses-${session}/func/negative_block.1D \
+            "$1"/ses-${session}/func/positive_block.1D \
+            "$1"/ses-${session}/func/neutral_block.1D \
+            "$1"/ses-${session}/func/rest.1D \
         -regress_stim_labels      neg_blck pos_blck neut_blck rest   \
-        -regress_basis            'BLOCK(22,1)' 'BLOCK(22,1)' 'BLOCK(22,1)' 'BLOCK(20,1)' \
+        -regress_basis            'BLOCK(22,1)' \
         -regress_opts_3dD \
             -jobs 8 \
             -gltsym 'SYM: neg_blck -neut_blck' \
@@ -104,5 +112,16 @@ for subj in "$@"; do
         -regress_est_blur_errts                                          \
         -regress_run_clustsim     no                                     \
         -execute                                                          
-    echo "Done running afni_proc.py for subject ${subj}"
+    echo "Done running afni_proc.py for subject "$1""
+}
+
+for subj in "$@"; do
+    while [ $num_jobs -ge $num_procs ]; do
+        wait -n
+    done
+    num_jobs=$num_jobs+1
+    task "$subj" > ${subj}.txt && num_jobs=$num_jobs-1 &
 done
+
+wait
+echo "All processes finished successfully!"
