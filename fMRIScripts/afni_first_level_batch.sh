@@ -1,8 +1,22 @@
 #!/bin/bash
 
+OPTIND=1
 #Indicate the session that needs to be analysed
 session=1
-compute_sswarper=true
+compute_sswarper=false
+
+while getopts "h?s:" opt; do
+    case "$opt" in
+    h|\?)
+        echo "Usage: $0 [-s] sub-??*"
+        exit 1
+        ;;
+    s)
+        compute_sswarper=true
+        echo "Computing SSWarper"
+    shift
+    esac
+done
 
 if ["$#" -e 0]; then
     echo "No subjects provided"
