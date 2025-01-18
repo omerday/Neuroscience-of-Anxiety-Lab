@@ -55,6 +55,7 @@ for subj in "$@"; do
         -volreg_align_e2a \
         -volreg_tlrc_warp \
         -mask_epi_anat yes \
+        -mask_segment_anat yes \
         -volreg_compute_tsnr yes \
         -tlrc_base MNI152_2009_template.nii.gz \
         -tlrc_NL_warp \
@@ -68,7 +69,7 @@ for subj in "$@"; do
             ${subj}/ses-${session}/func/neutral_block.1D \
             ${subj}/ses-${session}/func/rest.1D \
         -regress_stim_labels      neg_blck pos_blck neut_blck rest   \
-        -regress_basis            'BLOCK(20,1)' \
+        -regress_basis            'BLOCK(22,1)' 'BLOCK(22,1)' 'BLOCK(22,1)' 'BLOCK(20,1)' \
         -regress_opts_3dD \
             -jobs 8 \
             -gltsym 'SYM: neg_blck -neut_blck' \
