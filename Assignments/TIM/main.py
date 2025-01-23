@@ -74,6 +74,7 @@ df_pain, df_mood = setup_data_frame()
 params['serialBiopac'] = serial.Serial(params['port'], 115200, bytesize=serial.EIGHTBITS, timeout=1) if params[
     'recordPhysio'] else None
 
+
 if params['recordPhysio']:
     report_event(params['serialBiopac'], 255)
 

@@ -31,6 +31,8 @@ import cond
 import dataHadler
 import VAS
 import instructions
+import serial
+from serialHandler import *
 io = launchHubServer()
 
 debug = False
@@ -58,15 +60,19 @@ params = {
     "faceDurationMin": 8,
     "faceDurationMax": 9,
     "testBlockDuration": 18,
-
-
+    'port': 'COM4',
 }
+
+
 if not os.path.exists("./data"):
     os.mkdir("data")
 with open("./data/TIMconfig.json", 'w') as file:
     json.dump(params, file, indent=3)
 
 df_mood = dataHadler.setup_data_frame()
+params['serialBiopac'] = serial.Serial(params['port'], 115200, bytesize=serial.EIGHTBITS, timeout=1) if params[
+    'recordPhysio'] else None
+
 
 # window
 window = visual.Window(monitor="testMonitor", fullscr=params['fullScreen'], color=(210, 210, 210))
@@ -110,7 +116,7 @@ if params['preCond']:
     preCond.pre_cond(params, window, io, keyboard)
 
     # calling the cond function
-    cond.pre_cond(params, window, io, keyboard)
+    cond.pre_cond(params, window, io, keyboard, df_mood)
 
 if params['test']:
     # TODO: instructions
@@ -132,10 +138,10 @@ if params['test']:
     window.mouseVisible = False
     window.flip()
     start_time = time.time()
-    helpers.wait_for_time(window, params, start_time, display_time, keyboard)
+    helpers.wait_for_time(window, params, start_time, display_time, keyboard, df_mood)
 
     # calling the test function
-    test.test(params, window, io, keyboard)
+    test.test(params, window, io, keyboard, df_mood)
 
 # TODO: EVENTS
 # Last mood VAS

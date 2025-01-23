@@ -1,12 +1,13 @@
 import random
 import time
 
+import pandas as pd
 from psychopy import visual
 
 import helpers
 
 
-def test(params, window: visual.Window, io, keyboard):
+def test(params, window: visual.Window, io, keyboard, df_mood: pd.DataFrame):
     for i in range(3):
         temp_naturals = []
         for N in params['natural']:
@@ -17,6 +18,7 @@ def test(params, window: visual.Window, io, keyboard):
             curr_n = random.choice(temp_naturals)
             temp_naturals.remove(curr_n)
             img_name = params['natural'].index(curr_n)
+            prefix = curr_n.split('_')[0]  # for the events
 
             # displaying the plus image before the shape
             display_time_plus = random.uniform(params['plusDurationMin'], params['plusDurationMax'])
@@ -25,7 +27,8 @@ def test(params, window: visual.Window, io, keyboard):
             window.mouseVisible = False
             window.flip()
             start_time = time.time()
-            helpers.wait_for_time(window, params, start_time, display_time_plus, keyboard)
+            # TODO: add event plus
+            helpers.wait_for_time(window, params, start_time, display_time_plus, keyboard, df_mood)
 
             # displaying the natural face
             display_time_n = random.uniform(params['faceDurationMin'], params['faceDurationMax'])
@@ -34,7 +37,9 @@ def test(params, window: visual.Window, io, keyboard):
             window.mouseVisible = False
             window.flip()
             start_time = time.time()
-            helpers.wait_for_time(window, params, start_time, display_time_n, keyboard)
+            # TODO: add event every 2 sec
+            # helpers.wait_for_time_with_periodic_events(window, params, mood_df, start_time, display_time_img, keyboard, prefix, 0)
+            helpers.wait_for_time(window, params, start_time, display_time_n, keyboard, df_mood)
 
             # ITI
             display_time_iti = params["testBlockDuration"] - display_time_n
@@ -43,4 +48,6 @@ def test(params, window: visual.Window, io, keyboard):
             window.mouseVisible = False
             window.flip()
             start_time = time.time()
-            helpers.wait_for_time(window, params, start_time, display_time_iti, keyboard)
+            # TODO: add event when starting ITI
+            helpers.wait_for_time(window, params, start_time, display_time_iti, keyboard, df_mood)
+            # TODO: add event after ITI

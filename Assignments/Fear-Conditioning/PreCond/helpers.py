@@ -1,6 +1,7 @@
 from psychopy import visual, core
 import time
 import dataHadler
+from serialHandler import *
 from psychopy.iohub.client.keyboard import Keyboard
 
 def graceful_shutdown(window, params, mood_df):
@@ -10,12 +11,22 @@ def graceful_shutdown(window, params, mood_df):
     core.quit()
     exit()
 
-def wait_for_time(window: visual.Window, params, start_time, display_time, keyboard):
+def wait_for_time(window: visual.Window, params, mood_df, start_time, display_time, keyboard):
     while time.time() < start_time + display_time:
         for event in keyboard.getKeys():
             if event.key == "escape":
-                graceful_shutdown(window, params)
+                graceful_shutdown(window, params, mood_df)
         core.wait(0.05)
+
+def wait_for_time_with_periodic_events(window: visual.Window, params, mood_df, start_time, display_time, keyboard, prefix, sec):
+    while time.time() < start_time + display_time:
+        if sec <= time.time() - start_time <= sec + 0.1:
+            add_event(params, f'{prefix}_{sec}')
+            sec += 2
+        for ev in keyboard.getKeys():
+            if ev.key == "escape":
+                graceful_shutdown(window, params, mood_df)
+        core.wait(0.02)
 
 def wait_for_space(window: visual.Window, params, mood_df, io):
     keyboard = io.devices.keyboard
@@ -28,3 +39,7 @@ def wait_for_space(window: visual.Window, params, mood_df, io):
             elif event.key == "escape":
                 graceful_shutdown(window, params, mood_df)
         core.wait(0.05)
+
+def add_event(params: dict, event_name: str):
+    event = BIOPAC_EVENTS[event_name]
+    report_event(params['serialBiopac'], event)

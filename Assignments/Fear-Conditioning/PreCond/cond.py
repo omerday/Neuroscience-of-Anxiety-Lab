@@ -1,11 +1,12 @@
 import random
 import time
 
+import pandas as pd
 from psychopy import visual
 import helpers
 
 
-def pre_cond(params, window: visual.Window, io, keyboard):
+def pre_cond(params, window: visual.Window, io, keyboard, df_mood: pd.DataFrame):
     temp_naturals = []
     for N in params['natural']:
         temp_naturals.append(N)
@@ -29,6 +30,7 @@ def pre_cond(params, window: visual.Window, io, keyboard):
             counter = 1
 
         if counter != 4:
+            prefix = curr_img.split('_')[0] # for the events
             temp_naturals.remove(curr_img)
             display_time_img_angry = 0
 
@@ -39,7 +41,8 @@ def pre_cond(params, window: visual.Window, io, keyboard):
             window.mouseVisible = False
             window.flip()
             start_time = time.time()
-            helpers.wait_for_time(window, params, start_time, display_time_plus, keyboard)
+            # TODO: add event
+            helpers.wait_for_time(window, params, start_time, display_time_plus, keyboard, df_mood)
 
             # displaying the img
             display_time_img = random.uniform(params['faceDurationMin'], params['faceDurationMax'])
@@ -48,7 +51,9 @@ def pre_cond(params, window: visual.Window, io, keyboard):
             window.mouseVisible = False
             window.flip()
             start_time = time.time()
-            helpers.wait_for_time(window, params, start_time, display_time_img, keyboard)
+            # TODO: add event every 2 sec
+            # helpers.wait_for_time_with_periodic_events(window, params, mood_df, start_time, display_time_img, keyboard, prefix, 0)
+            helpers.wait_for_time(window, params, start_time, display_time_img, keyboard, df_mood)
 
             if len(temp_naturals) == 4:
                 display_time_img_angry = 2
@@ -58,7 +63,8 @@ def pre_cond(params, window: visual.Window, io, keyboard):
                 window.mouseVisible = False
                 window.flip()
                 start_time = time.time()
-                helpers.wait_for_time(window, params, start_time, display_time_img_angry, keyboard)
+                # TODO: add event
+                helpers.wait_for_time(window, params, start_time, display_time_img_angry, keyboard, df_mood)
 
             # ITI
             display_time_iti = params["blockDuration"] - display_time_img - display_time_plus - display_time_img_angry
@@ -67,4 +73,6 @@ def pre_cond(params, window: visual.Window, io, keyboard):
             window.mouseVisible = False
             window.flip()
             start_time = time.time()
-            helpers.wait_for_time(window, params, start_time, display_time_iti, keyboard)
+            # TODO: add event when starting ITI
+            helpers.wait_for_time(window, params, start_time, display_time_iti, keyboard, df_mood)
+            # TODO: add event after ITI
