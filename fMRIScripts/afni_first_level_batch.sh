@@ -38,7 +38,7 @@ task() {
 
     if [ $compute_sswarper = true ]; then
     echo "Running SSWarper on "$1""
-    sswarper2 -input "$1"/ses-${session}/anat/"$1"_ses-${session}_T1w.nii.gz -base MNI152_2009_template_SSW.nii.gz -subid "$1" -odir "$1"/ses-${session}/anat_warped -giant_move
+    @SSwarper -input "$1"/ses-${session}/anat/"$1"_ses-${session}_T1w.nii.gz -base MNI152_2009_template_SSW.nii.gz -subid "$1" -odir "$1"/ses-${session}/anat_warped -giant_move
     fi
 
     echo "Moving previous outputs for subject"
@@ -115,13 +115,19 @@ task() {
     echo "Done running afni_proc.py for subject "$1""
 }
 
-for subj in "$@"; do
-    while [ $num_jobs -ge $num_procs ]; do
-        wait -n
+if [ $num_procs -eq 1 ]; then
+    for subj in "$@"; do
+        task "$subj" > ${subj}.txt
     done
-    num_jobs=$num_jobs+1
-    task "$subj" > ${subj}.txt && num_jobs=$num_jobs-1 &
-done
+else
+    for subj in "$@"; do
+        while [ $num_jobs -ge $num_procs ]; do
+            wait -n
+        done
+        num_jobs=$num_jobs+1
+        task "$subj" > ${subj}.txt && num_jobs=$num_jobs-1 &
+    done
+fi
 
 wait
 echo "All processes finished successfully!"
