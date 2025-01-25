@@ -34,7 +34,7 @@ for subj in `cat subA.txt`; do
 done
 
 if [ ! -f subB.txt ]; then
-    echo "subA.txt not found, Running single group analysis."
+    echo "subB.txt not found, Running single group analysis."
 else
     sub_b_neg_neut_argument="-setB Control"
     #Loop over subjects in the control group
