@@ -72,5 +72,5 @@ fi
 3dttest++ \
     ${sub_a_neg_rest_argument} \
     ${sub_b_neg_rest_argument} \
-    -prefix ${prefix}_neg-neut \
+    -prefix ${prefix}_neg-rest \
     -mask ${prefix}_intersect+tlrc
