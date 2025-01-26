@@ -43,3 +43,19 @@ def wait_for_space(window: visual.Window, params, mood_df, io):
 def add_event(params: dict, event_name: str):
     event = BIOPAC_EVENTS[event_name]
     report_event(params['serialBiopac'], event)
+
+
+def play_sound(soundType: str, waitTime: float, volume=.4):
+    """
+    The method plays a sound and sleeps through it, while recording data for the DF
+    """
+
+    soundToPlay = sound.Sound(SOUNDS[soundType], volume=volume)
+    now = ptb.GetSecs()
+    soundToPlay.play(when=now)
+    startTime = time.time()
+    while time.time() < startTime + waitTime:
+        core.wait(1 / 1000)
+    soundToPlay.stop()
+    return
+
