@@ -1,5 +1,5 @@
 from medoc_api.commands.m_finite_ramp_command import *
-import medoc_api.enums as enums
+from medoc_api import enums
 
 
 class finite_ramp_safe_duration_command(finite_ramp_command):

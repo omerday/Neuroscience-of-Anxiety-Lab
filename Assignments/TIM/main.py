@@ -12,6 +12,7 @@ from serialHandler import *
 from helpers import *
 from dataHandler import *
 import logging
+from datetime import datetime
 
 io = launchHubServer()
 
@@ -62,6 +63,7 @@ params = {
     'continuousPresentTimeMax': 2.5,
     'dontSleepAfterTemp': configDialogBank[13],
     'tempRampUpTime': 750 if configDialogBank[14] else 300,
+    'fmriStartTime': 0,
 }
 
 if not os.path.exists("./data"):
@@ -107,7 +109,13 @@ if not params['skipInstructions']:
     instructions.instructions(window, params, io)
 
 for i in range(1, params['nBlocks'] + 1):
+    now = datetime.now()
+    current_time = now.strftime("%H:%M:%S.%f")
+    print(current_time, " : 114 - main - before square_run - i=", i, "\n")
     df_pain = squareRun.square_run(window, params, device, io, df_pain, df_mood, i)
+    now = datetime.now()
+    current_time = now.strftime("%H:%M:%S.%f")
+    print(current_time, " : 118 - main - after square_run - i=", i, "\n")
     # Middle Mood VAS
     if i == params['nBlocks'] / 2:
         if params['recordPhysio']:

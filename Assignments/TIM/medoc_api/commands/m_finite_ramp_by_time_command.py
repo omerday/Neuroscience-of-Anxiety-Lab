@@ -1,5 +1,5 @@
 import logging
-import medoc_api.enums as enums
+from medoc_api import enums
 from medoc_api.commands.m_finite_ramp_safe_duration_command import *
 from medoc_api.Utilities import temp_converter, converters
 

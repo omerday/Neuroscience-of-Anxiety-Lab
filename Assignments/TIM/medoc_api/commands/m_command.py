@@ -1,4 +1,4 @@
-import medoc_api.crc8
+from medoc_api import crc8
 import logging
 from medoc_api import enums
 from medoc_api.commands import m_message

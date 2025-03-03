@@ -1,5 +1,5 @@
  {
-    "port": "COM20",
+    "port": "COM6",
     "baudrate":115200,
     "parity":"None",
     "stopbits":1,

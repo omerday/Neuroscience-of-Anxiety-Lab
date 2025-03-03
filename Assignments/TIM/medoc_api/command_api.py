@@ -80,11 +80,11 @@ class CommandAPI:
 
         ser.flush()
 
-        # Wait for serial data to be received with a maximum delay of 0.5 seconds
+        # Wait for serial data to be received with a maximum delay of 0.75 seconds
         timeout_start = time.time()
         while ser.in_waiting < 4:
             # pass
-            if time.time() >= timeout_start + 0.2:
+            if time.time() >= timeout_start + 0.75:
                 # print(".", end="")
                 break
 
