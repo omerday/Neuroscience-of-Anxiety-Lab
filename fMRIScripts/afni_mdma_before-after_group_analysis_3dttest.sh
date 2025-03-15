@@ -37,7 +37,6 @@ for subj in `cat subA.txt`; do
     sub_b_neg_rest_argument="${sub_b_neg_neut_argument} ${subj} ./InputAfni/${subj}.ses-2.results/stats.${subj}+tlrc[neg_blck-rest_GLT#0_Coef]"
     sub_b_paths="${sub_b_paths} ./InputAfni/${subj}.ses-2.results/stats.${subj}+tlrc[neg-neut-blck_GLT#0_Coef]"
     done
-fi
 
 3dmask_tool \
     -input \
