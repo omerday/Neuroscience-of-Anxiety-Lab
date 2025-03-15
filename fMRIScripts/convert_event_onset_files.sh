@@ -20,7 +20,7 @@ fi
 
 #Loop over all subjects and format timing files into FSL format
 for subj in `cat subjList.txt`; do
-	cd $subj/ses-${session}/func
+	cd ${subj}/ses-${session}/func
 	cat ${subj}_ses-${session}_task-war_run-1_events.tsv | awk '{if ($2==31 || $2==32 || $2==33 || $2==34) {print $1 - 10, $4, 1}}' > negative_image_run1.txt
     cat ${subj}_ses-${session}_task-war_run-1_events.tsv | awk '{if ($2=="71" || $2=="72" || $2=="73" || $2=="74") {print $1 - 10, $4, 1}}' > positive_image_run1.txt
     cat ${subj}_ses-${session}_task-war_run-1_events.tsv | awk '{if ($2=="51" || $2=="52" || $2=="53" || $2=="54") {print $1 - 10, $4, 1}}' > neutral_image_run1.txt
