@@ -7,15 +7,19 @@ num_procs=1
 compute_sswarper=false
 num_jobs=0
 
-while getopts "hsn:" opt; do
+while getopts "hswn:" opt; do
     case "$opt" in
     h)
-        echo "Usage: $0 [-s] [-n nprocs] sub-??*"
+        echo "Usage: $0 [-s session] [-n nprocs] sub-??*"
         exit 1
         ;;
-    s)
+    w)
         compute_sswarper=true
         echo "++Set to compute SSWarper"
+        ;;
+    s)
+        session=$OPTARG
+        echo "++Session mentioned is $session"
         ;;
     n)
         num_procs=$OPTARG
@@ -43,9 +47,9 @@ task() {
 
     echo "Moving previous outputs for subject"
     time=`date +"%H"`.`date +%M`
-    mv "$1".results "$1".results.old.${time}
-    mv proc."$1" "$1".results.old.${time}/proc."$1"
-    mv output.proc."$1" "$1".results.old.${time}/output.proc."$1"
+    mv "$1".ses-"$session".results old_results/"$1".ses-"$session".results.old.${time}
+    mv proc."$1" old_results/"$1".ses-"$session".results.old.${time}/proc."$1"
+    mv output.proc."$1" old_results/"$1".ses-"$session".results.old.${time}/output.proc."$1"
 
     echo "Running afni_proc.py for subject "$1""
     afni_proc.py \
@@ -113,6 +117,9 @@ task() {
         -regress_run_clustsim     no                                     \
         -execute                                                          
     echo "Done running afni_proc.py for subject "$1""
+    echo "Moving results to sub-folder by session"
+    mv "$1".results "$1".ses-"$session".results"
+    echo "Done"
 }
 
 if [ $num_procs -eq 1 ]; then

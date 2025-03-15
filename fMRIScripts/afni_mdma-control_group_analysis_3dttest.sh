@@ -13,6 +13,8 @@ sub_a_neg_rest_argument="-setA MDMA"
 sub_b_neg_rest_argument=""
 prefix="group_analysis_`date +"%H"`.`date +%M`"
 
+session=1
+
 if [[ $# -eq 0 ]]; then
     echo "No prefix provided, using default"
 else
@@ -27,10 +29,10 @@ fi
 
 #Loop over subjects in the test group and add their stats to the path
 for subj in `cat subA.txt`; do
-    sub_a_neg_neut_argument="${sub_a_neg_neut_argument} ${subj} ./InputAfni/${subj}.results/stats.${subj}+tlrc[neg-neut-blck_GLT#0_Coef]"
-    sub_a_pos_neut_argument="${sub_a_pos_neut_argument} ${subj} ./InputAfni/${subj}.results/stats.${subj}+tlrc[pos-neut-blck_GLT#0_Coef]"
-    sub_a_neg_rest_argument="${sub_a_pos_neut_argument} ${subj} ./InputAfni/${subj}.results/stats.${subj}+tlrc[neg_blck-rest_GLT#0_Coef]"
-    sub_a_paths="${sub_a_paths} ./InputAfni/${subj}.results/stats.${subj}+tlrc[neg-neut-blck_GLT#0_Coef]"
+    sub_a_neg_neut_argument="${sub_a_neg_neut_argument} ${subj} ./InputAfni/${subj}.ses-"$session".results/stats.${subj}+tlrc[neg-neut-blck_GLT#0_Coef]"
+    sub_a_pos_neut_argument="${sub_a_pos_neut_argument} ${subj} ./InputAfni/${subj}.ses-"$session".results/stats.${subj}+tlrc[pos-neut-blck_GLT#0_Coef]"
+    sub_a_neg_rest_argument="${sub_a_pos_neut_argument} ${subj} ./InputAfni/${subj}.ses-"$session".results/stats.${subj}+tlrc[neg_blck-rest_GLT#0_Coef]"
+    sub_a_paths="${sub_a_paths} ./InputAfni/${subj}.ses-"$session".results/stats.${subj}+tlrc[neg-neut-blck_GLT#0_Coef]"
 done
 
 if [ ! -f subB.txt ]; then
