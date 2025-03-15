@@ -7,10 +7,10 @@ num_procs=1
 compute_sswarper=false
 num_jobs=0
 
-while getopts "hswn:" opt; do
+while getopts "hs:wn:" opt; do
     case "$opt" in
     h)
-        echo "Usage: $0 [-s session] [-n nprocs] sub-??*"
+        echo "Usage: $0 [-s session] [-w] [-n nprocs] sub-??*"
         exit 1
         ;;
     w)
@@ -38,7 +38,7 @@ task() {
     echo "Started running for ${subj} with PID $PID"
     echo "Preparing timing files for subject "$1""
     echo "$1" > subjList.txt
-    sh convert_event_onset_files.sh -s ${session}
+    sh convert_event_onset_files.sh -s ${}
 
     if [ $compute_sswarper = true ]; then
     echo "Running SSWarper on "$1""
