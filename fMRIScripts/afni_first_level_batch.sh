@@ -38,7 +38,7 @@ task() {
     echo "Started running for ${subj} with PID $PID"
     echo "Preparing timing files for subject "$1""
     echo "$1" > subjList.txt
-    sh convert_event_onset_files.sh -s ${}
+    sh convert_event_onset_files.sh -s ${session}
 
     if [ $compute_sswarper = true ]; then
     echo "Running SSWarper on "$1""
