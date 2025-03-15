@@ -32,7 +32,7 @@ for subj in `cat subA.txt`; do
     sub_a_neg_neut_argument="${sub_a_neg_neut_argument} ${subj} ./InputAfni/${subj}.ses-"$session".results/stats.${subj}+tlrc[neg-neut-blck_GLT#0_Coef]"
     sub_a_pos_neut_argument="${sub_a_pos_neut_argument} ${subj} ./InputAfni/${subj}.ses-"$session".results/stats.${subj}+tlrc[pos-neut-blck_GLT#0_Coef]"
     sub_a_neg_rest_argument="${sub_a_pos_neut_argument} ${subj} ./InputAfni/${subj}.ses-"$session".results/stats.${subj}+tlrc[neg_blck-rest_GLT#0_Coef]"
-    sub_a_paths="${sub_a_paths} ./InputAfni/${subj}.ses-"$session".results/stats.${subj}+tlrc[neg-neut-blck_GLT#0_Coef]"
+    sub_a_paths="${sub_a_paths} ./InputAfni/${subj}.ses-"$session".results/mask_anat.${subj}+tlrc"
 done
 
 if [ ! -f subB.txt ]; then
@@ -44,7 +44,7 @@ else
     sub_b_neg_neut_argument="${sub_b_neg_neut_argument} ${subj} ./Control/${subj}.results/stats.${subj}+tlrc[neg-neut-blck_GLT#0_Coef]"
     sub_b_pos_neut_argument="${sub_b_neg_neut_argument} ${subj} ./Control/${subj}.results/stats.${subj}+tlrc[pos-neut-blck_GLT#0_Coef]"
     sub_b_neg_rest_argument="${sub_b_neg_neut_argument} ${subj} ./Control/${subj}.results/stats.${subj}+tlrc[neg_blck-rest_GLT#0_Coef]"
-    sub_b_paths="${sub_b_paths} ./Control/${subj}.results/stats.${subj}+tlrc[neg-neut-blck_GLT#0_Coef]"
+    sub_b_paths="${sub_b_paths} ./Control/${subj}.results/mask_anat.${subj}+tlrc"
     done
 fi
 

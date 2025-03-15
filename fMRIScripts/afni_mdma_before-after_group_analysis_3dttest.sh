@@ -30,12 +30,12 @@ for subj in `cat subA.txt`; do
     sub_a_neg_neut_argument="${sub_a_neg_neut_argument} ${subj} ./InputAfni/${subj}.ses-1.results/stats.${subj}+tlrc[neg-neut-blck_GLT#0_Coef]"
     sub_a_pos_neut_argument="${sub_a_pos_neut_argument} ${subj} ./InputAfni/${subj}.ses-1.results/stats.${subj}+tlrc[pos-neut-blck_GLT#0_Coef]"
     sub_a_neg_rest_argument="${sub_a_pos_neut_argument} ${subj} ./InputAfni/${subj}.ses-1.results/stats.${subj}+tlrc[neg_blck-rest_GLT#0_Coef]"
-    sub_a_paths="${sub_a_paths} ./InputAfni/${subj}.ses-1.results/stats.${subj}+tlrc[neg-neut-blck_GLT#0_Coef]"
+    sub_a_paths="${sub_a_paths} ./InputAfni/${subj}.ses-1.results/mask_anat.${subj}+tlrc"
     sub_b_neg_neut_argument="-setB AFTER"
     sub_b_neg_neut_argument="${sub_b_neg_neut_argument} ${subj} ./InputAfni/${subj}.ses-2.results/stats.${subj}+tlrc[neg-neut-blck_GLT#0_Coef]"
     sub_b_pos_neut_argument="${sub_b_neg_neut_argument} ${subj} ./InputAfni/${subj}.ses-2.results/stats.${subj}+tlrc[pos-neut-blck_GLT#0_Coef]"
     sub_b_neg_rest_argument="${sub_b_neg_neut_argument} ${subj} ./InputAfni/${subj}.ses-2.results/stats.${subj}+tlrc[neg_blck-rest_GLT#0_Coef]"
-    sub_b_paths="${sub_b_paths} ./InputAfni/${subj}.ses-2.results/stats.${subj}+tlrc[neg-neut-blck_GLT#0_Coef]"
+    sub_b_paths="${sub_b_paths} ./InputAfni/${subj}.ses-2.results/mask_anat.${subj}+tlrc"
     done
 
 3dmask_tool \
