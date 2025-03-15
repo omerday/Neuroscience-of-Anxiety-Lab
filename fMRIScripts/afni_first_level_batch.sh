@@ -47,9 +47,23 @@ task() {
 
     echo "Moving previous outputs for subject"
     time=`date +"%H"`.`date +%M`
-    mv "$1".ses-"$session".results old_results/"$1".ses-"$session".results.old.${time}
-    mv proc."$1" old_results/"$1".ses-"$session".results.old.${time}/proc."$1"
-    mv output.proc."$1" old_results/"$1".ses-"$session".results.old.${time}/output.proc."$1"
+    old_results_path="$1".ses-"$session".results
+    if [-f old_results_path]; then
+        if [-f proc."$1"]; then
+        mv proc."$1" ${old_results_path}
+        fi
+        if [-f output.proc."$1"]; then
+            mv output.proc."$1" ${old_results_path}
+        fi
+        mv ${old_results_path} old_results/${old_results_path}.old.${time}
+    else
+        if [-f proc."$1"]; then
+            rm proc."$1"
+        fi
+        if [-f output.proc."$1"]; then
+            rm output.proc."$1"
+        fi
+    fi
 
     echo "Running afni_proc.py for subject "$1""
     afni_proc.py \
