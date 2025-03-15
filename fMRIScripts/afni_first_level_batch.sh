@@ -118,7 +118,7 @@ task() {
         -execute                                                          
     echo "Done running afni_proc.py for subject "$1""
     echo "Moving results to sub-folder by session"
-    mv "$1".results "$1".ses-"$session".results"
+    mv "$1".results "$1".ses-"$session".results
     echo "Done"
 }
 
