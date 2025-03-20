@@ -36,7 +36,7 @@ params = {
     "recordPhysio": configDialogBank[10],
     "skipInstructions": configDialogBank[11],
     "continuousShape": configDialogBank[12],
-    "fullScreen": True,
+    "fullScreen": True,  # True,
     "screenSize": (1024, 768),
     "startTime": time.time(),
     'port': 'COM4',
@@ -109,13 +109,7 @@ if not params['skipInstructions']:
     instructions.instructions(window, params, io)
 
 for i in range(1, params['nBlocks'] + 1):
-    now = datetime.now()
-    current_time = now.strftime("%H:%M:%S.%f")
-    print(current_time, " : 114 - main - before square_run - i=", i, "\n")
     df_pain = squareRun.square_run(window, params, device, io, df_pain, df_mood, i)
-    now = datetime.now()
-    current_time = now.strftime("%H:%M:%S.%f")
-    print(current_time, " : 118 - main - after square_run - i=", i, "\n")
     # Middle Mood VAS
     if i == params['nBlocks'] / 2:
         if params['recordPhysio']:

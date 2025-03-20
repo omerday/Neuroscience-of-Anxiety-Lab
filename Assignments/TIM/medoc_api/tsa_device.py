@@ -53,7 +53,7 @@ class TsaDevice:
             logging.getLogger().error("`auto_connect_port` is only available on Windows or Linux, please set port in `preferences.json`")
             auto_connect_port = False
 
-        print("73 - TsaDevice - before connector")                                                   
+        # print("56 - TsaDevice - before connector")                                                   
         self.connector: connector = connector(
             path_to_prefernces=preferences_path,
             auto_detect=auto_connect_port,

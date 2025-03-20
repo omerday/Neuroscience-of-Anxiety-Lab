@@ -1,4 +1,4 @@
-import medoc_api.enums as enums
+from medoc_api import enums
 import logging
 
 from medoc_api.commands.m_command import command

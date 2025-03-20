@@ -35,6 +35,7 @@ from medoc_api.commands.m_erase_conditional_events import erase_conditional_even
 from medoc_api.commands.m_ttl_out_pulse_duration import set_TTL_out_pulse_duration_command
 ##################################################################################
 
+
 class TsaDevice:
     """
     Class to communicate with a Medoc TSA based Device
@@ -44,7 +45,7 @@ class TsaDevice:
     events from a patient response device.
     """
 
-    def __init__(self, auto_connect_port=True, preferences_path="preferences.json") -> None:
+    def __init__(self, auto_connect_port=True, preferences_path="./medoc_api/preferences.json") -> None:
         self.current_thermode: enums.DEVICE_TAG = enums.DEVICE_TAG.Master
         self.token_holder: TokenHolder = TokenHolder()
 
@@ -52,6 +53,7 @@ class TsaDevice:
             logging.getLogger().error("`auto_connect_port` is only available on Windows or Linux, please set port in `preferences.json`")
             auto_connect_port = False
 
+        # print("56 - TsaDevice - before connector")                                                   
         self.connector: connector = connector(
             path_to_prefernces=preferences_path,
             auto_detect=auto_connect_port,
@@ -109,11 +111,7 @@ class TsaDevice:
         if time.time() >= self.safety_start_time + (safety_ms / 1000):
             self._safety_failure()
         
-        # message = f"Timestamp:{status_res.m_timestamp} | Temperature: {self.status_temp} | State: {self.status_state}\n"
-        # print(message)
-        # logging.getLogger().info(message)
-
-        yes_press = status_res.m_isResponseUnitYesOn 
+        yes_press = status_res.m_isResponseUnitYesOn
         no_press = status_res.m_isResponseUnitNoOn
         if no_press or yes_press:
             self.event_patient_response.emit(yes_press, no_press)
@@ -128,7 +126,8 @@ class TsaDevice:
         logging.getLogger().error("TEMPERATURE SAFETY FAILURE - TEMPERATURE REACHED %f", self.status_temp)
         raise RuntimeError(f"TEMPERATURE SAFETY FAILURE - TEMPERATURE REACHED {self.status_temp}")
 
-    def start_status_thread(self, update_rate=1.0):
+    def start_status_thread(self, update_rate=0.25):
+    # def start_status_thread(self, update_rate=1.0):
         """
         Start the running of the status update
         """

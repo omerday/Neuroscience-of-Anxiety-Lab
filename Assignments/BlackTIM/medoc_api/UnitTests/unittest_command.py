@@ -1,15 +1,15 @@
 import unittest
 
-import medoc_api.enums as enums
-from medoc_api.commands import m_getVersion_command, m_message, m_set_TCU_state
-from medoc_api.commands.m_clear_command_buffer import clear_command_buffer_command
-from medoc_api.commands.m_end_test_command import end_test_command
-from medoc_api.commands.m_finite_ramp_by_temperature_command import finite_ramp_by_temperature_command
-from medoc_api.commands.m_finite_ramp_by_time_command import finite_ramp_by_time_command
-from medoc_api.commands.m_getstatusTCU_command import get_status_TCU_command
-from medoc_api.commands.m_run_test import run_test_command
-from medoc_api.commands.m_simulate_response_unit import simulate_unit_response_command
-from medoc_api.commands.m_stop_test_command import stop_test_command
+import enums
+from commands import m_getVersion_command, m_message, m_set_TCU_state
+from commands.m_clear_command_buffer import clear_command_buffer_command
+from commands.m_end_test_command import end_test_command
+from commands.m_finite_ramp_by_temperature_command import finite_ramp_by_temperature_command
+from commands.m_finite_ramp_by_time_command import finite_ramp_by_time_command
+from commands.m_getstatusTCU_command import get_status_TCU_command
+from commands.m_run_test import run_test_command
+from commands.m_simulate_response_unit import simulate_unit_response_command
+from commands.m_stop_test_command import stop_test_command
 
 
 class commands_TestCase(unittest.TestCase):

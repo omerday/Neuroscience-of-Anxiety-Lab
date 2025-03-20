@@ -1,6 +1,6 @@
 import logging
 
-import medoc_api.enums as enums
+from medoc_api import enums
 from medoc_api.commands.m_command import command
 from medoc_api.Utilities  import converters
 

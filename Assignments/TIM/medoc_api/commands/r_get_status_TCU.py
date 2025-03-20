@@ -271,5 +271,5 @@ class get_statusTCU_response(get_status_response):
         system_state = enums.SystemState(self.m_systemState)
         
         row = f"{current_time},{self.m_timestamp},{self.m_currentThermode},{str(system_state)},{heater_temperature},{self.get_temp()},{tec_temperature},{self.get_temp_slave()},{self.m_waterTemperature},{self.m_covas},{self.m_isExternalTriggerOn},{self.m_externalTriggerTimestamp},{self.m_isResponseUnitYesOn},{self.m_isResponseUnitNoOn},{self.m_isError}"
-        log_status_to_csv("status_csv_file", f'{row}')
+        # log_status_to_csv("status_csv_file", f'{row}')
         return row

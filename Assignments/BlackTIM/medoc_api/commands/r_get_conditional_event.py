@@ -1,4 +1,4 @@
-import medoc_api.enums as enums
+from medoc_api import enums
 from medoc_api.Utilities import converters
 from medoc_api.commands.m_message import message
 from medoc_api.commands.response import response

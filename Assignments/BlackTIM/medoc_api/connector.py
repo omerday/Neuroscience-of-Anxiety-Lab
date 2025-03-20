@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 from medoc_api.commands.m_getstatusTCU_command import get_status_TCU_command
 
 class connector:
-    MAX_PORT_DEFAULT = 20
+    MAX_PORT_DEFAULT = 49
 
     def __init__(self, path_to_prefernces=None, auto_detect=False, token_holder: TokenHolder=None):
         self.tunnel = self.create_com_port(path_to_prefernces, auto_detect=auto_detect, token_holder=token_holder)
@@ -35,7 +35,7 @@ class connector:
     def get_com_port(self):
         return self.tunnel
 
-    def find_com_port(self, token_holder: TokenHolder, min_port=0, max_port=MAX_PORT_DEFAULT, settings:dict=None) -> serial.Serial:
+    def find_com_port(self, token_holder: TokenHolder, min_port=6, max_port=MAX_PORT_DEFAULT, settings:dict=None) -> serial.Serial:
         """
         Auto detect and return the correct port for the TSA Device
         
@@ -208,6 +208,7 @@ class connector:
             else:
                 raise serial.SerialException("No COM Port found! Try adjusting `preferences.json`")
 
+  
     def read_comport_preferences(self, path: object) -> object:
         """ get com port preferences
         :type path: object
@@ -217,6 +218,7 @@ class connector:
         :Version: 1
         :Authors: bodomus@gmail.com
         """
+  
         if not os.path.isfile(path):
             raise Exception("invalid file path {!r}".format(path))
         logger.info("read port preferences from file %s", path)
