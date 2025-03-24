@@ -96,12 +96,14 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
             window.mouseVisible = False
             window.flip()
             blank_screen_time = trial_timing['squareBlankScreen'] + trial_timing['squareJitter']
+            if time.time() > start_time + 2.1:
+                sec = 4
             _, event_onset_df = helpers.wait_for_time_with_periodic_events(window, params, device, mood_df, pain_df, start_time, blank_screen_time, keyboard, prefix, sec, event_onset_df)
 
         if params['painSupport']:
             import heatHandler
             event_onset_df = helpers.add_event(params, f'{prefix}_heat_pulse', 6, heat_level, event_onset_df)
-            heatHandler.deliver_pain(window, float(temperature), device)
+            heatHandler.deliver_pain(window, float(temperature), device, params)
 
         helpers.iti(window, params, "post", keyboard, device, mood_df, pain_df, trial_timing['preRatingITI'], event_onset_df)
 

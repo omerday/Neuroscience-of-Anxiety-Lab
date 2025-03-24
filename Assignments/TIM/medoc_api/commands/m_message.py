@@ -5,11 +5,11 @@ MAX_LENGTH = 512
 
 
 class message:
-    def __init__(self):
+    def __init__(self, command_tag: DEVICE_TAG):
         self.command_id = COMMAND_ID.Undefined
         self.command_array = None
         self.command_token = None
-        self.command_tag = DEVICE_TAG.Master
+        self.command_tag = command_tag
 
     def __str__(self):
         command = str(self.command_id)

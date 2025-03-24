@@ -1,4 +1,4 @@
-from enum import Enum
+from medoc_api.enum import Enum
 
 
 class TcuErrorCode(Enum):

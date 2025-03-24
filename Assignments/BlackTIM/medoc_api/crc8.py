@@ -256,13 +256,28 @@ crc8_table = [0x00,
               0xF3
               ]
 
+# replaced this part by one below to resolve error in crc8 calculation
+# def calculate(data: list, start: int, length: int) -> object:
+#    end = start + length
+#    crc = 0
+#    from_end = len(data) - end
+#    list = data[start:end]
+#    for i in list:
+#        d = crc ^ i
+#        crc = crc8_table[d]
+#    return crc
 
 def calculate(data: list, start: int, length: int) -> object:
     end = start + length
     crc = 0
     from_end = len(data) - end
-    list = data[start:end]
-    for i in list:
-        d = crc ^ i
+    sliced_list = data[start:end]  # Avoid using `list` as a variable name
+
+    for i in sliced_list:
+        if not isinstance(i, int):  # Ensure i is an integer
+            raise TypeError(f"Expected int but got {type(i)}: {i}")
+
+        d = crc ^ i  # Ensure both operands are integers
         crc = crc8_table[d]
+
     return crc

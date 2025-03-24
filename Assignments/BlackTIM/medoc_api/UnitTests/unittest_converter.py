@@ -1,5 +1,5 @@
 import unittest
-from medoc_api.Utilities import converters, temp_converter
+from Utilities import converters, temp_converter
 
 
 class converterTestCase(unittest.TestCase):
@@ -66,7 +66,6 @@ class converterTestCase(unittest.TestCase):
 
     def test_byte_converter_to_string_return_valid_string(self):
         """
-        #TODO need realize
         :return:
         """
 

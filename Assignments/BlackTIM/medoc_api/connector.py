@@ -8,14 +8,14 @@ from medoc_api.token_holder import TokenHolder
 from medoc_api.commands.m_getVersion_command import getVersion_command
 from medoc_api.command_api import CommandAPI
 from medoc_api.commands.response import response
-from medoc_api import enums
+import medoc_api.enums as enums
 
 logger = logging.getLogger(__name__)
 
 from medoc_api.commands.m_getstatusTCU_command import get_status_TCU_command
 
 class connector:
-    MAX_PORT_DEFAULT = 20
+    MAX_PORT_DEFAULT = 49
 
     def __init__(self, path_to_prefernces=None, auto_detect=False, token_holder: TokenHolder=None):
         self.tunnel = self.create_com_port(path_to_prefernces, auto_detect=auto_detect, token_holder=token_holder)
@@ -23,10 +23,7 @@ class connector:
         # self.tunnel.port = 'COM3'
         # self.tunnel.timeout = 0.5
         # self.tunnel.write_timeout = 0.5
-        
-        if self.tunnel == None:
-            print("Error! Connector tunnel failed to create")
-            return
+
         if not self.tunnel.is_open:
             self.tunnel.open()
         logger.info(f"Connector to {self.tunnel.port} port was successfully created\n\n")
@@ -38,7 +35,7 @@ class connector:
     def get_com_port(self):
         return self.tunnel
 
-    def find_com_port(self, token_holder: TokenHolder, min_port=0, max_port=MAX_PORT_DEFAULT, settings:dict=None) -> serial.Serial:
+    def find_com_port(self, token_holder: TokenHolder, min_port=6, max_port=MAX_PORT_DEFAULT, settings:dict=None) -> serial.Serial:
         """
         Auto detect and return the correct port for the TSA Device
         
@@ -57,7 +54,7 @@ class connector:
         valid_receive = False
         ser: serial.Serial = None
         
-        while not valid_receive and com <= max_port:
+        while not valid_receive and com < max_port:
             # Attempt to connect to a serial port with low timeout for faster iteration
             try:
                 if settings:
@@ -160,14 +157,14 @@ class connector:
                 auto = self.find_com_port(token_holder, settings=data)
             else:
                 auto = self.find_com_port(token_holder)
-            
-            return auto
+            if auto is not None:
+                return auto
 
         try:
             if data is None:
                 if sys.platform == "win32":
                     return serial.Serial(
-                        port='COM5',
+                        port='COM11',
                         baudrate=9600,
                         timeout=0.5,
                         writeTimeout=0.5
@@ -190,7 +187,7 @@ class connector:
                     )
                 elif "linux" in sys.platform:
                     return serial.Serial(
-                        port=f"/dev/{data['port']}",
+                        port=data['port'],
                         baudrate=data['baudrate'],
                         timeout=data['timeout'],
                         write_timeout=data['write_timeout'],
@@ -207,9 +204,11 @@ class connector:
             if "linux" in sys.platform:
                 if e.errno == 13:
                     raise OSError("Permission to port denied, please allow your user access to tty")
+                raise e
             else:
                 raise serial.SerialException("No COM Port found! Try adjusting `preferences.json`")
 
+  
     def read_comport_preferences(self, path: object) -> object:
         """ get com port preferences
         :type path: object
@@ -219,6 +218,7 @@ class connector:
         :Version: 1
         :Authors: bodomus@gmail.com
         """
+  
         if not os.path.isfile(path):
             raise Exception("invalid file path {!r}".format(path))
         logger.info("read port preferences from file %s", path)

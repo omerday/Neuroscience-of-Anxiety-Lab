@@ -1,12 +1,15 @@
 import logging
 from medoc_api import enums
+import csv
 from medoc_api.Utilities import temp_converter, converters
 from medoc_api.commands.m_message import message
 from medoc_api.enums import COMMAND_ID
 from medoc_api.commands.r_get_pid_calculation_response import get_pid_calculation_response
 from medoc_api.commands.r_status import get_status_response
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
+
 
 
 class get_statusTCU_response(get_status_response):
@@ -170,7 +173,6 @@ class get_statusTCU_response(get_status_response):
             start_position += 2
             self.m_atsResponse = temp_converter.tcu2pc(val)
 
-        # TODO Here check on TSA3 based device
         val = buffer[start_position]
         start_position += 1
         self.m_mainThermodeModel = val
@@ -194,7 +196,6 @@ class get_statusTCU_response(get_status_response):
         start_position += 1
         self.m_pid_data = []
         for x in range(0, cnt):
-            # TODO Need implementation new GetPIDCalculationsResponse(reader, type)
             pid_position = start_position
             pid_response = get_pid_calculation_response()
             start_position = pid_response.read_data(buffer, pid_position)
@@ -204,7 +205,6 @@ class get_statusTCU_response(get_status_response):
         start_position += 1
         self.m_slave_pid_data = []
         for x in range(0, cnt):
-            # TODO Need implementation new GetPIDCalculationsResponse(reader, type)
             pid_position = start_position
             slave_pid_response = get_pid_calculation_response()
             start_position = slave_pid_response.read_data(buffer, pid_position)
@@ -243,23 +243,33 @@ class get_statusTCU_response(get_status_response):
         logger.info(f'{str(self)}')
         pass
 
+    # def __str__(self):
+    #     base = str(message.__str__(self))
+    #     tec_temperature = 0 if self.m_tecTemperature is None else len(self.m_tecTemperature)
+    #     heater_temperature = 0 if self.m_heaterTemperature is None else len(self.m_heaterTemperature)
+    #     system_state = enums.SystemState(self.m_systemState)
+    #     info = f"RESPONSE::: {base}\n\t\t\t\t\t\t\t Timestamp: {self.m_timestamp}" \
+    #            f"\n\t\t\t\t\t\t\t Current thermode: {self.m_currentThermode}" \
+    #            f"\n\t\t\t\t\t\t\t TCU state:{str(system_state)}" \
+    #            f"\n\t\t\t\t\t\t\t Heater temperatures count: {heater_temperature}" \
+    #            f"\n\t\t\t\t\t\t\t Heater temperatures: {self.get_temp()}" \
+    #            f"\n\t\t\t\t\t\t\t TEC temperatures count: {tec_temperature}" \
+    #            f"\n\t\t\t\t\t\t\t Slave TEC temperature: {self.get_temp_slave()}" \
+    #            f"\n\t\t\t\t\t\t\t Water temperature: {self.m_waterTemperature}" \
+    #            f"\n\t\t\t\t\t\t\t COVAS: {self.m_covas}" \
+    #            f"\n\t\t\t\t\t\t\t External Trigger: {self.m_isExternalTriggerOn}" \
+    #            f"\n\t\t\t\t\t\t\t External Trigger Timestamp: {self.m_externalTriggerTimestamp}" \
+    #            f"\n\t\t\t\t\t\t\t Patient Response Yes Button: {self.m_isResponseUnitYesOn}" \
+    #            f"\n\t\t\t\t\t\t\t Patient Response No Button: {self.m_isResponseUnitNoOn}" \
+    #            f"\n\t\t\t\t\t\t\t Is_Error: {self.m_isError}\n "
+    #     return info
+     
     def __str__(self):
-        base = str(message.__str__(self))
+        current_time = datetime.now().strftime("%H:%M:%S.%f")
         tec_temperature = 0 if self.m_tecTemperature is None else len(self.m_tecTemperature)
         heater_temperature = 0 if self.m_heaterTemperature is None else len(self.m_heaterTemperature)
         system_state = enums.SystemState(self.m_systemState)
-        info = f"RESPONSE::: {base}\n\t\t\t\t\t\t\t Timestamp: {self.m_timestamp}" \
-               f"\n\t\t\t\t\t\t\t Current thermode: {self.m_currentThermode}" \
-               f"\n\t\t\t\t\t\t\t TCU state:{str(system_state)}" \
-               f"\n\t\t\t\t\t\t\t Heater temperatures count: {heater_temperature}" \
-               f"\n\t\t\t\t\t\t\t Heater temperatures: {self.get_temp()}" \
-               f"\n\t\t\t\t\t\t\t TEC temperatures count: {tec_temperature}" \
-               f"\n\t\t\t\t\t\t\t Slave TEC temperature: {self.get_temp_slave()}" \
-               f"\n\t\t\t\t\t\t\t Water temperature: {self.m_waterTemperature}" \
-               f"\n\t\t\t\t\t\t\t COVAS: {self.m_covas}" \
-               f"\n\t\t\t\t\t\t\t External Trigger: {self.m_isExternalTriggerOn}" \
-               f"\n\t\t\t\t\t\t\t External Trigger Timestamp: {self.m_externalTriggerTimestamp}" \
-               f"\n\t\t\t\t\t\t\t Patient Response Yes Button: {self.m_isResponseUnitYesOn}" \
-               f"\n\t\t\t\t\t\t\t Patient Response No Button: {self.m_isResponseUnitNoOn}" \
-               f"\n\t\t\t\t\t\t\t Is_Error: {self.m_isError}\n "
-        return info
+        
+        row = f"{current_time},{self.m_timestamp},{self.m_currentThermode},{str(system_state)},{heater_temperature},{self.get_temp()},{tec_temperature},{self.get_temp_slave()},{self.m_waterTemperature},{self.m_covas},{self.m_isExternalTriggerOn},{self.m_externalTriggerTimestamp},{self.m_isResponseUnitYesOn},{self.m_isResponseUnitNoOn},{self.m_isError}"
+        # log_status_to_csv("status_csv_file", f'{row}')
+        return row

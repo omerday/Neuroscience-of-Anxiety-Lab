@@ -8,8 +8,8 @@ logger = logging.getLogger(__name__)
 
 
 class enable_termode_command(command):
-    def __init__(self):
-        command.__init__(self)
+    def __init__(self, command_tag: enums.DEVICE_TAG = enums.DEVICE_TAG.Master):
+        command.__init__(self, command_tag)
         self.response = None
         self.m_isEnabled = True
         self.m_thermodeType = enums.ThermodeType.TSA

@@ -28,7 +28,6 @@ class CommandAPI:
 
         :returns: None on fail or the final command's response after send and receive
         """
-
         com_processed = CommandAPI.process_command(token_holder.token, com, data)
         res = CommandAPI._write_command(ser, com_processed)
         if inc_token:
@@ -70,6 +69,7 @@ class CommandAPI:
         """
 
         try:
+
             send_length = ser.write(processed_command.command_array)
             if send_length == 0:
                 logger.error("Send command failed - Wrote 0 bytes")
@@ -80,11 +80,11 @@ class CommandAPI:
 
         ser.flush()
 
-        # Wait for serial data to be received with a maximum delay of 0.5 seconds
+        # Wait for serial data to be received with a maximum delay of 0.75 seconds
         timeout_start = time.time()
         while ser.in_waiting < 4:
             # pass
-            if time.time() >= timeout_start + 0.2:
+            if time.time() >= timeout_start + 0.75:
                 # print(".", end="")
                 break
 
@@ -98,18 +98,37 @@ class CommandAPI:
             return None
 
         command_length = processed_command.header_length_from_bytes(header)
+        data_len = 0
+        data = []
+        while data_len != command_length - 3:
+            waiting = ser.in_waiting
+            if waiting == 0:
+                continue
+            read = ser.read(waiting)
+            for b in read:
+                data.append(b)
+            data_len += len(read)
 
-        while ser.in_waiting:
-            data = ser.read(command_length)
-            ser.reset_input_buffer()
-            ser.reset_output_buffer()
+        ser.reset_input_buffer()
+        ser.reset_output_buffer()
+        try:
+            processed_command.receive_response(header, data)
+            processed_command.response.response_message()
+        except ValueError:
+            logger.error("Invalid command id for command, likely bad communication. command: `%s`", processed_command)
+            return None
+        #while ser.in_waiting:
+        #    data = ser.read(command_length)
 
-            try:
-                processed_command.receive_response(header, data)
-                processed_command.response.response_message()
-            except ValueError:
-                logger.error("Invalid command id for command, likely bad communication. command: `%s`", processed_command)
-                return None
+        #    ser.reset_input_buffer()
+        #    ser.reset_output_buffer()
+
+        #    try:
+        #        processed_command.receive_response(header, data)
+        #        processed_command.response.response_message()
+        #    except ValueError:
+        #        logger.error("Invalid command id for command, likely bad communication. command: `%s`", processed_command)
+        #        return None
 
         return processed_command.response
         

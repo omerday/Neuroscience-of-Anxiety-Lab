@@ -8,9 +8,9 @@ logger = logging.getLogger(__name__)
 
 
 class get_status_TCU_command(m_command.command):
-    def __init__(self):
+    def __init__(self, command_tag: enums.DEVICE_TAG = enums.DEVICE_TAG.Master):
         # super(command, self).__init__()
-        m_command.command.__init__(self)
+        m_command.command.__init__(self, command_tag)
         self.response = None
         self.command_id = enums.COMMAND_ID.GetStatusTCU
 

@@ -8,8 +8,8 @@ logger = logging.getLogger(__name__)
 
 
 class set_TCU_state_command(command):
-    def __init__(self):
-        command.__init__(self)
+    def __init__(self, command_tag: enums.DEVICE_TAG = enums.DEVICE_TAG.Master):
+        command.__init__(self, command_tag)
         self.m_state = enums.SystemState.SafeMode
         self.m_runSelfTest = True
         self.response = None
