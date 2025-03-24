@@ -96,6 +96,8 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
             window.mouseVisible = False
             window.flip()
             blank_screen_time = trial_timing['squareBlankScreen'] + trial_timing['squareJitter']
+            if time.time() > start_time + 2.1:
+                sec = 4
             _, event_onset_df = helpers.wait_for_time_with_periodic_events(window, params, device, mood_df, pain_df, start_time, blank_screen_time, keyboard, prefix, sec, event_onset_df)
 
         if params['painSupport']:
