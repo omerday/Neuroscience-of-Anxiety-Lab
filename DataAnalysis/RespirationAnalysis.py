@@ -1,13 +1,10 @@
 import os
 import bioread
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.signal import butter
 from scipy.signal import filtfilt
 from scipy.signal import find_peaks
-import matplotlib.colors as mcolors
-import matplotlib.cm as cm
 from pathlib import Path
 
 
@@ -49,7 +46,7 @@ def closest_time_index(time_list, new_time):
 def weighted_average(data):
     total_weight = sum(weight for _, weight in data)
     if total_weight == 0:
-        return None  # Avoid division by zero
+        return None
     return sum(value * weight for value, weight in data) / total_weight
 
 
@@ -107,8 +104,11 @@ def analize_file(file_path):
     return negative_breathing_rate, neutral_breathing_rate, positive_breathing_rate
 
 
-def bar_plot_breathing(negative_value, neutral_value, positive_value, title, filename=None, show=False):
+def bar_plot_breathing(negative_value, neutral_value, positive_value, title, filename=None, show=False, errors=None):
     plt.bar(["Negative", "Neutral", "Positive"], [negative_value, neutral_value, positive_value])
+    if errors is not None:
+        plt.errorbar(["Negative", "Neutral", "Positive"], [negative_value, neutral_value, positive_value], errors, color='k', 
+            capsize=10, linestyle='')
     plt.title(title)
     plt.ylabel("Breathing rate (breaths per minute)")
     if filename is not None:
@@ -134,13 +134,14 @@ def main():
         negative_breathing_rates.append(negative_breathing_rate)
         neutral_breathing_rates.append(neutral_breathing_rate)
         positive_breathing_rates.append(positive_breathing_rate)
-        print("VALUES")
-        print(negative_breathing_rate, neutral_breathing_rate, positive_breathing_rate)
         bar_plot_breathing(negative_breathing_rate, neutral_breathing_rate, positive_breathing_rate, filename, 
             os.path.join(output_directory, Path(filename).with_suffix(".png")))
-        
+    
+    errors = [np.std(negative_breathing_rates)/np.sqrt(len(negative_breathing_rates)),
+              np.std(neutral_breathing_rates)/np.sqrt(len(neutral_breathing_rates)),
+              np.std(positive_breathing_rates)/np.sqrt(len(positive_breathing_rates))]
     bar_plot_breathing(np.mean(negative_breathing_rates), np.mean(neutral_breathing_rates), np.mean(positive_breathing_rates), 
-            "Average on all files", os.path.join(output_directory, "Average.png"))
+            "Average on all files", os.path.join(output_directory, "Average.png"), errors=errors)
 
 
 
