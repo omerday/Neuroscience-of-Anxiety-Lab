@@ -52,7 +52,7 @@ def pre_cond(params, window: visual.Window, io, keyboard, df_mood: pd.DataFrame)
             window.flip()
             start_time = time.time()
             # TODO: add event every 2 sec
-            # helpers.wait_for_time_with_periodic_events(window, params, mood_df, start_time, display_time_img, keyboard, prefix, 0)
+            # helpers.wait_for_time_with_periodic_events(window, params, mood_df, start_time, display_time_img, keyboard, prefix, 2)
             helpers.wait_for_time(window, params, start_time, display_time_img, keyboard, df_mood)
 
             if len(temp_naturals) == 4:
@@ -63,7 +63,8 @@ def pre_cond(params, window: visual.Window, io, keyboard, df_mood: pd.DataFrame)
                 window.mouseVisible = False
                 window.flip()
                 start_time = time.time()
-                # TODO: add event
+                # TODO: add event - איוונטים וגם צעקה ביחד - צריך לבדוק
+                #helpers.wait_for_time_with_periodic_events_and_scream(window, params, df_mood, start_time, display_time_img_angry, keyboard, prefix, 2, "./sounds/scream.wav")
                 helpers.wait_for_time(window, params, start_time, display_time_img_angry, keyboard, df_mood)
 
             # ITI
