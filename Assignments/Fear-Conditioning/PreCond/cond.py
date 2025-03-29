@@ -6,7 +6,7 @@ from psychopy import visual
 import helpers
 
 
-def pre_cond(params, window: visual.Window, io, keyboard, df_mood: pd.DataFrame):
+def cond(params, window: visual.Window, io, keyboard, df_mood: pd.DataFrame):
     temp_naturals = []
     for N in params['natural']:
         temp_naturals.append(N)
