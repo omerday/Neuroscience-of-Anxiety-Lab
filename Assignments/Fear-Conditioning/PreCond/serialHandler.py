@@ -76,7 +76,9 @@ BIOPAC_EVENTS = {
     'N8_ITIpost': 87,
 
     'PreVas_rating': 90,
-    'PostVas_rating': 91
+    'PostVas_rating': 91,
+    'preCond': 92,
+    'cond': 93,
 }
 
 def report_event(ser: serial.Serial, event_num):

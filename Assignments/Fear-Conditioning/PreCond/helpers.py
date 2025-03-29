@@ -62,16 +62,20 @@ def add_event(params: dict, event_name: str):
     report_event(params['serialBiopac'], event)
 
 
-def play_sound(soundName: str, waitTime: float, volume=.4):
-    """
-    The method plays a sound and sleeps through it, while recording data for the DF
-    """
+def wait_for_time_and_play_sound(window: visual.Window, params, mood_df, start_time, display_time, keyboard, soundName: str, volume=.4):
     soundToPlay = sound.Sound(soundName, volume=volume)
+    # Synchronize sound with next screen flip
+    next_flip_time = window.getFutureFlipTime(clock="now")
+    soundToPlay.play(when=next_flip_time)
+    """
     now = ptb.GetSecs()
     soundToPlay.play(when=now)
-    startTime = time.time()
-    while time.time() < startTime + waitTime:
-        core.wait(1 / 1000)
+    """
+    while time.time() < start_time + display_time:
+            for event in keyboard.getKeys():
+                if event.key == "escape":
+                    graceful_shutdown(window, params, mood_df)
+            core.wait(0.05)
     soundToPlay.stop()
-    return
+
 

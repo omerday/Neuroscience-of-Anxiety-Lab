@@ -143,8 +143,14 @@ if params['preCond']:
     start_time = time.time()
     helpers.wait_for_time(window, params, start_time, display_time, keyboard)
 
+    if params['recordPhysio']:
+        report_event(params['serialBiopac'], BIOPAC_EVENTS['preCond'])
+
     # calling the preCond function
     preCond.pre_cond(params, window, io, keyboard)
+
+    if params['recordPhysio']:
+        report_event(params['serialBiopac'], BIOPAC_EVENTS['cond'])
 
     # calling the cond function
     cond.cond(params, window, io, keyboard, df_mood)
