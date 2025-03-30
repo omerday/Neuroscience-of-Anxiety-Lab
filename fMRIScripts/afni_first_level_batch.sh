@@ -42,7 +42,12 @@ task() {
 
     if [ $compute_sswarper = true ]; then
     echo "Running SSWarper on "$1""
-    @SSwarper -input "$1"/ses-${session}/anat/"$1"_ses-${session}_T1w.nii.gz -base MNI152_2009_template_SSW.nii.gz -subid "$1" -odir "$1"/ses-${session}/anat_warped -giant_move
+    @SSwarper -input "$1"/ses-${session}/anat/"$1"_ses-${session}_T1w.nii.gz \
+            -base MNI152_2009_template_SSW.nii.gz \
+            -subid "$1" -odir "$1"/ses-${session}/anat_warped \
+            -giant_move \
+            -cost_nl_final lpa \
+            -minp 8
     fi
 
     echo "Moving previous outputs for subject"
