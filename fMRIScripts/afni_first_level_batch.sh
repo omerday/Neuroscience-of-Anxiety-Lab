@@ -114,6 +114,7 @@ task() {
             "$1"/ses-${session}/func/neutral_block.1D \
             "$1"/ses-${session}/func/rest.1D \
         -regress_stim_labels      neg_blck pos_blck neut_blck rest   \
+        #TODO: Try and use regress_stim_times
         -regress_basis            'BLOCK(22,1)' \
         -regress_opts_3dD \
             -jobs 8 \
@@ -134,7 +135,8 @@ task() {
         -regress_est_blur_epits                                          \
         -regress_est_blur_errts                                          \
         -regress_run_clustsim     no                                     \
-        -execute                                                          
+        -execute           
+        #TODO: Multiply GM with the activity, and run clustsim on the result (Maybe post-script?)                                               
     echo "Done running afni_proc.py for subject "$1""
     echo "Moving results to sub-folder by session"
     mv "$1".results "$1".ses-"$session".results
