@@ -4,11 +4,10 @@ from psychopy import visual
 import random
 from psychopy.iohub.client.keyboard import Keyboard
 
-def pre_cond(params, window: visual.Window, io, keyboard):
+def pre_cond(params, window: visual.Window, io, keyboard, mood_df):
     temp_shapes = []
     for shape in params['shapes']:
-        for i in range(4):
-            temp_shapes.append(shape)
+        temp_shapes.append(shape)
 
     while temp_shapes:
         # choosing shape
@@ -23,16 +22,16 @@ def pre_cond(params, window: visual.Window, io, keyboard):
         window.mouseVisible = False
         window.flip()
         start_time = time.time()
-        helpers.wait_for_time(window, params, start_time, display_time_plus, keyboard)
+        helpers.wait_for_time(window, params, mood_df, start_time, display_time_plus, keyboard)
 
         # displaying the shape
         display_time_shape = random.uniform(params['shapeDurationMin'], params['shapeDurationMax'])
-        shape = visual.ImageStim(window, image=f"./img/shapes/{shape_name}.jpeg", units="norm", size=(2, 2))
+        shape = visual.ImageStim(window, image=f"./img/shapes/{curr_shape}.jpeg", units="norm", size=(2, 2))
         shape.draw()
         window.mouseVisible = False
         window.flip()
         start_time = time.time()
-        helpers.wait_for_time(window, params, start_time, display_time_shape, keyboard)
+        helpers.wait_for_time(window, params, mood_df, start_time, display_time_shape, keyboard)
 
         # ITI
         display_time_iti = params["blockDuration"] - display_time_shape - display_time_plus
@@ -41,4 +40,4 @@ def pre_cond(params, window: visual.Window, io, keyboard):
         window.mouseVisible = False
         window.flip()
         start_time = time.time()
-        helpers.wait_for_time(window, params, start_time, display_time_iti, keyboard)
+        helpers.wait_for_time(window, params, mood_df, start_time, display_time_iti, keyboard)

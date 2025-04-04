@@ -15,14 +15,14 @@ def cond(params, window: visual.Window, io, keyboard, df_mood: pd.DataFrame):
     counter = 1
     while temp_naturals:
         # choosing img
-        curr_img = random.choice(temp_naturals)
-        img_name = params['natural'].index(curr_img)
-        angry_img_name = params['angry'].index(curr_img)
-        if 'F' in img_name:
+        neut_img_name = random.choice(temp_naturals)
+        # img_name = params['natural'].index(curr_img)
+        angry_img_name = f'A{neut_img_name[1:]}'
+        if 'F' in neut_img_name:
             if prev_gender == 'F':
                 counter += 1
             prev_gender = "F"
-        elif 'M' in img_name:
+        elif 'M' in neut_img_name:
             if prev_gender == 'M':
                 counter += 1
             prev_gender = "M"
@@ -30,8 +30,8 @@ def cond(params, window: visual.Window, io, keyboard, df_mood: pd.DataFrame):
             counter = 1
 
         if counter != 4:
-            prefix = curr_img.split('_')[0] # for the events
-            temp_naturals.remove(curr_img)
+            prefix = neut_img_name.split('_')[0] # for the events
+            temp_naturals.remove(neut_img_name)
 
             # displaying the plus image before the shape
             display_time_plus = random.uniform(params['plusDurationMin'], params['plusDurationMax'])
@@ -42,11 +42,11 @@ def cond(params, window: visual.Window, io, keyboard, df_mood: pd.DataFrame):
             start_time = time.time()
             # plus add event
             helpers.add_event(params, f'{prefix}_plus')
-            helpers.wait_for_time(window, params, start_time, display_time_plus, keyboard, df_mood)
+            helpers.wait_for_time(window, params, df_mood, start_time, display_time_plus, keyboard)
 
             # displaying the img
             display_time_img = random.uniform(params['faceDurationMin'], params['faceDurationMax'])
-            img = visual.ImageStim(window, image=f"./img/Natural/{img_name}.jpg", units="norm", size=(2, 2))
+            img = visual.ImageStim(window, image=f"./img/Natural/{neut_img_name}.jpg", units="norm", size=(2, 2))
             img.draw()
             window.mouseVisible = False
             window.flip()
@@ -55,8 +55,8 @@ def cond(params, window: visual.Window, io, keyboard, df_mood: pd.DataFrame):
             helpers.wait_for_time_with_periodic_events(window, params, df_mood, start_time, display_time_img, keyboard, prefix, 0)
             # helpers.wait_for_time(window, params, start_time, display_time_img, keyboard, df_mood)
 
+            display_time_img_angry = 2
             if len(temp_naturals) == 4:
-                display_time_img_angry = 2
                 angry_img = visual.ImageStim(window, image=f"./img/Angry/{angry_img_name}.jpg", units="norm", size=(2, 2))
                 angry_img.draw()
                 window.mouseVisible = False
@@ -74,6 +74,6 @@ def cond(params, window: visual.Window, io, keyboard, df_mood: pd.DataFrame):
             start_time = time.time()
             # TODO: add event when starting ITI
             helpers.add_event(params, f'{prefix}_ITIpre')
-            helpers.wait_for_time(window, params, start_time, display_time_iti, keyboard, df_mood)
+            helpers.wait_for_time(window, params, df_mood, start_time, display_time_iti, keyboard)
             # TODO: add event after ITI
             helpers.add_event(params, f'{prefix}_ITIpost')

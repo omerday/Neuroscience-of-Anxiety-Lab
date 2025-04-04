@@ -46,9 +46,9 @@ def wait_for_time_with_periodic_events_and_scream(window: visual.Window, params,
 
 
 def wait_for_space(window: visual.Window, params, mood_df, io):
+    core.wait(0.5)
     keyboard = io.devices.keyboard
     keyboard.getKeys()
-    core.wait(0.1)
     while True:
         for event in keyboard.getKeys():
             if event.key == " ":
@@ -64,7 +64,7 @@ def add_event(params: dict, event_name: str):
 
 def wait_for_time_and_play_sound(window: visual.Window, params, mood_df, start_time, display_time, keyboard, soundName: str, volume=.4):
     soundToPlay = sound.Sound(soundName, volume=volume)
-    # Synchronize sound with next screen flip
+    # Synchronize sounds with next screen flip
     next_flip_time = window.getFutureFlipTime(clock="now")
     soundToPlay.play(when=next_flip_time)
     """

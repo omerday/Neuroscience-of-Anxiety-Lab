@@ -1,7 +1,7 @@
 from psychopy import visual, core
 
 #TODO: change the number of slides
-NUM_OF_SLIDES = 30
+NUM_OF_SLIDES = 3
 def instructions(window: visual.Window, params, io):
     keyboard = io.devices.keyboard
     if params['preCond']:
@@ -10,13 +10,11 @@ def instructions(window: visual.Window, params, io):
         round = "test"
     if params['language'] == 'English':
         name_prefix = "Instructions_E_"
-    elif params['gender'] == 'Female':
-        name_prefix = "Instructions_F_"
     else:
-        name_prefix = "Instructions_M_"
+        name_prefix = "Instructions_H_"
 
     for i in range(1, NUM_OF_SLIDES + 1):
-        image = visual.ImageStim(window, image=f"./img/instructions/{round}/{name_prefix}{i}.jpeg", units="norm", size=(2, 2))
+        image = visual.ImageStim(window, image=f"./img/instructions/{name_prefix}{i}.jpeg", units="norm", size=(2, 2))
         image.draw()
         window.flip()
 

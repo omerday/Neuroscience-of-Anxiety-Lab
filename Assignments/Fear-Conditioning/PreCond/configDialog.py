@@ -13,9 +13,9 @@ def get_user_input(debug=False):
 
     loaded_data = {}
     if os.path.exists("./data"):
-        if os.path.exists("./data/TIMconfig.json"):
+        if os.path.exists("./data/FCconfig.json"):
             config_exists = True
-            with open("./data/TIMconfig.json") as file:
+            with open("./data/FCconfig.json") as file:
                 try:
                     loaded_data = json.load(file)
                 except json.decoder.JSONDecodeError:
@@ -26,7 +26,7 @@ def get_user_input(debug=False):
         os.mkdir("data")
         config_exists = False
 
-    userInput = gui.Dlg(title="TIM Task Configuration")
+    userInput = gui.Dlg(title="FC Task Configuration")
     userInput.addField('Subject Number:', )
     userInput.addField('Session:', 1)
     userInput.addField('Gender', "Female" if not config_exists else loaded_data["gender"], choices=["Male", "Female"])

@@ -28,7 +28,7 @@ def test(params, window: visual.Window, io, keyboard, df_mood: pd.DataFrame):
             window.flip()
             start_time = time.time()
             helpers.add_event(params, f'{prefix}_plus')
-            helpers.wait_for_time(window, params, start_time, display_time_plus, keyboard, df_mood)
+            helpers.wait_for_time(window, params, df_mood, start_time, display_time_plus, keyboard, df_mood)
 
             # displaying the natural face
             display_time_n = random.uniform(params['faceDurationMin'], params['faceDurationMax'])
@@ -50,6 +50,6 @@ def test(params, window: visual.Window, io, keyboard, df_mood: pd.DataFrame):
             start_time = time.time()
             # TODO: add event when starting ITI
             helpers.add_event(params, f'{prefix}_ITIpre')
-            helpers.wait_for_time(window, params, start_time, display_time_iti, keyboard, df_mood)
+            helpers.wait_for_time(window, params, df_mood, start_time, display_time_iti, keyboard, df_mood)
             # TODO: add event after ITI
             helpers.add_event(params, f'{prefix}_ITIpost')

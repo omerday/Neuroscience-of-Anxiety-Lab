@@ -57,7 +57,7 @@ params = {
     "gender": configDialogBank[2],
     "language": configDialogBank[3],
     "recordPhysio": configDialogBank[4],
-    "skipInstruction": configDialogBank[5],
+    "skipInstructions": configDialogBank[5],
     "preCond": configDialogBank[6],
     "test": configDialogBank[7],
     "shapes": ['square', 'circle', 'triangle', 'rhombus'],
@@ -74,12 +74,14 @@ params = {
     "faceDurationMax": 9,
     "testBlockDuration": 18,
     'port': 'COM4',
+    'fullScreen': True,
+    'startTime': time.time(),
 }
 
 
 if not os.path.exists("./data"):
     os.mkdir("data")
-with open("./data/TIMconfig.json", 'w') as file:
+with open("./data/FCconfig.json", 'w') as file:
     json.dump(params, file, indent=3)
 
 df_mood = dataHadler.setup_data_frame()
@@ -103,12 +105,12 @@ if params['recordPhysio']:
 
 # first slide before VAS - שקף התחלה - 27/3
 display_time = params['relaxSlideDuration']
-start = visual.ImageStim(window, image=f"./img/instructions/start.jpeg", units="norm", size=(2, 2))
+start = visual.ImageStim(window, image=f"./img/instructions/start_{params['language'][0]}.jpeg", units="norm", size=(2, 2))
 start.draw()
 window.mouseVisible = False
 window.flip()
 start_time = time.time()
-helpers.wait_for_time(window, params, start_time, display_time, keyboard)
+helpers.wait_for_space(window, params, df_mood, io)
 
 scores = VAS.run_vas(window, io, params, 'mood', mood_df=df_mood)
 df_mood = dataHadler.insert_data_mood("pre", scores, df_mood)
@@ -124,7 +126,7 @@ if params['preCond']:
     window.mouseVisible = False
     window.flip()
     start_time = time.time()
-    helpers.wait_for_time(window, params, start_time, display_time, keyboard)
+    helpers.wait_for_space(window, params, df_mood, io)
 
     # 30 seconds relaxing - no need 29/3
     """ display_time = params['relaxSlideDuration']
@@ -141,13 +143,13 @@ if params['preCond']:
     window.mouseVisible = False
     window.flip()
     start_time = time.time()
-    helpers.wait_for_time(window, params, start_time, display_time, keyboard)
+    helpers.wait_for_time(window, params, df_mood, start_time, display_time, keyboard)
 
     if params['recordPhysio']:
         report_event(params['serialBiopac'], BIOPAC_EVENTS['preCond'])
 
     # calling the preCond function
-    preCond.pre_cond(params, window, io, keyboard)
+    preCond.pre_cond(params, window, io, keyboard, df_mood)
 
     if params['recordPhysio']:
         report_event(params['serialBiopac'], BIOPAC_EVENTS['cond'])
@@ -170,7 +172,7 @@ if params['preCond']:
     window.mouseVisible = False
     window.flip()
     start_time = time.time()
-    helpers.wait_for_time(window, params, start_time, display_time, keyboard)
+    helpers.wait_for_time(window, params, df_mood, start_time, display_time, keyboard)
 
 
 if params['test']:
@@ -186,7 +188,7 @@ if params['test']:
     window.mouseVisible = False
     window.flip()
     start_time = time.time()
-    helpers.wait_for_time(window, params, start_time, display_time, keyboard)
+    helpers.wait_for_time(window, params, df_mood, start_time, display_time, keyboard)
 
     # 30 seconds relaxing - no need
     """ display_time = params['relaxSlideDuration']
@@ -203,7 +205,7 @@ if params['test']:
     window.mouseVisible = False
     window.flip()
     start_time = time.time()
-    helpers.wait_for_time(window, params, start_time, display_time, keyboard, df_mood)
+    helpers.wait_for_time(window, params, df_mood, start_time, display_time, keyboard, df_mood)
 
     # calling the test function
     test.test(params, window, io, keyboard, df_mood)
@@ -223,7 +225,7 @@ if params['test']:
     window.mouseVisible = False
     window.flip()
     start_time = time.time()
-    helpers.wait_for_time(window, params, start_time, display_time, keyboard)
+    helpers.wait_for_time(window, params, df_mood, start_time, display_time, keyboard)
 
 
 # end of the study
