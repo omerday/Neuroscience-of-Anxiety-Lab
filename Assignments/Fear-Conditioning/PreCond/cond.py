@@ -62,7 +62,7 @@ def cond(params, window: visual.Window, io, keyboard, df_mood: pd.DataFrame):
                 window.mouseVisible = False
                 window.flip()
                 start_time = time.time()
-                helpers.wait_for_time_and_play_sound(window, params, df_mood, start_time, display_time_img_angry, keyboard, "./sounds/scream.wav", volume=.4)
+                helpers.wait_for_time_and_play_sound(window, params, df_mood, start_time, display_time_img_angry, keyboard, "./sound/scream.wav", volume=.4)
                 helpers.add_event(params, f'{prefix}_angry')
 
             # ITI
