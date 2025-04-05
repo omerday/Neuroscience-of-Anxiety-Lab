@@ -188,7 +188,7 @@ if params['test']:
     window.mouseVisible = False
     window.flip()
     start_time = time.time()
-    helpers.wait_for_time(window, params, df_mood, start_time, display_time, keyboard)
+    helpers.wait_for_space(window, params, df_mood, io)
 
     # 30 seconds relaxing - no need
     """ display_time = params['relaxSlideDuration']
@@ -205,7 +205,7 @@ if params['test']:
     window.mouseVisible = False
     window.flip()
     start_time = time.time()
-    helpers.wait_for_time(window, params, df_mood, start_time, display_time, keyboard, df_mood)
+    helpers.wait_for_time(window, params, df_mood, start_time, display_time, keyboard)
 
     # calling the test function
     test.test(params, window, io, keyboard, df_mood)

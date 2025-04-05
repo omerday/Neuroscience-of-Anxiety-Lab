@@ -72,8 +72,8 @@ def cond(params, window: visual.Window, io, keyboard, df_mood: pd.DataFrame):
             window.mouseVisible = False
             window.flip()
             start_time = time.time()
-            # TODO: add event when starting ITI
+            # adding event when starting ITI
             helpers.add_event(params, f'{prefix}_ITIpre')
             helpers.wait_for_time(window, params, df_mood, start_time, display_time_iti, keyboard)
-            # TODO: add event after ITI
+            # adding event after ITI
             helpers.add_event(params, f'{prefix}_ITIpost')
