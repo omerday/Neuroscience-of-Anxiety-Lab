@@ -26,6 +26,7 @@ params = {
     "fmriVersion": configDialogBank[4],
     'temps': [configDialogBank[5], configDialogBank[6], configDialogBank[7]],
     'Ts': ['T2', 'T4', 'T8'],
+    
     # "T2": configDialogBank[5],
     # "T4": configDialogBank[6],
     # "T6": configDialogBank[7],
