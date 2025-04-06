@@ -207,6 +207,9 @@ if params['test']:
     start_time = time.time()
     helpers.wait_for_time(window, params, df_mood, start_time, display_time, keyboard)
 
+    if params['recordPhysio']:
+        report_event(params['serialBiopac'], BIOPAC_EVENTS['test'])
+
     # calling the test function
     test.test(params, window, io, keyboard, df_mood)
 
