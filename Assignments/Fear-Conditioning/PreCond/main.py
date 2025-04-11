@@ -219,6 +219,14 @@ if params['test']:
     scores = VAS.run_vas(window, io, params, 'mood', mood_df=df_mood)
     df_mood = dataHadler.insert_data_mood("post", scores, df_mood)
 
+    display_time = params['blankSlideDuration']
+    blank = visual.ImageStim(window, image=f"./img/blank.jpeg", units="norm", size=(2, 2))
+    blank.draw()
+    window.mouseVisible = False
+    window.flip()
+    start_time = time.time()
+    helpers.wait_for_time(window, params, df_mood, start_time, display_time, keyboard)
+
     # שקף סיום
     display_time = params['relaxSlideDuration']
     image = visual.ImageStim(window,
