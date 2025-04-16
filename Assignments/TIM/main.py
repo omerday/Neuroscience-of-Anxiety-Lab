@@ -12,6 +12,7 @@ from serialHandler import *
 from helpers import *
 from dataHandler import *
 import logging
+from datetime import datetime
 
 io = launchHubServer()
 
@@ -35,7 +36,7 @@ params = {
     "recordPhysio": configDialogBank[10],
     "skipInstructions": configDialogBank[11],
     "continuousShape": configDialogBank[12],
-    "fullScreen": True,
+    "fullScreen": True,  # True,
     "screenSize": (1024, 768),
     "startTime": time.time(),
     'port': 'COM4',
@@ -60,7 +61,9 @@ params = {
     'secondParadigmMax': 10,
     'continuousPresentTimeMin': 2,
     'continuousPresentTimeMax': 2.5,
-
+    'dontSleepAfterTemp': configDialogBank[13],
+    'tempRampUpTime': 750 if configDialogBank[14] else 300,
+    'fmriStartTime': 0,
 }
 
 if not os.path.exists("./data"):

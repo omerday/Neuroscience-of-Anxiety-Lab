@@ -5,7 +5,6 @@ import random
 import serial, serialHandler
 import VAS
 import squareRun
-from Assignments.TIM.squareRun import square_run
 from dataHandler import *
 from serialHandler import *
 
@@ -49,6 +48,7 @@ def fixation_before_block(window:visual.Window, params, device, mood_df, pain_df
 def wait_for_time_with_periodic_events(window: visual.Window, params, device, mood_df, pain_df, start_time, display_time, keyboard, prefix, sec, event_onset_df: pd.DataFrame):
     while time.time() < start_time + display_time:
         if sec <= time.time() - start_time <= sec + 0.1:
+            print(f"Sending event. Timediff: {time.time() - start_time}, sec: {sec}")
             event_onset_df = add_event(params, f'{prefix}_{sec}', 2, squareRun.T_TO_HEAT[prefix], event_onset_df)
             sec += 2
         for ev in keyboard.getKeys():

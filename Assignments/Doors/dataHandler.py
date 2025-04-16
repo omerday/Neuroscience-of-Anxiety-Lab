@@ -16,6 +16,8 @@ HEADERS = ['Time',
            'CurrentTime',
            'Section',
            'Session',
+           'Variation',
+           'BlockType',
            'Round',  # 1 or 2 in Task step, 1 to 3 in VAS step (Beginning-middle-end)
            'Subtrial',  # From 1 to 49 or 36
            'ScenarioIndex',
@@ -67,6 +69,7 @@ def create_dict_for_df(params: dict, **kwargs):
     dictLayout['Subject'] = params['Subject']
     dictLayout['StartTime'] = params['startTime']
     dictLayout['Session'] = params['Session']
+    dictLayout['Variation'] = get_variation(params)
     for key, value in kwargs.items():
         if key in dictLayout.keys():
             dictLayout[key] = value
@@ -74,6 +77,7 @@ def create_dict_for_df(params: dict, **kwargs):
 
 
 def export_data(params: dict, **kwargs):
+    variation = get_variation(params)
     folder = './data'
     if params['Subject'] != "":
         folder = f'./data/{params["Subject"]}'
@@ -85,16 +89,17 @@ def export_data(params: dict, **kwargs):
             try:
                 df = value.drop_duplicates(keep='first')
                 df.to_csv(
-                    f'{folder}/Doors {params["Subject"]} Session {params["Session"]} - {key} - {strftime("%Y-%m-%d %H-%M", localtime(params["startTime"]))}.csv')
+                    f'{folder}/Doors_sub-{params["Subject"]}_Session-{params["Session"]}_Variation-{variation}-{"ACT-NEUT" if params["ACTBlock"] == 1 else "NEUT-ACT"}_{key}_{strftime("%Y-%m-%d %H-%M", localtime(params["startTime"]))}.csv')
             except:
                 print("Something went wrong, keeping backup")
             else:
-                backup_path = f'{folder}/Doors {params["Subject"]} Session {params["Session"]} - {key} - {strftime("%Y-%m-%d %H-%M", localtime(params["startTime"]))}.backup.csv'
+                backup_path = f'{folder}/Doors_sub-{params["Subject"]}_Session-{params["Session"]}_Variation-{variation}-{"ACT-NEUT" if params["ACTBlock"] == 1 else "NEUT-ACT"}_{key}_{strftime("%Y-%m-%d %H-%M", localtime(params["startTime"]))}.backup.csv'
                 if os.path.exists(backup_path):
                     os.remove(backup_path)
 
 
 def save_backup(params: dict, **kwargs):
+    variation = get_variation(params)
     folder = './data'
     if params['Subject'] != "":
         folder = f'./data/{params["Subject"]}'
@@ -105,5 +110,14 @@ def save_backup(params: dict, **kwargs):
         if isinstance(value, pd.DataFrame):
             df = value.drop_duplicates(keep='first')
             df.to_csv(
-                f'{folder}/Doors {params["Subject"]} Session {params["Session"]} - {key} - {strftime("%Y-%m-%d %H-%M", localtime(params["startTime"]))}.backup.csv')
+                f'{folder}/Doors_sub-{params["Subject"]}_Session-{params["Session"]}_Variation-{variation}-{"ACT-NEUT" if params["ACTBlock"] == 1 else "NEUT-ACT"}_{key}_{strftime("%Y-%m-%d %H-%M", localtime(params["startTime"]))}.backup.csv')
 
+def get_variation(params: dict):
+    if params["screamVersion"]:
+        return "SCR"
+    elif params["cameraVersion"]:
+        return "CAM"
+    elif params["highValue"]:
+        return "HV"
+    else:
+        return "None"

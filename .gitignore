@@ -136,18 +136,22 @@ Assignments/Doors/.ipynb_checkpoints
 /.idea/Neuroscience-of-Anxiety-Lab.iml
 /.idea/inspectionProfiles/Project_Default.xml
 /.idea/inspectionProfiles/profiles_settings.xml
-/Assignments/Doors/data/doorsConfig.json
+/Assignments/Doors/data/
 .idea/misc.xml
 /.idea/modules.xml
 .idea/Neuroscience-of-Anxiety-Lab.iml
-/Assignments/NPU/data/NPUconfig.json
+/Assignments/NPU/data/
 /.idea/inspectionProfiles/profiles_settings.xml
 /.idea/inspectionProfiles/Project_Default.xml
 /.idea/rGraphicsSettings.xml
 /.idea/rSettings.xml
 Assignments/TIM/data/TIMconfig.json
+Assignments/BlackTIM/data/TIMconfig.json
+Assignments/TIM/data/
 /.idea/vcs.xml
 /.idea/.gitignore
 
 .gitattributes
 .idea/
+
+*/data/
