@@ -32,11 +32,12 @@ def instructions(window: visual.Window, params, io):
 
         space = False
         while not space:
+            core.wait(0.05)
             for event in keyboard.getKeys():
                 if event.key == "escape":
                     window.close()
                     core.quit()
-                elif event.key == " ":
+                elif event.key in [" ", 'c']:
                     space = True
                 elif i == 28 and event.key == 'r':
                     instructions(window, params, io)

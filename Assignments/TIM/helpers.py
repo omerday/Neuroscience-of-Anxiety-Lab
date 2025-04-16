@@ -64,7 +64,7 @@ def wait_for_space(window: visual.Window, params, device, mood_df, pain_df, io, 
     core.wait(0.1)
     while True:
         for event in keyboard.getKeys():
-            if event.key == " ":
+            if event.key in [" ", 'c']:
                 return
             elif event.key == "escape":
                 graceful_shutdown(window, params, device, mood_df, pain_df, event_onset_df)

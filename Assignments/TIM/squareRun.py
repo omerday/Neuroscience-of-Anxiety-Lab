@@ -35,6 +35,7 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
                     break
                 elif event.key == 'escape':
                     helpers.graceful_shutdown(window, params, device, mood_df, pain_df)
+            core.wait(0.05)
         params['fmriStartTime'] = time.time()
 
         event_onset_df = helpers.add_event(params, 'Start_Cycle', params['fixationBeforeBlock'], 0, event_onset_df)
