@@ -16,7 +16,8 @@ def instructions(window: visual.Window, params, io):
     else:
         name_prefix = "Instructions_M_"
 
-    for i in range(2, NUM_OF_SLIDES + 1):
+    i = 2
+    while i < NUM_OF_SLIDES + 1:
         if 3 <= i <= 22:
             image = visual.ImageStim(window, image=f"./img/instructions/{name_prefix}{i}_P2.jpeg", units="norm", size=(2, 2))
         elif 23 <= i <= 27:
@@ -38,10 +39,12 @@ def instructions(window: visual.Window, params, io):
                     window.close()
                     core.quit()
                 elif event.key in [" ", 'c']:
+                    i += 1
                     space = True
                 elif i == 28 and event.key == 'r':
                     instructions(window, params, io)
+                    i += 1
                     space = True
                 elif event.key == 'r':
-                    i = i - 2
+                    i -= 1
                     space = True

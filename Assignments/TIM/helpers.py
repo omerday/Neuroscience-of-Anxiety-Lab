@@ -107,7 +107,7 @@ def create_timing_array(params):
             timings.append(timing_dict)
         timings_sum = sum_timing_array(timings) + PRE_BLOCK_FIXATION_TIME
         print(f"Timing Sum = {timings_sum}\n==================================")
-        if timings_sum <= 240:
+        if 235 <= timings_sum <= 240:
             return timings
 
 
