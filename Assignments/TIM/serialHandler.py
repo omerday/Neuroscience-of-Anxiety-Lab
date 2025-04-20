@@ -50,7 +50,7 @@ BIOPAC_EVENTS = {
 
         'Fixation_cross': 95,
 
-        'Start_Cycle': 100
+        'Start_Cycle': 100,
     }
 
 PARADIGM_2_BIOPAC_EVENTS = {
@@ -102,7 +102,9 @@ PARADIGM_2_BIOPAC_EVENTS = {
 
         'Fixation_cross': 95,
 
-        'Start_Cycle': 100
+        'Start_Cycle': 100,
+
+        'T1_Start': 150,
     }
 
 

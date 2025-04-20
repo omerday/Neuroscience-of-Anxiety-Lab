@@ -42,3 +42,6 @@ def instructions(window: visual.Window, params, io):
                 elif i == 28 and event.key == 'r':
                     instructions(window, params, io)
                     space = True
+                elif event.key == 'r':
+                    i = i - 2
+                    space = True

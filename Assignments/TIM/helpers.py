@@ -7,6 +7,7 @@ import VAS
 import squareRun
 from dataHandler import *
 from serialHandler import *
+import serial
 
 PRE_BLOCK_FIXATION_TIME = 8
 
@@ -120,3 +121,32 @@ def add_event(params: dict, event_name: str, event_time, heat_level, event_onset
     event = PARADIGM_2_BIOPAC_EVENTS[event_name]
     report_event(params['serialBiopac'], event)
     return insert_data_fmri_events(params, event_time, event, heat_level, event_onset_file)
+
+def performT1Scan(window: visual.Window, params: dict, io):
+    keyboard = io.devices.keyboard
+    keyboard.getKeys()
+    core.wait(0.1)
+    image = visual.ImageStim(window, image=f"./img/instructions/T1Instruction_{params['language'][0]}.jpeg", units="norm", size=(2, 2))
+    image.draw()
+    window.flip()
+    started = False
+    while not started:
+        for event in keyboard.getKeys():
+            if event.key == "escape":
+                window.close()
+                core.quit()
+            elif event.key == "5":
+                started = True
+        core.wait(0.1)
+    report_event(params['serialBiopac'], PARADIGM_2_BIOPAC_EVENTS['T1_Start'])
+    image = visual.ImageStim(window, image=f"./img/plus.jpeg", units="norm", size=(2, 2))
+    image.draw()
+    window.flip()
+    while True:
+        core.wait(0.05)
+        for event in keyboard.getKeys():
+            if event.key == "escape":
+                window.close()
+                core.quit()
+            elif event.key == ' ':
+                return

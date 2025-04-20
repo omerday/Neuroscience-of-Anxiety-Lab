@@ -99,6 +99,12 @@ window.mouseVisible = False
 window.flip()
 wait_for_space(window, params, device, df_mood, df_pain, io)
 
+if params["fmriVersion"]:
+    # T1 Sequence
+    helpers.performT1Scan(window, params, io)
+    # Button Practice
+    _ = run_vas(window, io, params, 'mood', mood_df=df_mood, pain_df=df_pain, device=device, practice=True)
+
 # First mood VAS
 if params['recordPhysio']:
     report_event(params['serialBiopac'], BIOPAC_EVENTS['PreVas_rating'])

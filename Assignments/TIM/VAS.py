@@ -27,8 +27,11 @@ ANSWERS_HEBREW = [["כלל לא", "הרבה מאוד"], ["כלל לא", "הרב�
 ANSWERS_ENGLISH = [["Not at all", "A lot"], ["Not at all", "A lot"], ["Not at all", "A lot"], ["Very good", "Very bad"], ["Not at all", "A lot"]]
 
 
-def run_vas(window: visual.Window, io, params: dict, type:str, mood_df, pain_df, device, duration=float('inf'), event_onset_df=None):
-    if type == "PainRating":
+def run_vas(window: visual.Window, io, params: dict, type:str, mood_df, pain_df, device, duration=float('inf'), event_onset_df=None, practice=False) -> dict:
+    if practice:
+        questions =["קחו זמן להתנסות בדירוג"] if params['language'] == 'Hebrew' else ["Take your time and try rating"]
+        answers = [["נמוך יותר", "גבוה יותר"]] if params['language'] == 'Hebrew' else [["Lower", "Higher"]]
+    elif type == "PainRating":
         questions = PAIN_RATING_QUESTION_HEBREW if params['language'] == 'Hebrew' else PAIN_RATING_QUESTION_ENGLISH
         answers = PAIN_RATING_ANSWERS_HEBREW if params['language'] == 'Hebrew' else PAIN_RATING_ANSWERS_ENGLISH
     else:
@@ -45,8 +48,8 @@ def run_vas(window: visual.Window, io, params: dict, type:str, mood_df, pain_df,
                                             if params['language'] == 'Hebrew' else [answers[i][0],answers[i][1]],
                                         scale=None, choices=None, low=0, high=10, precision=.5, tickHeight=0.5 if type=="PainRating" else 0, size=2,
                                         markerStart=5, noMouse=True, leftKeys=['left', 'b'], rightKeys=['right', 'd'],  # Dummy left and right
-                                        textSize=0.6, acceptText="לחצו על הרווח"[::-1] if params['language'] == "Hebrew" else "Press Spacebar", showValue=False, showAccept=True,
-                                        acceptPreText="לחצו על הרווח"[::-1] if params['language'] == "Hebrew" else "Press Spacebar", acceptSize=1.5,
+                                        textSize=0.6, acceptText="לחצו לנעילה"[::-1] if params['language'] == "Hebrew" else "Press to Lock", showValue=False, showAccept=True,
+                                        acceptPreText="לחצו לנעילה"[::-1] if params['language'] == "Hebrew" else "Press to Lock", acceptSize=1.5,
                                         markerColor="Maroon", acceptKeys=["space", 'c'], textColor="Black",
                                         lineColor="Black", disappear=False)
         question_label = visual.TextStim(window, text=questions[i][::-1] if params['language'] == 'Hebrew' else questions[i], height=.12, units='norm', pos=[0, 0.3], wrapWidth=2,
@@ -54,6 +57,22 @@ def run_vas(window: visual.Window, io, params: dict, type:str, mood_df, pain_df,
 
         keyboard.getKeys()
         core.wait(0.05)
+
+        if practice:
+            while True:
+                scale.draw()
+                question_label.draw()
+                window.mouseVisible = False
+                window.flip()
+
+                for ev in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
+                    if ev.key == "escape":
+                        helpers.graceful_shutdown(window, params, device, mood_df, pain_df, event_onset_df)
+                    elif ev.key == " ":
+                        return {}
+                    core.wait(0.05)
+                if not scale.noResponse:
+                    scale.reset()
 
         end_time = time.time() + duration
         while (duration != float("inf") and time.time() < end_time) or (duration == float("inf") and scale.noResponse):
