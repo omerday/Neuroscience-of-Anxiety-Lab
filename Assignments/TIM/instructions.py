@@ -4,7 +4,7 @@ from psychopy.iohub.client.keyboard import Keyboard
 import random
 import VAS
 
-NUM_OF_SLIDES = 28
+NUM_OF_SLIDES = 23
 
 
 def instructions(window: visual.Window, params, io):
@@ -18,10 +18,8 @@ def instructions(window: visual.Window, params, io):
 
     i = 2
     while i < NUM_OF_SLIDES + 1:
-        if 3 <= i <= 22:
+        if 3 <= i <= NUM_OF_SLIDES:
             image = visual.ImageStim(window, image=f"./img/instructions/{name_prefix}{i}_P2.jpeg", units="norm", size=(2, 2))
-        elif 23 <= i <= 27:
-            continue
         else:
             image = visual.ImageStim(window, image=f"./img/instructions/{name_prefix}{i}.jpeg", units="norm", size=(2, 2))
         image.draw()
@@ -41,10 +39,10 @@ def instructions(window: visual.Window, params, io):
                 elif event.key in [" ", 'c']:
                     i += 1
                     space = True
-                elif i == 28 and event.key == 'r':
+                elif i == NUM_OF_SLIDES and event.key == 'r':
                     instructions(window, params, io)
                     i += 1
                     space = True
-                elif event.key == 'r':
+                elif i > 2 and event.key == 'r':
                     i -= 1
                     space = True
