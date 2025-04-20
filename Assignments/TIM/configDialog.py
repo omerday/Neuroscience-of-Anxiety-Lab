@@ -42,7 +42,6 @@ def get_user_input(debug=False):
     userInput.addField("T4", 0 if not config_exists else TEMPS.index(loaded_data['temps'][1]), choices=TEMPS)
     userInput.addField("T6", 0 if not config_exists else TEMPS.index(loaded_data['temps'][2]), choices=TEMPS)
     # userInput.addField("T8", 0 if not config_exists else TEMPS.index(loaded_data["T8"]), choices=TEMPS)
-    userInput.addField("Paradigm #", 1 if not config_exists else loaded_data["paradigm"] - 1, choices=[1, 2])
     userInput.addField("Pain Support", False if not config_exists else loaded_data["painSupport"])
     userInput.addField('Record Physiology', False if not config_exists else loaded_data['recordPhysio'])
     userInput.addField('Skip Instructions', False if not config_exists else loaded_data['skipInstructions'])

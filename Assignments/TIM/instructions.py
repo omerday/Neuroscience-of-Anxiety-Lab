@@ -17,9 +17,9 @@ def instructions(window: visual.Window, params, io):
         name_prefix = "Instructions_M_"
 
     for i in range(2, NUM_OF_SLIDES + 1):
-        if params["paradigm"] == 2 and 3 <= i <= 22:
+        if 3 <= i <= 22:
             image = visual.ImageStim(window, image=f"./img/instructions/{name_prefix}{i}_P2.jpeg", units="norm", size=(2, 2))
-        elif params["paradigm"] == 2 and 23 <= i <= 27:
+        elif 23 <= i <= 27:
             continue
         else:
             image = visual.ImageStim(window, image=f"./img/instructions/{name_prefix}{i}.jpeg", units="norm", size=(2, 2))
