@@ -110,7 +110,7 @@ start.draw()
 window.mouseVisible = False
 window.flip()
 start_time = time.time()
-helpers.wait_for_space(window, params, df_mood, io)
+helpers.wait_for_space_and_time(window, params, df_mood, io, start_time,display_time)
 
 scores = VAS.run_vas(window, io, params, 'mood', mood_df=df_mood)
 df_mood = dataHadler.insert_data_mood("pre", scores, df_mood)
@@ -126,7 +126,7 @@ if params['preCond']:
     window.mouseVisible = False
     window.flip()
     start_time = time.time()
-    helpers.wait_for_space(window, params, df_mood, io)
+    helpers.wait_for_space_and_time(window, params, df_mood, io, start_time, display_time)
 
     # 30 seconds relaxing - no need 29/3
     """ display_time = params['relaxSlideDuration']
@@ -143,6 +143,8 @@ if params['preCond']:
     window.mouseVisible = False
     window.flip()
     start_time = time.time()
+    if params['recordPhysio']:
+        report_event(params['serialBiopac'], BIOPAC_EVENTS['blankSlide'])
     helpers.wait_for_time(window, params, df_mood, start_time, display_time, keyboard)
 
     if params['recordPhysio']:
@@ -172,7 +174,7 @@ if params['preCond']:
     window.mouseVisible = False
     window.flip()
     start_time = time.time()
-    helpers.wait_for_time(window, params, df_mood, start_time, display_time, keyboard)
+    helpers.wait_for_space_and_time(window, params, df_mood, io, start_time, display_time)
 
 
 if params['test']:
@@ -188,7 +190,7 @@ if params['test']:
     window.mouseVisible = False
     window.flip()
     start_time = time.time()
-    helpers.wait_for_space(window, params, df_mood, io)
+    helpers.wait_for_space_and_time(window, params, df_mood, io, start_time, display_time)
 
     # 30 seconds relaxing - no need
     """ display_time = params['relaxSlideDuration']
@@ -205,6 +207,8 @@ if params['test']:
     window.mouseVisible = False
     window.flip()
     start_time = time.time()
+    if params['recordPhysio']:
+        report_event(params['serialBiopac'], BIOPAC_EVENTS['blankSlide'])
     helpers.wait_for_time(window, params, df_mood, start_time, display_time, keyboard)
 
     if params['recordPhysio']:
@@ -218,6 +222,14 @@ if params['test']:
         report_event(params['serialBiopac'], BIOPAC_EVENTS['PostVas_rating'])
     scores = VAS.run_vas(window, io, params, 'mood', mood_df=df_mood)
     df_mood = dataHadler.insert_data_mood("post", scores, df_mood)
+
+    display_time = params['blankSlideDuration']
+    blank = visual.ImageStim(window, image=f"./img/instructions/instructions_{'E' if params['language'] == 'English' else 'H'}_4.jpeg", units="norm", size=(2, 2))
+    blank.draw()
+    window.mouseVisible = False
+    window.flip()
+    start_time = time.time()
+    helpers.wait_for_space_and_time(window, params, df_mood, io, start_time, display_time)
 
     display_time = params['blankSlideDuration']
     blank = visual.ImageStim(window, image=f"./img/blank.jpeg", units="norm", size=(2, 2))
@@ -236,7 +248,7 @@ if params['test']:
     window.mouseVisible = False
     window.flip()
     start_time = time.time()
-    helpers.wait_for_time(window, params, df_mood, start_time, display_time, keyboard)
+    helpers.wait_for_space_and_time(window, params, df_mood, io, start_time, display_time)
 
 
 # end of the study

@@ -88,6 +88,7 @@ BIOPAC_EVENTS = {
     'preCond': 92,
     'cond': 93,
     'test': 94,
+    'blankSlide': 95,
 }
 
 def report_event(ser: serial.Serial, event_num):
