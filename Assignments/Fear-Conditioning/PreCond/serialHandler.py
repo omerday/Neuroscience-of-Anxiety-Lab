@@ -2,6 +2,15 @@ import serial
 import time
 
 BIOPAC_EVENTS = {
+    'S_plus' : 0,
+    'S_0' : 1,
+    'S_2' : 2,
+    'S_4' : 3,
+    'S_6' : 4,
+    'S_8' : 5,
+    'S_ITIpre': 6,
+    'S_ITIpost':7,
+
     'N1_plus': 10,
     'N1_0': 11,
     'N1_2': 12,
