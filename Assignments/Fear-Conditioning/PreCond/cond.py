@@ -46,7 +46,7 @@ def cond(params, window: visual.Window, io, keyboard, df_mood: pd.DataFrame):
 
             # displaying the img
             display_time_img = random.uniform(params['faceDurationMin'], params['faceDurationMax'])
-            img = visual.ImageStim(window, image=f"./img/Natural/{neut_img_name}.jpg", units="norm", size=(2, 2))
+            img = visual.ImageStim(window, image=f"./img/Natural/{neut_img_name}.jpg", units="norm", size=(1.3, 1.5))
             img.draw()
             window.mouseVisible = False
             window.flip()
@@ -57,7 +57,7 @@ def cond(params, window: visual.Window, io, keyboard, df_mood: pd.DataFrame):
 
             display_time_img_angry = 2
             if len(temp_naturals) == 4:
-                angry_img = visual.ImageStim(window, image=f"./img/Angry/{angry_img_name}.jpg", units="norm", size=(2, 2))
+                angry_img = visual.ImageStim(window, image=f"./img/Angry/{angry_img_name}.jpg", units="norm", size=(1.3, 1.5))
                 angry_img.draw()
                 window.mouseVisible = False
                 window.flip()
