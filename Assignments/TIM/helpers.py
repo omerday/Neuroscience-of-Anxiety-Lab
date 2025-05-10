@@ -12,9 +12,8 @@ import serial
 PRE_BLOCK_FIXATION_TIME = 8
 
 
-def iti(window: visual.Window, params: dict, iti_type, keyboard, device, mood_df, pain_df, display_time, event_onset_df=None):
-    # display_time = random.uniform(params[f'{iti_type}ITIMin'], params[f'{iti_type}ITIMax'])
-    image = "./img/blank.jpeg" if iti_type == "post" else "./img/plus.jpeg"
+def iti(window: visual.Window, params: dict, keyboard, device, mood_df, pain_df, display_time, event_onset_df=None):
+    image = "./img/blank.jpeg"
     square = visual.ImageStim(window, image=image, units="norm", size=(2, 2))
     square.draw()
     window.mouseVisible = False

@@ -52,7 +52,7 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
         heat_level = T_TO_HEAT[prefix]
         event_onset_df = helpers.add_event(params, f'{prefix}_ITIpre', trial_timing['preITI'], heat_level, event_onset_df)
 
-        helpers.iti(window, params, 'pre', keyboard, device, mood_df, pain_df, trial_timing['preITI'], event_onset_df)
+        helpers.iti(window, params, keyboard, device, mood_df, pain_df, trial_timing['preITI'], event_onset_df)
 
         event_onset_df = helpers.add_event(params, f'{prefix}_{0}', trial_timing['squareOnset'], heat_level, event_onset_df)
 
@@ -79,7 +79,7 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
             event_onset_df = helpers.add_event(params, f'{prefix}_heat_pulse', 6, heat_level, event_onset_df)
             heatHandler.deliver_pain(window, float(temperature), device, params)
 
-        helpers.iti(window, params, "post", keyboard, device, mood_df, pain_df, trial_timing['preRatingITI'], event_onset_df)
+        helpers.iti(window, params, keyboard, device, mood_df, pain_df, trial_timing['preRatingITI'], event_onset_df)
 
         event_onset_df = helpers.add_event(params, f'{prefix}_PainRatingScale', params['painRateDuration'], heat_level, event_onset_df)
 
@@ -87,7 +87,7 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
         pain_df = insert_data_pain(block_number, trial, (color_index + 1), curr_color, pain, pain_df)
 
         event_onset_df = helpers.add_event(params, f'{prefix}_ITIpost', trial_timing['postITI'], heat_level, event_onset_df)
-        helpers.iti(window, params, 'post', keyboard, device, mood_df, pain_df, trial_timing['postITI'], event_onset_df)
+        helpers.iti(window, params, keyboard, device, mood_df, pain_df, trial_timing['postITI'], event_onset_df)
 
         helpers.save_backup(params, Mood=mood_df, Pain=pain_df)
         helpers.save_fmri_event_onset(params, event_onset_df, block_number)

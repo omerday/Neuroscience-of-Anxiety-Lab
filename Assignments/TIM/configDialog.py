@@ -38,6 +38,7 @@ def get_user_input(debug=False):
     userInput.addField("Preferred Language", "Hebrew" if not config_exists else loaded_data["language"],
                        choices=["Hebrew", "English"])
     userInput.addField("fMRI Version", True if not config_exists else loaded_data["fmriVersion"])
+    userInput.addField("# of Blocks", 6 if not config_exists else loaded_data["nBlocks"])
     userInput.addField("T2", 0 if not config_exists else TEMPS.index(loaded_data['temps'][0]), choices=TEMPS)
     userInput.addField("T4", 0 if not config_exists else TEMPS.index(loaded_data['temps'][1]), choices=TEMPS)
     userInput.addField("T6", 0 if not config_exists else TEMPS.index(loaded_data['temps'][2]), choices=TEMPS)
