@@ -32,7 +32,7 @@ def test(params, window: visual.Window, io, keyboard, df_mood: pd.DataFrame):
 
             # displaying the natural face
             display_time_n = random.uniform(params['faceDurationMin'], params['faceDurationMax'])
-            shape = visual.ImageStim(window, image=f"./img/natural/{img_name}.jpeg", units="norm", size=(2, 2))
+            shape = visual.ImageStim(window, image=f"./img/Natural/{curr_n}.jpg", units="norm", size=(1.3, 1.5))
             shape.draw()
             window.mouseVisible = False
             window.flip()
@@ -50,6 +50,6 @@ def test(params, window: visual.Window, io, keyboard, df_mood: pd.DataFrame):
             start_time = time.time()
             # adding event when starting ITI
             helpers.add_event(params, f'{prefix}_ITIpre')
-            helpers.wait_for_time(window, params, df_mood, start_time, display_time_iti, keyboard, df_mood)
+            helpers.wait_for_time(window, params, df_mood, start_time, display_time_iti, keyboard)
             # adding event after ITI
             helpers.add_event(params, f'{prefix}_ITIpost')
