@@ -68,7 +68,7 @@ def cond(params, window: visual.Window, io, keyboard, df_mood: pd.DataFrame):
                 helpers.add_event(params, f'{prefix}_angry')
 
             # ITI
-            display_time_iti = params["blockDuration"] - display_time_img - display_time_plus - display_time_img_angry
+            display_time_iti = params["blockDuration"] - display_time_img - display_time_img_angry # - display_time_plus
             blank = visual.ImageStim(window, image=f"./img/blank.jpeg", units="norm", size=(2, 2))
             blank.draw()
             window.mouseVisible = False
