@@ -69,7 +69,7 @@ params = {
     "shapeDurationMax": 9,
     "blockDuration": 24,
     "relaxSlideDuration": 12,
-    "blankSlideDuration": 30,
+    "blankSlideDuration": 15,
     "faceDurationMin": 8,
     "faceDurationMax": 9,
     "testBlockDuration": 18,
@@ -119,7 +119,7 @@ if params['preCond']:
     """ if not params['skipInstructions']:
             instructions.instructions(window, params, io)"""
 
-    # הוראות שקף 1 - 27/3
+    # instructions slide 1
     display_time = params['relaxSlideDuration']
     instructions_1 = visual.ImageStim(window, image=f"./img/instructions/instructions_{'E' if params['language'] == 'English' else 'H'}_1.jpeg", units="norm", size=(2, 2))
     instructions_1.draw()
@@ -128,15 +128,18 @@ if params['preCond']:
     start_time = time.time()
     helpers.wait_for_space_and_time(window, params, df_mood, io, start_time, display_time)
 
-    # 30 seconds relaxing - no need 29/3
-    """ display_time = params['relaxSlideDuration']
-    relax = visual.ImageStim(window, image=f"./img/relax_slide.jpeg", units="norm", size=(2, 2))
-    relax.draw()
+    # instructions slide 2
+    display_time = params['relaxSlideDuration']
+    instructions_1 = visual.ImageStim(window,
+                                      image=f"./img/instructions/instructions_{'E' if params['language'] == 'English' else 'H'}_2.jpeg",
+                                      units="norm", size=(2, 2))
+    instructions_1.draw()
     window.mouseVisible = False
     window.flip()
     start_time = time.time()
-    helpers.wait_for_time(window, params, start_time, display_time, keyboard) """
+    helpers.wait_for_space_and_time(window, params, df_mood, io, start_time, display_time)
 
+    # blank slide - 15 sec
     display_time = params['blankSlideDuration']
     blank = visual.ImageStim(window, image=f"./img/blank.jpeg", units="norm", size=(2, 2))
     blank.draw()
@@ -165,10 +168,10 @@ if params['preCond']:
     scores = VAS.run_vas(window, io, params, 'mood', mood_df=df_mood)
     df_mood = dataHadler.insert_data_mood("post", scores, df_mood)
 
-    # שקף 2
+    # instructions slide 3
     display_time = params['relaxSlideDuration']
     image = visual.ImageStim(window,
-                             image=f"./img/instructions/instructions_{'E' if params['language'] == 'English' else 'H'}_2.jpeg",
+                             image=f"./img/instructions/instructions_{'E' if params['language'] == 'English' else 'H'}_3.jpeg",
                              units="norm", size=(2, 2))
     image.draw()
     window.mouseVisible = False
@@ -181,10 +184,10 @@ if params['test']:
     """ if not params['skipInstructions']:
             instructions.instructions(window, params, io) """
 
-    # הוראות - שקף 3 - 27/3
+    # instructions slide 4
     display_time = params['relaxSlideDuration']
     instructions_3 = visual.ImageStim(window,
-                                      image=f"./img/instructions/instructions_{'E' if params['language'] == 'English' else 'H'}_3.jpeg",
+                                      image=f"./img/instructions/instructions_{'E' if params['language'] == 'English' else 'H'}_4.jpeg",
                                       units="norm", size=(2, 2))
     instructions_3.draw()
     window.mouseVisible = False
@@ -192,15 +195,7 @@ if params['test']:
     start_time = time.time()
     helpers.wait_for_space_and_time(window, params, df_mood, io, start_time, display_time)
 
-    # 30 seconds relaxing - no need
-    """ display_time = params['relaxSlideDuration']
-    relax = visual.ImageStim(window, image=f"./img/relax_slide.jpeg", units="norm", size=(2, 2))
-    relax.draw()
-    window.mouseVisible = False
-    window.flip()
-    start_time = time.time()
-    helpers.wait_for_time(window, params, start_time, display_time, keyboard) """
-
+    # blank slide - 15 sec
     display_time = params['blankSlideDuration']
     blank = visual.ImageStim(window, image=f"./img/blank.jpeg", units="norm", size=(2, 2))
     blank.draw()
@@ -224,13 +219,14 @@ if params['test']:
     df_mood = dataHadler.insert_data_mood("post", scores, df_mood)
 
     display_time = params['blankSlideDuration']
-    blank = visual.ImageStim(window, image=f"./img/instructions/instructions_{'E' if params['language'] == 'English' else 'H'}_4.jpeg", units="norm", size=(2, 2))
+    blank = visual.ImageStim(window, image=f"./img/instructions/instructions_{'E' if params['language'] == 'English' else 'H'}_5.jpeg", units="norm", size=(2, 2))
     blank.draw()
     window.mouseVisible = False
     window.flip()
     start_time = time.time()
     helpers.wait_for_space_and_time(window, params, df_mood, io, start_time, display_time)
 
+    # blank slide - 15 sec - for measuring physiological activity
     display_time = params['blankSlideDuration']
     blank = visual.ImageStim(window, image=f"./img/blank.jpeg", units="norm", size=(2, 2))
     blank.draw()
@@ -239,7 +235,7 @@ if params['test']:
     start_time = time.time()
     helpers.wait_for_time(window, params, df_mood, start_time, display_time, keyboard)
 
-    # שקף סיום
+    # Finish slide
     display_time = params['relaxSlideDuration']
     image = visual.ImageStim(window,
                              image=f"./img/instructions/finish_{'E' if params['language'] == 'English' else 'H'}.jpeg",

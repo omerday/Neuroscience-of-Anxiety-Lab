@@ -33,6 +33,7 @@ def cond(params, window: visual.Window, io, keyboard, df_mood: pd.DataFrame):
             prefix = neut_img_name.split('_')[0] # for the events
             temp_naturals.remove(neut_img_name)
 
+            """"
             # displaying the plus image before the shape
             display_time_plus = random.uniform(params['plusDurationMin'], params['plusDurationMax'])
             plus = visual.ImageStim(window, image=f"./img/plus.jpeg", units="norm", size=(2, 2))
@@ -43,6 +44,7 @@ def cond(params, window: visual.Window, io, keyboard, df_mood: pd.DataFrame):
             # plus add event
             helpers.add_event(params, f'{prefix}_plus')
             helpers.wait_for_time(window, params, df_mood, start_time, display_time_plus, keyboard)
+            """
 
             # displaying the img
             display_time_img = random.uniform(params['faceDurationMin'], params['faceDurationMax'])
