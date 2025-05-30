@@ -105,7 +105,7 @@ if params['recordPhysio']:
 
 # first slide before VAS - שקף התחלה - 27/3
 display_time = params['relaxSlideDuration']
-start = visual.ImageStim(window, image=f"./img/instructions/start_{params['language'][0]}.jpeg", units="norm", size=(2, 2))
+start = visual.ImageStim(window, image=f"./img/instructions/start_{params['language'][0]}.jpg", units="norm", size=(2, 2))
 start.draw()
 window.mouseVisible = False
 window.flip()
@@ -121,7 +121,7 @@ if params['preCond']:
 
     # instructions slide 1
     display_time = params['relaxSlideDuration']
-    instructions_1 = visual.ImageStim(window, image=f"./img/instructions/instructions_{'E' if params['language'] == 'English' else 'H'}_1.jpeg", units="norm", size=(2, 2))
+    instructions_1 = visual.ImageStim(window, image=f"./img/instructions/instructions_{'E' if params['language'] == 'English' else 'H'}_1.jpg", units="norm", size=(2, 2))
     instructions_1.draw()
     window.mouseVisible = False
     window.flip()
@@ -131,7 +131,7 @@ if params['preCond']:
     # instructions slide 2
     display_time = params['relaxSlideDuration']
     instructions_1 = visual.ImageStim(window,
-                                      image=f"./img/instructions/instructions_{'E' if params['language'] == 'English' else 'H'}_2.jpeg",
+                                      image=f"./img/instructions/instructions_{'E' if params['language'] == 'English' else 'H'}_2.jpg",
                                       units="norm", size=(2, 2))
     instructions_1.draw()
     window.mouseVisible = False
@@ -171,7 +171,7 @@ if params['preCond']:
     # instructions slide 3
     display_time = params['relaxSlideDuration']
     image = visual.ImageStim(window,
-                             image=f"./img/instructions/instructions_{'E' if params['language'] == 'English' else 'H'}_3.jpeg",
+                             image=f"./img/instructions/instructions_{'E' if params['language'] == 'English' else 'H'}_3.jpg",
                              units="norm", size=(2, 2))
     image.draw()
     window.mouseVisible = False
@@ -187,7 +187,7 @@ if params['test']:
     # instructions slide 4
     display_time = params['relaxSlideDuration']
     instructions_3 = visual.ImageStim(window,
-                                      image=f"./img/instructions/instructions_{'E' if params['language'] == 'English' else 'H'}_4.jpeg",
+                                      image=f"./img/instructions/instructions_{'E' if params['language'] == 'English' else 'H'}_4.jpg",
                                       units="norm", size=(2, 2))
     instructions_3.draw()
     window.mouseVisible = False
@@ -219,7 +219,7 @@ if params['test']:
     df_mood = dataHadler.insert_data_mood("post", scores, df_mood)
 
     display_time = params['blankSlideDuration']
-    blank = visual.ImageStim(window, image=f"./img/instructions/instructions_{'E' if params['language'] == 'English' else 'H'}_5.jpeg", units="norm", size=(2, 2))
+    blank = visual.ImageStim(window, image=f"./img/instructions/instructions_{'E' if params['language'] == 'English' else 'H'}_5.jpg", units="norm", size=(2, 2))
     blank.draw()
     window.mouseVisible = False
     window.flip()
@@ -238,7 +238,7 @@ if params['test']:
     # Finish slide
     display_time = params['relaxSlideDuration']
     image = visual.ImageStim(window,
-                             image=f"./img/instructions/finish_{'E' if params['language'] == 'English' else 'H'}.jpeg",
+                             image=f"./img/instructions/finish_{'E' if params['language'] == 'English' else 'H'}.jpg",
                              units="norm", size=(2, 2))
     image.draw()
     window.mouseVisible = False
