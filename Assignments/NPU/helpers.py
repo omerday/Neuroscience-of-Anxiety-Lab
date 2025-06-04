@@ -292,6 +292,14 @@ def play_shock_sound(dict_for_df: dict, df: pd.DataFrame, sound_name=None):
     return df
 
 
+def play_shock_with_spider(window: visual.Window, dict_for_df: dict, df: pd.DataFrame, sound_name=None):
+    image = visual.ImageStim(win=window, image="./img/spider.png",
+                         units="norm", opacity=1,
+                         size=(2, 2))
+    image.draw()
+    return play_shock_sound(dict_for_df, df, sound_name)
+
+
 def startle_habituation_sequence(window: visual.Window, image: visual.ImageStim, params: dict, io, df: pd.DataFrame,
                                  mini_df: pd.DataFrame, ser=None):
     """
