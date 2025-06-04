@@ -88,6 +88,11 @@ def show_waiting_for_next_block(window: visual.Window, params: dict, ):
     image.draw()
     window.flip()
 
+def show_waiting_for_ra_space(window: visual.Window, params: dict, ):
+    image = visual.ImageStim(window, f"./img/waitForSpace_E.jpeg" if params['language'] == 'English' else f"./img/waitForSpace_H.jpeg", units="norm", size=(2, 2))
+    image.draw()
+    window.flip()
+
 def create_timing_array(params):
     random.seed(time.time())
     while True:

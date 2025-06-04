@@ -23,7 +23,18 @@ def square_run(window: visual.Window, params: dict, device, io, pain_df: pd.Data
     trial = 0
     timings = helpers.create_timing_array(params)
     event_onset_df = setup_fmri_onset_file()
-    keyboard = io.devices.keyboard
+    if params["fmriVersion"]:
+        helpers.show_waiting_for_ra_space(window, params)
+        keyboard.getKeys()
+        space = False
+        while not space:
+            for event in keyboard.getKeys():
+                if event.key == ' ':
+                    space = True
+                    break
+                elif event.key == 'escape':
+                    helpers.graceful_shutdown(window, params, device, mood_df, pain_df)
+            core.wait(0.05)
     helpers.show_waiting_for_next_block(window, params)
     keyboard.getKeys()
     five = False
