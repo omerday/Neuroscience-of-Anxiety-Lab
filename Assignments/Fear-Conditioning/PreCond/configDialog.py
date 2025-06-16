@@ -36,4 +36,6 @@ def get_user_input(debug=False):
     userInput.addField('Skip Instructions', False if not config_exists else loaded_data['skipInstructions'])
     userInput.addField('PreCond', False if not config_exists else loaded_data['preCond'])
     userInput.addField('Test', False if not config_exists else loaded_data['test'])
+    userInput.addField('preCond New Version', False if not config_exists else loaded_data['preCondNewVersion'])
+    userInput.addField('Test New Version', False if not config_exists else loaded_data['testNewVersion'])
     return userInput.show()
