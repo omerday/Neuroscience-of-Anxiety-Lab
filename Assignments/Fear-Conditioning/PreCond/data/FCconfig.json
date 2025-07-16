@@ -1,24 +1,14 @@
 {
    "subject": "",
    "session": 1,
-<<<<<<< HEAD
-   "gender": "Male",
-=======
    "gender": "Female",
->>>>>>> origin/fear-condition
    "language": "Hebrew",
    "recordPhysio": false,
    "skipInstructions": false,
    "preCond": false,
-<<<<<<< HEAD
    "test": false,
    "preCondNewVersion": false,
    "testNewVersion": true,
-=======
-   "test": true,
-   "preCondNewVersion": false,
-   "testNewVersion": false,
->>>>>>> origin/fear-condition
    "shapes": [
       "square",
       "circle",
@@ -73,9 +63,5 @@
    "testBlockDuration": 18,
    "port": "COM4",
    "fullScreen": true,
-<<<<<<< HEAD
-   "startTime": 1750084899.5970318
-=======
-   "startTime": 1750926870.211901
->>>>>>> origin/fear-condition
+   "startTime": 1752663760.568733
 }

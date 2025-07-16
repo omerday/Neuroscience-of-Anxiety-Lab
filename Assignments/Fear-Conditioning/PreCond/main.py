@@ -274,6 +274,17 @@ if params['preCondNewVersion']:
     scores = VAS.run_vas(window, io, params, 'mood', mood_df=df_mood)
     df_mood = dataHadler.insert_data_mood("post", scores, df_mood)
 
+    # instructions slide 3
+    display_time = params['relaxSlideDuration']
+    image = visual.ImageStim(window,
+                             image=f"./img/instructions/instructions_{'E' if params['language'] == 'English' else 'H'}_3.jpg",
+                             units="norm", size=(2, 2))
+    image.draw()
+    window.mouseVisible = False
+    window.flip()
+    start_time = time.time()
+    helpers.wait_for_space_and_time(window, params, df_mood, io, start_time, display_time)
+
 
 # test - new version
 if params['testNewVersion']:

@@ -57,12 +57,16 @@ def cond_new_version(params, window: visual.Window, io, keyboard, df_mood: pd.Da
 
             display_time_img_angry = 2
             if len(temp_naturals) == 3:
-                angry_img = visual.ImageStim(window, image=f"./img/Angry/{angry_img_name}.jpg", units="norm", size=(2, 2))
-                angry_img.draw()
-                window.mouseVisible = False
-                window.flip()
-                start_time = time.time()
-                helpers.wait_for_time_and_play_sound(window, params, df_mood, start_time, display_time_img_angry, keyboard, "./sound/scream.wav", volume=.4)
+                helpers.show_image_with_scream(
+                    window=window,
+                    image_path=f"./img/Angry/{angry_img_name}.jpg",
+                    sound_path="./sound/scream.wav",
+                    duration=display_time_img_angry,
+                    keyboard=keyboard,
+                    escape_callback=lambda: helpers.graceful_shutdown(window, params, df_mood),
+                    size=(1.5, 2),
+                    volume=0.4
+                )
                 helpers.add_event(params, f'{prefix}_angry')
 
             # ITI
