@@ -13,12 +13,25 @@ def test(params, window: visual.Window, io, keyboard, df_mood: pd.DataFrame):
         for N in params['natural']:
             temp_naturals.append(N)
 
+        prev_gender = ""
+        counter = 1
         while temp_naturals:
             # choosing natural face
             neut_img_name = random.choice(temp_naturals)
-            prefix = neut_img_name.split('_')[0]  # for the events
-            temp_naturals.remove(neut_img_name)
-            # img_name = params['natural'].index(curr_n)
+            if 'F' in neut_img_name:
+                if prev_gender == 'F':
+                    counter += 1
+                prev_gender = "F"
+            elif 'M' in neut_img_name:
+                if prev_gender == 'M':
+                    counter += 1
+                prev_gender = "M"
+            else:
+                counter = 1
+
+            if counter != 4:
+                prefix = neut_img_name.split('_')[0]  # for the events
+                temp_naturals.remove(neut_img_name)
 
             """ 
             # displaying the plus image before the shape
