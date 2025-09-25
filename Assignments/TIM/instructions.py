@@ -18,6 +18,9 @@ def instructions(window: visual.Window, params, io):
 
     i = 2
     while i < NUM_OF_SLIDES + 1:
+        if i == 5:
+            i += 1
+            continue
         if 3 <= i <= NUM_OF_SLIDES:
             image = visual.ImageStim(window, image=f"./img/instructions/{name_prefix}{i}_P2.jpeg", units="norm", size=(2, 2))
         else:
