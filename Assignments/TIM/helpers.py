@@ -5,16 +5,15 @@ import random
 import serial, serialHandler
 import VAS
 import squareRun
-from Assignments.TIM.squareRun import square_run
 from dataHandler import *
 from serialHandler import *
+import serial
 
 PRE_BLOCK_FIXATION_TIME = 8
 
 
-def iti(window: visual.Window, params: dict, iti_type, keyboard, device, mood_df, pain_df, display_time, event_onset_df=None):
-    # display_time = random.uniform(params[f'{iti_type}ITIMin'], params[f'{iti_type}ITIMax'])
-    image = "./img/blank.jpeg" if iti_type == "post" else "./img/plus.jpeg"
+def iti(window: visual.Window, params: dict, keyboard, device, mood_df, pain_df, display_time, event_onset_df=None):
+    image = "./img/blank.jpeg"
     square = visual.ImageStim(window, image=image, units="norm", size=(2, 2))
     square.draw()
     window.mouseVisible = False
@@ -49,6 +48,7 @@ def fixation_before_block(window:visual.Window, params, device, mood_df, pain_df
 def wait_for_time_with_periodic_events(window: visual.Window, params, device, mood_df, pain_df, start_time, display_time, keyboard, prefix, sec, event_onset_df: pd.DataFrame):
     while time.time() < start_time + display_time:
         if sec <= time.time() - start_time <= sec + 0.1:
+            print(f"Sending event. Timediff: {time.time() - start_time}, sec: {sec}")
             event_onset_df = add_event(params, f'{prefix}_{sec}', 2, squareRun.T_TO_HEAT[prefix], event_onset_df)
             sec += 2
         for ev in keyboard.getKeys():
@@ -64,7 +64,7 @@ def wait_for_space(window: visual.Window, params, device, mood_df, pain_df, io, 
     core.wait(0.1)
     while True:
         for event in keyboard.getKeys():
-            if event.key == " ":
+            if event.key in [" ", 'c']:
                 return
             elif event.key == "escape":
                 graceful_shutdown(window, params, device, mood_df, pain_df, event_onset_df)
@@ -88,6 +88,11 @@ def show_waiting_for_next_block(window: visual.Window, params: dict, ):
     image.draw()
     window.flip()
 
+def show_waiting_for_ra_space(window: visual.Window, params: dict, ):
+    image = visual.ImageStim(window, f"./img/waitForSpace_E.jpeg" if params['language'] == 'English' else f"./img/waitForSpace_H.jpeg", units="norm", size=(2, 2))
+    image.draw()
+    window.flip()
+
 def create_timing_array(params):
     random.seed(time.time())
     while True:
@@ -106,7 +111,7 @@ def create_timing_array(params):
             timings.append(timing_dict)
         timings_sum = sum_timing_array(timings) + PRE_BLOCK_FIXATION_TIME
         print(f"Timing Sum = {timings_sum}\n==================================")
-        if timings_sum <= 240:
+        if 235 <= timings_sum <= 240:
             return timings
 
 
@@ -120,3 +125,32 @@ def add_event(params: dict, event_name: str, event_time, heat_level, event_onset
     event = PARADIGM_2_BIOPAC_EVENTS[event_name]
     report_event(params['serialBiopac'], event)
     return insert_data_fmri_events(params, event_time, event, heat_level, event_onset_file)
+
+def performT1Scan(window: visual.Window, params: dict, io):
+    keyboard = io.devices.keyboard
+    keyboard.getKeys()
+    core.wait(0.1)
+    image = visual.ImageStim(window, image=f"./img/instructions/T1Instruction_{params['language'][0]}.jpeg", units="norm", size=(2, 2))
+    image.draw()
+    window.flip()
+    started = False
+    while not started:
+        for event in keyboard.getKeys():
+            if event.key == "escape":
+                window.close()
+                core.quit()
+            elif event.key == "5":
+                started = True
+        core.wait(0.1)
+    report_event(params['serialBiopac'], PARADIGM_2_BIOPAC_EVENTS['T1_Start'])
+    image = visual.ImageStim(window, image=f"./img/plus.jpeg", units="norm", size=(2, 2))
+    image.draw()
+    window.flip()
+    while True:
+        core.wait(0.05)
+        for event in keyboard.getKeys():
+            if event.key == "escape":
+                window.close()
+                core.quit()
+            elif event.key == ' ':
+                return

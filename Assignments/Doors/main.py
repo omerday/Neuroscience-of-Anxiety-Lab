@@ -39,13 +39,17 @@ params = {
     'soundOn': configDialogBank[9],
     'beeps': False,                             # An option to sound beeps before the door outcome is presented
     'outcomeString': True,   # True if we want to print the outcome amount, otherwise it will just show a monster / a fairy
-    'skipInstructions': configDialogBank[10],
-    'language': configDialogBank[11],
+    'screamVersion': True if configDialogBank[10] == "SCR" else False,
+    'cameraVersion': True if configDialogBank[10] == "CAM" else False,
+    'highValue': True if configDialogBank[10] == "HV" else False,
+    'ACTBlock': 1 if configDialogBank[11] == "ACT-NEUT" else 2,
+    'skipInstructions': configDialogBank[12],
+    'language': configDialogBank[13],
     'reducedEvents': False,                      # Send only one event for each doors (door presented), instead of three - door presented, locked and outcome
-    'fullScreen': configDialogBank[12] if debug else True,
-    'saveDataAtQuit': configDialogBank[13] if debug else True,
+    'fullScreen': configDialogBank[14] if debug else True,
+    'saveDataAtQuit': configDialogBank[15] if debug else True,
     'startTime': time.time(),
-    'saveAsDefault': configDialogBank[14] if debug else True,
+    'saveAsDefault': configDialogBank[16] if debug else True,
     'doorImagePathPrefix': './img/doors1/' if configDialogBank[8] == "P - R" else './img/doors2/',
     'doorOutcomePath': './img/outcomes/',
     'imageSuffix': '.jpg',
@@ -97,7 +101,7 @@ while roundNum <= params['numOfTasks']:
     mini_df, summary_df = VAS.middle_vas(window, params, mini_df, summary_df, roundNum, io)
 
     # Task 2
-    mini_df, summary_df, totalCoins = DoorPlay.run_task(window, params, roundNum, totalCoins, mini_df, summary_df, io, ser)
+    mini_df, summary_df, totalCoins = DoorPlay.run_task(window, params, roundNum, 0, mini_df, summary_df, io, ser)
 
     roundNum += 1
 

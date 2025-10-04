@@ -243,7 +243,7 @@ def wait_in_condition(window: visual.Window, image: visual.ImageStim, startle_ti
             df, mini_df = helpers.play_startle(dict_for_df, df, mini_df, ser)
             startle_times.remove(startle_times[0])
         if shock_time <= time.time() <= shock_time + 0.3:
-            df, mini_df = initiate_shock(params, dict_for_df, df, mini_df, ser, sound)
+            df, mini_df = initiate_shock(window, params, dict_for_df, df, mini_df, ser, sound)
 
         # Escape
         for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
@@ -257,7 +257,7 @@ def wait_in_condition(window: visual.Window, image: visual.ImageStim, startle_ti
     return scale.getRating(), df, mini_df
 
 
-def initiate_shock(params: dict, dict_for_df: dict, df: pd.DataFrame, mini_df: pd.DataFrame, ser=None, sound=None):
+def initiate_shock(window: visual.Window, params: dict, dict_for_df: dict, df: pd.DataFrame, mini_df: pd.DataFrame, ser=None, sound=None):
     dict_for_df["CurrentTime"] = round(time.time() - dict_for_df["StartTime"], 2)
     dict_for_df["Shock"] = 1
     dict_for_df["ScenarioIndex"] += SHOCK_EVENT_INDEX

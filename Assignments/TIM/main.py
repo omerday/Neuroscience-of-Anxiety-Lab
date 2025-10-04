@@ -12,6 +12,7 @@ from serialHandler import *
 from helpers import *
 from dataHandler import *
 import logging
+from datetime import datetime
 
 io = launchHubServer()
 
@@ -24,24 +25,22 @@ params = {
     "gender": configDialogBank[2],
     "language": configDialogBank[3],
     "fmriVersion": configDialogBank[4],
-    'temps': [configDialogBank[5], configDialogBank[6], configDialogBank[7]],
+    'nTrials': 6,  # number of squares in each block
+    'nBlocks': configDialogBank[5],  # number of blocks (aka runs) - need time to move electrode in between
+    'temps': [configDialogBank[6], configDialogBank[7], configDialogBank[8]],
     'Ts': ['T2', 'T4', 'T8'],
-    
     # "T2": configDialogBank[5],
     # "T4": configDialogBank[6],
     # "T6": configDialogBank[7],
     # "T8": configDialogBank[8],
-    "paradigm": configDialogBank[8],
     "painSupport": configDialogBank[9],
     "recordPhysio": configDialogBank[10],
     "skipInstructions": configDialogBank[11],
     "continuousShape": configDialogBank[12],
-    "fullScreen": True,
+    "fullScreen": True,  # True,
     "screenSize": (1024, 768),
     "startTime": time.time(),
     'port': 'COM4',
-    'nTrials': 6,  # number of squares in each block
-    'nBlocks': 6,  # number of blocks (aka runs) - need time to move electrode in between
     'painDur': 4,  # time of heat sensation (in seconds)
     'painRateDuration': 7.0,
     'squareDurationMin': 4,  # minimum duration for each square
@@ -61,7 +60,9 @@ params = {
     'secondParadigmMax': 10,
     'continuousPresentTimeMin': 2,
     'continuousPresentTimeMax': 2.5,
-
+    'dontSleepAfterTemp': configDialogBank[13],
+    'tempRampUpTime': 750 if configDialogBank[14] else 300,
+    'fmriStartTime': 0,
 }
 
 if not os.path.exists("./data"):
@@ -98,6 +99,12 @@ window.mouseVisible = False
 window.flip()
 wait_for_space(window, params, device, df_mood, df_pain, io)
 
+if params["fmriVersion"]:
+    # T1 Sequence
+    helpers.performT1Scan(window, params, io)
+    # Button Practice
+    _ = run_vas(window, io, params, 'mood', mood_df=df_mood, pain_df=df_pain, device=device, practice=True)
+
 # First mood VAS
 if params['recordPhysio']:
     report_event(params['serialBiopac'], BIOPAC_EVENTS['PreVas_rating'])
@@ -110,7 +117,7 @@ if not params['skipInstructions']:
 for i in range(1, params['nBlocks'] + 1):
     df_pain = squareRun.square_run(window, params, device, io, df_pain, df_mood, i)
     # Middle Mood VAS
-    if i == params['nBlocks'] / 2:
+    if i == params['nBlocks'] // 2:
         if params['recordPhysio']:
             report_event(params['serialBiopac'], BIOPAC_EVENTS['MidRun_rating'])
         scores = run_vas(window, io, params, 'mood', mood_df=df_mood, pain_df=df_pain, device=device)
