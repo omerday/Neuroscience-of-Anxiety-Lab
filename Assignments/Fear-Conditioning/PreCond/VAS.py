@@ -64,4 +64,5 @@ def run_vas(window: visual.Window, io, params: dict, type:str, mood_df, duration
 
 
     dataHadler.save_backup(params, Mood=mood_df)
+    print(scores)
     return scores

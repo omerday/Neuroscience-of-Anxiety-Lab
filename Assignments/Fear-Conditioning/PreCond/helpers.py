@@ -57,25 +57,42 @@ def wait_for_space(window: visual.Window, params, mood_df, io):
                 graceful_shutdown(window, params, mood_df)
         core.wait(0.05)
 
+def wait_for_space_and_time(window: visual.Window, params, mood_df, io, start_time, display_time):
+    core.wait(0.5)
+    keyboard = io.devices.keyboard
+    keyboard.getKeys()
+    while time.time() < start_time + display_time:
+        for event in keyboard.getKeys():
+            if event.key == " ":
+                return
+            elif event.key == "escape":
+                graceful_shutdown(window, params, mood_df)
+        core.wait(0.05)
+
 def add_event(params: dict, event_name: str):
     event = BIOPAC_EVENTS[event_name]
     report_event(params['serialBiopac'], event)
 
 
-def wait_for_time_and_play_sound(window: visual.Window, params, mood_df, start_time, display_time, keyboard, soundName: str, volume=.4):
-    soundToPlay = sound.Sound(soundName, volume=volume)
-    # Synchronize sounds with next screen flip
-    next_flip_time = window.getFutureFlipTime(clock="now")
-    soundToPlay.play(when=next_flip_time)
-    """
-    now = ptb.GetSecs()
-    soundToPlay.play(when=now)
-    """
-    while time.time() < start_time + display_time:
-            for event in keyboard.getKeys():
-                if event.key == "escape":
-                    graceful_shutdown(window, params, mood_df)
-            core.wait(0.05)
-    soundToPlay.stop()
+def show_image_with_scream(window, image_path, sound_path, duration, keyboard, escape_callback, size=(1.5, 2), volume=0.4):
+    image_stim = visual.ImageStim(window, image=image_path, units='norm', size=size)
+    image_stim.draw()
+
+    sound_to_play = sound.Sound(sound_path, volume=volume)
+    next_flip_time = window.getFutureFlipTime(clock='ptb')
+    sound_to_play.play(when=next_flip_time)
+
+    window.mouseVisible = False
+    window.flip()
+
+    start_time = core.getTime()
+    while core.getTime() < start_time + duration:
+        for event in keyboard.getKeys():
+            if event.key == "escape":
+                escape_callback()
+        core.wait(0.05)
+
+    sound_to_play.stop()
+
 
 

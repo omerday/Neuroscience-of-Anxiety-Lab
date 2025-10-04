@@ -7,32 +7,21 @@ from psychopy import visual
 import helpers
 
 
-def test(params, window: visual.Window, io, keyboard, df_mood: pd.DataFrame):
-    for i in range(3):
+def test_new_version(params, window: visual.Window, io, keyboard, df_mood: pd.DataFrame):
+    for i in range(4):
         temp_naturals = []
-        for N in params['natural']:
-            temp_naturals.append(N)
+        if params['gender'] == 'Female':
+            for N in params['N_F_newVersion']:
+                temp_naturals.append(N)
+        else:
+            for N in params['N_M_newVersion']:
+                temp_naturals.append(N)
 
-        prev_gender = ""
-        counter = 1
         while temp_naturals:
             # choosing natural face
             neut_img_name = random.choice(temp_naturals)
-            if 'F' in neut_img_name:
-                if prev_gender == 'F':
-                    counter += 1
-                prev_gender = "F"
-            elif 'M' in neut_img_name:
-                if prev_gender == 'M':
-                    counter += 1
-                prev_gender = "M"
-            else:
-                counter = 1
-
-            if counter != 4:
-                prefix = neut_img_name.split('_')[0]  # for the events
-                temp_naturals.remove(neut_img_name)
-
+            prefix = neut_img_name.split('_')[0]  # for the events
+            temp_naturals.remove(neut_img_name)
             """ 
             # displaying the plus image before the shape
             display_time_plus = random.uniform(params['plusDurationMin'], params['plusDurationMax'])
@@ -44,10 +33,9 @@ def test(params, window: visual.Window, io, keyboard, df_mood: pd.DataFrame):
             helpers.add_event(params, f'{prefix}_plus')
             helpers.wait_for_time(window, params, df_mood, start_time, display_time_plus, keyboard)
             """
-
             # displaying the natural face
             display_time_n = random.uniform(params['faceDurationMin'], params['faceDurationMax'])
-            shape = visual.ImageStim(window, image=f"./img/Natural/{neut_img_name}.jpeg", units="norm", size=(1.5, 2))
+            shape = visual.ImageStim(window, image=f"./img/Natural/{neut_img_name}.jpeg", units="norm", size=(2, 2))
             shape.draw()
             window.mouseVisible = False
             window.flip()

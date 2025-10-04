@@ -1,0 +1,67 @@
+{
+   "subject": "",
+   "session": 1,
+   "gender": "Female",
+   "language": "Hebrew",
+   "recordPhysio": false,
+   "skipInstructions": false,
+   "preCond": false,
+   "test": false,
+   "preCondNewVersion": false,
+   "testNewVersion": true,
+   "shapes": [
+      "square",
+      "circle",
+      "triangle",
+      "rhombus"
+   ],
+   "natural": [
+      "N1_F",
+      "N2_F",
+      "N3_F",
+      "N4_F",
+      "N5_M",
+      "N6_M",
+      "N7_M",
+      "N8_M"
+   ],
+   "angry": [
+      "A1_F",
+      "A2_F",
+      "A3_F",
+      "A4_F",
+      "A5_M",
+      "A6_M",
+      "A7_M",
+      "A8_M"
+   ],
+   "N_F_newVersion": [
+      "N1_F",
+      "N3_F",
+      "N1_F",
+      "N3_F",
+      "N1_F",
+      "N3_F"
+   ],
+   "N_M_newVersion": [
+      "N5_M",
+      "N8_M",
+      "N5_M",
+      "N8_M",
+      "N5_M",
+      "N8_M"
+   ],
+   "plusDurationMin": 2,
+   "plusDurationMax": 4,
+   "shapeDurationMin": 8,
+   "shapeDurationMax": 9,
+   "blockDuration": 24,
+   "relaxSlideDuration": 12,
+   "blankSlideDuration": 15,
+   "faceDurationMin": 8,
+   "faceDurationMax": 9,
+   "testBlockDuration": 18,
+   "port": "COM4",
+   "fullScreen": true,
+   "startTime": 1752663760.568733
+}
