@@ -46,7 +46,7 @@ def cond_new_version(params, window: visual.Window, io, keyboard, df_mood: pd.Da
 
             # displaying the img
             display_time_img = random.uniform(params['faceDurationMin'], params['faceDurationMax'])
-            img = visual.ImageStim(window, image=f"./img/Natural/{neut_img_name}.jpg", units="norm", size=(2, 2))
+            img = visual.ImageStim(window, image=f"./img/Natural/{neut_img_name}.jpg", units="norm", size=(1.5, 1.5))
             img.draw()
             window.mouseVisible = False
             window.flip()
@@ -64,7 +64,7 @@ def cond_new_version(params, window: visual.Window, io, keyboard, df_mood: pd.Da
                     duration=display_time_img_angry,
                     keyboard=keyboard,
                     escape_callback=lambda: helpers.graceful_shutdown(window, params, df_mood),
-                    size=(1.5, 2),
+                    size=(1.5, 1.5),
                     volume=0.4
                 )
                 helpers.add_event(params, f'{prefix}_angry')

@@ -35,7 +35,7 @@ def test_new_version(params, window: visual.Window, io, keyboard, df_mood: pd.Da
             """
             # displaying the natural face
             display_time_n = random.uniform(params['faceDurationMin'], params['faceDurationMax'])
-            shape = visual.ImageStim(window, image=f"./img/Natural/{neut_img_name}.jpeg", units="norm", size=(2, 2))
+            shape = visual.ImageStim(window, image=f"./img/Natural/{neut_img_name}.jpeg", units="norm", size=(1.5, 1.5))
             shape.draw()
             window.mouseVisible = False
             window.flip()
