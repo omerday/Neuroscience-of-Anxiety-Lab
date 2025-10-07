@@ -63,7 +63,7 @@ def cond(params, window: visual.Window, io, keyboard, df_mood: pd.DataFrame):
                 helpers.show_image_with_scream(
                     window=window,
                     image_path=f"./img/Angry/{angry_img_name}.jpg",
-                    sound_path="./sound/scream.wav",
+                    sound_path="./sound/shock_sound_1.mp3",
                     duration=display_time_img_angry,
                     keyboard=keyboard,
                     escape_callback=lambda: helpers.graceful_shutdown(window, params, df_mood),
