@@ -60,6 +60,7 @@ def cond(params, window: visual.Window, io, keyboard, df_mood: pd.DataFrame):
 
             display_time_img_angry = 2
             if len(temp_naturals) == 4:
+                helpers.add_event(params, f'{prefix}_angry')
                 helpers.show_image_with_scream(
                     window=window,
                     image_path=f"./img/Angry/{angry_img_name}.jpg",
@@ -70,7 +71,6 @@ def cond(params, window: visual.Window, io, keyboard, df_mood: pd.DataFrame):
                     size=(1.5, 1.5),
                     volume=0.4
                 )
-                helpers.add_event(params, f'{prefix}_angry')
 
 
             # ITI

@@ -57,6 +57,7 @@ def cond_new_version(params, window: visual.Window, io, keyboard, df_mood: pd.Da
 
             display_time_img_angry = 2
             if len(temp_naturals) == 3:
+                helpers.add_event(params, f'{prefix}_angry')
                 helpers.show_image_with_scream(
                     window=window,
                     image_path=f"./img/Angry/{angry_img_name}.jpg",
@@ -67,7 +68,6 @@ def cond_new_version(params, window: visual.Window, io, keyboard, df_mood: pd.Da
                     size=(1.5, 1.5),
                     volume=0.4
                 )
-                helpers.add_event(params, f'{prefix}_angry')
 
             # ITI
             display_time_iti = params["blockDuration"] - display_time_img - display_time_img_angry # - display_time_plus
