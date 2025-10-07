@@ -43,15 +43,17 @@ def export_data(params: dict, **kwargs):
         if not os.path.exists(folder):
             os.mkdir(folder)
 
+    task = "test" if params["test"] or params["testNewVersion"] else "cond"
+
     for key, value in kwargs.items():
         if isinstance(value, pd.DataFrame):
             try:
                 df = value.drop_duplicates(keep='first')
                 df.to_csv(
-                    f'{folder}/FC Subject {params["subject"]} Session {params["session"]} - {key} - {strftime("%d-%m-%Y %H-%M", localtime(params["startTime"]))}.csv')
+                    f'{folder}/FC Subject {params["subject"]} Session {params["session"]} {task} - {key} - {strftime("%d-%m-%Y %H-%M", localtime(params["startTime"]))}.csv')
             except:
                 print("Something went wrong, keeping backup")
             else:
-                backup_path = f'{folder}/FC Subject {params["subject"]} Session {params["session"]} - {key} - {strftime("%d-%m-%Y %H-%M", localtime(params["startTime"]))}.backup.csv'
+                backup_path = f'{folder}/FC Subject {params["subject"]} Session {params["session"]} {task} - {key} - {strftime("%d-%m-%Y %H-%M", localtime(params["startTime"]))}.backup.csv'
                 if os.path.exists(backup_path):
                     os.remove(backup_path)
