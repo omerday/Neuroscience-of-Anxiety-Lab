@@ -92,14 +92,14 @@ BIOPAC_EVENTS = {
     'N8_ITIpost': 107,
     'N8_angry': 108,
 
-    'PreVas_rating': 100,
-    'PostVas_rating': 101,
-    'preCond': 102,
-    'cond': 103,
-    'test': 104,
-    'condNewVersion': 105,
-    'testNewVersion': 106,
-    'blankSlide': 107,
+    'PreVas_rating': 110,
+    'PostVas_rating': 111,
+    'preCond': 112,
+    'cond': 113,
+    'test': 114,
+    'condNewVersion': 115,
+    'testNewVersion': 116,
+    'blankSlide': 117,
 }
 
 def report_event(ser: serial.Serial, event_num):
