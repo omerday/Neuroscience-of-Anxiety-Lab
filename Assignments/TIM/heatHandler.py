@@ -146,4 +146,3 @@ def cool_down(device):
     device.end_test()
     device.stop_status_thread()
     device.finalize()
-    core.quit()

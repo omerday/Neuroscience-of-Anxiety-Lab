@@ -72,11 +72,11 @@ def wait_for_space(window: visual.Window, params, device, mood_df, pain_df, io, 
 
 
 def graceful_shutdown(window, params, device, mood_df, pain_df, event_onset_df=None):
+    export_data(params, Mood=mood_df, Pain=pain_df)
+    save_fmri_event_onset(params, event_onset_df, "backup")
     if params['painSupport']:
         from heatHandler import cool_down
         cool_down(device)
-    export_data(params, Mood=mood_df, Pain=pain_df)
-    save_fmri_event_onset(params, event_onset_df, "backup")
     print(f"Experiment Ended\n===========================================")
     window.close()
     core.quit()
