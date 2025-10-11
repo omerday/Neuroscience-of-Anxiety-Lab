@@ -148,6 +148,7 @@ Assignments/Doors/.ipynb_checkpoints
 Assignments/TIM/data/TIMconfig.json
 Assignments/BlackTIM/data/TIMconfig.json
 Assignments/Fear-Conditioning/PreCond/data/*
+Assignments/Fear-Conditioning/PreCond/data/FCconfig.json
 Assignments/TIM/data/
 /.idea/vcs.xml
 /.idea/.gitignore
