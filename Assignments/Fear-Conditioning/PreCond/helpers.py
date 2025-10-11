@@ -22,6 +22,24 @@ def graceful_shutdown(window, params, mood_df):
     core.quit()
     exit()
 
+def show_slide_and_wait(window, params, df_mood, io, keyboard, image_path, duration, is_space_wait):
+    slide = visual.ImageStim(window, image=image_path, units="norm", size=(2, 2))
+    slide.draw()
+    window.mouseVisible = False
+    window.flip()
+    start_time = time.time()
+    if is_space_wait:
+        wait_for_space_and_time(window, params, df_mood, io, start_time, duration)
+    else:
+        wait_for_time(window, params, df_mood, start_time, duration, keyboard)
+
+
+def show_blank_slide_and_wait(window, params, df_mood, keyboard, io):
+    if params['recordPhysio']:
+        report_event(params['serialBiopac'], BIOPAC_EVENTS['blankSlide'])
+    show_slide_and_wait(window, params, df_mood, io, keyboard, "./img/blank.jpeg", params['blankSlideDuration'], False)
+
+
 def wait_for_time(window: visual.Window, params, mood_df, start_time, display_time, keyboard):
     while time.time() < start_time + display_time:
         for event in keyboard.getKeys():

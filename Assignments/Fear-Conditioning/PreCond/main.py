@@ -9,16 +9,14 @@ from psychopy import visual, core, event, monitors
 import helpers
 from psychopy.iohub.client.keyboard import Keyboard
 import preCond
-import cond
+import conditioning
 import test
-import cond
-import condNewVersion
-import testNewVersion
 import dataHadler
 import VAS
 import instructions
 import serial
 from serialHandler import *
+
 io = launchHubServer()
 
 debug = False
@@ -55,7 +53,6 @@ params = {
     'startTime': time.time(),
 }
 
-
 if not os.path.exists("./data"):
     os.mkdir("data")
 with open("./data/FCconfig.json", 'w') as file:
@@ -64,7 +61,6 @@ with open("./data/FCconfig.json", 'w') as file:
 df_mood = dataHadler.setup_data_frame()
 params['serialBiopac'] = serial.Serial(params['port'], 115200, bytesize=serial.EIGHTBITS, timeout=1) if params[
     'recordPhysio'] else None
-
 
 # window
 window = visual.Window(monitor="testMonitor", fullscr=params['fullScreen'], color=(210, 210, 210))
@@ -75,288 +71,88 @@ core.wait(0.5)
 
 keyboard = io.devices.keyboard
 
+# first slide before VAS
+helpers.show_slide_and_wait(window, params, df_mood, io, keyboard, f"./img/instructions/start_{params['language'][0]}.jpg",
+                    params['relaxSlideDuration'], True)
 
 # First mood VAS
 if params['recordPhysio']:
     report_event(params['serialBiopac'], BIOPAC_EVENTS['PreVas_rating'])
-
-# first slide before VAS - שקף התחלה - 27/3
-display_time = params['relaxSlideDuration']
-start = visual.ImageStim(window, image=f"./img/instructions/start_{params['language'][0]}.jpg", units="norm", size=(2, 2))
-start.draw()
-window.mouseVisible = False
-window.flip()
-start_time = time.time()
-helpers.wait_for_space_and_time(window, params, df_mood, io, start_time,display_time)
-
 scores = VAS.run_vas(window, io, params, 'mood', mood_df=df_mood)
 df_mood = dataHadler.insert_data_mood("pre", scores, df_mood)
 
-# precond - original version
-if params['phase'] == "Conditioning" and params['version'] == "Long":
-    # instructions slide 1
-    display_time = params['relaxSlideDuration']
-    instructions_1 = visual.ImageStim(window, image=f"./img/instructions/instructions_{'E' if params['language'] == 'English' else 'H'}_1.jpg", units="norm", size=(2, 2))
-    instructions_1.draw()
-    window.mouseVisible = False
-    window.flip()
-    start_time = time.time()
-    helpers.wait_for_space_and_time(window, params, df_mood, io, start_time, display_time)
+# Main experiment flow
+lang_suf = 'E' if params['language'] == 'English' else 'H'
+is_short_version = params['version'] == 'Short'
+img_ext = ".jpeg" if is_short_version else ".jpg"
 
-    # instructions slide 2
-    display_time = params['relaxSlideDuration']
-    instructions_1 = visual.ImageStim(window,
-                                      image=f"./img/instructions/instructions_{'E' if params['language'] == 'English' else 'H'}_2.jpg",
-                                      units="norm", size=(2, 2))
-    instructions_1.draw()
-    window.mouseVisible = False
-    window.flip()
-    start_time = time.time()
-    helpers.wait_for_space_and_time(window, params, df_mood, io, start_time, display_time)
+if params['phase'] == "Conditioning":
+    # Instructions
+    helpers.show_slide_and_wait(window, params, df_mood, io, keyboard, f"./img/instructions/instructions_{lang_suf}_1{img_ext}",
+                        params['relaxSlideDuration'], True)
+    helpers.show_slide_and_wait(window, params, df_mood, io, keyboard, f"./img/instructions/instructions_{lang_suf}_2{img_ext}",
+                        params['relaxSlideDuration'], True)
 
-    # blank slide - 15 sec
-    display_time = params['blankSlideDuration']
-    blank = visual.ImageStim(window, image=f"./img/blank.jpeg", units="norm", size=(2, 2))
-    blank.draw()
-    window.mouseVisible = False
-    window.flip()
-    start_time = time.time()
-    if params['recordPhysio']:
-        report_event(params['serialBiopac'], BIOPAC_EVENTS['blankSlide'])
-    helpers.wait_for_time(window, params, df_mood, start_time, display_time, keyboard)
+    # Blank slide
+    helpers.show_blank_slide_and_wait(window, params, df_mood, keyboard, io)
 
+    # Pre-conditioning
     if params['recordPhysio']:
         report_event(params['serialBiopac'], BIOPAC_EVENTS['preCond'])
-
-    # calling the preCond function
     preCond.pre_cond(params, window, io, keyboard, df_mood)
 
-    if params['recordPhysio']:
-        report_event(params['serialBiopac'], BIOPAC_EVENTS['cond'])
+    # Conditioning
+    if is_short_version:
+        if params['recordPhysio']:
+            report_event(params['serialBiopac'], BIOPAC_EVENTS['condNewVersion'])
+        conditioning.condition_short_version(params, window, io, keyboard, df_mood)
+    else:
+        if params['recordPhysio']:
+            report_event(params['serialBiopac'], BIOPAC_EVENTS['cond'])
+        conditioning.condition_long_version(params, window, io, keyboard, df_mood)
 
-    # calling the cond function
-    cond.cond(params, window, io, keyboard, df_mood)
-
-    # Last mood VAS
-    if params['recordPhysio']:
-        report_event(params['serialBiopac'], BIOPAC_EVENTS['PostVas_rating'])
-    scores = VAS.run_vas(window, io, params, 'mood', mood_df=df_mood)
-    df_mood = dataHadler.insert_data_mood("post", scores, df_mood)
-
-    # instructions slide 3
-    display_time = params['relaxSlideDuration']
-    image = visual.ImageStim(window,
-                             image=f"./img/instructions/instructions_{'E' if params['language'] == 'English' else 'H'}_3.jpg",
-                             units="norm", size=(2, 2))
-    image.draw()
-    window.mouseVisible = False
-    window.flip()
-    start_time = time.time()
-    helpers.wait_for_space_and_time(window, params, df_mood, io, start_time, display_time)
-
-
-# test - original version
-if params['phase'] == "Test" and params['version'] == "Long":
-    # instructions slide 4
-    display_time = params['relaxSlideDuration']
-    instructions_3 = visual.ImageStim(window,
-                                      image=f"./img/instructions/instructions_{'E' if params['language'] == 'English' else 'H'}_4.jpg",
-                                      units="norm", size=(2, 2))
-    instructions_3.draw()
-    window.mouseVisible = False
-    window.flip()
-    start_time = time.time()
-    helpers.wait_for_space_and_time(window, params, df_mood, io, start_time, display_time)
-
-    # blank slide - 15 sec
-    display_time = params['blankSlideDuration']
-    blank = visual.ImageStim(window, image=f"./img/blank.jpeg", units="norm", size=(2, 2))
-    blank.draw()
-    window.mouseVisible = False
-    window.flip()
-    start_time = time.time()
-    if params['recordPhysio']:
-        report_event(params['serialBiopac'], BIOPAC_EVENTS['blankSlide'])
-    helpers.wait_for_time(window, params, df_mood, start_time, display_time, keyboard)
-
-    if params['recordPhysio']:
-        report_event(params['serialBiopac'], BIOPAC_EVENTS['test'])
-
-    # calling the test function
-    test.test(params, window, io, keyboard, df_mood)
-
-    # Last mood VAS
+    # Post-task VAS
     if params['recordPhysio']:
         report_event(params['serialBiopac'], BIOPAC_EVENTS['PostVas_rating'])
     scores = VAS.run_vas(window, io, params, 'mood', mood_df=df_mood)
     df_mood = dataHadler.insert_data_mood("post", scores, df_mood)
 
-    # instructions slide 5
-    display_time = params['blankSlideDuration']
-    blank = visual.ImageStim(window, image=f"./img/instructions/instructions_{'E' if params['language'] == 'English' else 'H'}_5.jpg", units="norm", size=(2, 2))
-    blank.draw()
-    window.mouseVisible = False
-    window.flip()
-    start_time = time.time()
-    helpers.wait_for_space_and_time(window, params, df_mood, io, start_time, display_time)
+    # Final instruction
+    helpers.show_slide_and_wait(window, params, df_mood, io, keyboard, f"./img/instructions/instructions_{lang_suf}_3.jpg",
+                        params['relaxSlideDuration'], True)
 
-    # blank slide - 15 sec - for measuring physiological activity
-    display_time = params['blankSlideDuration']
-    blank = visual.ImageStim(window, image=f"./img/blank.jpeg", units="norm", size=(2, 2))
-    blank.draw()
-    window.mouseVisible = False
-    window.flip()
-    start_time = time.time()
-    helpers.wait_for_time(window, params, df_mood, start_time, display_time, keyboard)
+elif params['phase'] == "Test":
+    # Instruction
+    helpers.show_slide_and_wait(window, params, df_mood, io, keyboard, f"./img/instructions/instructions_{lang_suf}_4{img_ext}",
+                        params['relaxSlideDuration'], True)
 
-    # Finish slide
-    display_time = params['relaxSlideDuration']
-    image = visual.ImageStim(window,
-                             image=f"./img/instructions/finish_{'E' if params['language'] == 'English' else 'H'}.jpg",
-                             units="norm", size=(2, 2))
-    image.draw()
-    window.mouseVisible = False
-    window.flip()
-    start_time = time.time()
-    helpers.wait_for_space_and_time(window, params, df_mood, io, start_time, display_time)
+    # Blank slide
+    helpers.show_blank_slide_and_wait(window, params, df_mood, keyboard, io)
 
+    # Test phase
+    if is_short_version:
+        if params['recordPhysio']:
+            report_event(params['serialBiopac'], BIOPAC_EVENTS['testNewVersion'])
+        test.test_short_version(params, window, io, keyboard, df_mood)
+    else:
+        if params['recordPhysio']:
+            report_event(params['serialBiopac'], BIOPAC_EVENTS['test'])
+        test.test_long_version(params, window, io, keyboard, df_mood)
 
-# precond - new version
-if params['phase'] == "Conditioning" and params['version'] == "Short":
-    # instructions slide 1
-    display_time = params['relaxSlideDuration']
-    instructions_1 = visual.ImageStim(window,
-                                      image=f"./img/instructions/instructions_{'E' if params['language'] == 'English' else 'H'}_1.jpeg",
-                                      units="norm", size=(2, 2))
-    instructions_1.draw()
-    window.mouseVisible = False
-    window.flip()
-    start_time = time.time()
-    helpers.wait_for_space_and_time(window, params, df_mood, io, start_time, display_time)
-
-    # instructions slide 2
-    display_time = params['relaxSlideDuration']
-    instructions_1 = visual.ImageStim(window,
-                                      image=f"./img/instructions/instructions_{'E' if params['language'] == 'English' else 'H'}_2.jpeg",
-                                      units="norm", size=(2, 2))
-    instructions_1.draw()
-    window.mouseVisible = False
-    window.flip()
-    start_time = time.time()
-    helpers.wait_for_space_and_time(window, params, df_mood, io, start_time, display_time)
-
-    # blank slide - 15 sec
-    display_time = params['blankSlideDuration']
-    blank = visual.ImageStim(window, image=f"./img/blank.jpeg", units="norm", size=(2, 2))
-    blank.draw()
-    window.mouseVisible = False
-    window.flip()
-    start_time = time.time()
-    if params['recordPhysio']:
-        report_event(params['serialBiopac'], BIOPAC_EVENTS['blankSlide'])
-    helpers.wait_for_time(window, params, df_mood, start_time, display_time, keyboard)
-
-    if params['recordPhysio']:
-        report_event(params['serialBiopac'], BIOPAC_EVENTS['preCond'])
-
-    # calling the preCond function
-    preCond.pre_cond(params, window, io, keyboard, df_mood)
-
-    if params['recordPhysio']:
-        report_event(params['serialBiopac'], BIOPAC_EVENTS['condNewVersion'])
-
-    # calling the cond function
-    condNewVersion.cond_new_version(params, window, io, keyboard, df_mood)
-
-    # Last mood VAS
+    # Post-task VAS
     if params['recordPhysio']:
         report_event(params['serialBiopac'], BIOPAC_EVENTS['PostVas_rating'])
     scores = VAS.run_vas(window, io, params, 'mood', mood_df=df_mood)
     df_mood = dataHadler.insert_data_mood("post", scores, df_mood)
 
-    # instructions slide 3
-    display_time = params['relaxSlideDuration']
-    image = visual.ImageStim(window,
-                             image=f"./img/instructions/instructions_{'E' if params['language'] == 'English' else 'H'}_3.jpg",
-                             units="norm", size=(2, 2))
-    image.draw()
-    window.mouseVisible = False
-    window.flip()
-    start_time = time.time()
-    helpers.wait_for_space_and_time(window, params, df_mood, io, start_time, display_time)
-
-
-# test - new version
-if params['phase'] == "Test" and params['version'] == "Short":
-    # instructions slide 4
-    display_time = params['relaxSlideDuration']
-    instructions_3 = visual.ImageStim(window,
-                                      image=f"./img/instructions/instructions_{'E' if params['language'] == 'English' else 'H'}_4.jpeg",
-                                      units="norm", size=(2, 2))
-    instructions_3.draw()
-    window.mouseVisible = False
-    window.flip()
-    start_time = time.time()
-    helpers.wait_for_space_and_time(window, params, df_mood, io, start_time, display_time)
-
-    # blank slide - 15 sec
-    display_time = params['blankSlideDuration']
-    blank = visual.ImageStim(window, image=f"./img/blank.jpeg", units="norm", size=(2, 2))
-    blank.draw()
-    window.mouseVisible = False
-    window.flip()
-    start_time = time.time()
-    if params['recordPhysio']:
-        report_event(params['serialBiopac'], BIOPAC_EVENTS['blankSlide'])
-    helpers.wait_for_time(window, params, df_mood, start_time, display_time, keyboard)
-
-    if params['recordPhysio']:
-        report_event(params['serialBiopac'], BIOPAC_EVENTS['testNewVersion'])
-
-    # calling the test function
-    testNewVersion.test_new_version(params, window, io, keyboard, df_mood)
-
-    # Last mood VAS
-    if params['recordPhysio']:
-        report_event(params['serialBiopac'], BIOPAC_EVENTS['PostVas_rating'])
-    scores = VAS.run_vas(window, io, params, 'mood', mood_df=df_mood)
-    df_mood = dataHadler.insert_data_mood("post", scores, df_mood)
-
-    # instructions slide 5
-    display_time = params['blankSlideDuration']
-    blank = visual.ImageStim(window, image=f"./img/instructions/instructions_{'E' if params['language'] == 'English' else 'H'}_5.jpeg", units="norm", size=(2, 2))
-    blank.draw()
-    window.mouseVisible = False
-    window.flip()
-    start_time = time.time()
-    helpers.wait_for_space_and_time(window, params, df_mood, io, start_time, display_time)
-
-    # blank slide - 15 sec - for measuring physiological activity
-    display_time = params['blankSlideDuration']
-    blank = visual.ImageStim(window, image=f"./img/blank.jpeg", units="norm", size=(2, 2))
-    blank.draw()
-    window.mouseVisible = False
-    window.flip()
-    start_time = time.time()
-    helpers.wait_for_time(window, params, df_mood, start_time, display_time, keyboard)
-
-    # Finish slide
-    display_time = params['relaxSlideDuration']
-    image = visual.ImageStim(window,
-                             image=f"./img/instructions/finish_{'E' if params['language'] == 'English' else 'H'}.jpeg",
-                             units="norm", size=(2, 2))
-    image.draw()
-    window.mouseVisible = False
-    window.flip()
-    start_time = time.time()
-    helpers.wait_for_space_and_time(window, params, df_mood, io, start_time, display_time)
+    # More slides
+    helpers.show_slide_and_wait(window, params, df_mood, io, keyboard,
+                        f"./img/instructions/instructions_{lang_suf}_5{img_ext}",
+                        params['blankSlideDuration'], True)
+    helpers.show_blank_slide_and_wait(window, params, df_mood, keyboard, io)
+    helpers.show_slide_and_wait(window, params, df_mood, io, keyboard, f"./img/instructions/finish_{lang_suf}{img_ext}",
+                        params['relaxSlideDuration'], True)
 
 # end of the study
 helpers.wait_for_space(window, params, df_mood, io)
 helpers.graceful_shutdown(window, params, df_mood)
-
-
-
-
-
-
