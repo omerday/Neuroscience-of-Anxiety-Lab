@@ -5,6 +5,7 @@ from serialHandler import *
 from psychopy.iohub.client.keyboard import Keyboard
 from psychopy import sound
 import psychtoolbox as ptb
+import random
 
 STEPS = ["Conditioning", "Test"]
 VERSION = ["Short", "Long"]
@@ -121,5 +122,16 @@ def show_image_with_scream(window, image_path, sound_path, duration, keyboard, e
 
     sound_to_play.stop()
 
+def generate_test_sequence(repeats_for_each_stimulus: int):
+    sequence = ["CS-", "CS+", "NEW"] * repeats_for_each_stimulus
+    random.shuffle(sequence)
+    while not is_valid(sequence):
+        random.shuffle(sequence)
+    return sequence
 
+def is_valid(sequence: list):
+    for i in range(len(sequence) - 2):
+        if sequence[i] == sequence[i + 1] == sequence[i + 2]:
+            return False
+    return True
 

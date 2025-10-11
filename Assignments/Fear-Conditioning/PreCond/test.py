@@ -58,41 +58,33 @@ def test_long_version(params, window: visual.Window, io, keyboard, df_mood: pd.D
 
 
 def test_short_version(params, window: visual.Window, io, keyboard, df_mood: pd.DataFrame):
-    for i in range(4):
-        temp_naturals = []
-        if params['gender'] == 'Female':
-            for N in params['N_F_newVersion']:
-                temp_naturals.append(N)
-        else:
-            for N in params['N_M_newVersion']:
-                temp_naturals.append(N)
+    sequence = helpers.generate_test_sequence(10)
+    for trial in sequence:
+        stim_face_number = params['faceCombination'][trial]
+        image_name = f"N{stim_face_number}_F.jpg"
+        prefix = f"N{stim_face_number}"
 
-        while temp_naturals:
-            # choosing natural face
-            neut_img_name = random.choice(temp_naturals)
-            prefix = neut_img_name.split('_')[0]  # for the events
-            temp_naturals.remove(neut_img_name)
+        # displaying the natural face
+        display_time_n = random.uniform(params['faceDurationMin'], params['faceDurationMax'])
+        shape = visual.ImageStim(window, image=f"./img/Natural/{image_name}.jpeg", units="norm", size=(1.5, 1.5))
+        shape.draw()
+        window.mouseVisible = False
+        window.flip()
+        start_time = time.time()
 
-            # displaying the natural face
-            display_time_n = random.uniform(params['faceDurationMin'], params['faceDurationMax'])
-            shape = visual.ImageStim(window, image=f"./img/Natural/{neut_img_name}.jpeg", units="norm", size=(1.5, 1.5))
-            shape.draw()
-            window.mouseVisible = False
-            window.flip()
-            start_time = time.time()
+        # adding event every 2 sec
+        helpers.wait_for_time_with_periodic_events(window, params, df_mood, start_time, display_time_n, keyboard,
+                                                   prefix, 0)
 
-            # adding event every 2 sec
-            helpers.wait_for_time_with_periodic_events(window, params, df_mood, start_time, display_time_n, keyboard, prefix, 0)
-
-            # ITI
-            display_time_iti = params["testBlockDuration"] - display_time_n
-            blank = visual.ImageStim(window, image=f"./img/blank.jpeg", units="norm", size=(2, 2))
-            blank.draw()
-            window.mouseVisible = False
-            window.flip()
-            start_time = time.time()
-            # adding event when starting ITI
-            helpers.add_event(params, f'{prefix}_ITIpre')
-            helpers.wait_for_time(window, params, df_mood, start_time, display_time_iti, keyboard)
-            # adding event after ITI
-            helpers.add_event(params, f'{prefix}_ITIpost')
+        # ITI
+        display_time_iti = params["testBlockDuration"] - display_time_n
+        blank = visual.ImageStim(window, image=f"./img/blank.jpeg", units="norm", size=(2, 2))
+        blank.draw()
+        window.mouseVisible = False
+        window.flip()
+        start_time = time.time()
+        # adding event when starting ITI
+        helpers.add_event(params, f'{prefix}_ITIpre')
+        helpers.wait_for_time(window, params, df_mood, start_time, display_time_iti, keyboard)
+        # adding event after ITI
+        helpers.add_event(params, f'{prefix}_ITIpost')
