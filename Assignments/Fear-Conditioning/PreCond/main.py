@@ -31,10 +31,10 @@ params = {
     "language": configDialogBank[3],
     "recordPhysio": configDialogBank[4],
     "skipInstructions": configDialogBank[5],
-    "preCond": configDialogBank[6],
-    "test": configDialogBank[7],
-    "preCondNewVersion": configDialogBank[8],
-    "testNewVersion": configDialogBank[9],
+    "phase": configDialogBank[6],
+    "version": configDialogBank[7],
+    "faceCombinationIndex": configDialogBank[8],
+    "faceCombination": helpers.FACE_COMBINATIONS[configDialogBank[8] - 1],
     "shapes": ['square', 'circle', 'triangle', 'rhombus'],
     "natural": ['N1_F', 'N2_F', 'N3_F', 'N4_F', 'N5_M', 'N6_M', 'N7_M', 'N8_M'],
     "angry": ['A1_F', 'A2_F', 'A3_F', 'A4_F', 'A5_M', 'A6_M', 'A7_M', 'A8_M'],
@@ -93,7 +93,7 @@ scores = VAS.run_vas(window, io, params, 'mood', mood_df=df_mood)
 df_mood = dataHadler.insert_data_mood("pre", scores, df_mood)
 
 # precond - original version
-if params['preCond']:
+if params['phase'] == "Conditioning" and params['version'] == "Long":
     # instructions slide 1
     display_time = params['relaxSlideDuration']
     instructions_1 = visual.ImageStim(window, image=f"./img/instructions/instructions_{'E' if params['language'] == 'English' else 'H'}_1.jpg", units="norm", size=(2, 2))
@@ -156,7 +156,7 @@ if params['preCond']:
 
 
 # test - original version
-if params['test']:
+if params['phase'] == "Test" and params['version'] == "Long":
     # instructions slide 4
     display_time = params['relaxSlideDuration']
     instructions_3 = visual.ImageStim(window,
@@ -222,7 +222,7 @@ if params['test']:
 
 
 # precond - new version
-if params['preCondNewVersion']:
+if params['phase'] == "Conditioning" and params['version'] == "Short":
     # instructions slide 1
     display_time = params['relaxSlideDuration']
     instructions_1 = visual.ImageStim(window,
@@ -287,7 +287,7 @@ if params['preCondNewVersion']:
 
 
 # test - new version
-if params['testNewVersion']:
+if params['phase'] == "Test" and params['version'] == "Short":
     # instructions slide 4
     display_time = params['relaxSlideDuration']
     instructions_3 = visual.ImageStim(window,
