@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-extraction-rules>
+    <cloud-backup>
+        <!-- For more information on data extraction rules, see https://developer.android.com/guide/topics/data/autobackup -->
+    </cloud-backup>
+</data-extraction-rules>
