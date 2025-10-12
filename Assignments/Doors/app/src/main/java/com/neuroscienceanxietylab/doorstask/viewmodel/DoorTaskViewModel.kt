@@ -63,7 +63,10 @@ class DoorTaskViewModel(application: Application) : AndroidViewModel(application
     private var autoLockJob: Job? = null
     private var trialStartTime: Long = 0L
 
-    // Configurable parameters, fetched from Firestore
+    // In-memory lists for aggregation
+    private val sessionLogsInMemory = mutableListOf<SessionLog>()
+    private val vasResponsesInMemory = mutableListOf<VASResponse>()
+
     private var trialsPerBlock: Int = 25
     private var totalBlocks: Int = 2
     private var trialTimeoutMs: Long = 10000L
@@ -78,12 +81,7 @@ class DoorTaskViewModel(application: Application) : AndroidViewModel(application
     }
 
     fun loadRemoteConfig() {
-        val userId = auth.currentUser?.uid
-        if (userId == null) {
-            // Handle error or logout
-            return
-        }
-
+        val userId = auth.currentUser?.uid ?: return
         firestore.collection("users").document(userId).get()
             .addOnSuccessListener { document ->
                 if (document != null && document.exists()) {
@@ -91,12 +89,10 @@ class DoorTaskViewModel(application: Application) : AndroidViewModel(application
                     totalBlocks = (document.getLong("totalBlocks") ?: 2).toInt()
                     trialTimeoutMs = document.getLong("trialTimeoutMs") ?: 10000L
                 }
-                // After config is loaded (or defaults used), setup trials and start flow
                 setupTrials()
                 _uiState.update { it.copy(phase = TaskPhase.INSTRUCTIONS, totalTrials = trialList.size) }
             }
             .addOnFailureListener {
-                // Handle failure, maybe use default values
                 setupTrials()
                 _uiState.update { it.copy(phase = TaskPhase.INSTRUCTIONS, totalTrials = trialList.size) }
             }
@@ -104,33 +100,17 @@ class DoorTaskViewModel(application: Application) : AndroidViewModel(application
 
     private fun setupTrials() {
         val scenarios = mutableListOf<Pair<Int, Int>>().apply {
-            for (r in 1..7) {
-                for (p in 1..7) {
-                    add(Pair(r, p))
-                }
-            }
+            for (r in 1..7) { for (p in 1..7) { add(Pair(r, p)) } }
         }
-        // Create a list of trials based on the fetched config
-        var fullTrialList = emptyList<Pair<Int, Int>>().toMutableList()
-        for (i in 1..totalBlocks) {
-            fullTrialList.addAll(scenarios.shuffled())
-        }
+        var fullTrialList = mutableListOf<Pair<Int, Int>>()
+        for (i in 1..totalBlocks) { fullTrialList.addAll(scenarios.shuffled()) }
         trialList = fullTrialList.take(trialsPerBlock * totalBlocks)
     }
 
     private fun loadCurrentTrial() {
         val trial = trialList[_uiState.value.currentTrialIndex]
         trialStartTime = System.currentTimeMillis()
-        _uiState.update {
-            it.copy(
-                phase = TaskPhase.TRIAL,
-                currentReward = trial.first,
-                currentPunishment = trial.second,
-                isLockedIn = false,
-                outcome = DoorOutcome.Undetermined,
-                currentDistance = 50f
-            )
-        }
+        _uiState.update { it.copy(phase = TaskPhase.TRIAL, currentReward = trial.first, currentPunishment = trial.second, isLockedIn = false, outcome = DoorOutcome.Undetermined, currentDistance = 50f) }
         startAutoLockTimer()
     }
 
@@ -138,26 +118,17 @@ class DoorTaskViewModel(application: Application) : AndroidViewModel(application
         autoLockJob?.cancel()
         autoLockJob = viewModelScope.launch {
             delay(trialTimeoutMs)
-            if (!_uiState.value.isLockedIn) {
-                onLockInPressed(isAutoLocked = true)
-            }
+            if (!_uiState.value.isLockedIn) { onLockInPressed(isAutoLocked = true) }
         }
     }
 
-    fun onInstructionsFinished() {
-        _uiState.update { it.copy(phase = TaskPhase.VAS_PRE) }
-    }
+    fun onInstructionsFinished() { _uiState.update { it.copy(phase = TaskPhase.VAS_PRE) } }
 
-    fun onDistanceChanged(newDistance: Float) {
-        if (!_uiState.value.isLockedIn) {
-            _uiState.update { it.copy(currentDistance = newDistance) }
-        }
-    }
+    fun onDistanceChanged(newDistance: Float) { if (!_uiState.value.isLockedIn) { _uiState.update { it.copy(currentDistance = newDistance) } } }
 
     fun onLockInPressed(isAutoLocked: Boolean = false) {
         if (_uiState.value.isLockedIn) return
         autoLockJob?.cancel()
-
         val reactionTime = if (isAutoLocked) trialTimeoutMs else System.currentTimeMillis() - trialStartTime
 
         viewModelScope.launch {
@@ -176,44 +147,26 @@ class DoorTaskViewModel(application: Application) : AndroidViewModel(application
                 _uiState.update { it.copy(outcome = DoorOutcome.Closed) }
             }
 
-            val log = SessionLog(
-                subjectId = auth.currentUser?.uid ?: "UNKNOWN",
-                session = 1,
-                round = (_uiState.value.currentTrialIndex / trialsPerBlock) + 1,
-                subtrial = _uiState.value.currentTrialIndex,
-                rewardMagnitude = _uiState.value.currentReward,
-                punishmentMagnitude = _uiState.value.currentPunishment,
-                distanceAtStart = 50f,
-                distanceFromDoor = distance,
-                distanceMax = 0f, 
-                distanceMin = 0f, 
-                distanceLock = true,
-                doorActionRT = reactionTime.toFloat(),
-                doorOpened = doorOpens,
-                doorOutcome = if(doorOpens) if(didWin == true) "reward" else "punishment" else "closed",
-                didWin = didWin,
-                totalCoins = _uiState.value.totalCoins
-            )
+            val log = SessionLog(subjectId = auth.currentUser?.uid ?: "UNKNOWN", session = 1, round = (_uiState.value.currentTrialIndex / trialsPerBlock) + 1, subtrial = _uiState.value.currentTrialIndex, rewardMagnitude = _uiState.value.currentReward, punishmentMagnitude = _uiState.value.currentPunishment, distanceAtStart = 50f, distanceFromDoor = distance, distanceMax = 0f, distanceMin = 0f, distanceLock = true, doorActionRT = reactionTime.toFloat(), doorOpened = doorOpens, doorOutcome = if(doorOpens) if(didWin == true) "reward" else "punishment" else "closed", didWin = didWin, totalCoins = _uiState.value.totalCoins)
+            
+            // Save to local DB for robustness
             taskDao.insertSessionLog(log)
-
-            // Save to Firestore
-            firestore.collection("session_logs").add(log)
+            // Add to in-memory list for final aggregation
+            sessionLogsInMemory.add(log)
         }
     }
 
     fun onNextTrial() {
         val nextTrialIndex = _uiState.value.currentTrialIndex + 1
-
         if (nextTrialIndex % trialsPerBlock == 0 && nextTrialIndex < trialList.size) {
             _uiState.update { it.copy(phase = TaskPhase.VAS_MID, currentTrialIndex = nextTrialIndex, currentVasQuestionIndex = 0) }
             return
         }
-
         if (nextTrialIndex >= trialList.size) {
+            saveAggregatedDataToFirestore()
             _uiState.update { it.copy(phase = TaskPhase.VAS_POST, currentVasQuestionIndex = 0) }
             return
         }
-
         _uiState.update { it.copy(currentTrialIndex = nextTrialIndex) }
         loadCurrentTrial()
     }
@@ -222,19 +175,12 @@ class DoorTaskViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch {
             val currentState = _uiState.value
             val question = vasQuestions[currentState.currentVasQuestionIndex]
-            val response = VASResponse(
-                subjectId = auth.currentUser?.uid ?: "UNKNOWN",
-                session = 1,
-                taskPhase = currentState.phase.name,
-                question = question.question,
-                tag = question.tag,
-                score = score,
-                responseTime = 0L
-            )
+            val response = VASResponse(subjectId = auth.currentUser?.uid ?: "UNKNOWN", session = 1, taskPhase = currentState.phase.name, question = question.question, tag = question.tag, score = score, responseTime = 0L)
+            
+            // Save to local DB for robustness
             taskDao.insertVASResponse(response)
-
-            // Save to Firestore
-            firestore.collection("vas_responses").add(response)
+            // Add to in-memory list for final aggregation
+            vasResponsesInMemory.add(response)
 
             val nextVasIndex = currentState.currentVasQuestionIndex + 1
             if (nextVasIndex < vasQuestions.size) {
@@ -244,9 +190,30 @@ class DoorTaskViewModel(application: Application) : AndroidViewModel(application
                     TaskPhase.VAS_PRE -> loadCurrentTrial()
                     TaskPhase.VAS_MID -> loadCurrentTrial()
                     TaskPhase.VAS_POST -> _uiState.update { it.copy(phase = TaskPhase.SUMMARY) }
-                    else -> { /* Do nothing */ }
+                    else -> {}
                 }
             }
         }
+    }
+
+    private fun saveAggregatedDataToFirestore() {
+        val userId = auth.currentUser?.uid ?: return
+
+        val sessionDocument = hashMapOf(
+            "userId" to userId,
+            "subjectId" to "sub_${userId.take(6)}",
+            "sessionTimestamp" to System.currentTimeMillis(),
+            "finalCoinTotal" to _uiState.value.totalCoins,
+            "behavioral_data" to sessionLogsInMemory,
+            "vas_responses" to vasResponsesInMemory
+        )
+
+        firestore.collection("completed_sessions").add(sessionDocument)
+            .addOnSuccessListener { 
+                println("Aggregated session data saved successfully.")
+                sessionLogsInMemory.clear()
+                vasResponsesInMemory.clear()
+             }
+            .addOnFailureListener { e -> println("Error saving aggregated session data: $e") }
     }
 }
