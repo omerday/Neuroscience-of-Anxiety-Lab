@@ -4,9 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.neuroscienceanxietylab.doorstask.ui.screens.DoorTrialScreen
 import com.neuroscienceanxietylab.doorstask.ui.screens.InstructionScreen
 import com.neuroscienceanxietylab.doorstask.ui.screens.SummaryScreen
@@ -21,7 +18,7 @@ fun AppNavigator(viewModel: DoorTaskViewModel = viewModel()) {
     when (uiState.phase) {
         TaskPhase.INSTRUCTIONS -> InstructionScreen(viewModel)
         TaskPhase.TRIAL -> DoorTrialScreen(viewModel)
-        TaskPhase.VAS -> VASScreen(viewModel)
+        TaskPhase.VAS_PRE, TaskPhase.VAS_MID, TaskPhase.VAS_POST -> VASScreen(viewModel)
         TaskPhase.SUMMARY -> SummaryScreen(viewModel)
     }
 }

@@ -1,7 +1,12 @@
 package com.neuroscienceanxietylab.doorstask.viewmodel
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.neuroscienceanxietylab.doorstask.data.local.DoorsDatabase
+import com.neuroscienceanxietylab.doorstask.data.local.TaskDao
+import com.neuroscienceanxietylab.doorstask.data.model.SessionLog
+import com.neuroscienceanxietylab.doorstask.data.model.VASResponse
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,23 +17,25 @@ import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 private const val TRIAL_TIMEOUT_MS = 10000L
-private const val NUM_TRIALS_PER_BLOCK = 5 // For demo; original is 49. Let's do 2 blocks.
+private const val NUM_TRIALS_PER_BLOCK = 5
+
+data class VasQuestion(val question: String, val tag: String)
 
 enum class TaskPhase {
     INSTRUCTIONS,
     TRIAL,
-    VAS,
+    VAS_PRE,
+    VAS_MID,
+    VAS_POST,
     SUMMARY
 }
 
-// Sealed class to represent the various outcomes of a door trial
 sealed class DoorOutcome {
     data class Opened(val didWin: Boolean) : DoorOutcome()
     object Closed : DoorOutcome()
     object Undetermined : DoorOutcome()
 }
 
-// Represents the state of the entire task UI
 data class TaskUiState(
     val phase: TaskPhase = TaskPhase.INSTRUCTIONS,
     val totalCoins: Int = 0,
@@ -36,21 +43,31 @@ data class TaskUiState(
     val totalTrials: Int = NUM_TRIALS_PER_BLOCK * 2,
     val currentReward: Int = 0,
     val currentPunishment: Int = 0,
-    val currentDistance: Float = 50f, // Start at 50%
+    val currentDistance: Float = 50f,
     val isLockedIn: Boolean = false,
-    val outcome: DoorOutcome = DoorOutcome.Undetermined
+    val outcome: DoorOutcome = DoorOutcome.Undetermined,
+    val currentVasQuestionIndex: Int = 0
 )
 
-class DoorTaskViewModel : ViewModel() {
+class DoorTaskViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _uiState = MutableStateFlow(TaskUiState())
     val uiState: StateFlow<TaskUiState> = _uiState.asStateFlow()
 
+    private val taskDao: TaskDao
     private var trialList: List<Pair<Int, Int>> = emptyList()
     private var autoLockJob: Job? = null
+    private var trialStartTime: Long = 0L
+
+    val vasQuestions = listOf(
+        VasQuestion("How anxious do you feel right now?", "Anxiety"),
+        VasQuestion("How happy do you feel right now?", "Happiness")
+    )
 
     init {
+        taskDao = DoorsDatabase.getDatabase(application).taskDao()
         setupTrials()
+        _uiState.update { it.copy(phase = TaskPhase.INSTRUCTIONS) }
     }
 
     private fun setupTrials() {
@@ -66,6 +83,7 @@ class DoorTaskViewModel : ViewModel() {
 
     private fun loadCurrentTrial() {
         val trial = trialList[_uiState.value.currentTrialIndex]
+        trialStartTime = System.currentTimeMillis()
         _uiState.update {
             it.copy(
                 phase = TaskPhase.TRIAL,
@@ -84,13 +102,13 @@ class DoorTaskViewModel : ViewModel() {
         autoLockJob = viewModelScope.launch {
             delay(TRIAL_TIMEOUT_MS)
             if (!_uiState.value.isLockedIn) {
-                onLockInPressed()
+                onLockInPressed(isAutoLocked = true)
             }
         }
     }
 
     fun onInstructionsFinished() {
-        loadCurrentTrial()
+        _uiState.update { it.copy(phase = TaskPhase.VAS_PRE) }
     }
 
     fun onDistanceChanged(newDistance: Float) {
@@ -99,9 +117,11 @@ class DoorTaskViewModel : ViewModel() {
         }
     }
 
-    fun onLockInPressed() {
+    fun onLockInPressed(isAutoLocked: Boolean = false) {
         if (_uiState.value.isLockedIn) return
         autoLockJob?.cancel()
+
+        val reactionTime = if (isAutoLocked) TRIAL_TIMEOUT_MS else System.currentTimeMillis() - trialStartTime
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLockedIn = true) }
@@ -109,10 +129,12 @@ class DoorTaskViewModel : ViewModel() {
 
             val distance = _uiState.value.currentDistance
             val doorOpens = Random.nextFloat() * 100 <= distance
+            var didWin: Boolean? = null
+            var coinsChange = 0
 
             if (doorOpens) {
-                val didWin = Random.nextBoolean()
-                val coinsChange = if (didWin) _uiState.value.currentReward else -_uiState.value.currentPunishment
+                didWin = Random.nextBoolean()
+                coinsChange = if (didWin) _uiState.value.currentReward else -_uiState.value.currentPunishment
                 _uiState.update {
                     it.copy(
                         outcome = DoorOutcome.Opened(didWin),
@@ -122,34 +144,72 @@ class DoorTaskViewModel : ViewModel() {
             } else {
                 _uiState.update { it.copy(outcome = DoorOutcome.Closed) }
             }
+
+            val log = SessionLog(
+                subjectId = "SUBJECT_01",
+                session = 1,
+                round = if (_uiState.value.currentTrialIndex < NUM_TRIALS_PER_BLOCK) 1 else 2,
+                subtrial = _uiState.value.currentTrialIndex,
+                rewardMagnitude = _uiState.value.currentReward,
+                punishmentMagnitude = _uiState.value.currentPunishment,
+                distanceAtStart = 50f,
+                distanceFromDoor = distance,
+                distanceMax = 0f, // Placeholder
+                distanceMin = 0f, // Placeholder
+                distanceLock = true,
+                doorActionRT = reactionTime.toFloat(),
+                doorOpened = doorOpens,
+                doorOutcome = if(doorOpens) if(didWin == true) "reward" else "punishment" else "closed",
+                didWin = didWin,
+                totalCoins = _uiState.value.totalCoins
+            )
+            taskDao.insertSessionLog(log)
         }
     }
 
     fun onNextTrial() {
         val nextTrialIndex = _uiState.value.currentTrialIndex + 1
 
-        // Time for VAS screen in the middle
         if (nextTrialIndex == NUM_TRIALS_PER_BLOCK) {
-            _uiState.update { it.copy(phase = TaskPhase.VAS, currentTrialIndex = nextTrialIndex) }
+            _uiState.update { it.copy(phase = TaskPhase.VAS_MID, currentTrialIndex = nextTrialIndex, currentVasQuestionIndex = 0) }
             return
         }
 
-        // Time for Summary screen at the end
         if (nextTrialIndex >= uiState.value.totalTrials) {
-            _uiState.update { it.copy(phase = TaskPhase.SUMMARY) }
+            _uiState.update { it.copy(phase = TaskPhase.VAS_POST, currentVasQuestionIndex = 0) }
             return
         }
 
-        // Otherwise, load the next trial
         _uiState.update { it.copy(currentTrialIndex = nextTrialIndex) }
         loadCurrentTrial()
     }
 
     fun onVasResponse(score: Int) {
-        // TODO: Save VAS response to database
-        println("VAS Score: $score")
+        viewModelScope.launch {
+            val currentState = _uiState.value
+            val question = vasQuestions[currentState.currentVasQuestionIndex]
+            val response = VASResponse(
+                subjectId = "SUBJECT_01",
+                session = 1,
+                taskPhase = currentState.phase.name,
+                question = question.question,
+                tag = question.tag,
+                score = score,
+                responseTime = 0L // Placeholder
+            )
+            taskDao.insertVASResponse(response)
 
-        // After VAS, continue to next trial block
-        loadCurrentTrial()
+            val nextVasIndex = currentState.currentVasQuestionIndex + 1
+            if (nextVasIndex < vasQuestions.size) {
+                _uiState.update { it.copy(currentVasQuestionIndex = nextVasIndex) }
+            } else {
+                when (currentState.phase) {
+                    TaskPhase.VAS_PRE -> loadCurrentTrial()
+                    TaskPhase.VAS_MID -> loadCurrentTrial()
+                    TaskPhase.VAS_POST -> _uiState.update { it.copy(phase = TaskPhase.SUMMARY) }
+                    else -> { /* Do nothing */ }
+                }
+            }
+        }
     }
 }

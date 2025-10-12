@@ -15,9 +15,10 @@ import com.neuroscienceanxietylab.doorstask.viewmodel.DoorTaskViewModel
 
 @Composable
 fun VASScreen(viewModel: DoorTaskViewModel = viewModel()) {
+    val uiState by viewModel.uiState.collectAsState()
     var sliderValue by remember { mutableStateOf(50f) }
 
-    val currentQuestion = "How anxious do you feel right now?"
+    val currentQuestion = viewModel.vasQuestions[uiState.currentVasQuestionIndex]
 
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
@@ -25,7 +26,7 @@ fun VASScreen(viewModel: DoorTaskViewModel = viewModel()) {
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = currentQuestion,
+            text = currentQuestion.question,
             fontSize = 24.sp,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth(0.8f)

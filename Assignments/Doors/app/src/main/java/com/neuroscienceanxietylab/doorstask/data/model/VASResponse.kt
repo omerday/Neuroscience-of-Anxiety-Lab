@@ -8,9 +8,9 @@ data class VASResponse(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val subjectId: String,
     val session: Int,
-    val round: Int, // e.g., Beginning, Middle, End
-    val questionNumber: Int,
-    val vasType: String,
+    val taskPhase: String, // e.g., "pre-task", "midway", "post-task"
+    val question: String,
+    val tag: String, // e.g., "Anxiety", "Happiness"
     val score: Int,
     val responseTime: Long,
     val timestamp: Long = System.currentTimeMillis()
