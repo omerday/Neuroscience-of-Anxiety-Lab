@@ -47,7 +47,7 @@ def pre_cond(params, window: visual.Window, io, keyboard, mood_df):
         window.flip()
         start_time = time.time()
         # adding event when starting ITI
-        helpers.add_event(params, f'S_ITIpre')
+        helpers.add_event(params, f'S_ITIstart')
         helpers.wait_for_time(window, params, mood_df, start_time, display_time_iti, keyboard)
         # adding event after ITI
-        helpers.add_event(params, f'S_ITIpost')
+        helpers.add_event(params, f'S_ITIend')

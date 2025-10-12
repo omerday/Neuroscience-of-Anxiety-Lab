@@ -51,10 +51,10 @@ def test_long_version(params, window: visual.Window, io, keyboard, df_mood: pd.D
             window.flip()
             start_time = time.time()
             # adding event when starting ITI
-            helpers.add_event(params, f'{prefix}_ITIpre')
+            helpers.add_event(params, f'{prefix}_ITIstart')
             helpers.wait_for_time(window, params, df_mood, start_time, display_time_iti, keyboard)
             # adding event after ITI
-            helpers.add_event(params, f'{prefix}_ITIpost')
+            helpers.add_event(params, f'{prefix}_ITIend')
 
 
 def test_short_version(params, window: visual.Window, io, keyboard, df_mood: pd.DataFrame):
@@ -84,7 +84,7 @@ def test_short_version(params, window: visual.Window, io, keyboard, df_mood: pd.
         window.flip()
         start_time = time.time()
         # adding event when starting ITI
-        helpers.add_event(params, f'{prefix}_ITIpre')
+        helpers.add_event(params, f'{prefix}_ITIstart')
         helpers.wait_for_time(window, params, df_mood, start_time, display_time_iti, keyboard)
         # adding event after ITI
-        helpers.add_event(params, f'{prefix}_ITIpost')
+        helpers.add_event(params, f'{prefix}_ITIend')
