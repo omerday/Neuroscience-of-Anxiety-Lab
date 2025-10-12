@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "273610200115",
+    "project_id": "doors-task-app",
+    "storage_bucket": "doors-task-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:273610200115:android:86579e9efc7ba467bd7f46",
+        "android_client_info": {
+          "package_name": "com.neuroscienceanxietylab.doorstask"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAyWFOQxKod7K6d6tN75OwXvb2xL0DnTqQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
