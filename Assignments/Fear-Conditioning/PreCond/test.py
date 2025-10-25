@@ -61,7 +61,7 @@ def test_short_version(params, window: visual.Window, io, keyboard, df_mood: pd.
     sequence = helpers.generate_test_sequence(params['testRepetitions'])
     for trial in sequence:
         stim_face_number = params['faceCombination'][trial]
-        image_name = f"N{stim_face_number}_F.jpg"
+        image_name = f"{stim_face_number}_N"
         prefix = f"N{stim_face_number}"
 
         # displaying the natural face
