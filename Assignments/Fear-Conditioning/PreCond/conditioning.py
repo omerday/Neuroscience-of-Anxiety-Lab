@@ -43,7 +43,7 @@ def condition_long_version(params, window: visual.Window, io, keyboard, df_mood:
 
             # displaying the img
             display_time_img = random.uniform(params['faceDurationMin'], params['faceDurationMax'])
-            img = visual.ImageStim(window, image=f"./img/Natural/{neut_img_name}.jpg", units="norm", size=(1.5, 1.5))
+            img = visual.ImageStim(window, image=f"./img/long/Natural/{neut_img_name}.jpg", units="norm", size=(1.5, 1.5))
             img.draw()
             window.mouseVisible = False
             window.flip()
@@ -57,7 +57,7 @@ def condition_long_version(params, window: visual.Window, io, keyboard, df_mood:
                 helpers.add_event(params, f'{prefix}_angry')
                 helpers.show_image_with_scream(
                     window=window,
-                    image_path=f"./img/Angry/{angry_img_name}.jpg",
+                    image_path=f"./img/long/Angry/{angry_img_name}.jpg",
                     sound_path="./sound/shock_sound_1.mp3",
                     duration=display_time_img_angry,
                     keyboard=keyboard,
@@ -90,7 +90,7 @@ def condition_short_version(params, window: visual.Window, io, keyboard, df_mood
         neut_image = f"N{params['faceCombination'][image_type]}_F.jpg"
         # displaying the img
         display_time_img = random.uniform(params['faceDurationMin'], params['faceDurationMax'])
-        img = visual.ImageStim(window, image=f"./img/Natural/{neut_image}.jpg", units="norm", size=(1.5, 1.5))
+        img = visual.ImageStim(window, image=f"./img/short/Natural/{neut_image}.jpg", units="norm", size=(1.5, 1.5))
         img.draw()
         window.mouseVisible = False
         window.flip()
@@ -104,7 +104,7 @@ def condition_short_version(params, window: visual.Window, io, keyboard, df_mood
             helpers.add_event(params, f'{prefix_for_events}_angry')
             helpers.show_image_with_scream(
                 window=window,
-                image_path=f"./img/Angry/{angry_image}.jpg",
+                image_path=f"./img/short/Angry/{angry_image}.jpg",
                 sound_path="./sound/shock_sound_1.mp3",
                 duration=ANGRY_IMAGE_ONSET_TIME,
                 keyboard=keyboard,
