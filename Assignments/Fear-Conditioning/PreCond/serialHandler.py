@@ -102,6 +102,56 @@ BIOPAC_EVENTS = {
     'blankSlide': 117,
 }
 
+BIOPAC_SHORT_EVENTS = {
+    'S_plus' : 20,
+    'S_0' : 21,
+    'S_2' : 22,
+    'S_4' : 23,
+    'S_6' : 24,
+    'S_8' : 25,
+    'S_ITIstart': 26,
+    'S_ITIend':27,
+
+    'CS-_plus': 30,
+    'CS-_0': 31,
+    'CS-_2': 32,
+    'CS-_4': 33,
+    'CS-_6': 34,
+    'CS-_8': 35,
+    'CS-_ITIstart': 36,
+    'CS-_ITIend':37,
+    'CS-_angry':38,
+
+    'CS+_plus': 40,
+    'CS+_0': 41,
+    'CS+_2': 42,
+    'CS+_4': 43,
+    'CS+_6': 44,
+    'CS+_8': 45,
+    'CS+_ITIstart': 46,
+    'CS+_ITIend': 47,
+    'CS+_angry': 48,
+
+    'NEW_plus': 50,
+    'NEW_0': 51,
+    'NEW_2': 52,
+    'NEW_4': 53,
+    'NEW_6': 54,
+    'NEW_8': 55,
+    'NEW_ITIstart': 56,
+    'NEW_ITIend':57,
+    'NEW_angry':58,
+
+    'PreVas_rating': 110,
+    'PostVas_rating': 111,
+    'preCond': 112,
+    'cond': 113,
+    'test': 114,
+    'condNewVersion': 115,
+    'testNewVersion': 116,
+    'blankSlide': 117,
+}
+
 def report_event(ser: serial.Serial, event_num):
     print(f"{round(time.time(), 2)} - Sending event {event_num} to BioPac - {hex(event_num).encode()}")
     if not ser:

@@ -86,7 +86,7 @@ def condition_short_version(params, window: visual.Window, io, keyboard, df_mood
         image_type = trial['image']
         scream = trial['scream']
 
-        prefix_for_events = f"N{params['faceCombination'][image_type]}"
+        prefix_for_events = image_type
         nat_image = f"{params['faceCombination'][image_type]}_N.jpeg"
         # displaying the img
         display_time_img = random.uniform(params['faceDurationMin'], params['faceDurationMax'])

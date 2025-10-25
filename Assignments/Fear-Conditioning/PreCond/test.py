@@ -62,7 +62,7 @@ def test_short_version(params, window: visual.Window, io, keyboard, df_mood: pd.
     for trial in sequence:
         stim_face_number = params['faceCombination'][trial]
         image_name = f"{stim_face_number}_N"
-        prefix = f"N{stim_face_number}"
+        prefix = trial
 
         # displaying the natural face
         display_time_n = random.uniform(params['faceDurationMin'], params['faceDurationMax'])
