@@ -33,11 +33,10 @@ params = {
     "version": configDialogBank[7],
     "faceCombinationIndex": configDialogBank[8],
     "faceCombination": helpers.FACE_COMBINATIONS[configDialogBank[8] - 1],
+    "testRepetitions": 10,      # Amount of repetitions for each stimulus
     "shapes": ['square', 'circle', 'triangle', 'rhombus'],
     "natural": ['N1_F', 'N2_F', 'N3_F', 'N4_F', 'N5_M', 'N6_M', 'N7_M', 'N8_M'],
     "angry": ['A1_F', 'A2_F', 'A3_F', 'A4_F', 'A5_M', 'A6_M', 'A7_M', 'A8_M'],
-    "N_F_newVersion": ['N1_F', 'N3_F', 'N1_F', 'N3_F', 'N1_F', 'N3_F'],
-    "N_M_newVersion": ['N5_M', 'N8_M', 'N5_M', 'N8_M', 'N5_M', 'N8_M'],
     "plusDurationMin": 2,
     "plusDurationMax": 4,
     "shapeDurationMin": 8,
@@ -52,6 +51,8 @@ params = {
     'fullScreen': True,
     'startTime': time.time(),
 }
+
+dataHadler.export_face_combination(params)
 
 if not os.path.exists("./data"):
     os.mkdir("data")

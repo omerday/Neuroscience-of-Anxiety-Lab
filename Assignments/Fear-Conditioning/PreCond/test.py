@@ -58,7 +58,7 @@ def test_long_version(params, window: visual.Window, io, keyboard, df_mood: pd.D
 
 
 def test_short_version(params, window: visual.Window, io, keyboard, df_mood: pd.DataFrame):
-    sequence = helpers.generate_test_sequence(10)
+    sequence = helpers.generate_test_sequence(params['testRepetitions'])
     for trial in sequence:
         stim_face_number = params['faceCombination'][trial]
         image_name = f"N{stim_face_number}_F.jpg"

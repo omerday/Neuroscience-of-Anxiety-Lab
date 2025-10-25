@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 from time import strftime, localtime
+import json
 
 HEADERS_MOOD = [
     'Round',
@@ -57,3 +58,13 @@ def export_data(params: dict, **kwargs):
                 backup_path = f'{folder}/FC Subject {params["subject"]} Session {params["session"]} {task} - {key} - {strftime("%d-%m-%Y %H-%M", localtime(params["startTime"]))}.backup.csv'
                 if os.path.exists(backup_path):
                     os.remove(backup_path)
+
+def export_face_combination(params: dict):
+    folder = './data'
+    if params['subject'] != "":
+        folder = f'./data/{params["subject"]}'
+        if not os.path.exists(folder):
+            os.mkdir(folder)
+
+    with open(f"{folder}/faces_{params['subject']}.json", "w") as file:
+        json.dump(params['faceCombination'], file, indent=4)

@@ -9,12 +9,12 @@ import random
 
 STEPS = ["Conditioning", "Test"]
 VERSION = ["Short", "Long"]
-FACE_COMBINATIONS = [{"CS-": 1, "CS+": 3, "NEW": 10},
-                      {"CS-": 1, "CS+": 10, "NEW": 3},
-                      {"CS-": 3, "CS+": 1, "NEW": 10},
-                      {"CS-": 3, "CS+": 10, "NEW": 1},
-                      {"CS-": 10, "CS+": 1, "NEW": 3},
-                      {"CS-": 10, "CS+": 3, "NEW": 1}]
+FACE_COMBINATIONS = [{"CS-": 1, "CS+": 3, "NEW": 5},
+                      {"CS-": 1, "CS+": 5, "NEW": 3},
+                      {"CS-": 3, "CS+": 1, "NEW": 5},
+                      {"CS-": 3, "CS+": 5, "NEW": 1},
+                      {"CS-": 5, "CS+": 1, "NEW": 3},
+                      {"CS-": 5, "CS+": 3, "NEW": 1}]
 
 def graceful_shutdown(window, params, mood_df):
     dataHadler.export_data(params, Mood=mood_df)
