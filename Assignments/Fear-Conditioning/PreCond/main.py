@@ -64,7 +64,7 @@ params['serialBiopac'] = serial.Serial(params['port'], 115200, bytesize=serial.E
     'recordPhysio'] else None
 
 # window
-window = visual.Window(monitor="testMonitor", fullscr=params['fullScreen'], color=(210, 210, 210))
+window = visual.Window(monitor="testMonitor", color="#C2E2FA", fullscr=params['fullScreen'])
 window.mouseVisible = False
 window.flip()
 
