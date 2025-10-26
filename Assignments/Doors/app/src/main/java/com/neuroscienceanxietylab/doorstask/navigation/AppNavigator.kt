@@ -17,7 +17,7 @@ import com.neuroscienceanxietylab.doorstask.viewmodel.DoorTaskViewModel
 import com.neuroscienceanxietylab.doorstask.viewmodel.TaskPhase
 
 object AuthRoutes {
-    const val LOGIN = "login"
+    const val LOGIN = "login" // blah blah
     const val REGISTER = "register"
 }
 
