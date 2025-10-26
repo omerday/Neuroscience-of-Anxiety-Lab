@@ -33,7 +33,7 @@ fun AppNavigator(
     LaunchedEffect(authState) {
         if (authState is AuthState.Authenticated) {
             // Once authenticated, trigger the remote config load.
-            doorTaskViewModel.loadRemoteConfig()  // Assuming this is a function in DoorTaskViewModel
+            doorTaskViewModel.loadRemoteConfig()
         }
     }
 
