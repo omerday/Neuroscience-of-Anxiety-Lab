@@ -103,14 +103,6 @@ BIOPAC_EVENTS = {
 }
 
 BIOPAC_SHORT_EVENTS = {
-    'S_plus' : 20,
-    'S_0' : 21,
-    'S_2' : 22,
-    'S_4' : 23,
-    'S_6' : 24,
-    'S_8' : 25,
-    'S_ITIstart': 26,
-    'S_ITIend':27,
 
     'CS-_plus': 30,
     'CS-_0': 31,
@@ -150,6 +142,39 @@ BIOPAC_SHORT_EVENTS = {
     'condNewVersion': 115,
     'testNewVersion': 116,
     'blankSlide': 117,
+
+    'square_0': 130,
+    'square_2': 131,
+    'square_4': 132,
+    'square_6': 133,
+    'square_8': 134,
+    'square_ITIstart': 135,
+    'square_ITIend': 136,
+
+    'circle_0': 140,
+    'circle_2': 141,
+    'circle_4': 142,
+    'circle_6': 143,
+    'circle_8': 144,
+    'circle_ITIstart': 145,
+    'circle_ITIend': 146,
+
+    'triangle_0': 150,
+    'triangle_2': 151,
+    'triangle_4': 152,
+    'triangle_6': 153,
+    'triangle_8': 154,
+    'triangle_ITIstart': 155,
+    'triangle_ITIend': 156,
+
+    'rhombus_0': 160,
+    'rhombus_2': 161,
+    'rhombus_4': 162,
+    'rhombus_6': 163,
+    'rhombus_8': 164,
+    'rhombus_ITIstart': 165,
+    'rhombus_ITIend': 166,
+
 }
 
 def report_event(ser: serial.Serial, event_num):

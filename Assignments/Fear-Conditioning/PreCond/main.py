@@ -79,8 +79,10 @@ helpers.show_slide_and_wait(window, params, df_mood, io, keyboard, f"./img/instr
 # First mood VAS
 if params['recordPhysio']:
     report_event(params['serialBiopac'], BIOPAC_EVENTS['PreVas_rating'])
+
 scores = VAS.run_vas(window, io, params, 'mood', mood_df=df_mood)
 df_mood = dataHadler.insert_data_mood("pre", scores, df_mood)
+dataHadler.save_backup(params, Mood=df_mood)
 
 # Main experiment flow
 lang_suf = 'E' if params['language'] == 'English' else 'H'

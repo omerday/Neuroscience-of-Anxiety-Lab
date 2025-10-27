@@ -34,7 +34,7 @@ def save_backup(params: dict, **kwargs):
         if isinstance(value, pd.DataFrame):
             df = value.drop_duplicates(keep='first')
             df.to_csv(
-                f'{folder}/FC Subject {params["subject"]} Session {params["session"]} - {key} - {strftime("%d-%m-%Y %H-%M", localtime(params["startTime"]))}.backup.csv')
+                f'{folder}/FC Subject {params["subject"]} Session {params["session"]} {params["phase"]} - {key} - {strftime("%d-%m-%Y %H-%M", localtime(params["startTime"]))}.backup.csv')
 
 
 def export_data(params: dict, **kwargs):

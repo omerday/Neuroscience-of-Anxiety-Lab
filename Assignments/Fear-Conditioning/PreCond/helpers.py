@@ -21,7 +21,7 @@ def graceful_shutdown(window, params, mood_df):
     print(f"Experiment Ended\n===========================================")
     window.close()
     core.quit()
-    exit()
+
 
 def show_slide_and_wait(window, params, df_mood, io, keyboard, image_path, duration, is_space_wait):
     slide = visual.ImageStim(window, image=image_path, units="norm", size=(2, 2))
