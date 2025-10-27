@@ -44,19 +44,17 @@ def export_data(params: dict, **kwargs):
         if not os.path.exists(folder):
             os.mkdir(folder)
 
-    task = "test" if params["test"] or params["testNewVersion"] else "cond"
-
     for key, value in kwargs.items():
         if isinstance(value, pd.DataFrame):
             try:
+                file_path = f'{folder}/FC Subject {params["subject"]} Session {params["session"]} {params["phase"]} - {key} - {strftime("%d-%m-%Y %H-%M", localtime(params["startTime"]))}.csv'
                 df = value.drop_duplicates(keep='first')
-                df.to_csv(
-                    f'{folder}/FC Subject {params["subject"]} Session {params["session"]} {task} - {key} - {strftime("%d-%m-%Y %H-%M", localtime(params["startTime"]))}.csv')
+                df.to_csv(file_path)
             except:
                 print("Something went wrong, keeping backup")
             else:
-                backup_path = f'{folder}/FC Subject {params["subject"]} Session {params["session"]} {task} - {key} - {strftime("%d-%m-%Y %H-%M", localtime(params["startTime"]))}.backup.csv'
-                if os.path.exists(backup_path):
+                backup_path = f'{folder}/FC Subject {params["subject"]} Session {params["session"]} {params["phase"]} - {key} - {strftime("%d-%m-%Y %H-%M", localtime(params["startTime"]))}.backup.csv'
+                if os.path.exists(backup_path) and os.path.exists(file_path):
                     os.remove(backup_path)
 
 def export_face_combination(params: dict):
