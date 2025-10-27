@@ -90,7 +90,7 @@ def condition_short_version(params, window: visual.Window, io, keyboard, df_mood
         nat_image = f"{params['faceCombination'][image_type]}_N.jpeg"
         # displaying the img
         display_time_img = random.uniform(params['faceDurationMin'], params['faceDurationMax'])
-        img = visual.ImageStim(window, image=f"./img/short/Natural/{nat_image}.jpg", units="norm", size=(1.5, 1.5))
+        img = visual.ImageStim(window, image=f"./img/short/Natural/{nat_image}.jpg", units="norm", size=(2, 2))
         img.draw()
         window.mouseVisible = False
         window.flip()
@@ -109,7 +109,7 @@ def condition_short_version(params, window: visual.Window, io, keyboard, df_mood
                 duration=ANGRY_IMAGE_ONSET_TIME,
                 keyboard=keyboard,
                 escape_callback=lambda: helpers.graceful_shutdown(window, params, df_mood),
-                size=(1.5, 1.5),
+                size=(2, 2),
                 volume=0.4
             )
 

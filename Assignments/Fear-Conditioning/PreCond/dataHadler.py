@@ -66,5 +66,5 @@ def export_face_combination(params: dict):
         if not os.path.exists(folder):
             os.mkdir(folder)
 
-    with open(f"{folder}/faces_{params['subject']}.json", "w") as file:
+    with open(f"{folder}/faces_{params['subject']}_{params['phase']}.json", "w") as file:
         json.dump(params['faceCombination'], file, indent=4)

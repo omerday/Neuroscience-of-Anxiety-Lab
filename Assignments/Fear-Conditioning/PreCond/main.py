@@ -154,6 +154,7 @@ elif params['phase'] == "Test":
     helpers.show_slide_and_wait(window, params, df_mood, io, keyboard, f"./img/instructions/finish_{lang_suf}{img_ext}",
                         params['relaxSlideDuration'], True)
 
+dataHadler.export_data(params, df_mood=df_mood)
 # end of the study
 helpers.wait_for_space(window, params, df_mood, io)
 helpers.graceful_shutdown(window, params, df_mood)

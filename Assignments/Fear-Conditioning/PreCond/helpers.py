@@ -101,7 +101,7 @@ def add_event(params: dict, event_name: str):
     event = BIOPAC_EVENTS[event_name] if params['version'] == 'Long' else BIOPAC_SHORT_EVENTS[event_name]
     report_event(params['serialBiopac'], event)
 
-def show_image_with_scream(window, image_path, sound_path, duration, keyboard, escape_callback, size=(1.5, 2), volume=0.4):
+def show_image_with_scream(window, image_path, sound_path, duration, keyboard, escape_callback, size=(2, 2), volume=0.4):
     image_stim = visual.ImageStim(window, image=image_path, units='norm', size=size)
     image_stim.draw()
 
