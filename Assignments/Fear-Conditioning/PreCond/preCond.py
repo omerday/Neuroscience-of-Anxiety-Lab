@@ -28,7 +28,7 @@ def pre_cond(params, window: visual.Window, io, keyboard, mood_df):
         """
 
         # displaying the shape
-        display_time_shape = random.uniform(params['shapeDurationMin'], params['shapeDurationMax'])
+        display_time_shape = params['shapeDuration']
         shape = visual.ImageStim(window, image=f"./img/shapes/{curr_shape}.jpeg", units="norm", size=(2, 2))
         shape.draw()
         window.mouseVisible = False
@@ -39,7 +39,7 @@ def pre_cond(params, window: visual.Window, io, keyboard, mood_df):
                                                    curr_shape, 0)
 
         # ITI
-        display_time_iti = params["blockDuration"] - display_time_shape # - display_time_plus
+        display_time_iti = random.uniform(params['ITIDurationCondMin'], params['ITIDurationCondMax'])
         blank = visual.ImageStim(window, image=f"./img/blank.jpeg", units="norm", size=(2, 2))
         blank.draw()
         window.mouseVisible = False

@@ -65,7 +65,7 @@ def test_short_version(params, window: visual.Window, io, keyboard, df_mood: pd.
         prefix = trial
 
         # displaying the natural face
-        display_time_n = random.uniform(params['faceDurationMin'], params['faceDurationMax'])
+        display_time_n = params['faceDurationTest']
         shape = visual.ImageStim(window, image=f"./img/short/Natural/{image_name}.jpeg", units="norm", size=(2, 2))
         shape.draw()
         window.mouseVisible = False
@@ -77,7 +77,7 @@ def test_short_version(params, window: visual.Window, io, keyboard, df_mood: pd.
                                                    prefix, 0)
 
         # ITI
-        display_time_iti = params["testBlockDuration"] - display_time_n
+        display_time_iti = random.uniform(params['ITIDurationTestMin'], params['ITIDurationTestMax'])
         blank = visual.ImageStim(window, image=f"./img/blank.jpeg", units="norm", size=(2, 2))
         blank.draw()
         window.mouseVisible = False

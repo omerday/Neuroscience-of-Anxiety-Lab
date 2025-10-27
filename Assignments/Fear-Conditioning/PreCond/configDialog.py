@@ -28,7 +28,7 @@ def get_user_input(debug=False):
         config_exists = False
 
     userInput = gui.Dlg(title="FC Task Configuration")
-    userInput.addField('Subject Number:', )
+    userInput.addField('Subject ID:', )
     userInput.addField('Session:', 1)
     userInput.addField('Gender', 0 if not config_exists else loaded_data["gender"], choices=["Male", "Female"])
     userInput.addField("Preferred Language", "Hebrew" if not config_exists else loaded_data["language"],
