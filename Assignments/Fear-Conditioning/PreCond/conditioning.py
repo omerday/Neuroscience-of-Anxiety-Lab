@@ -10,7 +10,10 @@ CONDITIONING_FLOW = [{"image": "CS-", "scream": False},
                      {"image": "CS-", "scream": False},
                      {"image": "CS+", "scream": True},
                      {"image": "CS-", "scream": False},
-                     {"image": "CS+", "scream": False},]
+                     {"image": "CS+", "scream": False},
+                     {"image": "CS-", "scream": False},
+                     {"image": "CS+", "scream": False},
+                     ]
 
 ANGRY_IMAGE_ONSET_TIME = 1
 
@@ -123,5 +126,3 @@ def condition_short_version(params, window: visual.Window, io, keyboard, df_mood
         # adding event when starting ITI
         helpers.add_event(params, f'{prefix_for_events}_ITIstart')
         helpers.wait_for_time(window, params, df_mood, start_time, display_time_iti, keyboard)
-        # adding event after ITI
-        helpers.add_event(params, f'{prefix_for_events}_ITIend')

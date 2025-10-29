@@ -48,5 +48,3 @@ def pre_cond(params, window: visual.Window, io, keyboard, mood_df):
         # adding event when starting ITI
         helpers.add_event(params, f'{curr_shape}_ITIstart')
         helpers.wait_for_time(window, params, mood_df, start_time, display_time_iti, keyboard)
-        # adding event after ITI
-        helpers.add_event(params, f'{curr_shape}_ITIend')

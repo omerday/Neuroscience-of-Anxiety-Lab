@@ -86,5 +86,3 @@ def test_short_version(params, window: visual.Window, io, keyboard, df_mood: pd.
         # adding event when starting ITI
         helpers.add_event(params, f'{prefix}_ITIstart')
         helpers.wait_for_time(window, params, df_mood, start_time, display_time_iti, keyboard)
-        # adding event after ITI
-        helpers.add_event(params, f'{prefix}_ITIend')
