@@ -56,13 +56,11 @@ def run_vas(window: visual.Window, io, params: dict, type:str, mood_df, duration
 
             for ev in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
                 if ev.key == "escape":
-                    helpers.graceful_shutdown(window)
+                    helpers.graceful_shutdown(window, params, mood_df)
                 core.wait(0.05)
 
         score = scale.getRating()
         scores[LABELS[i]] = score
 
-
-    dataHadler.save_backup(params, Mood=mood_df)
     print(scores)
     return scores

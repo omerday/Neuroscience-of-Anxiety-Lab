@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 from time import strftime, localtime
+import json
 
 HEADERS_MOOD = [
     'Round',
@@ -33,7 +34,7 @@ def save_backup(params: dict, **kwargs):
         if isinstance(value, pd.DataFrame):
             df = value.drop_duplicates(keep='first')
             df.to_csv(
-                f'{folder}/FC Subject {params["subject"]} Session {params["session"]} - {key} - {strftime("%d-%m-%Y %H-%M", localtime(params["startTime"]))}.backup.csv')
+                f'{folder}/FC Subject {params["subject"]} Session {params["session"]} {params["phase"]} - {key} - {strftime("%d-%m-%Y %H-%M", localtime(params["startTime"]))}.backup.csv')
 
 
 def export_data(params: dict, **kwargs):
@@ -46,12 +47,22 @@ def export_data(params: dict, **kwargs):
     for key, value in kwargs.items():
         if isinstance(value, pd.DataFrame):
             try:
+                file_path = f'{folder}/FC Subject {params["subject"]} Session {params["session"]} {params["phase"]} - {key} - {strftime("%d-%m-%Y %H-%M", localtime(params["startTime"]))}.csv'
                 df = value.drop_duplicates(keep='first')
-                df.to_csv(
-                    f'{folder}/FC Subject {params["subject"]} Session {params["session"]} - {key} - {strftime("%d-%m-%Y %H-%M", localtime(params["startTime"]))}.csv')
+                df.to_csv(file_path)
             except:
                 print("Something went wrong, keeping backup")
             else:
-                backup_path = f'{folder}/FC Subject {params["subject"]} Session {params["session"]} - {key} - {strftime("%d-%m-%Y %H-%M", localtime(params["startTime"]))}.backup.csv'
-                if os.path.exists(backup_path):
+                backup_path = f'{folder}/FC Subject {params["subject"]} Session {params["session"]} {params["phase"]} - {key} - {strftime("%d-%m-%Y %H-%M", localtime(params["startTime"]))}.backup.csv'
+                if os.path.exists(backup_path) and os.path.exists(file_path):
                     os.remove(backup_path)
+
+def export_face_combination(params: dict):
+    folder = './data'
+    if params['subject'] != "":
+        folder = f'./data/{params["subject"]}'
+        if not os.path.exists(folder):
+            os.mkdir(folder)
+
+    with open(f"{folder}/faces_{params['subject']}_{params['phase']}.json", "w") as file:
+        json.dump(params['faceCombination'], file, indent=4)

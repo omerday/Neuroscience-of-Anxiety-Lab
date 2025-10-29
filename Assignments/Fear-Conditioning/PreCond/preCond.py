@@ -13,7 +13,6 @@ def pre_cond(params, window: visual.Window, io, keyboard, mood_df):
         # choosing shape
         curr_shape = random.choice(temp_shapes)
         temp_shapes.remove(curr_shape)
-        shape_name = params['shapes'].index(curr_shape)
 
         """
         # displaying the plus image before the shape
@@ -29,7 +28,7 @@ def pre_cond(params, window: visual.Window, io, keyboard, mood_df):
         """
 
         # displaying the shape
-        display_time_shape = random.uniform(params['shapeDurationMin'], params['shapeDurationMax'])
+        display_time_shape = params['shapeDuration']
         shape = visual.ImageStim(window, image=f"./img/shapes/{curr_shape}.jpeg", units="norm", size=(2, 2))
         shape.draw()
         window.mouseVisible = False
@@ -37,17 +36,15 @@ def pre_cond(params, window: visual.Window, io, keyboard, mood_df):
         start_time = time.time()
         # add event every 2 sec
         helpers.wait_for_time_with_periodic_events(window, params, mood_df, start_time, display_time_shape, keyboard,
-                                                   'S', 0)
+                                                   curr_shape, 0)
 
         # ITI
-        display_time_iti = params["blockDuration"] - display_time_shape # - display_time_plus
+        display_time_iti = random.uniform(params['ITIDurationCondMin'], params['ITIDurationCondMax'])
         blank = visual.ImageStim(window, image=f"./img/blank.jpeg", units="norm", size=(2, 2))
         blank.draw()
         window.mouseVisible = False
         window.flip()
         start_time = time.time()
         # adding event when starting ITI
-        helpers.add_event(params, f'S_ITIpre')
+        helpers.add_event(params, f'{curr_shape}_ITIstart')
         helpers.wait_for_time(window, params, mood_df, start_time, display_time_iti, keyboard)
-        # adding event after ITI
-        helpers.add_event(params, f'S_ITIpost')

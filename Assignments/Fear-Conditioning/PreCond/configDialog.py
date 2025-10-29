@@ -2,6 +2,7 @@ import os
 
 from psychopy import gui
 import json
+import helpers
 
 
 def get_user_input(debug=False):
@@ -27,15 +28,17 @@ def get_user_input(debug=False):
         config_exists = False
 
     userInput = gui.Dlg(title="FC Task Configuration")
-    userInput.addField('Subject Number:', )
+    userInput.addField('Subject ID:', )
     userInput.addField('Session:', 1)
-    userInput.addField('Gender', "Female" if not config_exists else loaded_data["gender"], choices=["Male", "Female"])
+    userInput.addField('Gender', 0 if not config_exists else loaded_data["gender"], choices=["Male", "Female"])
     userInput.addField("Preferred Language", "Hebrew" if not config_exists else loaded_data["language"],
                        choices=["Hebrew", "English"])
     userInput.addField('Record Physiology', False if not config_exists else loaded_data['recordPhysio'])
     userInput.addField('Skip Instructions', False if not config_exists else loaded_data['skipInstructions'])
-    userInput.addField('PreCond', False if not config_exists else loaded_data['preCond'])
-    userInput.addField('Test', False if not config_exists else loaded_data['test'])
-    userInput.addField('preCond New Version', False if not config_exists else loaded_data['preCondNewVersion'])
-    userInput.addField('Test New Version', False if not config_exists else loaded_data['testNewVersion'])
+    userInput.addField('Phase', 0 if not config_exists else helpers.STEPS.index(loaded_data['phase']),
+                       choices=helpers.STEPS)
+    userInput.addField('Version', 0 if not config_exists else helpers.VERSION.index(loaded_data['version']),
+                       choices=helpers.VERSION)
+    userInput.addField('Combination',
+                       0 if not config_exists else loaded_data['faceCombinationIndex'] - 1, choices=range(1, 7))
     return userInput.show()
