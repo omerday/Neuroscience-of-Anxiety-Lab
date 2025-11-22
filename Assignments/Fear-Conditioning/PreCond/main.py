@@ -34,9 +34,13 @@ params = {
     "faceCombinationIndex": configDialogBank[8],
     "faceCombination": helpers.FACE_COMBINATIONS[configDialogBank[8] - 1],
     "testRepetitions": 10,      # Amount of repetitions for each stimulus
-    "shapes": ['square', 'circle', 'triangle', 'rhombus'],
+    "shapes": ['square', 'circle', 'pentagon', 'rhombus', 'plus'],
     "natural": ['N1_F', 'N2_F', 'N3_F', 'N4_F', 'N5_M', 'N6_M', 'N7_M', 'N8_M'],
     "angry": ['A1_F', 'A2_F', 'A3_F', 'A4_F', 'A5_M', 'A6_M', 'A7_M', 'A8_M'],
+    "welcomeSlidesCount": 3,
+    "testWelcomeSlidesCount": 2,
+    "conditioningInstructionsSlidesCount": 4,
+    "testingInstructionsSlidesCount": 2,
     "plusDurationMin": 2,
     "plusDurationMax": 4,
     "shapeDuration": 10,
@@ -68,7 +72,7 @@ params['serialBiopac'] = serial.Serial(params['port'], 115200, bytesize=serial.E
     'recordPhysio'] else None
 
 # window
-window = visual.Window(monitor="testMonitor", color="#C2E2FA", fullscr=params['fullScreen'])
+window = visual.Window(monitor="testMonitor", color="#FFFFFF", fullscr=params['fullScreen'])
 window.mouseVisible = False
 window.flip()
 
@@ -76,9 +80,14 @@ core.wait(0.5)
 
 keyboard = io.devices.keyboard
 
-# first slide before VAS
-helpers.show_slide_and_wait(window, params, df_mood, io, keyboard, f"./img/instructions/start_{params['language'][0]}.jpg",
-                    params['relaxSlideDuration'], True)
+if params['phase'] == "Conditioning":
+    for i in range(1, params['welcomeSlidesCount'] + 1):
+        helpers.show_slide_and_wait(window, params, df_mood, io, keyboard, f"./img/instructions/welcome_{params['language'][0]}_{i}.jpeg",
+                        0, True)
+elif params['phase'] == "Test":
+    for i in range(1, params['testWelcomeSlidesCount'] + 1):
+        helpers.show_slide_and_wait(window, params, df_mood, io, keyboard, f"./img/instructions/welcome_test_{params['language'][0]}_{i}.jpeg",
+                        0, True)
 
 # First mood VAS
 if params['recordPhysio']:
@@ -91,14 +100,14 @@ dataHadler.save_backup(params, Mood=df_mood)
 # Main experiment flow
 lang_suf = 'E' if params['language'] == 'English' else 'H'
 is_short_version = params['version'] == 'Short'
-img_ext = ".jpeg" if is_short_version else ".jpg"
+img_ext = ".jpeg"
 
 if params['phase'] == "Conditioning":
     # Instructions
-    helpers.show_slide_and_wait(window, params, df_mood, io, keyboard, f"./img/instructions/instructions_{lang_suf}_1{img_ext}",
-                        params['relaxSlideDuration'], True)
-    helpers.show_slide_and_wait(window, params, df_mood, io, keyboard, f"./img/instructions/instructions_{lang_suf}_2{img_ext}",
-                        params['relaxSlideDuration'], True)
+    for i in range(1, params['conditioningInstructionsSlidesCount'] + 1):
+        helpers.show_slide_and_wait(window, params, df_mood, io, keyboard,
+                                    f"./img/instructions/instructions_cond_{params['language'][0]}_{i}.jpg",
+                                    0, True)
 
     # Blank slide
     helpers.show_blank_slide_and_wait(window, params, df_mood, keyboard, io)
@@ -121,17 +130,18 @@ if params['phase'] == "Conditioning":
     # Post-task VAS
     if params['recordPhysio']:
         report_event(params['serialBiopac'], BIOPAC_EVENTS['PostVas_rating'])
-    scores = VAS.run_vas(window, io, params, 'mood', mood_df=df_mood)
+    scores = VAS.run_vas(window, io, params, 'mood', mood_df=df_mood, background_color="#C2E2FA")
     df_mood = dataHadler.insert_data_mood("post", scores, df_mood)
 
     # Final instruction
-    helpers.show_slide_and_wait(window, params, df_mood, io, keyboard, f"./img/instructions/instructions_{lang_suf}_3.jpg",
-                        params['relaxSlideDuration'], True)
+    helpers.show_slide_and_wait(window, params, df_mood, io, keyboard, f"./img/instructions/cond_finish_{lang_suf}.jpeg",
+                        0, True)
 
 elif params['phase'] == "Test":
-    # Instruction
-    helpers.show_slide_and_wait(window, params, df_mood, io, keyboard, f"./img/instructions/instructions_{lang_suf}_4{img_ext}",
-                        params['relaxSlideDuration'], True)
+    for i in range(1, params['testingInstructionsSlidesCount'] + 1):
+        helpers.show_slide_and_wait(window, params, df_mood, io, keyboard,
+                                    f"./img/instructions/instructions_test_{lang_suf}_{i}.jpeg",
+                                    0, True)
 
     # Blank slide
     helpers.show_blank_slide_and_wait(window, params, df_mood, keyboard, io)
@@ -146,18 +156,27 @@ elif params['phase'] == "Test":
             report_event(params['serialBiopac'], BIOPAC_EVENTS['test'])
         test.test_long_version(params, window, io, keyboard, df_mood)
 
+    helpers.show_slide_and_wait(window, params, df_mood, io, keyboard,
+                                f"./img/instructions/test_finish_{lang_suf}.jpeg",
+                                0, True)
+    # Measurements
+    helpers.show_slide_and_wait(window, params, df_mood, io, keyboard,
+                                f"./img/instructions/measurement_{lang_suf}.jpeg",
+                                0, True)
+    helpers.show_slide_and_wait(window, params, df_mood, io, keyboard,
+                                f"./img/instructions/blank_measurements.jpeg",
+                                params['blankSlideDuration'], True)
+
     # Post-task VAS
+    helpers.show_slide_and_wait(window, params, df_mood, io, keyboard,
+                                f"./img/instructions/welcome_{lang_suf}_3.jpeg",
+                                0, True)
     if params['recordPhysio']:
         report_event(params['serialBiopac'], BIOPAC_EVENTS['PostVas_rating'])
-    scores = VAS.run_vas(window, io, params, 'mood', mood_df=df_mood)
+    scores = VAS.run_vas(window, io, params, 'mood', mood_df=df_mood, background_color="#C2E2FA")
     df_mood = dataHadler.insert_data_mood("post", scores, df_mood)
 
-    # More slides
-    helpers.show_slide_and_wait(window, params, df_mood, io, keyboard,
-                        f"./img/instructions/instructions_{lang_suf}_5{img_ext}",
-                        params['blankSlideDuration'], True)
-    helpers.show_blank_slide_and_wait(window, params, df_mood, keyboard, io)
-    helpers.show_slide_and_wait(window, params, df_mood, io, keyboard, f"./img/instructions/finish_{lang_suf}{img_ext}",
+    helpers.show_slide_and_wait(window, params, df_mood, io, keyboard, f"./img/instructions/finish_{lang_suf}.jpeg",
                         params['relaxSlideDuration'], True)
 
 dataHadler.export_data(params, df_mood=df_mood)

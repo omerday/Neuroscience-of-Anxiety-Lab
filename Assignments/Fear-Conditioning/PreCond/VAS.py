@@ -23,7 +23,9 @@ ANSWERS_HEBREW = [["כלל לא", "הרבה מאוד"], ["כלל לא", "הרב�
 ANSWERS_ENGLISH = [["Not at all", "A lot"], ["Not at all", "A lot"], ["Not at all", "A lot"], ["Very good", "Very bad"]]
 
 
-def run_vas(window: visual.Window, io, params: dict, type:str, mood_df, duration=float('inf')):
+def run_vas(window: visual.Window, io, params: dict, type:str, mood_df, duration=float('inf'), background_color=""):
+    if background_color:
+        window.setColor(background_color)
     questions = QUESTIONS_HEBREW if params['language'] == 'Hebrew' else QUESTIONS_ENGLISH
     answers = ANSWERS_HEBREW if params['language'] == 'Hebrew' else ANSWERS_ENGLISH
 

@@ -156,13 +156,13 @@ BIOPAC_SHORT_EVENTS = {
     'circle_ITIstart': 145,
     'circle_ITIend': 146,
 
-    'triangle_0': 150,
-    'triangle_2': 151,
-    'triangle_4': 152,
-    'triangle_6': 153,
-    'triangle_8': 154,
-    'triangle_ITIstart': 155,
-    'triangle_ITIend': 156,
+    'pentagon_0': 150,
+    'pentagon_2': 151,
+    'pentagon_4': 152,
+    'pentagon_6': 153,
+    'pentagon_8': 154,
+    'pentagon_ITIstart': 155,
+    'pentagon_ITIend': 156,
 
     'rhombus_0': 160,
     'rhombus_2': 161,
@@ -171,6 +171,14 @@ BIOPAC_SHORT_EVENTS = {
     'rhombus_8': 164,
     'rhombus_ITIstart': 165,
     'rhombus_ITIend': 166,
+
+    'plus_0': 160,
+    'plus_2': 161,
+    'plus_4': 162,
+    'plus_6': 163,
+    'plus_8': 164,
+    'plus_ITIstart': 165,
+    'plus_ITIend': 166,
 
 }
 

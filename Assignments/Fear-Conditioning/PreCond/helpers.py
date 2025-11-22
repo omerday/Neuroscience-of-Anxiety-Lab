@@ -30,7 +30,7 @@ def show_slide_and_wait(window, params, df_mood, io, keyboard, image_path, durat
     window.flip()
     start_time = time.time()
     if is_space_wait:
-        wait_for_space_and_time(window, params, df_mood, io, start_time, duration)
+        wait_for_space(window, params, df_mood, io)
     else:
         wait_for_time(window, params, df_mood, start_time, duration, keyboard)
 
