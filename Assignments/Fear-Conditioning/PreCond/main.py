@@ -38,7 +38,7 @@ params = {
     "natural": ['N1_F', 'N2_F', 'N3_F', 'N4_F', 'N5_M', 'N6_M', 'N7_M', 'N8_M'],
     "angry": ['A1_F', 'A2_F', 'A3_F', 'A4_F', 'A5_M', 'A6_M', 'A7_M', 'A8_M'],
     "welcomeSlidesCount": 3,
-    "testWelcomeSlidesCount": 2,
+    "testWelcomeSlidesCount": 1,
     "conditioningInstructionsSlidesCount": 4,
     "testingInstructionsSlidesCount": 2,
     "plusDurationMin": 2,
@@ -164,8 +164,8 @@ elif params['phase'] == "Test":
                                 f"./img/instructions/measurement_{lang_suf}.jpeg",
                                 0, True)
     helpers.show_slide_and_wait(window, params, df_mood, io, keyboard,
-                                f"./img/instructions/blank_measurements.jpeg",
-                                params['blankSlideDuration'], True)
+                                f"./img/blank_measurements.jpeg",
+                                params['blankSlideDuration'], False)
 
     # Post-task VAS
     helpers.show_slide_and_wait(window, params, df_mood, io, keyboard,
