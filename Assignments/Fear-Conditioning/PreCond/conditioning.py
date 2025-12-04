@@ -5,7 +5,7 @@ import pandas as pd
 from psychopy import visual, core, sound
 import helpers
 
-CONDITIONING_FLOW = [{"image": "CS-", "scream": False},
+CONDITIONING_FLOWS = [[{"image": "CS-", "scream": False},
                      {"image": "CS+", "scream": False},
                      {"image": "CS-", "scream": False},
                      {"image": "CS+", "scream": True},
@@ -13,7 +13,16 @@ CONDITIONING_FLOW = [{"image": "CS-", "scream": False},
                      {"image": "CS+", "scream": False},
                      {"image": "CS-", "scream": False},
                      {"image": "CS+", "scream": False},
-                     ]
+                     ],
+                    [{"image": "CS+", "scream": False},
+                     {"image": "CS-", "scream": False},
+                     {"image": "CS-", "scream": False},
+                     {"image": "CS+", "scream": True},
+                     {"image": "CS+", "scream": False},
+                     {"image": "CS-", "scream": False},
+                     {"image": "CS+", "scream": False},
+                     {"image": "CS-", "scream": False},
+                     ]]
 
 ANGRY_IMAGE_ONSET_TIME = 1
 
@@ -85,7 +94,9 @@ def condition_long_version(params, window: visual.Window, io, keyboard, df_mood:
 
 
 def condition_short_version(params, window: visual.Window, io, keyboard, df_mood: pd.DataFrame):
-    for i, trial in enumerate(CONDITIONING_FLOW):
+    random.seed()
+    conditioning_flow = random.choice(CONDITIONING_FLOWS)
+    for i, trial in enumerate(conditioning_flow):
         image_type = trial['image']
         scream = trial['scream']
 
