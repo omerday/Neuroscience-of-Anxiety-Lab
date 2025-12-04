@@ -172,13 +172,13 @@ BIOPAC_SHORT_EVENTS = {
     'rhombus_ITIstart': 165,
     'rhombus_ITIend': 166,
 
-    'plus_0': 160,
-    'plus_2': 161,
-    'plus_4': 162,
-    'plus_6': 163,
-    'plus_8': 164,
-    'plus_ITIstart': 165,
-    'plus_ITIend': 166,
+    'plus_0': 170,
+    'plus_2': 171,
+    'plus_4': 172,
+    'plus_6': 173,
+    'plus_8': 174,
+    'plus_ITIstart': 175,
+    'plus_ITIend': 176,
 
 }
 
