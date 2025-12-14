@@ -3,7 +3,7 @@ import time
 from psychopy.iohub.client.keyboard import Keyboard
 from psychopy.visual import ratingscale
 import helpers
-import dataHadler
+import dataHandler
 
 
 

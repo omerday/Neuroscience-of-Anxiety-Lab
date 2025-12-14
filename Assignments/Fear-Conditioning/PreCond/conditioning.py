@@ -94,8 +94,7 @@ def condition_long_version(params, window: visual.Window, io, keyboard, df_mood:
 
 
 def condition_short_version(params, window: visual.Window, io, keyboard, df_mood: pd.DataFrame):
-    random.seed()
-    conditioning_flow = random.choice(CONDITIONING_FLOWS)
+    conditioning_flow = params["conditioningSequence"]
     for i, trial in enumerate(conditioning_flow):
         image_type = trial['image']
         scream = trial['scream']

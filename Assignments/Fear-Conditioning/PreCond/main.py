@@ -11,7 +11,7 @@ from psychopy.iohub.client.keyboard import Keyboard
 import preCond
 import conditioning
 import test
-import dataHadler
+import dataHandler
 import VAS
 import instructions
 import serial
@@ -33,6 +33,8 @@ params = {
     "version": configDialogBank[7],
     "faceCombinationIndex": configDialogBank[8],
     "faceCombination": helpers.FACE_COMBINATIONS[configDialogBank[8] - 1],
+    "conditioningSequenceIndex": configDialogBank[9],
+    "conditioningSequence": conditioning.CONDITIONING_FLOWS[configDialogBank[9] - 1],
     "testRepetitions": 10,      # Amount of repetitions for each stimulus
     "shapes": ['square', 'circle', 'pentagon', 'rhombus', 'plus'],
     "natural": ['N1_F', 'N2_F', 'N3_F', 'N4_F', 'N5_M', 'N6_M', 'N7_M', 'N8_M'],
@@ -60,14 +62,15 @@ params = {
     'startTime': time.time(),
 }
 
-dataHadler.export_face_combination(params)
+dataHandler.export_face_combination(params)
+dataHandler.export_conditioning_sequence(params)
 
 if not os.path.exists("./data"):
     os.mkdir("data")
 with open("./data/FCconfig.json", 'w') as file:
     json.dump(params, file, indent=3)
 
-df_mood = dataHadler.setup_data_frame()
+df_mood = dataHandler.setup_data_frame()
 params['serialBiopac'] = serial.Serial(params['port'], 115200, bytesize=serial.EIGHTBITS, timeout=1) if params[
     'recordPhysio'] else None
 
@@ -94,8 +97,8 @@ if params['recordPhysio']:
     report_event(params['serialBiopac'], BIOPAC_EVENTS['PreVas_rating'])
 
 scores = VAS.run_vas(window, io, params, 'mood', mood_df=df_mood)
-df_mood = dataHadler.insert_data_mood("pre", scores, df_mood)
-dataHadler.save_backup(params, Mood=df_mood)
+df_mood = dataHandler.insert_data_mood("pre", scores, df_mood)
+dataHandler.save_backup(params, Mood=df_mood)
 
 # Main experiment flow
 lang_suf = 'E' if params['language'] == 'English' else 'H'
@@ -131,7 +134,7 @@ if params['phase'] == "Conditioning":
     if params['recordPhysio']:
         report_event(params['serialBiopac'], BIOPAC_EVENTS['PostVas_rating'])
     scores = VAS.run_vas(window, io, params, 'mood', mood_df=df_mood, background_color="#C2E2FA")
-    df_mood = dataHadler.insert_data_mood("post", scores, df_mood)
+    df_mood = dataHandler.insert_data_mood("post", scores, df_mood)
 
     # Final instruction
     helpers.show_slide_and_wait(window, params, df_mood, io, keyboard, f"./img/instructions/cond_finish_{lang_suf}.jpeg",
@@ -174,12 +177,12 @@ elif params['phase'] == "Test":
     if params['recordPhysio']:
         report_event(params['serialBiopac'], BIOPAC_EVENTS['PostVas_rating'])
     scores = VAS.run_vas(window, io, params, 'mood', mood_df=df_mood, background_color="#C2E2FA")
-    df_mood = dataHadler.insert_data_mood("post", scores, df_mood)
+    df_mood = dataHandler.insert_data_mood("post", scores, df_mood)
 
     helpers.show_slide_and_wait(window, params, df_mood, io, keyboard, f"./img/instructions/finish_{lang_suf}.jpeg",
                         params['relaxSlideDuration'], True)
 
-dataHadler.export_data(params, df_mood=df_mood)
+dataHandler.export_data(params, df_mood=df_mood)
 # end of the study
 helpers.wait_for_space(window, params, df_mood, io)
 helpers.graceful_shutdown(window, params, df_mood)

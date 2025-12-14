@@ -1,6 +1,6 @@
 from psychopy import visual, core
 import time
-import dataHadler
+import dataHandler
 from serialHandler import *
 from psychopy.iohub.client.keyboard import Keyboard
 from psychopy import sound
@@ -17,7 +17,7 @@ FACE_COMBINATIONS = [{"CS-": 1, "CS+": 2, "NEW": 3},
                       {"CS-": 3, "CS+": 2, "NEW": 1}]
 
 def graceful_shutdown(window, params, mood_df):
-    dataHadler.export_data(params, Mood=mood_df)
+    dataHandler.export_data(params, Mood=mood_df)
     print(f"Experiment Ended\n===========================================")
     window.close()
     core.quit()

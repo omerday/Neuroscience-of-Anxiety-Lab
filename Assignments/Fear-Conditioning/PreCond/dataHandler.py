@@ -66,3 +66,13 @@ def export_face_combination(params: dict):
 
     with open(f"{folder}/faces_{params['subject']}_{params['phase']}.json", "w") as file:
         json.dump(params['faceCombination'], file, indent=4)
+
+def export_conditioning_sequence(params: dict):
+    folder = './data'
+    if params['subject'] != "":
+        folder = f'./data/{params["subject"]}'
+        if not os.path.exists(folder):
+            os.mkdir(folder)
+
+    with open(f"{folder}/sequence_{params['subject']}_{params['phase']}.json", "w") as file:
+        json.dump(params['conditioningSequence'], file, indent=4)
