@@ -47,7 +47,7 @@ params = {
     'squareDurationMax': 7,  # maximum duration for each square
     'colors': ['Green', 'Black', 'Red'],
     'pre_vas': ['Green', 'Green', 'Green', 'Red', 'Red', 'Red'],
-    'post_vas': ['Green', 'Green', 'Green', 'Red', 'Red', 'Red'],
+    'post_vas': ['Green', 'Green', 'Red', 'Red'],
     'fixationBeforeBlock': 8,
     'preITIMin': 3,
     'preITIMax': 5,
