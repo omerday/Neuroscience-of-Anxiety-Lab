@@ -41,5 +41,5 @@ def get_user_input(debug=False):
                        choices=helpers.VERSION)
     userInput.addField('Combination',
                        0 if not config_exists else loaded_data['faceCombinationIndex'] - 1, choices=range(1, 7))
-    userInput.addField('Cond. Sequence', 0 if not config_exists else loaded_data['conditioningSequenceIndex'] - 1, choices=range(1,3))
+    userInput.addField('Cond. Sequence', 0 if not config_exists else loaded_data['conditioningSequenceIndex'] - 1, choices=range(1,5))
     return userInput.show()

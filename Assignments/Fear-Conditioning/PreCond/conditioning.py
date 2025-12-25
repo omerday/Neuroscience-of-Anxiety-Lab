@@ -22,7 +22,22 @@ CONDITIONING_FLOWS = [[{"image": "CS-", "scream": False},
                      {"image": "CS-", "scream": False},
                      {"image": "CS+", "scream": False},
                      {"image": "CS-", "scream": False},
-                     ]]
+                     ],
+                      [{"image": "CS-", "scream": False},
+                       {"image": "CS+", "scream": False},
+                       {"image": "CS-", "scream": False},
+                       {"image": "CS+", "scream": True},
+                       {"image": "CS-", "scream": False},
+                       {"image": "CS+", "scream": False},
+                       ],
+                      [{"image": "CS+", "scream": False},
+                       {"image": "CS-", "scream": False},
+                       {"image": "CS-", "scream": False},
+                       {"image": "CS+", "scream": True},
+                       {"image": "CS+", "scream": False},
+                       {"image": "CS-", "scream": False},
+                       ],
+                      ]
 
 ANGRY_IMAGE_ONSET_TIME = 1
 
