@@ -6,17 +6,22 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.neuroscienceanxietylab.doorstask.R
 import com.neuroscienceanxietylab.doorstask.util.SoundPlayer
@@ -68,7 +73,7 @@ fun DoorTrialScreen(viewModel: DoorTaskViewModel = viewModel()) {
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            Slider(
+            GradientSlider(
                 value = uiState.currentDistance,
                 onValueChange = { viewModel.onDistanceChanged(it) },
                 valueRange = 0f..100f,
@@ -136,6 +141,52 @@ private fun OutcomeOverlay(outcome: DoorOutcome, context: Context, onNext: () ->
         Image(painter = painterResource(id = outcomeImageRes), contentDescription = outcomeText)
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = outcomeText, fontSize = 32.sp, fontWeight = FontWeight.Bold, color = Color.White)
+    }
+}
+
+@Composable
+private fun GradientSlider(
+    value: Float,
+    onValueChange: (Float) -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    valueRange: ClosedFloatingPointRange<Float> = 0f..100f
+) {
+    Box(modifier = modifier) {
+        // Gradient track background - positioned to align with Material3 slider track
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(14.dp)
+                .align(Alignment.Center)
+                .clip(RoundedCornerShape(7.dp))
+                .background(
+                    Brush.horizontalGradient(
+                        colors = listOf(
+                            Color(0xFFE53935), // Red (left)
+                            Color(0xFFFF9800), // Orange
+                            Color(0xFFFFEB3B), // Yellow
+                            Color(0xFF4CAF50)  // Green (right)
+                        )
+                    )
+                )
+                .border(1.dp, Color(0xFF424242), RoundedCornerShape(7.dp))
+        )
+        
+        // Material3 Slider with transparent tracks to show gradient background
+        Slider(
+            value = value,
+            onValueChange = onValueChange,
+            valueRange = valueRange,
+            modifier = Modifier.fillMaxWidth(),
+            enabled = enabled,
+            colors = SliderDefaults.colors(
+                activeTrackColor = Color.Transparent,
+                inactiveTrackColor = Color.Transparent,
+                thumbColor = Color(0xFFFFFFFF),
+                disabledThumbColor = Color(0xFF9E9E9E)
+            )
+        )
     }
 }
 
