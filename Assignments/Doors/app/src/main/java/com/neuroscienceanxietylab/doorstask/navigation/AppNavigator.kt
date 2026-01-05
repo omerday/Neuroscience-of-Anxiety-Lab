@@ -10,13 +10,20 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.neuroscienceanxietylab.doorstask.ui.screens.*
+import com.neuroscienceanxietylab.doorstask.ui.screens.LoginScreen
+import com.neuroscienceanxietylab.doorstask.ui.screens.OpeningScreen
+import com.neuroscienceanxietylab.doorstask.ui.screens.RegistrationScreen
+import com.neuroscienceanxietylab.doorstask.ui.screens.DoorTrialScreen
+import com.neuroscienceanxietylab.doorstask.ui.screens.InstructionScreen
+import com.neuroscienceanxietylab.doorstask.ui.screens.SummaryScreen
+import com.neuroscienceanxietylab.doorstask.ui.screens.VASScreen
 import com.neuroscienceanxietylab.doorstask.viewmodel.AuthViewModel
 import com.neuroscienceanxietylab.doorstask.viewmodel.AuthState
 import com.neuroscienceanxietylab.doorstask.viewmodel.DoorTaskViewModel
 import com.neuroscienceanxietylab.doorstask.viewmodel.TaskPhase
 
 object AuthRoutes {
+    const val OPENING = "opening"
     const val LOGIN = "login"
     const val REGISTER = "register"
 }
@@ -60,7 +67,12 @@ fun AppNavigator(
         else -> {
             // If not authenticated, show the login/register flow
             val navController = rememberNavController()
-            NavHost(navController = navController, startDestination = AuthRoutes.LOGIN) {
+            NavHost(navController = navController, startDestination = AuthRoutes.OPENING) {
+                composable(AuthRoutes.OPENING) {
+                    OpeningScreen(
+                        onStartClick = { navController.navigate(AuthRoutes.LOGIN) }
+                    )
+                }
                 composable(AuthRoutes.LOGIN) {
                     LoginScreen(
                         onLoginClick = { email, password -> authViewModel.login(email, password) },
