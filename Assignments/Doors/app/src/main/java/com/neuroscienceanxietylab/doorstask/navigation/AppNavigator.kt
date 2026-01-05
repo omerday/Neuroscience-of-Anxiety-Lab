@@ -35,6 +35,7 @@ fun AppNavigator(
 ) {
     val authState by authViewModel.authState.collectAsState()
     val taskState by doorTaskViewModel.uiState.collectAsState()
+    var hasShownOpeningScreen by remember { mutableStateOf(false) }
 
     // This effect will run whenever the authState changes.
     LaunchedEffect(authState) {
@@ -42,6 +43,16 @@ fun AppNavigator(
             // Once authenticated, trigger the remote config load.
             doorTaskViewModel.loadRemoteConfig()
         }
+    }
+
+    // Show opening screen first, then check auth state
+    if (!hasShownOpeningScreen) {
+        OpeningScreen(
+            onStartClick = {
+                hasShownOpeningScreen = true
+            }
+        )
+        return
     }
 
     when (authState) {
@@ -67,12 +78,7 @@ fun AppNavigator(
         else -> {
             // If not authenticated, show the login/register flow
             val navController = rememberNavController()
-            NavHost(navController = navController, startDestination = AuthRoutes.OPENING) {
-                composable(AuthRoutes.OPENING) {
-                    OpeningScreen(
-                        onStartClick = { navController.navigate(AuthRoutes.LOGIN) }
-                    )
-                }
+            NavHost(navController = navController, startDestination = AuthRoutes.LOGIN) {
                 composable(AuthRoutes.LOGIN) {
                     LoginScreen(
                         onLoginClick = { email, password -> authViewModel.login(email, password) },
