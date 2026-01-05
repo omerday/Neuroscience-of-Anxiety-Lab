@@ -122,7 +122,17 @@ class DoorTaskViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun onInstructionsFinished() { _uiState.update { it.copy(phase = TaskPhase.VAS_PRE) } }
+    fun onInstructionsFinished() { _uiState.update { it.copy(phase = TaskPhase.VAS_PRE, currentVasQuestionIndex = 0) } }
+
+    // Start the task without showing instructions again (go directly to pre-task VAS)
+    fun startTaskWithoutInstructions() {
+        _uiState.update { it.copy(phase = TaskPhase.VAS_PRE, currentVasQuestionIndex = 0) }
+    }
+
+    // Show instructions from the beginning again
+    fun repeatInstructions() {
+        _uiState.update { it.copy(phase = TaskPhase.INSTRUCTIONS) }
+    }
 
     fun onDistanceChanged(newDistance: Float) { if (!_uiState.value.isLockedIn) { _uiState.update { it.copy(currentDistance = newDistance) } } }
 

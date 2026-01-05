@@ -10,7 +10,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.neuroscienceanxietylab.doorstask.ui.screens.*
+import com.neuroscienceanxietylab.doorstask.ui.screens.DoorTrialScreen
+import com.neuroscienceanxietylab.doorstask.ui.screens.InstructionScreen
+import com.neuroscienceanxietylab.doorstask.ui.screens.LoginScreen
+import com.neuroscienceanxietylab.doorstask.ui.screens.OpeningScreen
+import com.neuroscienceanxietylab.doorstask.ui.screens.RegistrationScreen
+import com.neuroscienceanxietylab.doorstask.ui.screens.SummaryScreen
+import com.neuroscienceanxietylab.doorstask.ui.screens.VASScreen
 import com.neuroscienceanxietylab.doorstask.viewmodel.AuthViewModel
 import com.neuroscienceanxietylab.doorstask.viewmodel.AuthState
 import com.neuroscienceanxietylab.doorstask.viewmodel.DoorTaskViewModel
@@ -28,6 +34,7 @@ fun AppNavigator(
 ) {
     val authState by authViewModel.authState.collectAsState()
     val taskState by doorTaskViewModel.uiState.collectAsState()
+    var showWelcome by remember { mutableStateOf(true) }
 
     // This effect will run whenever the authState changes.
     LaunchedEffect(authState) {
@@ -39,17 +46,34 @@ fun AppNavigator(
 
     when (authState) {
         is AuthState.Authenticated -> {
-            // Once authenticated, show the main task flow based on its phase
-            when (taskState.phase) {
-                TaskPhase.LOADING -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
+            if (showWelcome) {
+                OpeningScreen(
+                    onRunTaskClick = {
+                        showWelcome = false
+                        doorTaskViewModel.startTaskWithoutInstructions()
+                    },
+                    onRepeatInstructionsClick = {
+                        showWelcome = false
+                        doorTaskViewModel.repeatInstructions()
+                    },
+                    onLogoutClick = {
+                        showWelcome = false
+                        authViewModel.signOut()
                     }
+                )
+            } else {
+                // Once past the welcome screen, show the main task flow based on its phase
+                when (taskState.phase) {
+                    TaskPhase.LOADING -> {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator()
+                        }
+                    }
+                    TaskPhase.INSTRUCTIONS -> InstructionScreen(doorTaskViewModel)
+                    TaskPhase.TRIAL -> DoorTrialScreen(doorTaskViewModel)
+                    TaskPhase.VAS_PRE, TaskPhase.VAS_MID, TaskPhase.VAS_POST -> VASScreen(doorTaskViewModel)
+                    TaskPhase.SUMMARY -> SummaryScreen(doorTaskViewModel)
                 }
-                TaskPhase.INSTRUCTIONS -> InstructionScreen(doorTaskViewModel)
-                TaskPhase.TRIAL -> DoorTrialScreen(doorTaskViewModel)
-                TaskPhase.VAS_PRE, TaskPhase.VAS_MID, TaskPhase.VAS_POST -> VASScreen(doorTaskViewModel)
-                TaskPhase.SUMMARY -> SummaryScreen(doorTaskViewModel)
             }
         }
         is AuthState.Loading -> {
