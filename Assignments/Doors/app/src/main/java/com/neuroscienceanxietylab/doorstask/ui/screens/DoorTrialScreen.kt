@@ -139,8 +139,6 @@ private fun OutcomeOverlay(outcome: DoorOutcome, context: Context, onNext: () ->
         verticalArrangement = Arrangement.Center
     ) {
         Image(painter = painterResource(id = outcomeImageRes), contentDescription = outcomeText)
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(text = outcomeText, fontSize = 32.sp, fontWeight = FontWeight.Bold, color = Color.White)
     }
 }
 
