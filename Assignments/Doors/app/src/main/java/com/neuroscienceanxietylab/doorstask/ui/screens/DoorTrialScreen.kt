@@ -8,20 +8,27 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.zIndex
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.platform.LocalDensity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.neuroscienceanxietylab.doorstask.R
 import com.neuroscienceanxietylab.doorstask.util.SoundPlayer
@@ -51,44 +58,59 @@ fun DoorTrialScreen(viewModel: DoorTaskViewModel = viewModel()) {
             Text(text = "Coins: ${uiState.totalCoins}", fontSize = 20.sp, fontWeight = FontWeight.Bold)
         }
 
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+        Box(
+            modifier = Modifier.fillMaxSize()
         ) {
-
-            val doorImage = getDoorImageResource(uiState.currentReward, uiState.currentPunishment)
-
-            Image(
-                painter = painterResource(id = doorImage),
-                contentDescription = "Door",
-                modifier = Modifier
-                    .size(300.dp)
-                    .graphicsLayer(
-                        scaleX = animatedScale,
-                        scaleY = animatedScale
-                    ),
-                contentScale = ContentScale.Fit
-            )
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            GradientSlider(
-                value = uiState.currentDistance,
-                onValueChange = { viewModel.onDistanceChanged(it) },
-                valueRange = 0f..100f,
-                modifier = Modifier.fillMaxWidth(0.8f),
-                enabled = !uiState.isLockedIn
-            )
-            Text(text = "Chance to open: ${uiState.currentDistance.toInt()}%")
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            Button(
-                onClick = { viewModel.onLockInPressed() },
-                enabled = !uiState.isLockedIn
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                Text(text = "Lock In", fontSize = 18.sp)
+                val doorImage = getDoorImageResource(uiState.currentReward, uiState.currentPunishment)
+
+                Image(
+                    painter = painterResource(id = doorImage),
+                    contentDescription = "Door",
+                    modifier = Modifier
+                        .size(300.dp)
+                        .graphicsLayer(
+                            scaleX = animatedScale,
+                            scaleY = animatedScale
+                        ),
+                    contentScale = ContentScale.Fit
+                )
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                Text(text = "Chance to open: ${uiState.currentDistance.toInt()}%")
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                Button(
+                    onClick = { viewModel.onLockInPressed() },
+                    enabled = !uiState.isLockedIn
+                ) {
+                    Text(text = "Lock In", fontSize = 18.sp)
+                }
+            }
+
+            // Slider positioned absolutely to be in front of the image
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .zIndex(1f),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                VerticalGradientSlider(
+                    value = uiState.currentDistance,
+                    onValueChange = { viewModel.onDistanceChanged(it) },
+                    valueRange = 0f..100f,
+                    enabled = !uiState.isLockedIn,
+                    modifier = Modifier
+                        .fillMaxHeight(0.6f)
+                        .padding(end = 24.dp)
+                )
             }
         }
 
@@ -143,47 +165,88 @@ private fun OutcomeOverlay(outcome: DoorOutcome, context: Context, onNext: () ->
 }
 
 @Composable
-private fun GradientSlider(
+fun VerticalGradientSlider(
     value: Float,
     onValueChange: (Float) -> Unit,
+    valueRange: ClosedFloatingPointRange<Float>,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    valueRange: ClosedFloatingPointRange<Float> = 0f..100f
+    trackWidth: Dp = 14.dp,
+    thumbRadius: Dp = 10.dp
 ) {
-    Box(modifier = modifier) {
-        // Gradient track background - positioned to align with Material3 slider track
+    val range = valueRange.endInclusive - valueRange.start
+    var sliderHeightPx by remember { mutableStateOf(1f) }
+    val density = LocalDensity.current
+    val thumbRadiusPx = with(density) { thumbRadius.toPx() }
+
+    Box(
+        modifier = modifier
+            .width(40.dp)
+            .fillMaxHeight()
+            .padding(vertical = 24.dp)
+    ) {
         Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(14.dp)
-                .align(Alignment.Center)
-                .clip(RoundedCornerShape(7.dp))
+                .width(trackWidth)
+                .fillMaxHeight()
+                .align(Alignment.TopStart)
+                .clip(RoundedCornerShape(trackWidth / 2))
                 .background(
-                    Brush.horizontalGradient(
+                    Brush.verticalGradient(
                         colors = listOf(
-                            Color(0xFFE53935), // Red (left)
-                            Color(0xFFFF9800), // Orange
-                            Color(0xFFFFEB3B), // Yellow
-                            Color(0xFF4CAF50)  // Green (right)
+                            Color(0xFF4CAF50),
+                            Color(0xFFFFEB3B),
+                            Color(0xFFFF9800),
+                            Color(0xFFE53935)
                         )
                     )
                 )
-                .border(1.dp, Color(0xFF424242), RoundedCornerShape(7.dp))
+                .onSizeChanged { sliderHeightPx = it.height.toFloat() }
+                .pointerInput(enabled, sliderHeightPx, thumbRadiusPx) {
+                    if (!enabled || sliderHeightPx <= 0) return@pointerInput
+                    // Calculate the valid range for thumb center (accounting for thumb radius)
+                    // Position is relative to the track's top (y=0 is top of track)
+                    val minY = thumbRadiusPx
+                    val maxY = sliderHeightPx - thumbRadiusPx
+                    val trackRange = maxY - minY
+                    
+                    detectVerticalDragGestures { change, _ ->
+                        val y = change.position.y  // y is relative to the track's top
+                        // Clamp to valid thumb center range
+                        val clampedY = y.coerceIn(minY, maxY)
+                        // Map from thumb center position to value (inverted: top = max, bottom = min)
+                        val percent = 1f - ((clampedY - minY) / trackRange)
+                        val newValue =
+                            (valueRange.start + percent * range).coerceIn(valueRange.start, valueRange.endInclusive)
+                        onValueChange(newValue)
+                    }
+                }
         )
-        
-        // Material3 Slider with transparent tracks to show gradient background
-        Slider(
-            value = value,
-            onValueChange = onValueChange,
-            valueRange = valueRange,
-            modifier = Modifier.fillMaxWidth(),
-            enabled = enabled,
-            colors = SliderDefaults.colors(
-                activeTrackColor = Color.Transparent,
-                inactiveTrackColor = Color.Transparent,
-                thumbColor = Color(0xFFFFFFFF),
-                disabledThumbColor = Color(0xFF9E9E9E)
-            )
+
+        // Thumb - positioned relative to the track's coordinate system
+        // The track starts at the top of the parent Box (after padding)
+        // Calculate thumb center position, accounting for thumb radius bounds
+        val minY = thumbRadiusPx
+        val maxY = sliderHeightPx - thumbRadiusPx
+        val trackRange = maxY - minY
+        val percent = (value - valueRange.start) / range
+        val thumbCenterY = if (trackRange > 0) {
+            maxY - (percent * trackRange)
+        } else {
+            sliderHeightPx / 2f
+        }
+
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .offset { 
+                    val xOffset = with(density) { (trackWidth / 2 - thumbRadius).toPx().toInt() }
+                    IntOffset(xOffset, (thumbCenterY - thumbRadiusPx).toInt()) 
+                }
+                .size(thumbRadius * 2)
+                .clip(RoundedCornerShape(50))
+                .background(Color.White)
+                .border(1.dp, Color(0xFF424242), RoundedCornerShape(50))
         )
     }
 }
