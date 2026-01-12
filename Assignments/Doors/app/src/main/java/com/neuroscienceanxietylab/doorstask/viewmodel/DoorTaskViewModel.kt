@@ -108,6 +108,20 @@ class DoorTaskViewModel(application: Application) : AndroidViewModel(application
     }
 
     private fun loadCurrentTrial() {
+        // Safety check: ensure trials are initialized
+        if (trialList.isEmpty()) {
+            setupTrials()
+            _uiState.update { it.copy(totalTrials = trialList.size) }
+        }
+        
+        // Additional safety check: ensure we have a valid trial index
+        if (_uiState.value.currentTrialIndex >= trialList.size) {
+            // If somehow we're past the end, go to summary
+            saveAggregatedDataToFirestore()
+            _uiState.update { it.copy(phase = TaskPhase.SUMMARY) }
+            return
+        }
+        
         val trial = trialList[_uiState.value.currentTrialIndex]
         trialStartTime = System.currentTimeMillis()
         _uiState.update { it.copy(phase = TaskPhase.TRIAL, currentReward = trial.first, currentPunishment = trial.second, isLockedIn = false, outcome = DoorOutcome.Undetermined, currentDistance = 50f) }
@@ -126,7 +140,13 @@ class DoorTaskViewModel(application: Application) : AndroidViewModel(application
 
     // Start the task without showing instructions again (go directly to pre-task VAS)
     fun startTaskWithoutInstructions() {
-        _uiState.update { it.copy(phase = TaskPhase.VAS_PRE, currentVasQuestionIndex = 0) }
+        // Ensure trials are set up before proceeding (in case remote config hasn't loaded yet)
+        if (trialList.isEmpty()) {
+            setupTrials()
+            _uiState.update { it.copy(phase = TaskPhase.VAS_PRE, currentVasQuestionIndex = 0, totalTrials = trialList.size) }
+        } else {
+            _uiState.update { it.copy(phase = TaskPhase.VAS_PRE, currentVasQuestionIndex = 0) }
+        }
     }
 
     // Show instructions from the beginning again
