@@ -22,7 +22,9 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -61,6 +63,8 @@ fun DoorTrialScreen(viewModel: DoorTaskViewModel = viewModel()) {
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
+            var imageTop by remember { mutableStateOf(0f) }
+            
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -73,6 +77,9 @@ fun DoorTrialScreen(viewModel: DoorTaskViewModel = viewModel()) {
                     contentDescription = "Door",
                     modifier = Modifier
                         .size(300.dp)
+                        .onPlaced { coordinates ->
+                            imageTop = coordinates.positionInParent().y
+                        }
                         .graphicsLayer(
                             scaleX = animatedScale,
                             scaleY = animatedScale
@@ -94,13 +101,13 @@ fun DoorTrialScreen(viewModel: DoorTaskViewModel = viewModel()) {
                 }
             }
 
-            // Slider positioned absolutely to be in front of the image
+            // Slider positioned absolutely to align with image top and bottom
             Row(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxWidth()
+                    .offset { IntOffset(0, imageTop.toInt()) }
                     .zIndex(1f),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
+                horizontalArrangement = Arrangement.End
             ) {
                 VerticalGradientSlider(
                     value = uiState.currentDistance,
@@ -108,7 +115,7 @@ fun DoorTrialScreen(viewModel: DoorTaskViewModel = viewModel()) {
                     valueRange = 0f..100f,
                     enabled = !uiState.isLockedIn,
                     modifier = Modifier
-                        .fillMaxHeight(0.6f)
+                        .height(300.dp)
                         .padding(end = 24.dp)
                 )
             }
@@ -183,7 +190,6 @@ fun VerticalGradientSlider(
         modifier = modifier
             .width(40.dp)
             .fillMaxHeight()
-            .padding(vertical = 24.dp)
     ) {
         Box(
             modifier = Modifier
