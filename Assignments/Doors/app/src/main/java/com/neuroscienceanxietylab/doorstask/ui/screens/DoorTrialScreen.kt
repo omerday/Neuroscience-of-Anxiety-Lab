@@ -49,17 +49,6 @@ fun DoorTrialScreen(viewModel: DoorTaskViewModel = viewModel()) {
     )
 
     Box(modifier = Modifier.fillMaxSize()) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.TopCenter)
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(text = "Trial: ${uiState.currentTrialIndex + 1}/${uiState.totalTrials}", fontSize = 20.sp)
-            Text(text = "Coins: ${uiState.totalCoins}", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-        }
-
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
@@ -86,19 +75,6 @@ fun DoorTrialScreen(viewModel: DoorTaskViewModel = viewModel()) {
                         ),
                     contentScale = ContentScale.Fit
                 )
-
-                Spacer(modifier = Modifier.height(32.dp))
-
-                Text(text = "Chance to open: ${uiState.currentDistance.toInt()}%")
-
-                Spacer(modifier = Modifier.height(32.dp))
-
-                Button(
-                    onClick = { viewModel.onLockInPressed() },
-                    enabled = !uiState.isLockedIn
-                ) {
-                    Text(text = "Lock In", fontSize = 18.sp)
-                }
             }
 
             // Slider positioned absolutely to align with image top and bottom
