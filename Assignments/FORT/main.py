@@ -130,6 +130,9 @@ if params['blocks'] == 2:
         if ch != 'N':
             sounds_in_order.pop(0)
 
+# Wait 5 minutes after second sequence
+    helpers.wait_for_space_with_replay(window, image, params, df, mini_df, {"StartTime": time.time()}, 300)  # 5 minutes = 300 seconds
+
 df, mini_df = VAS.vas(window, params, df, mini_df, io, 3)
 
 dataHandler.export_data(params=params, fullDF=df, miniDF=mini_df)
