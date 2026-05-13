@@ -1,10 +1,11 @@
 import pandas as pd
-from psychopy import visual, core, event
+from psychopy import visual, core, event, sound
 import random
 import helpers
 import time
 from psychopy.iohub.client.keyboard import Keyboard
 from psychopy.visual import ratingscale
+import psychtoolbox as ptb
 import dataHandler
 import serialHandler
 
@@ -59,8 +60,11 @@ def run_condition(window: visual.Window, image: visual.ImageStim, params: dict, 
     print("Starting condition " + condition)
     print("Randomizing times")
 
-    # Randomize initial cue and startle times
-    cue_times = helpers.randomize_cue_times()
+    # Special handling for P condition to implement the requested pattern
+    if condition == 'P':
+        return run_p_condition_pattern(window, image, params, io, df, mini_df, blockNum, ser, fear_level)
+
+    # Original N and U condition handling
     if not params["skipStartle"]:
         startle_times = helpers.randomize_startles(cue_times)
     else:
@@ -127,6 +131,122 @@ def run_condition(window: visual.Window, image: visual.ImageStim, params: dict, 
                                                            ser=ser, condition_start=condition_start, sound=sound)
             timing_index += 1
             print("Leaving a cue")
+
+    dataHandler.save_backup(params=params, fullDF=df, miniDF=mini_df)
+
+    return fear_level, df, mini_df
+
+
+def run_p_condition_pattern(window: visual.Window, image: visual.ImageStim, params: dict, io, df: pd.DataFrame,
+                           mini_df: pd.DataFrame, blockNum: int, ser=None, fear_level=5):
+    """
+    Run P condition with the specific pattern requested:
+    no shape, shape(no scream), no shape, shape(scream), no shape, shape(no scream)
+    """
+    print("Starting P condition with special pattern")
+
+    # Define the sequence: (image_type, duration, play_scream)
+    # image_type: "blank" for blank screen, "p" for P shape image
+    # duration: in seconds
+    # play_scream: boolean whether to play scream sound during this period
+    # Base pattern: no shape, shape(no scream), no shape, shape(scream), no shape, shape(no scream)
+    base_pattern = [
+        ("blank", 4.0, False),   # no shape
+        ("p", 6.0, False),       # shape without screaming
+        ("blank", 4.0, False),   # no shape
+        ("p", 6.0, True),        # shape with screaming
+        ("blank", 4.0, False),   # no shape
+        ("p", 6.0, False)        # shape without screaming
+    ]
+
+    # Repeat the pattern to fill BLOCK_LENGTH (120 seconds)
+    pattern = []
+    time_so_far = 0
+    while time_so_far < BLOCK_LENGTH:
+        for image_type, duration, play_scream in base_pattern:
+            if time_so_far >= BLOCK_LENGTH:
+                break
+            # Adjust duration for the last segment to exactly fill remaining time
+            remaining_time = BLOCK_LENGTH - time_so_far
+            actual_duration = min(duration, remaining_time)
+            pattern.append((image_type, actual_duration, play_scream))
+            time_so_far += actual_duration
+
+    for _, (image_type, duration, play_scream) in enumerate(pattern):
+        period_start = time.time()
+        period_end = period_start + duration
+
+        # Set the appropriate image
+        if image_type == "blank":
+            image.image = f"./img/blank.jpeg"
+        elif image_type == "p":
+            image.image = f"{PATH}P_{params['language'][0]}{SUFFIX}"
+
+        image.setSize((2, 2))
+
+        # Play scream sound if requested (only for P shape images)
+        sound_played = False
+        if play_scream and image_type == "p":
+            # Play scream sound for 1.5 seconds at the start of this period
+            sound_path = "./sounds/shock_sound_1.mp3"
+            soundToPlay = sound.Sound(sound_path)
+            now = ptb.GetSecs()
+            soundToPlay.play(when=now)
+            sound_played = True
+            # Note: We don't wait for the sound to finish completely here
+            # as we want to continue showing the image while sound plays
+
+        # Wait for the period duration
+        while time.time() < period_end:
+            # Draw the image
+            image.draw()
+            window.update()
+            window.mouseVisible = False
+
+            # Collect fear ratings and update dataframes (similar to wait_in_condition)
+            dict_for_df = dataHandler.create_dict_for_df(params=params, Step="Game", Block=blockNum, Scenario=CONDITIONS["P"])
+            dict_for_df["CurrentTime"] = round(time.time() - params["startTime"], 2)
+            dict_for_df["TimeInCondition"] = round(time.time() - period_start, 2)
+
+            # Add fear rating if we want to collect it during this period
+            # For simplicity, we'll skip fear collection during these patterned periods
+            # but we can add it back if needed
+
+            mini_df = pd.concat([mini_df, pd.DataFrame.from_records([dict_for_df])])
+
+            # Record physiological events if needed
+            if params["recordPhysio"] and ser is not None:
+                # Send appropriate event code based on what's being shown
+                if image_type == "blank":
+                    event_code = 50  # Blank screen event
+                elif image_type == "p":
+                    if play_scream:
+                        event_code = 150  # P shape with scream
+                    else:
+                        event_code = 100  # P shape without scream
+                else:
+                    event_code = 10  # Default
+
+                dict_for_df["ScenarioIndex"] = event_code
+                serialHandler.report_event(ser, dict_for_df["ScenarioIndex"])
+                # Clear the scenario index for next recording
+                dict_for_df.pop("ScenarioIndex", None)
+
+            # Check for escape
+            keyboard = io.devices.keyboard
+            for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
+                if event.key == "escape":
+                    dataHandler.export_raw_data(params, df)
+                    window.close()
+                    core.quit()
+
+            # Small wait to prevent hogging CPU
+            core.wait(0.01)
+
+        # Stop sound if it was playing (though it should have finished after 1.5 seconds)
+        if sound_played:
+            # Sound should naturally stop after ~1.5 seconds from play time
+            pass
 
     dataHandler.save_backup(params=params, fullDF=df, miniDF=mini_df)
 
