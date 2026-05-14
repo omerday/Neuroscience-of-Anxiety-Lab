@@ -9,6 +9,10 @@ import psychtoolbox as ptb
 import dataHandler
 import serialHandler
 
+# Global dictionary to track U condition occurrences per block
+# Format: {blockNum: count_of_U_conditions_seen}
+_u_condition_tracker = {}
+
 PATH = "./img/blocks/"
 SUFFIX = ".jpeg"
 
@@ -64,7 +68,11 @@ def run_condition(window: visual.Window, image: visual.ImageStim, params: dict, 
     if condition == 'P':
         return run_p_condition_pattern(window, image, params, io, df, mini_df, blockNum, ser, fear_level)
 
-    # Original N and U condition handling
+    # Special handling for U condition with the requested pattern
+    if condition == 'U':
+        return run_u_condition_pattern(window, image, params, io, df, mini_df, blockNum, ser, fear_level)
+
+    # Original N condition handling
     if not params["skipStartle"]:
         startle_times = helpers.randomize_startles(cue_times)
     else:
@@ -395,3 +403,137 @@ def initiate_shock(window: visual.Window, params: dict, dict_for_df: dict, df: p
     dict_for_df.pop("Shock")
     dict_for_df["ScenarioIndex"] -= SHOCK_EVENT_INDEX
     return df, mini_df
+
+
+def run_u_condition_pattern(window: visual.Window, image: visual.ImageStim, params: dict, io, df: pd.DataFrame,
+                           mini_df: pd.DataFrame, blockNum: int, ser=None, fear_level=5):
+    """
+    Run U condition with the specific pattern requested:
+    First U in block: show shape(no scream), move shape, show shape(scream when disappearing), show shape(no scream)
+    Second U in block: show shape(scream after first shape), show shape(no scream), move shape, show shape(no scream)
+    """
+    print(f"Starting U condition with special pattern for block {blockNum}")
+
+    # Initialize or get the tracker for this block
+    if blockNum not in _u_condition_tracker:
+        _u_condition_tracker[blockNum] = 0
+
+    # Increment the counter for this U condition
+    _u_condition_tracker[blockNum] += 1
+    u_occurrence = _u_condition_tracker[blockNum]
+
+    print(f"This is U occurrence #{u_occurrence} in block {blockNum}")
+
+    # Define timing for the U condition block (120 seconds total)
+    # We'll divide it into 4 equal segments of 30 seconds each
+    segment_duration = BLOCK_LENGTH // 4  # 30 seconds each
+
+    if u_occurrence == 1:
+        # First U in the block: shape(no scream), move shape, shape(scream when disappearing), shape(no scream)
+        u_pattern = [
+            ("shape", segment_duration, False),   # shape, no scream
+            ("moving_shape", segment_duration, False),  # moving shape, no scream
+            ("shape", segment_duration, True),    # shape, scream (when disappearing)
+            ("shape", segment_duration, False)    # shape, no scream
+        ]
+    else:  # u_occurrence == 2
+        # Second U in the block: shape(scream after first shape), shape(no scream), move shape, shape(no scream)
+        u_pattern = [
+            ("shape", segment_duration, True),    # shape, scream (after first shape appears)
+            ("shape", segment_duration, False),   # shape, no scream
+            ("moving_shape", segment_duration, False),  # moving shape, no scream
+            ("shape", segment_duration, False)    # shape, no scream
+        ]
+
+    start_time = time.time()
+
+    for i, (image_type, duration, play_scream) in enumerate(u_pattern):
+        period_start = time.time()
+        period_end = period_start + duration
+
+        # Set the appropriate image
+        if image_type == "shape":
+            image.image = f"{PATH}U_{params['language'][0]}{SUFFIX}"
+        elif image_type == "moving_shape":
+            # For moving shape, we'll alternate between two positions or use animation
+            # For simplicity, we'll use the same shape image but note it's "moving" in our tracking
+            image.image = f"{PATH}U_{params['language'][0]}{SUFFIX}"
+
+        image.setSize((2, 2))
+
+        # Play scream sound if requested (only for U shape images)
+        sound_played = False
+        scream_start_time = None
+
+        if play_scream and image_type in ["shape", "moving_shape"]:
+            # Calculate when to play the scream sound based on the pattern
+            if u_occurrence == 1 and i == 2:  # First U: scream during third segment (when shape disappears)
+                # Play scream sound at the END of this period (last 1.5 seconds)
+                scream_start_time = period_end - 1.5
+            elif u_occurrence == 2 and i == 0:  # Second U: scream during first segment (right after shape appears)
+                # Play scream sound at the BEGINNING of this period
+                scream_start_time = period_start
+
+        # Wait for the period duration
+        while time.time() < period_end:
+            # Draw the image
+            image.draw()
+            window.update()
+            window.mouseVisible = False
+
+            # Handle scream sound timing
+            if play_scream and image_type in ["shape", "moving_shape"] and scream_start_time is not None:
+                if time.time() >= scream_start_time and not sound_played:
+                    # Play the scream sound
+                    sound_path = "./sounds/shock_sound_1.mp3"
+                    soundToPlay = sound.Sound(sound_path)
+                    now = ptb.GetSecs()
+                    soundToPlay.play(when=now)
+                    sound_played = True
+                    # Note: We don't wait for the sound to finish completely here
+                    # as we want to continue showing the image while sound plays
+
+            # Collect fear ratings and update dataframes (similar to wait_in_condition)
+            dict_for_df = dataHandler.create_dict_for_df(params=params, Step="Game", Block=blockNum, Scenario=CONDITIONS["U"])
+            dict_for_df["CurrentTime"] = round(time.time() - params["startTime"], 2)
+            dict_for_df["TimeInCondition"] = round(time.time() - period_start, 2)
+
+            mini_df = pd.concat([mini_df, pd.DataFrame.from_records([dict_for_df])])
+
+            # Record physiological events if needed
+            if params["recordPhysio"] and ser is not None:
+                # Send appropriate event code based on what's being shown
+                if image_type == "shape":
+                    if play_scream and not sound_played and time.time() >= (scream_start_time if scream_start_time else 0):
+                        event_code = 250  # U shape with scream
+                    else:
+                        event_code = 200  # U shape without scream
+                elif image_type == "moving_shape":
+                    event_code = 220  # U moving shape
+                else:
+                    event_code = 10  # Default
+
+                dict_for_df["ScenarioIndex"] = event_code
+                serialHandler.report_event(ser, dict_for_df["ScenarioIndex"])
+                # Clear the scenario index for next recording
+                dict_for_df.pop("ScenarioIndex", None)
+
+            # Check for escape
+            keyboard = io.devices.keyboard
+            for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
+                if event.key == "escape":
+                    dataHandler.export_raw_data(params, df)
+                    window.close()
+                    core.quit()
+
+            # Small wait to prevent hogging CPU
+            core.wait(0.01)
+
+        # Stop sound if it was playing (though it should have finished after 1.5 seconds)
+        if sound_played:
+            # Sound should naturally stop after ~1.5 seconds from play time
+            pass
+
+    dataHandler.save_backup(params=params, fullDF=df, miniDF=mini_df)
+
+    return fear_level, df, mini_df
