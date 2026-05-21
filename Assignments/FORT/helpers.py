@@ -152,16 +152,12 @@ def play_sound_and_wait(window: visual.Window, io, params: dict, df: pd.DataFram
         for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
             if event.key == "escape":
                 soundToPlay.stop()
-                dataHandler.export_raw_data(params, df)
-                window.close()
-                core.quit()
+                return
         core.wait(0.05)
     while True:
         for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
             if event.key == "escape":
-                dataHandler.export_raw_data(params, df)
-                window.close()
-                core.quit()
+                return
             elif event.key == " ":
                 return
         core.wait(0.05)
