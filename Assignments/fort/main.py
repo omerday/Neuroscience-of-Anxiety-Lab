@@ -25,10 +25,11 @@ import serialHandler
 #   4. Start screen
 #   5. Block 1: N/P/U in randomized order
 #   6. VAS round 2
-#   7. 5-minute break screen
-#   8. Block 2: N/P/U in a new randomized order
-#   9. VAS round 3
-#  10. Data export + finalization
+#   7. Break screen (params['breakDuration'])
+#   8. Second calibration (fixation + params['calibrationTime'])
+#   9. Block 2: N/P/U in a new randomized order
+#  10. VAS round 3
+#  11. Data export + finalization
 # ---------------------------------------------------------------------------
 
 io = launchHubServer()
@@ -126,10 +127,13 @@ for ch in block1_sequence:
 # 6. VAS round 2
 df, mini_df = VAS.vas(window, params, df, mini_df, io, 2)
 
-# 7. 5-minute break screen
+# 7. Break screen
 df, mini_df = instructionsScreen.break_screen(window, image, params, df, mini_df, io)
 
-# 8. Block 2 — another random permutation of N, P, U
+# 8. Second calibration — same fixation + wait_for_calibration as used in instructions (slide 3)
+df, mini_df = instructionsScreen.pre_block_calibration(params, window, image, io, df, mini_df, ser)
+
+# 9. Block 2 — another random permutation of N, P, U
 fear_level = 5
 sounds_in_order = helpers.randomize_sounds()
 block2_sequence = ["N", "P", "U"]

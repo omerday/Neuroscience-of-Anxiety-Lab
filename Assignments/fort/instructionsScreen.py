@@ -170,3 +170,25 @@ def break_screen(window: visual.Window, image: visual.ImageStim, params: dict, d
         core.wait(0.05)
 
     return df, mini_df
+
+
+def pre_block_calibration(params: dict, window: visual.Window, image: visual.ImageStim, io,
+                           df: pd.DataFrame, mini_df: pd.DataFrame, ser=None):
+    """
+    Runs a calibration period (fixation cross + wait) immediately before Block 2.
+    Reuses helpers.wait_for_calibration — same BioPac event (99), same Step="Calibration" logging,
+    same params['calibrationTime'] duration as the initial calibration in the instructions.
+    Skipped entirely if params['skipCalibration'] is True, matching initial calibration behavior.
+    """
+    if params["skipCalibration"]:
+        return df, mini_df
+
+    dict_for_df = dataHandler.create_dict_for_df(params, Step="Calibration")
+
+    image.image = f"./img/plus{SUFFIX}"
+    image.setSize((2, 2))
+    image.draw()
+    window.update()
+
+    df, mini_df = helpers.wait_for_calibration(window, params, io, df, mini_df, dict_for_df, ser)
+    return df, mini_df
