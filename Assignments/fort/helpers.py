@@ -356,3 +356,64 @@ def randomize_sounds():
     print(sounds_in_order)
     return sounds_in_order
 
+
+def randomize_shock_fort(cues: list, startles: list, condition: str, blockNum: int, params: dict):
+    """
+    Fort-specific shock timing. Replaces NPU's randomize_shock for the Fort experiment.
+
+    P condition — shock is forced into a specific cue depending on block:
+        Block 1: shock inside 2nd cue (index 1)
+        Block 2: shock inside 3rd cue (index 2)
+        Offset within the cue uses the same NPU logic:
+            - skipStartle=False: 6–8s after cue onset (leaves room for startle first)
+            - skipStartle=True:  2–10s after cue onset
+        The in-cue startle is relocated (same NPU conflict-resolution) when startles are active.
+
+    U condition — shock is forced to exactly 13s after a specific cue onset:
+        Block 1: 13s after 2nd cue onset (index 1)
+        Block 2: 13s after 1st cue onset (index 0)
+        CUE_LENGTH is 12s, so the shock lands 1s after the cue disappears → out-of-cue event.
+        No collision resolution is needed because the shock is outside every cue window.
+
+    N condition — no shock (returns sentinel 0, identical to NPU).
+
+    Returns: (shock_time_seconds_relative, startles)
+    """
+    random.seed()
+
+    if condition == 'N':
+        return 0, startles
+
+    if condition == 'P':
+        # Block 1 → 2nd cue (0-indexed: 1), Block 2 → 3rd cue (0-indexed: 2)
+        cue_for_shock = 1 if blockNum == 1 else 2
+        if params["skipStartle"]:
+            shock_time = round(cues[cue_for_shock] + random.uniform(2, 10), 2)
+        else:
+            shock_time = round(cues[cue_for_shock] + random.uniform(6, 8), 2)
+            # Relocate the in-cue startle so it precedes the shock with enough gap
+            cue_time = cues[cue_for_shock]
+            new_startle = round(cue_time + random.uniform(1.5, 3.5), 2)
+            for startle in list(startles):
+                if cue_time < startle < cue_time + blocksInfra.CUE_LENGTH:
+                    startles.remove(startle)
+                    startles.append(new_startle)
+                    startles.sort()
+
+        print(f"[Fort] P shock forced to cue index {cue_for_shock} → {shock_time}s")
+        print(f"[Fort] Final startles: {startles}")
+        return shock_time, startles
+
+    if condition == 'U':
+        # Block 1 → 13s after 2nd cue onset, Block 2 → 13s after 1st cue onset
+        # 13 > CUE_LENGTH (12) → shock is always outside the cue window
+        cue_index = 1 if blockNum == 1 else 0
+        shock_time = round(cues[cue_index] + 13, 2)
+
+        print(f"[Fort] U shock forced to {shock_time}s (13s after cue index {cue_index})")
+        print(f"[Fort] Final startles: {startles}")
+        return shock_time, startles
+
+    # Fallback — should never be reached
+    return 0, startles
+

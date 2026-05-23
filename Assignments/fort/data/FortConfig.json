@@ -1,0 +1,23 @@
+{
+   "Subject": "123",
+   "session": 1,
+   "blocks": 2,
+   "gender": "Female",
+   "language": "Hebrew",
+   "shockType": "Sound",
+   "skipStartle": false,
+   "recordPhysio": false,
+   "skipInstructions": false,
+   "skipCalibration": false,
+   "calibrationTime": 2,
+   "breakDuration": 10,
+   "fullScreen": true,
+   "saveDataAtQuit": true,
+   "saveConfig": true,
+   "screenSize": [
+      1024,
+      768
+   ],
+   "startTime": 1779538377.4957938,
+   "port": "COM4"
+}

@@ -82,9 +82,8 @@ def run_condition(window: visual.Window, image: visual.ImageStim, params: dict, 
     if condition == 'N':
         shock_time = 0
     else:
-        # Randomize shock time
-        shock_time, startle_times = helpers.randomize_shock(cue_times, startle_times,
-                                                            True if condition == 'P' else False, params)
+        # Fort: use block-aware shock timing instead of NPU's fully randomized version
+        shock_time, startle_times = helpers.randomize_shock_fort(cue_times, startle_times, condition, blockNum, params)
         shock_time = shock_time + time.time()
 
     # Make sure cues, startles and shocks are well placed, so we will have a startle every cue onset/offset,

@@ -47,11 +47,13 @@ params = {
     "skipStartle": configDialogBank[5],
     "recordPhysio": configDialogBank[6],
     "skipInstructions": configDialogBank[7],
-    "calibrationTime": 2,
     "skipCalibration": configDialogBank[8],
-    "fullScreen": configDialogBank[9] if debug is True else True,
-    "saveDataAtQuit": configDialogBank[10] if debug is True else True,
-    "saveConfig": configDialogBank[11] if debug is True else True,
+    # Configurable durations — set from the startup dialog
+    "calibrationTime": configDialogBank[9],   # seconds; default 2
+    "breakDuration": configDialogBank[10],    # seconds; default 300 (5 min)
+    "fullScreen": configDialogBank[11] if debug is True else True,
+    "saveDataAtQuit": configDialogBank[12] if debug is True else True,
+    "saveConfig": configDialogBank[13] if debug is True else True,
     "screenSize": (1024, 768),
     "startTime": time.time(),
     "port": "COM4",

@@ -38,6 +38,8 @@ def get_user_input(debug=False):
     userInput.addField('Record Physiology', True if not configExists else loadedData.get('recordPhysio', True))
     userInput.addField('Skip Instructions', False if not configExists else loadedData.get('skipInstructions', False))
     userInput.addField('Skip Calibration', False if not configExists else loadedData.get('skipCalibration', False))
+    userInput.addField('Calibration Duration (sec)', 2 if not configExists else loadedData.get('calibrationTime', 2))
+    userInput.addField('Break Duration (sec)', 300 if not configExists else loadedData.get('breakDuration', 300))
     if debug:
         userInput.addField('Full Screen', True if not configExists else loadedData.get('fullScreen', True))
         userInput.addField('Save Data at Unexpected Quit', False if not configExists else loadedData.get('saveDataAtQuit', False))

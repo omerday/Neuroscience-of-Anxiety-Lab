@@ -17,7 +17,7 @@ STARTLE_SLIDE = 30
 RATING_SLIDE = 29
 CALIBRATION_SLIDE = 3
 
-BREAK_DURATION = 300  # 5-minute break between blocks (seconds)
+# Break duration is now read from params['breakDuration'] (set in configDialog, default 300s)
 
 
 def show_instructions(params: dict, window: visual.Window, img: visual.ImageStim, io, df: pd.DataFrame,
@@ -158,7 +158,7 @@ def break_screen(window: visual.Window, image: visual.ImageStim, params: dict, d
     image.draw()
     window.update()
 
-    break_end_time = time.time() + BREAK_DURATION
+    break_end_time = time.time() + params['breakDuration']
     while time.time() < break_end_time:
         dict_for_df["CurrentTime"] = round(time.time() - params["startTime"], 2)
         df = pd.concat([df, pandas.DataFrame.from_records([dict_for_df])])
