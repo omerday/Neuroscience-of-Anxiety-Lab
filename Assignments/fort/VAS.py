@@ -120,6 +120,11 @@ def display_vas(window: visual.Window, params:dict, text, labels, Df: pandas.Dat
         textItem = visual.TextStim(window, text=text, height=.12, units='norm', pos=[0, 0.3], wrapWidth=2,
                                    languageStyle="LTR", font="Open Sans", color="Black")
 
+    # Allow Space to accept the default value (markerStart=5) without requiring arrow-key movement first.
+    # Without this, markerPlacedBySubject stays False and the accept-key handler is never triggered,
+    # causing the while-loop to freeze when Enter/Space is pressed immediately.
+    scale.markerPlacedBySubject = True
+
     dict_for_df = dataHandler.create_dict_for_df(params, Step="VAS", Section='VAS', VASQuestionNumber=questionNo, Round=roundNum)
 
     core.wait(0.05)
