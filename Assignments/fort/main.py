@@ -20,14 +20,14 @@ import serialHandler
 # Fort Experiment Flow
 #
 #   1. Instructions (same as NPU)
-#   2. Calibration / startle habituation (~1 min, same as NPU)
+#   2. Calibration 1 (habituation + params['calibrationTime1'])
 #   3. VAS round 1 (participant state questions)
 #   4. Start screen
 #   5. Block 1: N/P/U in randomized order
 #   6. VAS round 2
-#   7. Break screen (params['breakDuration'])
-#   8. Second calibration (fixation + params['calibrationTime'])
-#   9. Block 2: N/P/U in a new randomized order
+#   7. Calibration 2 (fixation + params['calibrationTime2'])
+#   8. Block 2: N/P/U in a new randomized order
+#   9. Calibration 3 (fixation + params['calibrationTime3'])
 #  10. VAS round 3
 #  11. Data export + finalization
 # ---------------------------------------------------------------------------
@@ -49,12 +49,15 @@ params = {
     "recordPhysio": configDialogBank[6],
     "skipInstructions": configDialogBank[7],
     "skipCalibration": configDialogBank[8],
-    # Configurable durations — set from the startup dialog
-    "calibrationTime": configDialogBank[9],   # seconds; default 2
-    "breakDuration": configDialogBank[10],    # seconds; default 300 (5 min)
-    "fullScreen": configDialogBank[11] if debug is True else True,
-    "saveDataAtQuit": configDialogBank[12] if debug is True else True,
-    "saveConfig": configDialogBank[13] if debug is True else True,
+    # Three independent calibration durations — each set from the startup dialog
+    "calibrationTime1": configDialogBank[9],   # Calibration 1: inside instructions (slide 3)
+    "calibrationTime2": configDialogBank[10],  # Calibration 2: between blocks
+    "calibrationTime3": configDialogBank[11],  # Calibration 3: after block 2
+    # calibrationTime is set dynamically before each phase (see below)
+    "calibrationTime": configDialogBank[9],    # initialised to cal1; overwritten per phase
+    "fullScreen": configDialogBank[12] if debug is True else True,
+    "saveDataAtQuit": configDialogBank[13] if debug is True else True,
+    "saveConfig": configDialogBank[14] if debug is True else True,
     "screenSize": (1024, 768),
     "startTime": time.time(),
     "port": "COM4",
@@ -94,11 +97,12 @@ temp_dict["CurrentTime"] = 0.0
 mini_df = pd.concat([mini_df, pd.DataFrame.from_records([temp_dict])])
 del temp_dict
 
-# 1. Instructions
+# 1. Instructions — calibration 1 fires on slide 3 inside show_instructions
+params["calibrationTime"] = params["calibrationTime1"]
 if not params["skipInstructions"]:
     df, mini_df = instructionsScreen.show_instructions(params, window, image, io, df, mini_df, ser)
 
-# 2. Calibration / startle habituation (~1 min)
+# 2. Calibration 1 / startle habituation (~1 min)
 if not params["skipStartle"]:
     df, mini_df = helpers.startle_habituation_sequence(window, image, params, io, df, mini_df, ser)
 
@@ -127,13 +131,11 @@ for ch in block1_sequence:
 # 6. VAS round 2
 df, mini_df = VAS.vas(window, params, df, mini_df, io, 2)
 
-# 7. Break screen
-df, mini_df = instructionsScreen.break_screen(window, image, params, df, mini_df, io)
-
-# 8. Second calibration — same fixation + wait_for_calibration as used in instructions (slide 3)
+# 7. Calibration 2 — immediate transition between blocks (no break screen)
+params["calibrationTime"] = params["calibrationTime2"]
 df, mini_df = instructionsScreen.pre_block_calibration(params, window, image, io, df, mini_df, ser)
 
-# 9. Block 2 — another random permutation of N, P, U
+# 8. Block 2 — another random permutation of N, P, U
 fear_level = 5
 sounds_in_order = helpers.randomize_sounds()
 block2_sequence = ["N", "P", "U"]
@@ -149,7 +151,11 @@ for ch in block2_sequence:
     if ch != "N":
         sounds_in_order.pop(0)
 
-# 9. VAS round 3
+# 9. Calibration 3 — after block 2, before final VAS
+params["calibrationTime"] = params["calibrationTime3"]
+df, mini_df = instructionsScreen.pre_block_calibration(params, window, image, io, df, mini_df, ser)
+
+# 10. VAS round 3
 df, mini_df = VAS.vas(window, params, df, mini_df, io, 3)
 
 # 10. Export + finalization
