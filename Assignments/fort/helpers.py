@@ -14,6 +14,8 @@ import serialHandler
 
 HABITUATION_STARTLES = 9
 HABITUATION_EVENT = 80
+DEMO_SCREAM_EVENT = 90
+DEMO_STARTLE_EVENT = 91
 
 SOUNDS = ["./sounds/shock_sound_1.mp3", "./sounds/shock_sound_2.mp3"]
 
@@ -129,16 +131,21 @@ def wait_for_calibration(window: visual.Window, params, io, df: pd.DataFrame, mi
 
 
 def play_sound_and_wait(window: visual.Window, io, params: dict, df: pd.DataFrame,
-                        dict_for_df: dict, sound_type: str):
+                        dict_for_df: dict, sound_type: str, ser=None):
     sound_path = ""
+    demo_event = None
     if sound_type == "Scream":
         sound_path = "./sounds/shock_sound_1.mp3"
+        demo_event = DEMO_SCREAM_EVENT
     elif sound_type == "Startle":
         sound_path = "./sounds/startle_probe.wav"
+        demo_event = DEMO_STARTLE_EVENT
     soundToPlay = sound.Sound(sound_path)
     core.wait(3)
     now = ptb.GetSecs()
     soundToPlay.play(when=now)
+    if ser is not None and demo_event is not None:
+        serialHandler.report_event(ser, demo_event)
     time_to_finish = time.time() + 2
     keyboard = io.devices.keyboard
     while time.time() < time_to_finish:

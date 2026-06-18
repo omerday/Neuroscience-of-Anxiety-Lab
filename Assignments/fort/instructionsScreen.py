@@ -50,11 +50,11 @@ def show_instructions(params: dict, window: visual.Window, img: visual.ImageStim
                     df, mini_df = helpers.wait_for_calibration(window, params, io, df, mini_df, dict_for_df, ser)
                     dict_for_df["Step"] = "Instructions"
                 elif i == SHOCK_SLIDE:
-                    df = helpers.play_sound_and_wait(window, io, params, df, dict_for_df, "Scream")
+                    df = helpers.play_sound_and_wait(window, io, params, df, dict_for_df, "Scream", ser)
                 elif i == RATING_SLIDE:
                     df = helpers.wait_for_space_with_rating_scale(window, img, io, params, df, dict_for_df)
                 elif i == STARTLE_SLIDE:
-                    df = helpers.play_sound_and_wait(window, io, params, df, dict_for_df, "Startle")
+                    df = helpers.play_sound_and_wait(window, io, params, df, dict_for_df, "Startle", ser)
                 else:
                     df = helpers.wait_for_space(window, io, params, df, dict_for_df)
 
