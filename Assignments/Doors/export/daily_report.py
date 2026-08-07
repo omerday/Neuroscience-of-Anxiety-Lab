@@ -27,6 +27,7 @@ import os
 import smtplib
 import ssl
 import sys
+import time
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from email.message import EmailMessage
@@ -94,6 +95,7 @@ class Session:
 def fetch_sessions(since: datetime, until: datetime) -> list[Session]:
     """Sessions whose sessionTimestamp falls in [since, until)."""
     from google.cloud import firestore
+    from google.cloud.firestore_v1.base_query import FieldFilter
     from google.oauth2 import service_account
 
     raw = os.environ.get("FIREBASE_SERVICE_ACCOUNT", "").strip()
@@ -111,10 +113,12 @@ def fetch_sessions(since: datetime, until: datetime) -> list[Session]:
     since_ms = int(since.timestamp() * 1000)
     until_ms = int(until.timestamp() * 1000)
 
+    # FieldFilter rather than the positional where(field, op, value) form, which is deprecated
+    # and would break on a future google-cloud-firestore release.
     query = (
         client.collection(COLLECTION)
-        .where("sessionTimestamp", ">=", since_ms)
-        .where("sessionTimestamp", "<", until_ms)
+        .where(filter=FieldFilter("sessionTimestamp", ">=", since_ms))
+        .where(filter=FieldFilter("sessionTimestamp", "<", until_ms))
     )
     return [parse_session(doc.id, doc.to_dict() or {}) for doc in query.stream()]
 
@@ -319,15 +323,35 @@ def send_email(subject: str, body: str, filename: str, csv_text: str) -> None:
     )
 
     context = ssl.create_default_context()
-    if port == 465:
-        with smtplib.SMTP_SSL(host, port, context=context, timeout=60) as server:
-            server.login(user, password)
-            server.send_message(message)
-    else:
-        with smtplib.SMTP(host, port, timeout=60) as server:
-            server.starttls(context=context)
-            server.login(user, password)
-            server.send_message(message)
+
+    def attempt() -> None:
+        if port == 465:
+            with smtplib.SMTP_SSL(host, port, context=context, timeout=60) as server:
+                server.login(user, password)
+                server.send_message(message)
+        else:
+            with smtplib.SMTP(host, port, timeout=60) as server:
+                server.starttls(context=context)
+                server.login(user, password)
+                server.send_message(message)
+
+    # A failed run does NOT get retried by tomorrow's run - tomorrow covers tomorrow's window,
+    # so a day lost here needs a manual backfill. Worth a few retries on transient network or
+    # greylisting failures before giving up.
+    last_error: Exception | None = None
+    for delay in (0, 30, 120):
+        if delay:
+            print(f"Send failed, retrying in {delay}s...")
+            time.sleep(delay)
+        try:
+            attempt()
+            return
+        except smtplib.SMTPAuthenticationError:
+            raise  # Bad credentials will never succeed on retry.
+        except (smtplib.SMTPException, OSError) as exc:
+            last_error = exc
+
+    raise RuntimeError(f"Could not send after 3 attempts: {last_error}")
 
 
 def require_env(name: str) -> str:
