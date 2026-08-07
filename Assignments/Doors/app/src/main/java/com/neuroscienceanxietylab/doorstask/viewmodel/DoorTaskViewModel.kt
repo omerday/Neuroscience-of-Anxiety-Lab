@@ -8,6 +8,8 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.neuroscienceanxietylab.doorstask.data.local.DoorsDatabase
 import com.neuroscienceanxietylab.doorstask.data.local.TaskDao
+import com.neuroscienceanxietylab.doorstask.data.model.InstructionPage
+import com.neuroscienceanxietylab.doorstask.data.model.InstructionPagesConfig
 import com.neuroscienceanxietylab.doorstask.data.model.SessionLog
 import com.neuroscienceanxietylab.doorstask.data.model.VASResponse
 import kotlinx.coroutines.Job
@@ -39,6 +41,8 @@ sealed class DoorOutcome {
 
 data class TaskUiState(
     val phase: TaskPhase = TaskPhase.LOADING,
+    val instructionPages: List<InstructionPage> = emptyList(),
+    val currentInstructionPageIndex: Int = 0,
     val totalCoins: Int = 0,
     val currentTrialIndex: Int = 0,
     val totalTrials: Int = 0,
@@ -90,11 +94,25 @@ class DoorTaskViewModel(application: Application) : AndroidViewModel(application
                     trialTimeoutMs = document.getLong("trialTimeoutMs") ?: 10000L
                 }
                 setupTrials()
-                _uiState.update { it.copy(phase = TaskPhase.INSTRUCTIONS, totalTrials = trialList.size) }
+                _uiState.update {
+                    it.copy(
+                        phase = TaskPhase.INSTRUCTIONS,
+                        totalTrials = trialList.size,
+                        instructionPages = InstructionPagesConfig.pages,
+                        currentInstructionPageIndex = 0
+                    )
+                }
             }
             .addOnFailureListener {
                 setupTrials()
-                _uiState.update { it.copy(phase = TaskPhase.INSTRUCTIONS, totalTrials = trialList.size) }
+                _uiState.update {
+                    it.copy(
+                        phase = TaskPhase.INSTRUCTIONS,
+                        totalTrials = trialList.size,
+                        instructionPages = InstructionPagesConfig.pages,
+                        currentInstructionPageIndex = 0
+                    )
+                }
             }
     }
 
@@ -138,6 +156,26 @@ class DoorTaskViewModel(application: Application) : AndroidViewModel(application
 
     fun onInstructionsFinished() { _uiState.update { it.copy(phase = TaskPhase.VAS_PRE, currentVasQuestionIndex = 0) } }
 
+    fun onInstructionNext() {
+        val currentState = _uiState.value
+        val lastPageIndex = currentState.instructionPages.lastIndex
+        if (lastPageIndex < 0) {
+            onInstructionsFinished()
+            return
+        }
+        if (currentState.currentInstructionPageIndex < lastPageIndex) {
+            _uiState.update { it.copy(currentInstructionPageIndex = it.currentInstructionPageIndex + 1) }
+        } else {
+            onInstructionsFinished()
+        }
+    }
+
+    fun onInstructionBack() {
+        _uiState.update {
+            it.copy(currentInstructionPageIndex = (it.currentInstructionPageIndex - 1).coerceAtLeast(0))
+        }
+    }
+
     // Start the task without showing instructions again (go directly to pre-task VAS)
     fun startTaskWithoutInstructions() {
         // Ensure trials are set up before proceeding (in case remote config hasn't loaded yet)
@@ -151,7 +189,13 @@ class DoorTaskViewModel(application: Application) : AndroidViewModel(application
 
     // Show instructions from the beginning again
     fun repeatInstructions() {
-        _uiState.update { it.copy(phase = TaskPhase.INSTRUCTIONS) }
+        _uiState.update {
+            it.copy(
+                phase = TaskPhase.INSTRUCTIONS,
+                instructionPages = InstructionPagesConfig.pages,
+                currentInstructionPageIndex = 0
+            )
+        }
     }
 
     fun onDistanceChanged(newDistance: Float) { if (!_uiState.value.isLockedIn) { _uiState.update { it.copy(currentDistance = newDistance) } } }

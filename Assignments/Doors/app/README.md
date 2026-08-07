@@ -119,20 +119,32 @@ All timing-related logic is centralized in the `DoorTaskViewModel` and `DoorTria
 
 ### Adding/Changing Instruction Slides
 
-1.  **Add the Image**: Place your new instruction image file (e.g., `my_new_instruction.png`) into the `app/src/main/res/drawable/` directory.
-2.  **Update the List**: Open `app/src/main/java/com/neuroscienceanxietylab/doorstask/ui/screens/InstructionScreen.kt` and add your new resource to the `instructionImages` list in the desired order.
+Instruction content is a list of `InstructionPage` entries, edited in one place:
+`app/src/main/java/com/neuroscienceanxietylab/doorstask/data/model/InstructionPagesConfig.kt`.
+`InstructionScreen.kt` just renders whatever that list contains — you shouldn't need to touch it.
+
+Each page is one of two kinds:
+
+1.  **Text page** — a title/body pair rendered as real text, with an optional centered image
+    (`foregroundImageRes`) and per-page colors/fonts. Use this when a page is simple: one heading,
+    one paragraph, at most one picture.
+2.  **Full-bleed slide page** — set `slideImageRes` to a drawable and the page renders that image
+    edge-to-edge instead of title/body. Use this for anything with positioned callouts, multiple
+    overlapping images, or baked-in labels that the text/single-image model can't express — export
+    the slide from the source deck as a PNG, add it to `app/src/main/res/drawable-nodpi/`, and point
+    `slideImageRes` at it. (`drawable-nodpi`, not `drawable`, so a full-screen image isn't upscaled
+    per pixel density.)
 
     ```kotlin
-    val instructionImages = remember {
-        listOf(
-            R.drawable.inst_en_1e,
-            R.drawable.inst_en_2e,
-            // ... add your new image here
-            R.drawable.my_new_instruction,
-            // ... other images
-        )
-    }
+    InstructionPage(
+        title = "Slide 09 (flattened)",
+        body = "Baked into inst_en_09.png — edit by re-exporting slide 9 from the source deck.",
+        slideImageRes = R.drawable.inst_en_09
+    )
     ```
+
+To add or remove a page, add or remove an entry in `InstructionPagesConfig.pages` — navigation
+(Back/Next, "Start Task" on the last page) is driven by the list's size automatically.
 
 ### Adding/Changing VAS Questions
 

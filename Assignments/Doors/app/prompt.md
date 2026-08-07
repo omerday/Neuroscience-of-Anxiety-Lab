@@ -74,7 +74,7 @@ prompt.md               # This file.
 
 -   **`ui/screens/DoorTrialScreen.kt`**: The main experiment screen. It is mostly stateless. It displays door images, a slider for distance, and outcome animations based on the ViewModel's state. It uses `Modifier.graphicsLayer` to apply a true zoom effect to the door image.
 
--   **`ui/screens/InstructionScreen.kt`**: Displays a sequence of instruction images. The list of images is currently hardcoded here.
+-   **`ui/screens/InstructionScreen.kt`**: Renders each instruction page from `InstructionPage` data (title/body text and styling, or a full-bleed `slideImageRes`). The page content itself lives in `data/model/InstructionPagesConfig.kt`, not in this file.
 
 -   **`data/` package**: Defines the schema for the local Room database. It contains three `@Entity` classes: `SessionLog` (for trial summaries), `EventLog` (for fine-grained distance changes), and `VASResponse`.
 
