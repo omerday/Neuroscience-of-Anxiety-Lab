@@ -1,0 +1,59 @@
+name: Doors daily CSV report
+
+on:
+  schedule:
+    # 18:00 UTC. GitHub's scheduler only understands UTC, and Israel shifts between UTC+2 and
+    # UTC+3, so this lands at 21:00 local in summer and 20:00 in winter. Either way it is after
+    # the 20:00 window boundary the script uses, which is what keeps the daily window gap-free.
+    - cron: "0 18 * * *"
+
+  # Lets you run it by hand from the Actions tab - for testing, or to backfill a date range.
+  workflow_dispatch:
+    inputs:
+      since:
+        description: "Start date YYYY-MM-DD (inclusive). Leave blank for the normal daily window."
+        required: false
+      until:
+        description: "End date YYYY-MM-DD (exclusive). Leave blank for the normal daily window."
+        required: false
+      dry_run:
+        description: "Print the CSV in the log instead of emailing it"
+        type: boolean
+        default: false
+
+# Never let a manual run and the scheduled run overlap.
+concurrency:
+  group: doors-daily-report
+  cancel-in-progress: false
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: Assignments/Doors/export/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r Assignments/Doors/export/requirements.txt
+
+      - name: Build and send report
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          REPORT_EMAIL_TO: ${{ secrets.REPORT_EMAIL_TO }}
+        run: |
+          cd Assignments/Doors/export
+          python daily_report.py \
+            ${{ inputs.since && format('--since {0}', inputs.since) || '' }} \
+            ${{ inputs.until && format('--until {0}', inputs.until) || '' }} \
+            ${{ inputs.dry_run && '--dry-run' || '' }}
