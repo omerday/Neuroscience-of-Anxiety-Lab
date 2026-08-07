@@ -59,6 +59,46 @@ fun InstructionScreen(viewModel: DoorTaskViewModel = viewModel()) {
                 .background(screenBackgroundColor)
         )
 
+        if (currentPage.slideImageRes != null) {
+            Image(
+                painter = painterResource(id = currentPage.slideImageRes),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Fit
+            )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter)
+                    .padding(horizontal = 24.dp, vertical = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Button(
+                    onClick = viewModel::onInstructionBack,
+                    enabled = currentInstructionIndex > 0,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = backButtonColor,
+                        contentColor = buttonTextColor
+                    )
+                ) {
+                    Text("Back")
+                }
+
+                Button(
+                    onClick = viewModel::onInstructionNext,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = nextButtonColor,
+                        contentColor = buttonTextColor
+                    )
+                ) {
+                    Text(if (currentInstructionIndex < pages.lastIndex) "Next" else "Start Task")
+                }
+            }
+            return@Box
+        }
+
         currentPage.backgroundImageRes?.let { imageRes ->
             Image(
                 painter = painterResource(id = imageRes),
