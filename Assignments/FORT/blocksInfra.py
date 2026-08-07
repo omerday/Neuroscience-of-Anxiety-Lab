@@ -1,0 +1,539 @@
+import pandas as pd
+from psychopy import visual, core, event, sound
+import random
+import helpers
+import time
+from psychopy.iohub.client.keyboard import Keyboard
+from psychopy.visual import ratingscale
+import psychtoolbox as ptb
+import dataHandler
+import serialHandler
+
+# Global dictionary to track U condition occurrences per block
+# Format: {blockNum: count_of_U_conditions_seen}
+_u_condition_tracker = {}
+
+PATH = "./img/blocks/"
+SUFFIX = ".jpeg"
+
+BLOCK_LENGTH = 120
+CUE_LENGTH = 12
+STARTLES_PER_BLOCK = 6
+
+FIXED_CUE_TIMES = [30, 60, 90]
+
+CONDITIONS = {"N": "Neutral", "P": "Predictable", "U": "Unpredictable"}
+
+SCENARIO_PREFIX = {"N": 0, "P": 100, "U": 200}
+STARTLE_EVENT_INDEX = 1
+SHOCK_EVENT_INDEX = 2
+CONDITION_START_INDEX = 10
+CUE_START_INDEX = 20
+CUE_END_INDEX = 30
+
+SCALE_LABEL_HEB = "רמת חרדה"
+SCALE_LABEL_ENG = "Anxiety Level"
+
+
+def run_condition(window: visual.Window, image: visual.ImageStim, params: dict, io, condition: str, df: pd.DataFrame,
+                  mini_df: pd.DataFrame, blockNum: int, ser=None, fear_level=5, sound=None):
+    """
+    The method is responsible for setting up a new condition - it randomizes cue and startle times, and shock time if necessary,
+    and loops through the different condition to launch wait_in_condition state for each of them.
+    Args:
+        window:
+        image:
+        params:
+        io:
+        condition:
+        df:
+        mini_df:
+        blockNum:
+        ser:
+        fear_level:
+        sound:
+
+    Returns: fear_level, df, mini_df
+
+    """
+    window.mouseVisible = False
+    if condition != "N" and condition != "P" and condition != "U":
+        print("Unknown condition " + condition)
+        return
+
+    print("Starting condition " + condition)
+    print("Randomizing times")
+
+    # Special handling for P condition to implement the requested pattern
+    if condition == 'P':
+        return run_p_condition_pattern(window, image, params, io, df, mini_df, blockNum, ser, fear_level)
+
+    # Special handling for U condition with the requested pattern
+    if condition == 'U':
+        return run_u_condition_pattern(window, image, params, io, df, mini_df, blockNum, ser, fear_level)
+
+    # Original N condition handling
+    if not params["skipStartle"]:
+        startle_times = helpers.randomize_startles(cue_times)
+    else:
+        startle_times = []
+
+    dict_for_df = dataHandler.create_dict_for_df(params=params, Step="Game", Block=blockNum, Scenario=CONDITIONS[condition])
+    dict_for_df["ScenarioIndex"] = SCENARIO_PREFIX[condition] + CONDITION_START_INDEX
+    dict_for_df["CurrentTime"] = round(time.time() - dict_for_df["StartTime"], 2)
+    condition_start = time.time()
+    dict_for_df["TimeInCondition"] = round(time.time() - condition_start, 2)
+    mini_df = pd.concat([mini_df, pd.DataFrame.from_records([dict_for_df])])
+
+    if params["recordPhysio"]:
+        serialHandler.report_event(ser, dict_for_df["ScenarioIndex"])
+    dict_for_df["ScenarioIndex"] = dict_for_df[
+                                       "ScenarioIndex"] - CONDITION_START_INDEX  # Remove the condition-start event, and only
+    # keep the condition we're in
+
+    if condition == 'N':
+        shock_time = 0
+    else:
+        # Randomize shock time
+        shock_time, startle_times = helpers.randomize_shock(cue_times, startle_times,
+                                                            True if condition == 'P' else False, params)
+        shock_time = shock_time + time.time()
+
+    # Make sure cues, startles and shocks are well placed, so we will have a startle every cue onset/offset,
+    # And that the shock will be a decent amount of time after a startle, and at the appropriate timing in terms of cues
+    cue_times, startle_times = helpers.prepare_cues_and_startles(cue_times, startle_times)
+
+    timing_index = 0
+    start_time = time.time()
+
+    while time.time() < start_time + BLOCK_LENGTH:
+        image.image = f"{PATH}{condition}_{params['language'][0]}{SUFFIX}"
+        image.setSize((2, 2))
+        image.draw()
+        window.update()
+        window.mouseVisible = False
+
+        fear_level, df, mini_df = launch_wait_sequence(params=params, window=window, image=image,
+                                                       end_time=cue_times[timing_index] if timing_index < 3
+                                                       else start_time + BLOCK_LENGTH,
+                                                       startles=startle_times, io=io, shock_time=shock_time,
+                                                       fear_level=fear_level,
+                                                       dict_for_df=dict_for_df, df=df, mini_df=mini_df, ser=ser,
+                                                       condition_start=condition_start, sound=sound)
+
+        if timing_index == 3:
+            pass
+        elif cue_times[timing_index] <= time.time() <= cue_times[timing_index] + 1:
+            print("Entering a cue")
+            current_cue_time = time.time()
+            image.image = f"{PATH}{condition}_{params['language'][0]}_Cue{SUFFIX}"
+            image.setSize((2, 2))
+            # image.draw()
+            # window.update()
+
+            fear_level, df, mini_df = launch_wait_sequence(params=params, window=window, image=image,
+                                                           end_time=current_cue_time + CUE_LENGTH,
+                                                           startles=startle_times, io=io, shock_time=shock_time,
+                                                           fear_level=fear_level,
+                                                           cue=True, dict_for_df=dict_for_df, df=df, mini_df=mini_df,
+                                                           ser=ser, condition_start=condition_start, sound=sound)
+            timing_index += 1
+            print("Leaving a cue")
+
+    dataHandler.save_backup(params=params, fullDF=df, miniDF=mini_df)
+
+    return fear_level, df, mini_df
+
+
+def run_p_condition_pattern(window: visual.Window, image: visual.ImageStim, params: dict, io, df: pd.DataFrame,
+                           mini_df: pd.DataFrame, blockNum: int, ser=None, fear_level=5):
+    """
+    Run P condition with the specific pattern requested:
+    no shape, shape(no scream), no shape, shape(scream), no shape, shape(no scream)
+    """
+    print("Starting P condition with special pattern")
+
+    # Define the sequence: (image_type, duration, play_scream)
+    # image_type: "blank" for blank screen, "p" for P shape image
+    # duration: in seconds
+    # play_scream: boolean whether to play scream sound during this period
+    # Base pattern: no shape, shape(no scream), no shape, shape(scream), no shape, shape(no scream)
+    base_pattern = [
+        ("blank", 4.0, False),   # no shape
+        ("p", 6.0, False),       # shape without screaming
+        ("blank", 4.0, False),   # no shape
+        ("p", 6.0, True),        # shape with screaming
+        ("blank", 4.0, False),   # no shape
+        ("p", 6.0, False)        # shape without screaming
+    ]
+
+    # Repeat the pattern to fill BLOCK_LENGTH (120 seconds)
+    pattern = []
+    time_so_far = 0
+    while time_so_far < BLOCK_LENGTH:
+        for image_type, duration, play_scream in base_pattern:
+            if time_so_far >= BLOCK_LENGTH:
+                break
+            # Adjust duration for the last segment to exactly fill remaining time
+            remaining_time = BLOCK_LENGTH - time_so_far
+            actual_duration = min(duration, remaining_time)
+            pattern.append((image_type, actual_duration, play_scream))
+            time_so_far += actual_duration
+
+    for _, (image_type, duration, play_scream) in enumerate(pattern):
+        period_start = time.time()
+        period_end = period_start + duration
+
+        # Set the appropriate image
+        if image_type == "blank":
+            image.image = f"./img/blank.jpeg"
+        elif image_type == "p":
+            image.image = f"{PATH}P_{params['language'][0]}{SUFFIX}"
+
+        image.setSize((2, 2))
+
+        # Play scream sound if requested (only for P shape images)
+        sound_played = False
+        if play_scream and image_type == "p":
+            # Play scream sound for 1.5 seconds at the start of this period
+            sound_path = "./sounds/shock_sound_1.mp3"
+            soundToPlay = sound.Sound(sound_path)
+            now = ptb.GetSecs()
+            soundToPlay.play(when=now)
+            sound_played = True
+            # Note: We don't wait for the sound to finish completely here
+            # as we want to continue showing the image while sound plays
+
+        # Wait for the period duration
+        while time.time() < period_end:
+            # Draw the image
+            image.draw()
+            window.update()
+            window.mouseVisible = False
+
+            # Collect fear ratings and update dataframes (similar to wait_in_condition)
+            dict_for_df = dataHandler.create_dict_for_df(params=params, Step="Game", Block=blockNum, Scenario=CONDITIONS["P"])
+            dict_for_df["CurrentTime"] = round(time.time() - params["startTime"], 2)
+            dict_for_df["TimeInCondition"] = round(time.time() - period_start, 2)
+
+            # Add fear rating if we want to collect it during this period
+            # For simplicity, we'll skip fear collection during these patterned periods
+            # but we can add it back if needed
+
+            mini_df = pd.concat([mini_df, pd.DataFrame.from_records([dict_for_df])])
+
+            # Record physiological events if needed
+            if params["recordPhysio"] and ser is not None:
+                # Send appropriate event code based on what's being shown
+                if image_type == "blank":
+                    event_code = 50  # Blank screen event
+                elif image_type == "p":
+                    if play_scream:
+                        event_code = 150  # P shape with scream
+                    else:
+                        event_code = 100  # P shape without scream
+                else:
+                    event_code = 10  # Default
+
+                dict_for_df["ScenarioIndex"] = event_code
+                serialHandler.report_event(ser, dict_for_df["ScenarioIndex"])
+                # Clear the scenario index for next recording
+                dict_for_df.pop("ScenarioIndex", None)
+
+            # Check for escape
+            keyboard = io.devices.keyboard
+            for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
+                if event.key == "escape":
+                    dataHandler.export_raw_data(params, df)
+                    window.close()
+                    core.quit()
+
+            # Small wait to prevent hogging CPU
+            core.wait(0.01)
+
+        # Stop sound if it was playing (though it should have finished after 1.5 seconds)
+        if sound_played:
+            # Sound should naturally stop after ~1.5 seconds from play time
+            pass
+
+    dataHandler.save_backup(params=params, fullDF=df, miniDF=mini_df)
+
+    return fear_level, df, mini_df
+
+
+def launch_wait_sequence(params: dict, window: visual.Window, image: visual.ImageStim, end_time, startles: list, io,
+                         dict_for_df: dict, df: pd.DataFrame, mini_df: pd.DataFrame, shock_time=0, fear_level=5,
+                         cue=False, ser=None, condition_start=0.0, sound=None):
+    """
+    The method prepares the command for launching the wait sequence from the "Helpers" module.
+    It takes the cues times, shock times (if there are any) and the end time of the current waiting sequence and organizes
+    them into a command.
+    """
+    if cue:
+        dict_for_df["CueStart"] = round(time.time() - condition_start, 2)
+        dict_for_df["ScenarioIndex"] += CUE_START_INDEX
+    else:
+        dict_for_df["ScenarioIndex"] += CUE_END_INDEX
+
+    if params["recordPhysio"]:
+        serialHandler.report_event(ser, dict_for_df["ScenarioIndex"])
+
+    dict_for_df["Cue"] = 1 if cue else 0
+    dict_for_df["CurrentTime"] = round(time.time() - dict_for_df["StartTime"], 2)
+    dict_for_df["TimeInCondition"] = round(time.time() - condition_start, 2)
+    mini_df = pd.concat([mini_df, pd.DataFrame.from_records([dict_for_df])])
+    df = pd.concat([df, pd.DataFrame.from_records([dict_for_df])])
+
+    startles_filtered = list(filter(lambda cue: time.time() <= cue <= end_time, startles))
+    print(f"startles_filtered: {startles_filtered}")
+    if shock_time != 0 and time.time() <= shock_time <= end_time:
+        print("starting wait with shock")
+        fear_level, df, mini_df = wait_in_condition(params=params, window=window, image=image,
+                                                    startle_times=startles_filtered,
+                                                    end_time=end_time, shock_time=shock_time, io=io,
+                                                    fear_level=fear_level,
+                                                    dict_for_df=dict_for_df, df=df, mini_df=mini_df, ser=ser,
+                                                    condition_start=condition_start, sound=sound)
+    else:
+        print("starting wait without shock")
+        fear_level, df, mini_df = wait_in_condition(window=window, image=image, startle_times=startles_filtered,
+                                                    end_time=end_time, params=params, io=io, fear_level=fear_level,
+                                                    dict_for_df=dict_for_df, df=df, mini_df=mini_df, ser=ser,
+                                                    condition_start=condition_start, sound=sound)
+
+    if cue:
+        dict_for_df["CueEnd"] = round(time.time() - condition_start, 2)
+        dict_for_df["CurrentTime"] = round(time.time() - dict_for_df["StartTime"], 2)
+        dict_for_df["TimeInCondition"] = round(time.time() - condition_start, 2)
+        mini_df = pd.concat([mini_df, pd.DataFrame.from_records([dict_for_df])])
+        dict_for_df.pop("CueEnd")
+        dict_for_df.pop("CueStart")
+        dict_for_df["ScenarioIndex"] -= CUE_START_INDEX
+    else:
+        dict_for_df["ScenarioIndex"] -= CUE_END_INDEX
+
+    return fear_level, df, mini_df
+
+
+def wait_in_condition(window: visual.Window, image: visual.ImageStim, startle_times: list, end_time: time,
+                      io, params: dict, dict_for_df: dict, df: pd.DataFrame, mini_df: pd.DataFrame, fear_level=5,
+                      shock_time=0, ser=None, condition_start=0.0, sound=None):
+    """
+    The method waits in the condition, plays startle/shock if needed, and collects fear level from the subject at any time.
+    Args:
+        window:
+        image:
+        startle_times:
+        end_time:
+        io:
+        params:
+        dict_for_df:
+        df:
+        mini_df:
+        fear_level:
+        shock_time:
+        ser:
+        condition_start:
+        sound:
+
+    Returns: scale.getRating(), df, mini_df
+
+    """
+    keyboard = io.devices.keyboard
+    scale = ratingscale.RatingScale(win=window, scale=None, labels=["0", "10"], low=0, high=10, markerStart=fear_level,
+                                    showAccept=False, markerColor="Gray", textColor="Black", lineColor="Black",
+                                    pos=(0, -window.size[1] / 2 + 150))
+
+    scale_label = visual.TextStim(win=window,
+                                 text=SCALE_LABEL_ENG if params["language"] == "English" else SCALE_LABEL_HEB,
+                                 pos=(0, -window.size[1] / 2 + 250), color="Black",
+                                 languageStyle="LTR" if params["language"] == "English" else "RTL", height=40)
+
+    while time.time() <= end_time:
+
+        # Rating Scale
+        image.draw()
+        scale.draw()
+        scale_label.draw()
+        window.flip()
+        window.mouseVisible=False
+
+        # Write to DF
+        dict_for_df["CurrentTime"] = round(time.time() - dict_for_df["StartTime"], 2)
+        dict_for_df["FearRating"] = scale.getRating()
+        df = pd.concat([df, pd.DataFrame.from_records([dict_for_df])])
+
+        # Startles and shocks
+        dict_for_df["TimeInCondition"] = round(time.time() - condition_start, 2)
+        if len(startle_times) == 0:
+            pass
+        elif startle_times[0] <= time.time() <= startle_times[0] + 0.5:
+            df, mini_df = helpers.play_startle(dict_for_df, df, mini_df, ser)
+            startle_times.remove(startle_times[0])
+        if shock_time <= time.time() <= shock_time + 0.3:
+            df, mini_df = initiate_shock(window, params, dict_for_df, df, mini_df, ser, sound)
+
+        # Escape
+        for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
+            if event.key == "escape":
+                dataHandler.export_raw_data(params, df)
+                dataHandler.export_summarized_dataframe(params, mini_df)
+                window.close()
+                core.quit()
+
+    print(f"Scale Rating: {scale.getRating()}")
+    return scale.getRating(), df, mini_df
+
+
+def initiate_shock(window: visual.Window, params: dict, dict_for_df: dict, df: pd.DataFrame, mini_df: pd.DataFrame, ser=None, sound=None):
+    dict_for_df["CurrentTime"] = round(time.time() - dict_for_df["StartTime"], 2)
+    dict_for_df["Shock"] = 1
+    dict_for_df["ScenarioIndex"] += SHOCK_EVENT_INDEX
+    mini_df = pd.concat([mini_df, pd.DataFrame.from_records([dict_for_df])])
+
+    if ser is not None:
+        serialHandler.report_event(ser, dict_for_df["ScenarioIndex"])
+
+    if params["shockType"] == "Shock":
+        # TODO: Add shock mechanism
+        pass
+    else:
+        df = helpers.play_shock_sound(dict_for_df, df, sound)
+
+    dict_for_df.pop("Shock")
+    dict_for_df["ScenarioIndex"] -= SHOCK_EVENT_INDEX
+    return df, mini_df
+
+
+def run_u_condition_pattern(window: visual.Window, image: visual.ImageStim, params: dict, io, df: pd.DataFrame,
+                           mini_df: pd.DataFrame, blockNum: int, ser=None, fear_level=5):
+    """
+    Run U condition with the specific pattern requested:
+    First U in block: show shape(no scream), move shape, show shape(scream when disappearing), show shape(no scream)
+    Second U in block: show shape(scream after first shape), show shape(no scream), move shape, show shape(no scream)
+    """
+    print(f"Starting U condition with special pattern for block {blockNum}")
+
+    # Initialize or get the tracker for this block
+    if blockNum not in _u_condition_tracker:
+        _u_condition_tracker[blockNum] = 0
+
+    # Increment the counter for this U condition
+    _u_condition_tracker[blockNum] += 1
+    u_occurrence = _u_condition_tracker[blockNum]
+
+    print(f"This is U occurrence #{u_occurrence} in block {blockNum}")
+
+    # Define timing for the U condition block (120 seconds total)
+    # We'll divide it into 4 equal segments of 30 seconds each
+    segment_duration = BLOCK_LENGTH // 4  # 30 seconds each
+
+    if u_occurrence == 1:
+        # First U in the block: shape(no scream), move shape, shape(scream when disappearing), shape(no scream)
+        u_pattern = [
+            ("shape", segment_duration, False),   # shape, no scream
+            ("moving_shape", segment_duration, False),  # moving shape, no scream
+            ("shape", segment_duration, True),    # shape, scream (when disappearing)
+            ("shape", segment_duration, False)    # shape, no scream
+        ]
+    else:  # u_occurrence == 2
+        # Second U in the block: shape(scream after first shape), shape(no scream), move shape, shape(no scream)
+        u_pattern = [
+            ("shape", segment_duration, True),    # shape, scream (after first shape appears)
+            ("shape", segment_duration, False),   # shape, no scream
+            ("moving_shape", segment_duration, False),  # moving shape, no scream
+            ("shape", segment_duration, False)    # shape, no scream
+        ]
+
+    start_time = time.time()
+
+    for i, (image_type, duration, play_scream) in enumerate(u_pattern):
+        period_start = time.time()
+        period_end = period_start + duration
+
+        # Set the appropriate image
+        if image_type == "shape":
+            image.image = f"{PATH}U_{params['language'][0]}{SUFFIX}"
+        elif image_type == "moving_shape":
+            # For moving shape, we'll alternate between two positions or use animation
+            # For simplicity, we'll use the same shape image but note it's "moving" in our tracking
+            image.image = f"{PATH}U_{params['language'][0]}{SUFFIX}"
+
+        image.setSize((2, 2))
+
+        # Play scream sound if requested (only for U shape images)
+        sound_played = False
+        scream_start_time = None
+
+        if play_scream and image_type in ["shape", "moving_shape"]:
+            # Calculate when to play the scream sound based on the pattern
+            if u_occurrence == 1 and i == 2:  # First U: scream during third segment (when shape disappears)
+                # Play scream sound at the END of this period (last 1.5 seconds)
+                scream_start_time = period_end - 1.5
+            elif u_occurrence == 2 and i == 0:  # Second U: scream during first segment (right after shape appears)
+                # Play scream sound at the BEGINNING of this period
+                scream_start_time = period_start
+
+        # Wait for the period duration
+        while time.time() < period_end:
+            # Draw the image
+            image.draw()
+            window.update()
+            window.mouseVisible = False
+
+            # Handle scream sound timing
+            if play_scream and image_type in ["shape", "moving_shape"] and scream_start_time is not None:
+                if time.time() >= scream_start_time and not sound_played:
+                    # Play the scream sound
+                    sound_path = "./sounds/shock_sound_1.mp3"
+                    soundToPlay = sound.Sound(sound_path)
+                    now = ptb.GetSecs()
+                    soundToPlay.play(when=now)
+                    sound_played = True
+                    # Note: We don't wait for the sound to finish completely here
+                    # as we want to continue showing the image while sound plays
+
+            # Collect fear ratings and update dataframes (similar to wait_in_condition)
+            dict_for_df = dataHandler.create_dict_for_df(params=params, Step="Game", Block=blockNum, Scenario=CONDITIONS["U"])
+            dict_for_df["CurrentTime"] = round(time.time() - params["startTime"], 2)
+            dict_for_df["TimeInCondition"] = round(time.time() - period_start, 2)
+
+            mini_df = pd.concat([mini_df, pd.DataFrame.from_records([dict_for_df])])
+
+            # Record physiological events if needed
+            if params["recordPhysio"] and ser is not None:
+                # Send appropriate event code based on what's being shown
+                if image_type == "shape":
+                    if play_scream and not sound_played and time.time() >= (scream_start_time if scream_start_time else 0):
+                        event_code = 250  # U shape with scream
+                    else:
+                        event_code = 200  # U shape without scream
+                elif image_type == "moving_shape":
+                    event_code = 220  # U moving shape
+                else:
+                    event_code = 10  # Default
+
+                dict_for_df["ScenarioIndex"] = event_code
+                serialHandler.report_event(ser, dict_for_df["ScenarioIndex"])
+                # Clear the scenario index for next recording
+                dict_for_df.pop("ScenarioIndex", None)
+
+            # Check for escape
+            keyboard = io.devices.keyboard
+            for event in keyboard.getKeys(etype=Keyboard.KEY_PRESS):
+                if event.key == "escape":
+                    dataHandler.export_raw_data(params, df)
+                    window.close()
+                    core.quit()
+
+            # Small wait to prevent hogging CPU
+            core.wait(0.01)
+
+        # Stop sound if it was playing (though it should have finished after 1.5 seconds)
+        if sound_played:
+            # Sound should naturally stop after ~1.5 seconds from play time
+            pass
+
+    dataHandler.save_backup(params=params, fullDF=df, miniDF=mini_df)
+
+    return fear_level, df, mini_df
