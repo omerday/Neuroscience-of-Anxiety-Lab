@@ -17,12 +17,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.neuroscienceanxietylab.doorstask.data.model.InstructionFontFamily
 import com.neuroscienceanxietylab.doorstask.data.model.InstructionImageAlignment
+import com.neuroscienceanxietylab.doorstask.data.model.InstructionOverlay
+import com.neuroscienceanxietylab.doorstask.data.model.InstructionOverlayType
 import com.neuroscienceanxietylab.doorstask.data.model.InstructionTextAlign
 import com.neuroscienceanxietylab.doorstask.viewmodel.DoorTaskViewModel
 
@@ -59,7 +62,69 @@ fun InstructionScreen(viewModel: DoorTaskViewModel = viewModel()) {
                 .background(screenBackgroundColor)
         )
 
-        if (currentPage.slideImageRes != null) {
+        if (currentPage.overlays.isNotEmpty()) {
+            BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+                val pageWidth = maxWidth
+                val pageHeight = maxHeight
+                currentPage.overlays.forEach { overlay ->
+                    val overlayModifier = Modifier
+                        .offset(x = pageWidth * overlay.xFraction, y = pageHeight * overlay.yFraction)
+                        .size(pageWidth * overlay.widthFraction, pageHeight * overlay.heightFraction)
+                    when (overlay.type) {
+                        InstructionOverlayType.IMAGE -> {
+                            if (overlay.imageRes != null) {
+                                Image(
+                                    painter = painterResource(id = overlay.imageRes),
+                                    contentDescription = null,
+                                    modifier = overlayModifier,
+                                    contentScale = ContentScale.Fit
+                                )
+                            }
+                        }
+                        InstructionOverlayType.TEXT -> {
+                            Text(
+                                text = overlay.text.orEmpty(),
+                                modifier = overlayModifier,
+                                fontSize = overlay.fontSizeSp.sp,
+                                fontWeight = if (overlay.bold) FontWeight.Bold else FontWeight.Normal,
+                                textAlign = toTextAlign(overlay.textAlign),
+                                color = parseColorHex(overlay.colorHex, fallback = Color.Black)
+                            )
+                        }
+                    }
+                }
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.BottomCenter)
+                        .padding(horizontal = 24.dp, vertical = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Button(
+                        onClick = viewModel::onInstructionBack,
+                        enabled = currentInstructionIndex > 0,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = backButtonColor,
+                            contentColor = buttonTextColor
+                        )
+                    ) {
+                        Text("Back")
+                    }
+
+                    Button(
+                        onClick = viewModel::onInstructionNext,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = nextButtonColor,
+                            contentColor = buttonTextColor
+                        )
+                    ) {
+                        Text(if (currentInstructionIndex < pages.lastIndex) "Next" else "Start Task")
+                    }
+                }
+            }
+        } else if (currentPage.slideImageRes != null) {
             Image(
                 painter = painterResource(id = currentPage.slideImageRes),
                 contentDescription = null,

@@ -128,23 +128,38 @@ Each page is one of two kinds:
 1.  **Text page** — a title/body pair rendered as real text, with an optional centered image
     (`foregroundImageRes`) and per-page colors/fonts. Use this when a page is simple: one heading,
     one paragraph, at most one picture.
-2.  **Full-bleed slide page** — set `slideImageRes` to a drawable and the page renders that image
-    edge-to-edge instead of title/body. Use this for anything with positioned callouts, multiple
-    overlapping images, or baked-in labels that the text/single-image model can't express — export
-    the slide from the source deck as a PNG, add it to `app/src/main/res/drawable-nodpi/`, and point
-    `slideImageRes` at it. (`drawable-nodpi`, not `drawable`, so a full-screen image isn't upscaled
-    per pixel density.)
+2.  **Overlay page** — set `overlays` to a list of `InstructionOverlay` entries (each `TEXT` or
+    `IMAGE`) positioned by fraction of the screen (`xFraction`/`yFraction`/`widthFraction`/
+    `heightFraction`, all `0f`-`1f`). Use this for anything with more than one picture or more than
+    one caption on the same page — every piece of text stays real, selectable text and every
+    picture stays a plain image; nothing is rendered as one flattened screenshot.
 
     ```kotlin
     InstructionPage(
-        title = "Slide 09 (flattened)",
-        body = "Baked into inst_en_09.png — edit by re-exporting slide 9 from the source deck.",
-        slideImageRes = R.drawable.inst_en_09
+        title = "Bars: Reward Side",
+        body = "",
+        overlays = listOf(
+            textOverlay(0.61f, 0.35f, 0.38f, 0.18f, "If the door opens, and it hides a fairy (50%): how many coins you'll win.", sizeSp = 18f),
+            imageOverlay(0.33f, 0.55f, 0.35f, 0.45f, R.drawable.inst_bars_generic),
+            textOverlay(0.75f, 0.65f, 0.22f, 0.09f, "+6 coins", sizeSp = 22f, bold = true, colorHex = "#1F7A3D")
+        )
     )
     ```
 
+    The fastest way to get a new overlay page's coordinates right is to open the source slide in
+    PowerPoint, select each shape, and read its position/size from the ruler as a fraction of the
+    full slide width/height — that's exactly how the current 17 overlay pages were built. There is
+    also a `slideImageRes` field (full-bleed single image) kept on the model for a page that is
+    genuinely just one picture with no text at all, but no current page uses it.
+
 To add or remove a page, add or remove an entry in `InstructionPagesConfig.pages` — navigation
 (Back/Next, "Start Task" on the last page) is driven by the list's size automatically.
+
+Eight of the source deck's 28 slides are deliberately not in `InstructionPagesConfig.pages`: one
+empty separator, one obsolete "press 'r' to repeat" slide (this app already has its own Repeat
+Instructions button), and six slides that describe desktop mouse-click/spacebar controls from an
+older, non-touch version of this task. See the comment at the top of `InstructionPagesConfig.kt`
+for the full list — if this app ever grows a desktop/mouse mode, those are the slides to revisit.
 
 ### Adding/Changing VAS Questions
 
