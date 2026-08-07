@@ -96,95 +96,94 @@ fun InstructionScreen(viewModel: DoorTaskViewModel = viewModel()) {
                     Text(if (currentInstructionIndex < pages.lastIndex) "Next" else "Start Task")
                 }
             }
-            return@Box
-        }
-
-        currentPage.backgroundImageRes?.let { imageRes ->
-            Image(
-                painter = painterResource(id = imageRes),
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.25f))
-            )
-        }
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 24.dp, vertical = 16.dp)
-        ) {
-            Spacer(modifier = Modifier.weight(0.08f))
-            Text(
-                text = currentPage.title,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(0.15f),
-                fontSize = currentPage.titleFontSizeSp.sp,
-                fontFamily = toFontFamily(currentPage.fontFamily),
-                textAlign = toTextAlign(currentPage.textAlign),
-                color = titleColor
-            )
-            Text(
-                text = currentPage.body,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(0.45f),
-                fontSize = currentPage.bodyFontSizeSp.sp,
-                lineHeight = (currentPage.bodyFontSizeSp * 1.25f).sp,
-                fontFamily = toFontFamily(currentPage.fontFamily),
-                textAlign = toTextAlign(currentPage.textAlign),
-                color = bodyColor
-            )
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(0.25f)
-            ) {
-                currentPage.foregroundImageRes?.let { imageRes ->
-                    Image(
-                        painter = painterResource(id = imageRes),
-                        contentDescription = "Instruction foreground",
-                        modifier = Modifier
-                            .fillMaxWidth(0.6f)
-                            .fillMaxHeight(0.95f)
-                            .align(toComposeAlignment(currentPage.foregroundImageAlignment)),
-                        contentScale = ContentScale.Fit
-                    )
-                }
+        } else {
+            currentPage.backgroundImageRes?.let { imageRes ->
+                Image(
+                    painter = painterResource(id = imageRes),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.25f))
+                )
             }
 
-            Row(
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(0.07f),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                    .fillMaxSize()
+                    .padding(horizontal = 24.dp, vertical = 16.dp)
             ) {
-                Button(
-                    onClick = viewModel::onInstructionBack,
-                    enabled = currentInstructionIndex > 0,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = backButtonColor,
-                        contentColor = buttonTextColor
-                    )
+                Spacer(modifier = Modifier.weight(0.08f))
+                Text(
+                    text = currentPage.title,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(0.15f),
+                    fontSize = currentPage.titleFontSizeSp.sp,
+                    fontFamily = toFontFamily(currentPage.fontFamily),
+                    textAlign = toTextAlign(currentPage.textAlign),
+                    color = titleColor
+                )
+                Text(
+                    text = currentPage.body,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(0.45f),
+                    fontSize = currentPage.bodyFontSizeSp.sp,
+                    lineHeight = (currentPage.bodyFontSizeSp * 1.25f).sp,
+                    fontFamily = toFontFamily(currentPage.fontFamily),
+                    textAlign = toTextAlign(currentPage.textAlign),
+                    color = bodyColor
+                )
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(0.25f)
                 ) {
-                    Text("Back")
+                    currentPage.foregroundImageRes?.let { imageRes ->
+                        Image(
+                            painter = painterResource(id = imageRes),
+                            contentDescription = "Instruction foreground",
+                            modifier = Modifier
+                                .fillMaxWidth(0.6f)
+                                .fillMaxHeight(0.95f)
+                                .align(toComposeAlignment(currentPage.foregroundImageAlignment)),
+                            contentScale = ContentScale.Fit
+                        )
+                    }
                 }
 
-                Button(
-                    onClick = viewModel::onInstructionNext,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = nextButtonColor,
-                        contentColor = buttonTextColor
-                    )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(0.07f),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(if (currentInstructionIndex < pages.lastIndex) "Next" else "Start Task")
+                    Button(
+                        onClick = viewModel::onInstructionBack,
+                        enabled = currentInstructionIndex > 0,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = backButtonColor,
+                            contentColor = buttonTextColor
+                        )
+                    ) {
+                        Text("Back")
+                    }
+
+                    Button(
+                        onClick = viewModel::onInstructionNext,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = nextButtonColor,
+                            contentColor = buttonTextColor
+                        )
+                    ) {
+                        Text(if (currentInstructionIndex < pages.lastIndex) "Next" else "Start Task")
+                    }
                 }
             }
         }
